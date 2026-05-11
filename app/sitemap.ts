@@ -20,6 +20,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...toolPages,
     {
+      url: `${BASE_URL}/changelog`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
+    {
       url: `${BASE_URL}/privacy`,
       lastModified: new Date(),
       changeFrequency: "yearly",

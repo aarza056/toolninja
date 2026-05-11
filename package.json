@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "changelog": "node scripts/gen-changelog.js"
   },
   "dependencies": {
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.9.1",
     "@types/diff": "^7.0.2",
     "@types/js-yaml": "^4.0.9",
     "@types/qrcode": "^1.5.6",

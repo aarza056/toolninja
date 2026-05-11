@@ -65,6 +65,10 @@ export default function Sidebar() {
           Your data never leaves the browser 🔒
         </p>
         <div className="flex gap-3 text-xs text-[#555555]">
+          <Link href="/changelog" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+            Changelog
+          </Link>
+          <span>·</span>
           <Link href="/privacy" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Privacy
           </Link>

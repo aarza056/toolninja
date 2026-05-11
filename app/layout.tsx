@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import ParticleBackground from "@/components/ParticleBackground";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -78,7 +79,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0a0a0a] text-[#f5f5f5]`}>
-        <div className="flex min-h-screen">
+        <ParticleBackground />
+        <div className="relative z-[1] flex min-h-screen">
           <Sidebar />
           <main className="flex-1 md:ml-[240px] min-h-screen overflow-y-auto">
             {children}
