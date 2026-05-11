@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -89,6 +90,7 @@ export default function RootLayout({
         <div className="fixed bottom-3 right-4 text-xs text-[#333333] pointer-events-none select-none z-50">
           🥷 ToolNinja
         </div>
+        <Analytics />
       </body>
     </html>
   );
