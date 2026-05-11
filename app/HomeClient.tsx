@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { tools, categories } from "@/lib/tools";
 import type { Tool } from "@/lib/tools";
 import * as LucideIcons from "lucide-react";
 import { Search, X } from "lucide-react";
+import { devPhrases } from "@/lib/phrases";
 
 type FilterCategory = typeof categories[number] | "All";
 
@@ -101,6 +102,21 @@ const WHY_ITEMS = [
 export default function HomeClient() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("All");
+  const [phrase, setPhrase] = useState("");
+
+  useEffect(() => {
+    setPhrase(devPhrases[Math.floor(Math.random() * devPhrases.length)]);
+  }, []);
+
+  function nextPhrase() {
+    setPhrase((current) => {
+      let next = current;
+      while (next === current) {
+        next = devPhrases[Math.floor(Math.random() * devPhrases.length)];
+      }
+      return next;
+    });
+  }
 
   const filteredTools = useMemo(() => {
     let result = tools;
@@ -140,6 +156,21 @@ export default function HomeClient() {
             you&apos;ve been looking for.
           </span>
         </h1>
+
+        {phrase && (
+          <div className="flex items-center justify-center gap-2 mt-3 mb-5">
+            <p className="text-sm italic text-[#666666] font-mono">
+              💬 {phrase}
+            </p>
+            <button
+              onClick={nextPhrase}
+              title="Another one"
+              className="text-[#444444] hover:text-[#a855f7] transition-colors text-base leading-none"
+            >
+              ↻
+            </button>
+          </div>
+        )}
 
         <p className="text-[#666666] text-base max-w-md mx-auto mb-8 leading-relaxed">
           Fast, free, private. Every tool runs entirely in your browser —
