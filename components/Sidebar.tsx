@@ -7,6 +7,12 @@ import { tools, categories } from "@/lib/tools";
 import { Menu, X } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 
+const NEW_TOOL_SLUGS = new Set([
+  "git-command-generator",
+  "markdown-table-generator",
+  "meta-tags-generator",
+]);
+
 function ToolIcon({ name }: { name: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[name];
   if (!Icon) return null;
@@ -50,7 +56,12 @@ export default function Sidebar() {
                     }`}
                   >
                     <ToolIcon name={tool.icon} />
-                    <span>{tool.name}</span>
+                    <span className="flex-1 truncate">{tool.name}</span>
+                    {NEW_TOOL_SLUGS.has(tool.slug) && (
+                      <span className="text-[9px] px-1 py-0.5 bg-[#a855f7]/20 text-[#a855f7] rounded-[3px] font-bold tracking-wider flex-shrink-0">
+                        NEW
+                      </span>
+                    )}
                   </Link>
                 );
               })}

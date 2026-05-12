@@ -22,7 +22,14 @@ const NEW_SLUGS = new Set([
   "sql-formatter","color-palette","jwt-generator","crypto-tools",
   "http-request","html-formatter","config-validator","text-diff",
   "cidr-calculator","unicode-explorer",
+  "git-command-generator","markdown-table-generator","meta-tags-generator",
 ]);
+
+const LATEST_SLUGS = [
+  "git-command-generator",
+  "markdown-table-generator",
+  "meta-tags-generator",
+];
 
 const CATEGORY_COLORS: Record<string, string> = {
   Format:    "bg-purple-500/10 text-purple-400 border-purple-500/20",
@@ -120,6 +127,7 @@ export default function HomeClient() {
   }, [search, activeCategory]);
 
   const featuredTools = tools.filter((t) => FEATURED_SLUGS.includes(t.slug));
+  const latestTools = tools.filter((t) => LATEST_SLUGS.includes(t.slug));
   const isFiltering = search.trim() !== "" || activeCategory !== "All";
 
   return (
@@ -183,6 +191,21 @@ export default function HomeClient() {
           </button>
         ))}
       </div>
+
+      {/* New ──────────────────────────────────────────────────────────────── */}
+      {!isFiltering && (
+        <div className="mb-10">
+          <h2 className="flex items-center gap-2 text-xs font-semibold text-[#555555] uppercase tracking-wider mb-4">
+            <span className="inline-flex items-center px-1.5 py-0.5 bg-[#a855f7]/15 text-[#a855f7] rounded-[4px] text-[9px] font-bold tracking-wider">NEW</span>
+            Just added
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {latestTools.map((t) => (
+              <ToolCard key={t.slug} tool={t} featured />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Featured ─────────────────────────────────────────────────────────── */}
       {!isFiltering && (

@@ -1162,6 +1162,108 @@ export const toolContent: Record<string, ToolContent> = {
     ],
   },
 
+  "git-command-generator": {
+    about:
+      "The Git Command Generator is a searchable reference for 60+ git commands organized by category — Setup, Branches, Staging, Commits, Remote, Undo, History, Tags, Stash, and Advanced. Search by name or keyword to find the exact command, copy it with one click, and see warning badges on destructive commands that rewrite history.",
+    useCases: [
+      "Quickly finding the right git syntax without leaving the browser",
+      "Learning git commands beyond the basics (reflog, bisect, worktree)",
+      "Checking the correct flags for destructive operations before running them",
+      "Onboarding new developers to git workflows with a visual reference",
+    ],
+    tips: [
+      "Commands marked with a Caution badge rewrite history — never use them on branches others have already pulled.",
+      "Search by concept, not just command name: try 'undo', 'linear', or 'recover' to find commands by what they do.",
+      "Your recently copied commands are saved in localStorage for quick re-access.",
+    ],
+    faq: [
+      {
+        q: "What is the difference between git reset and git revert?",
+        a: "git revert creates a new commit that undoes a previous commit — it's safe to use on shared branches because it doesn't rewrite history. git reset moves the HEAD pointer backward, effectively removing commits from the history — this rewrites history and is destructive. Only use git reset on commits that haven't been pushed to a shared branch.",
+      },
+      {
+        q: "When should I use git rebase instead of git merge?",
+        a: "Use rebase when you want a linear, clean commit history — your commits are replayed on top of the target branch as if they were written there. Use merge when you want to preserve the true divergence history with a merge commit. The golden rule: never rebase branches that others have already pulled from, as it rewrites the commit hashes they reference.",
+      },
+      {
+        q: "What does git stash do and when should I use it?",
+        a: "git stash temporarily saves your uncommitted changes (both staged and unstaged) to a stack, leaving your working directory clean. Use it when you need to quickly switch branches or pull changes without committing half-finished work. Run git stash pop to restore the most recent stash, or git stash list to see all stored stashes.",
+      },
+      {
+        q: "How do I recover commits after a git reset --hard?",
+        a: "Use git reflog — it logs every position HEAD has been at, even after hard resets. Find the commit hash you want to recover in the reflog output, then run git checkout <hash> to inspect it, or git reset --hard <hash> to restore your branch to that state. The reflog is local and expires after 90 days by default.",
+      },
+    ],
+  },
+
+  "markdown-table-generator": {
+    about:
+      "The Markdown Table Generator lets you build tables in a visual spreadsheet-style editor without memorizing Markdown syntax. Add and remove rows and columns, toggle per-column alignment (left, center, right), import data from a CSV file, and export as Markdown, HTML, or a live rendered preview.",
+    useCases: [
+      "Creating comparison tables for README files and documentation",
+      "Converting CSV data to Markdown for GitHub wikis and pull request descriptions",
+      "Building HTML tables for web content without writing raw HTML",
+      "Generating formatted tables for blog posts and technical writing",
+    ],
+    tips: [
+      "Press Tab in the last cell to automatically add a new row.",
+      "Import a CSV file to populate the table — headers in the first row are treated as column names.",
+      "Use the alignment buttons under each header to control text alignment in Markdown and the exported HTML.",
+    ],
+    faq: [
+      {
+        q: "How do I add rows and columns quickly?",
+        a: "Use the + and – buttons in the toolbar to add or remove rows and columns. Pressing Tab in the last cell of the last row also automatically adds a new row. For large datasets, importing a CSV file is the fastest approach.",
+      },
+      {
+        q: "Does Markdown support table cell merging (colspan/rowspan)?",
+        a: "Standard GitHub Flavored Markdown (GFM) does not support cell merging. Markdown tables are limited to basic rectangular grids. If you need merged cells, use the HTML export — HTML tables support colspan and rowspan, which you can add manually after export.",
+      },
+      {
+        q: "What CSV format does the importer accept?",
+        a: "The importer accepts comma-separated values where the first row is treated as column headers. Quoted fields (surrounded by double quotes) are supported. Line endings can be CRLF or LF. Import files with .csv extension or plain text files formatted as CSV.",
+      },
+      {
+        q: "Will the Markdown table render correctly on GitHub?",
+        a: "Yes. The generator produces GitHub Flavored Markdown (GFM) table syntax, which renders in GitHub README files, wikis, pull request descriptions, and issue comments. The column alignment (left, center, right) is controlled by the colon position in the separator row, which GFM supports fully.",
+      },
+    ],
+  },
+
+  "meta-tags-generator": {
+    about:
+      "The Meta Tags Generator creates all the HTML meta tags your page needs for SEO, Open Graph (Facebook/LinkedIn), and Twitter Cards. Fill in the fields and watch the live previews update for Google search, Twitter, and LinkedIn simultaneously. A quality checklist tracks what's missing. Copy all generated tags with one click.",
+    useCases: [
+      "Setting up complete meta tags for a new web page or blog post",
+      "Previewing how a page will appear when shared on social media before publishing",
+      "Auditing existing pages for missing or incorrect social meta tags",
+      "Generating Twitter Card and Open Graph tags for marketing campaigns",
+    ],
+    tips: [
+      "Keep your title under 60 characters — search engines truncate longer titles in results.",
+      "The description should be 120-160 characters — enough to describe the page but short enough to display fully.",
+      "Your OG image should be 1200×630px for best display across all platforms. Twitter Cards also accept this size.",
+    ],
+    faq: [
+      {
+        q: "What is the difference between Open Graph and Twitter Card tags?",
+        a: "Open Graph (og:) tags were created by Facebook and are used by Facebook, LinkedIn, Slack, Discord, WhatsApp, and most other platforms to generate link previews. Twitter Card (twitter:) tags are specific to Twitter/X. Both use similar fields — title, description, image — but different property names. Many platforms fall back to og: tags if twitter: tags are absent, so setting both is recommended.",
+      },
+      {
+        q: "Do meta keywords still matter for SEO?",
+        a: "No. Google and most major search engines stopped using the meta keywords tag as a ranking signal around 2009. Including it does no harm, but it provides no SEO benefit. Focus on the meta description — while it doesn't directly affect rankings either, a compelling description improves click-through rates from search results.",
+      },
+      {
+        q: "What is the ideal OG image size?",
+        a: "The recommended Open Graph image size is 1200×630 pixels (1.91:1 aspect ratio). This displays correctly on Facebook, LinkedIn, Twitter, and Slack. Minimum size is 200×200px, but smaller images may be displayed as a small thumbnail rather than a full-width card. Use PNG or JPG format; keep the file size under 1MB.",
+      },
+      {
+        q: "When should I use noindex or nofollow?",
+        a: "noindex tells search engines not to include the page in search results — use it for admin pages, duplicate content, thank-you pages, and staging environments. nofollow tells search engines not to follow the links on the page — use it sparingly, typically on user-generated content pages. Avoid noindexing pages you want to rank. Combining both (noindex, nofollow) is the most restrictive setting.",
+      },
+    ],
+  },
+
   "unicode-explorer": {
     about:
       "The Unicode Explorer lets you look up any Unicode character by symbol, name, or code point. Enter a character to see its official Unicode name, code point (decimal and hex), UTF-8 encoding, HTML entity, and Unicode block. Search by name to find the right symbol for your content.",

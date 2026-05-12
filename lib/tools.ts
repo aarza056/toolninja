@@ -289,6 +289,30 @@ export const tools: Tool[] = [
     category: "Reference",
     keywords: ["unicode", "character", "code point", "utf8", "utf16", "symbol", "emoji", "explorer"],
   },
+  {
+    slug: "git-command-generator",
+    name: "Git Command Generator",
+    description: "Find and copy git commands fast — search, filter by category, with warnings",
+    icon: "GitBranch",
+    category: "Generate",
+    keywords: ["git", "command", "generator", "version control", "branch", "commit", "rebase", "merge"],
+  },
+  {
+    slug: "markdown-table-generator",
+    name: "Markdown Table Generator",
+    description: "Build Markdown tables visually — edit cells, align columns, export as HTML",
+    icon: "Table",
+    category: "Generate",
+    keywords: ["markdown", "table", "generator", "csv", "html", "alignment", "grid"],
+  },
+  {
+    slug: "meta-tags-generator",
+    name: "Meta Tags Generator",
+    description: "Generate Open Graph, Twitter Card, and SEO meta tags with live previews",
+    icon: "Tags",
+    category: "Generate",
+    keywords: ["meta tags", "og tags", "open graph", "twitter card", "seo", "social preview", "html head"],
+  },
 ];
 
 export const categories = ["Format", "Encode", "Generate", "Convert", "Test", "Design", "Security", "Reference"] as const;

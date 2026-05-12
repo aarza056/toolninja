@@ -7,9 +7,11 @@ interface CopyButtonProps {
   text: string;
   className?: string;
   size?: "sm" | "md";
+  label?: string;
+  onAfterCopy?: () => void;
 }
 
-export default function CopyButton({ text, className = "", size = "md" }: CopyButtonProps) {
+export default function CopyButton({ text, className = "", size = "md", label, onAfterCopy }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
@@ -17,6 +19,7 @@ export default function CopyButton({ text, className = "", size = "md" }: CopyBu
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
+      onAfterCopy?.();
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback for older browsers
@@ -29,9 +32,10 @@ export default function CopyButton({ text, className = "", size = "md" }: CopyBu
       document.execCommand("copy");
       document.body.removeChild(el);
       setCopied(true);
+      onAfterCopy?.();
       setTimeout(() => setCopied(false), 2000);
     }
-  }, [text]);
+  }, [text, onAfterCopy]);
 
   const sizeClasses = size === "sm"
     ? "px-2 py-1 text-xs gap-1"
@@ -48,7 +52,7 @@ export default function CopyButton({ text, className = "", size = "md" }: CopyBu
       title="Copy to clipboard (Ctrl+Shift+C)"
     >
       {copied ? <Check size={13} /> : <Copy size={13} />}
-      {copied ? "Copied!" : "Copy"}
+      {copied ? "Copied!" : (label ?? "Copy")}
     </button>
   );
 }
