@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { tools, categories } from "@/lib/tools";
 import type { Tool } from "@/lib/tools";
 import * as LucideIcons from "lucide-react";
-import { Search, X } from "lucide-react";
+import { Search, X, RefreshCw } from "lucide-react";
+import { devPhrases } from "@/lib/phrases";
 
 type FilterCategory = typeof categories[number] | "All";
 
@@ -108,6 +109,15 @@ const WHY_ITEMS = [
 export default function HomeClient() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("All");
+  const [phraseIdx, setPhraseIdx] = useState(0);
+
+  useEffect(() => {
+    setPhraseIdx(Math.floor(Math.random() * devPhrases.length));
+  }, []);
+
+  const nextPhrase = useCallback(() => {
+    setPhraseIdx((i) => (i + 1) % devPhrases.length);
+  }, []);
 
   const filteredTools = useMemo(() => {
     let result = tools;
@@ -148,6 +158,19 @@ export default function HomeClient() {
             you&apos;ve been looking for.
           </span>
         </h1>
+
+        <div className="flex items-center justify-center gap-2 mb-5">
+          <p className="font-mono text-sm italic text-[#555555]">
+            &ldquo;{devPhrases[phraseIdx]}&rdquo;
+          </p>
+          <button
+            onClick={nextPhrase}
+            aria-label="Next phrase"
+            className="text-[#444444] hover:text-[#a855f7] transition-colors flex-shrink-0"
+          >
+            <RefreshCw size={13} />
+          </button>
+        </div>
 
         <p className="text-[#666666] text-base max-w-md mx-auto mb-8 leading-relaxed">
           Fast, free, private. Every tool runs entirely in your browser —

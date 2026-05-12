@@ -1,13 +1,13 @@
 # Changelog
 
-All notable changes to ToolNinja are documented here.
+All notable changes to ToolNinja, auto-generated from commit history.
 
----
+## 2026-05-12
+
+- • Added new Features: Git Commands, Markdown tables and MetaTags
 
 ## 2026-05-11
 
-### 📝 Changes
-
--  Added funny rotating IT/DEV phrases (`f485c63`)
--  Changed background particles theme + Added Changelog + Minor Bug Fixes (`2125e82`)
--  Initial commit - ToolNinja.io (`2c1969f`)
+- • Install Vercel Speed Insights
+- • Install Vercel Web Analytics
+- • Initial commit - ToolNinja.io
