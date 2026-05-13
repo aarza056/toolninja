@@ -87,6 +87,10 @@ export default function Sidebar() {
           <Link href="/changelog" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Changelog
           </Link>
+          <span>·</span>
+          <Link href="/blog" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+            Blog
+          </Link>
         </div>
       </div>
     </div>
