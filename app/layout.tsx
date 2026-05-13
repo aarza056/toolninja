@@ -91,6 +91,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
+        <meta name="keywords" content="developer tools, json formatter, base64 decoder, jwt decoder, regex tester, uuid generator, hash generator, chmod calculator, cidr calculator, css gradient generator, online developer tools, free developer tools, browser tools no login" />
+        <meta name="description" content="38 free browser-only developer tools. JSON formatter, Base64 encoder, JWT decoder, Regex tester, UUID generator, Chmod calculator, CIDR calculator, CSS animations and more. No login, no tracking, 100% private." />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png" />
         <link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png" />

@@ -115,7 +115,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "regex-tester": {
     about:
-      "The Regex Tester lets you write and test JavaScript regular expressions against sample text with live match highlighting. It shows match count, the full match string, and all captured groups. Supports the full JavaScript regex feature set including lookaheads, lookbehinds, named capture groups, and Unicode.",
+      "The ToolNinja Regex Tester is a free online regular expression tester with live match highlighting, match table with indices and capture groups, flag controls, and replace mode. Test JavaScript regex patterns instantly as you type. A fast, privacy-focused regex101 alternative — your data never leaves the browser.",
     useCases: [
       "Validating input formats such as emails, phone numbers, and URLs",
       "Writing parsing logic for structured text like log files or CSV",
@@ -217,7 +217,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "jwt-decoder": {
     about:
-      "The JWT Decoder parses JSON Web Tokens into their three components: header (algorithm and type), payload (claims), and signature. It decodes the Base64URL-encoded sections and displays them as readable JSON — showing all claims including expiry time (exp), issued-at (iat), issuer (iss), and subject (sub).",
+      "The ToolNinja JWT Decoder lets you decode and inspect JSON Web Tokens (JWTs) directly in your browser — your token never leaves your machine. Instantly view the header, payload, and signature. Check expiration times, inspect claims, and validate token structure. A privacy-first alternative to jwt.io.",
     useCases: [
       "Debugging authentication failures by inspecting what claims the token contains",
       "Checking whether a token is expired without waiting for an API call to fail",
@@ -756,7 +756,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "chmod-calculator": {
     about:
-      "The Chmod Calculator converts between symbolic Unix permission notation (rwxr-xr-x) and octal notation (755) for all three permission classes: owner, group, and others. Each class has three bits: read (4), write (2), and execute (1) — the octal digit is their sum.",
+      "The ToolNinja Chmod Calculator is a free online Linux file permission calculator. Convert between symbolic (rwxr-xr-x) and octal (755) notation instantly. Perfect for calculating chmod 755, chmod 777, chmod 644 and any other Unix/Linux file permissions without memorizing the octal values. Works entirely in your browser — no login, no server calls.",
     useCases: [
       "Setting correct permissions for web server files (644 for files, 755 for directories)",
       "Debugging 'Permission denied' errors in Linux and macOS environments",
@@ -1130,7 +1130,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "cidr-calculator": {
     about:
-      "The IP/CIDR Calculator computes all subnet details from a CIDR notation like 192.168.1.0/24. Instantly see the network address, broadcast address, subnet mask, wildcard mask, first and last usable host, total host count, and the full binary representation of each address.",
+      "The ToolNinja CIDR Calculator is a free online subnet calculator and IP address calculator. Enter any CIDR notation (e.g. 192.168.1.0/24) to instantly calculate subnet mask, network address, broadcast address, host range, and total number of hosts. Perfect for network engineers, sysadmins, and DevOps professionals.",
     useCases: [
       "Planning IP address ranges for VPC and cloud network configurations",
       "Verifying subnet masks when setting up routers and firewall rules",
