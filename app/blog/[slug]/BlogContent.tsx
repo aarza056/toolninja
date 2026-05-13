@@ -41,7 +41,13 @@ const components: Components = {
   ),
   code: ({ children, className }) => {
     const isBlock = className?.startsWith("language-");
-    if (isBlock) return null; // handled by pre
+    if (isBlock) {
+      return (
+        <code className="text-[#c9d1d9] font-mono text-[13px] leading-relaxed">
+          {children}
+        </code>
+      );
+    }
     return (
       <code className="text-[#e879f9] bg-[#1a0a2e] border border-[#2d1250] px-1.5 py-0.5 rounded text-[13px] font-mono">
         {children}
