@@ -1,11 +1,20 @@
 ---
 title: "JWT Tokens Explained: Structure, Signing, and Security"
 description: "Learn how JSON Web Tokens (JWT) work, how to decode and verify them, common vulnerabilities like the 'alg:none' attack, and best practices for using JWTs securely in your applications."
-date: "2025-11-15"
+date: "2026-05-03"
 author: "ToolNinja"
 coverEmoji: "🔑"
-tags: ["jwt", "authentication", "security", "api", "oauth"]
+tags: ["jwt decoder", "decode jwt token", "json web token explained", "jwt token structure", "jwt header payload signature", "jwt security", "how to decode jwt online", "jwt debugger", "jwt expiry check", "jwt vs session tokens", "jwt alg none attack", "jwt tutorial"]
 relatedTools: ["jwt-decoder"]
+faqs:
+  - q: "Can I decode a JWT without the secret key?"
+    a: "Yes — the header and payload of a JWT are just Base64URL encoded, not encrypted. Anyone can decode them without the secret. The secret is only needed to verify the signature."
+  - q: "Is it safe to paste my JWT into an online decoder?"
+    a: "Only if the tool runs entirely in your browser with no server calls. ToolNinja's JWT Decoder processes your token 100% client-side — nothing is ever sent to any server."
+  - q: "What is the difference between JWT and session tokens?"
+    a: "Session tokens require a database lookup on every request. JWTs are self-contained — the server can verify them without a database by checking the signature."
+  - q: "What does the alg:none vulnerability mean in JWT?"
+    a: "Some JWT libraries historically accepted tokens with algorithm set to none, bypassing signature verification entirely. Always verify your library rejects alg:none tokens."
 ---
 
 ## What Is a JWT?

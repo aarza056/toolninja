@@ -1,11 +1,20 @@
 ---
 title: "Essential Git Commands Every Developer Should Know"
 description: "A practical Git reference covering branching, stashing, rebasing, undoing mistakes, and advanced commands like bisect, reflog, and worktrees. With real-world workflows and examples."
-date: "2025-12-13"
+date: "2026-05-07"
 author: "ToolNinja"
 coverEmoji: "🌿"
-tags: ["git", "version-control", "workflow", "devops", "terminal"]
+tags: ["git commands cheat sheet", "git reset vs revert", "git stash tutorial", "git fetch vs pull", "git rebase explained", "git cherry pick", "how to undo git commit", "git branch commands", "essential git commands", "git commands list", "git workflow guide", "git beginner guide"]
 relatedTools: ["git-command-generator"]
+faqs:
+  - q: "What is the difference between git reset and git revert?"
+    a: "git reset moves the branch pointer backward, rewriting history — only safe for unpushed commits. git revert creates a new commit that undoes a previous one, preserving history and safe for shared branches."
+  - q: "What does git stash do and when should I use it?"
+    a: "git stash temporarily saves uncommitted changes and restores your working directory to the last commit. Use it when you need to switch branches without committing unfinished work."
+  - q: "What is the difference between git fetch and git pull?"
+    a: "git fetch downloads changes from remote without modifying your working directory. git pull is fetch plus merge — it downloads and immediately integrates changes."
+  - q: "How do I undo a git commit I already pushed?"
+    a: "Use git revert <commit-hash> to create a new commit that undoes changes. Avoid git push --force on shared branches as it rewrites history."
 ---
 
 ## Setup and Config

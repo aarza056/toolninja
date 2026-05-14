@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { tools, categories } from "@/lib/tools";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 
 const NEW_TOOL_SLUGS = new Set([
@@ -22,6 +22,16 @@ function ToolIcon({ name }: { name: string }) {
 export default function Sidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    setIsMac(/Mac|iPhone|iPod|iPad/.test(navigator.userAgent));
+  }, []);
+
+  const openPalette = () => {
+    window.dispatchEvent(new CustomEvent("toolninja:openpalette"));
+    setMobileOpen(false);
+  };
 
   const sidebarContent = (
     <div className="flex flex-col h-full">
@@ -31,6 +41,22 @@ export default function Sidebar() {
           <span className="text-xl">🥷</span>
           <span className="font-bold text-[#a855f7] text-base tracking-tight">ToolNinja</span>
         </Link>
+      </div>
+
+      {/* Search trigger */}
+      <div className="px-3 pb-2 pt-1">
+        <button
+          onClick={openPalette}
+          className="w-full flex items-center justify-between px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg text-sm text-[#555555] hover:text-[#888888] hover:border-[#333333] transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Search size={12} />
+            <span className="text-xs">Search tools...</span>
+          </div>
+          <kbd className="text-[10px] bg-[#111111] border border-[#333333] px-1.5 py-0.5 rounded text-[#444444]">
+            {isMac ? "⌘K" : "Ctrl+K"}
+          </kbd>
+        </button>
       </div>
 
       {/* Tool list */}

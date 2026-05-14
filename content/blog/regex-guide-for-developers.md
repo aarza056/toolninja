@@ -1,11 +1,20 @@
 ---
 title: "Regex for Developers: Practical Patterns You'll Actually Use"
 description: "A practical regex guide covering anchors, quantifiers, groups, lookaheads, and 20+ real-world patterns for emails, URLs, dates, IDs, and more. Includes JavaScript, Python, and Go examples."
-date: "2025-11-22"
+date: "2026-05-04"
 author: "ToolNinja"
 coverEmoji: "🔍"
-tags: ["regex", "javascript", "python", "validation", "patterns"]
+tags: ["regex tester online", "regex tutorial", "regular expressions explained", "regex patterns cheat sheet", "test regex online", "regex flags javascript", "capture groups regex", "regex email validation", "regex url matching", "regex101 alternative", "regex for beginners", "javascript regex guide"]
 relatedTools: ["regex-tester"]
+faqs:
+  - q: "What is the difference between .* and .+ in regex?"
+    a: ".* matches zero or more of any character and can match an empty string. .+ matches one or more and requires at least one character."
+  - q: "How do I match a literal dot in regex?"
+    a: "Use \\. (backslash-dot). A bare . in regex matches any character. To match an actual period you must escape it."
+  - q: "What does the g flag do in JavaScript regex?"
+    a: "The g (global) flag makes the regex find all matches in the string, not just the first one."
+  - q: "Why does my regex work in testing but fail in production?"
+    a: "Common causes: missing escape on special characters, wrong flags, greedy vs lazy quantifiers, or anchoring issues. Always test with edge cases."
 ---
 
 ## Regex Fundamentals

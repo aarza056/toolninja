@@ -1,11 +1,20 @@
 ---
 title: "Markdown Guide for Developers: Tables, Code Blocks, and More"
 description: "A complete Markdown reference for developers covering tables, code blocks with syntax highlighting, task lists, footnotes, GitHub-Flavored Markdown, and Mermaid diagrams."
-date: "2026-01-10"
+date: "2026-05-10"
 author: "ToolNinja"
 coverEmoji: "📝"
-tags: ["markdown", "documentation", "github", "readme", "writing"]
+tags: ["markdown table generator", "github flavored markdown", "markdown syntax guide", "markdown code blocks", "mdx vs markdown", "markdown to html converter", "markdown cheat sheet", "markdown table syntax", "markdown task list", "markdown tutorial developers", "markdown preview online"]
 relatedTools: ["markdown-preview", "markdown-table-generator"]
+faqs:
+  - q: "What is the difference between Markdown and MDX?"
+    a: "Markdown is a plain text formatting syntax converting to HTML. MDX extends Markdown to support JSX — you can embed React components directly in Markdown files."
+  - q: "Why does my Markdown table not render correctly?"
+    a: "Common issues: missing alignment row (dashes after header), inconsistent pipe characters, or extra spaces. Every table needs a header row, separator row with dashes, and at least one data row."
+  - q: "What is GitHub Flavored Markdown?"
+    a: "GitHub Flavored Markdown (GFM) extends standard Markdown with tables, task lists, strikethrough, autolinked URLs, fenced code blocks with syntax highlighting, and @ mentions."
+  - q: "How do I add syntax highlighting to code blocks in Markdown?"
+    a: "Use fenced code blocks with the language identifier — triple backticks followed by the language name like javascript, python, bash, sql, or json."
 ---
 
 ## Why Markdown Matters for Developers

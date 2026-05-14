@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getPostBySlug, getAllPostSlugs } from "@/lib/blog";
+import { getPostBySlug, getAllPostSlugs, getAllPosts } from "@/lib/blog";
 import { Calendar, Clock, Tag } from "lucide-react";
 import { tools } from "@/lib/tools";
 import BlogContent from "./BlogContent";
+import ShareButtons from "@/components/ShareButtons";
+import RelatedArticles from "@/components/RelatedArticles";
 
 interface Props {
   params: { slug: string };
@@ -53,6 +55,8 @@ export default function BlogPostPage({ params }: Props) {
   const post = getPostBySlug(params.slug);
   if (!post) notFound();
 
+  const allPosts = getAllPosts();
+
   const relatedToolObjects = post.relatedTools
     .map((slug) => tools.find((t) => t.slug === slug))
     .filter(Boolean);
@@ -63,6 +67,7 @@ export default function BlogPostPage({ params }: Props) {
     headline: post.title,
     description: post.description,
     datePublished: post.date,
+    dateModified: post.date,
     author: {
       "@type": "Organization",
       name: "ToolNinja",
@@ -85,9 +90,30 @@ export default function BlogPostPage({ params }: Props) {
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://toolninja.io" },
       { "@type": "ListItem", position: 2, name: "Blog", item: "https://toolninja.io/blog" },
-      { "@type": "ListItem", position: 3, name: post.title, item: `https://toolninja.io/blog/${post.slug}` },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: `https://toolninja.io/blog/${post.slug}`,
+      },
     ],
   };
+
+  const faqSchema =
+    post.faqs.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: post.faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.q,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: faq.a,
+            },
+          })),
+        }
+      : null;
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
@@ -99,12 +125,22 @@ export default function BlogPostPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
 
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-[#555555] mb-8">
-        <Link href="/" className="hover:text-[#888888] transition-colors">Home</Link>
+        <Link href="/" className="hover:text-[#888888] transition-colors">
+          Home
+        </Link>
         <span>/</span>
-        <Link href="/blog" className="hover:text-[#888888] transition-colors">Blog</Link>
+        <Link href="/blog" className="hover:text-[#888888] transition-colors">
+          Blog
+        </Link>
         <span>/</span>
         <span className="text-[#888888] truncate">{post.title}</span>
       </div>
@@ -113,7 +149,7 @@ export default function BlogPostPage({ params }: Props) {
       <header className="mb-8">
         <div className="flex items-center gap-3 mb-4">
           <span className="text-4xl">{post.coverEmoji}</span>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {post.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
@@ -144,12 +180,47 @@ export default function BlogPostPage({ params }: Props) {
         </div>
       </header>
 
-      {/* Article content */}
+      {/* 1. Article content */}
       <BlogContent content={post.content} />
 
-      {/* Related tools */}
+      {/* 2. Share buttons */}
+      <ShareButtons
+        title={post.title}
+        url={`https://toolninja.io/blog/${post.slug}`}
+      />
+
+      {/* 3. FAQ section */}
+      {post.faqs.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-lg font-bold text-[#f5f5f5] mb-5 pb-2 border-b border-[#1e1e1e]">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-4">
+            {post.faqs.map((faq, i) => (
+              <div
+                key={i}
+                className="p-4 bg-[#111111] border border-[#1e1e1e] rounded-lg"
+              >
+                <h3 className="text-sm font-semibold text-[#f5f5f5] mb-2">
+                  {faq.q}
+                </h3>
+                <p className="text-sm text-[#888888] leading-relaxed">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 4. Related articles */}
+      <RelatedArticles
+        currentSlug={post.slug}
+        currentTags={post.tags}
+        allPosts={allPosts}
+      />
+
+      {/* 5. Tool CTA */}
       {relatedToolObjects.length > 0 && (
-        <div className="mt-12 p-5 bg-[#111111] border border-[#a855f7]/20 rounded-xl">
+        <div className="mt-8 p-5 bg-[#111111] border border-[#a855f7]/20 rounded-xl">
           <h2 className="text-sm font-semibold text-[#f5f5f5] mb-3">
             Try it yourself →
           </h2>
@@ -175,7 +246,7 @@ export default function BlogPostPage({ params }: Props) {
         </div>
       )}
 
-      {/* Back to blog */}
+      {/* 6. Back to blog */}
       <div className="mt-8 pt-6 border-t border-[#1e1e1e]">
         <Link
           href="/blog"

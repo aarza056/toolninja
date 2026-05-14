@@ -1,11 +1,20 @@
 ---
 title: "UUIDs Explained: v1 vs v4 vs v7 and When to Use Each"
 description: "Understand UUID versions — v1 (time + MAC), v4 (random), v5 (name + hash), and the new v7 (sortable). When to use each, database implications, and alternatives like NanoID and ULID."
-date: "2025-12-06"
+date: "2026-05-06"
 author: "ToolNinja"
 coverEmoji: "🎲"
-tags: ["uuid", "identifiers", "database", "api", "javascript"]
+tags: ["uuid generator online", "uuid v4 vs v7", "uuid explained", "guid vs uuid difference", "uuid primary key database", "uuid v4 random generation", "uuid v7 sortable", "ulid vs uuid", "nanoid vs uuid", "uuid collision probability", "generate uuid free", "uuid format explained"]
 relatedTools: ["uuid-generator"]
+faqs:
+  - q: "What is the difference between UUID v4 and UUID v7?"
+    a: "UUID v4 is randomly generated with no ordering — great for privacy but poor for database indexing. UUID v7 is time-ordered while still random enough to avoid collisions, making it better for database primary keys."
+  - q: "Can two UUID v4s ever be the same?"
+    a: "Theoretically yes, but practically impossible. The probability of a duplicate among 1 trillion UUIDs is about 1 in a billion."
+  - q: "Should I use UUID as a database primary key?"
+    a: "UUID v4 has trade-offs: no sequential enumeration attacks and easy distributed data merging, but larger storage and slower indexing. UUID v7 or ULID solve most performance issues."
+  - q: "What is the difference between UUID and GUID?"
+    a: "They are the same thing. GUID is Microsoft's term for UUID. Both follow the same RFC 4122 standard and are interchangeable."
 ---
 
 ## What Is a UUID?

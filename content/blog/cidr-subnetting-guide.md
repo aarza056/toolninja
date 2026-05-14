@@ -1,11 +1,20 @@
 ---
 title: "CIDR Notation & Subnetting: A Practical Guide for Developers"
 description: "Understand CIDR notation, subnet masks, and IP ranges. Learn how /24, /16, /8 networks work, when to use private ranges, and how to subnet for cloud and on-prem infrastructure."
-date: "2025-11-08"
+date: "2026-05-02"
 author: "ToolNinja"
 coverEmoji: "🌐"
-tags: ["networking", "cidr", "subnetting", "devops", "cloud", "aws"]
+tags: ["cidr calculator", "subnet calculator online", "cidr notation explained", "what is /24 network", "ip subnet calculator", "cidr to ip range", "subnet mask calculator", "network address calculator", "ipv4 subnetting guide", "cidr block calculator", "what is 0.0.0.0/0", "subnetting explained"]
 relatedTools: ["cidr-calculator"]
+faqs:
+  - q: "What does /24 mean in an IP address like 192.168.1.0/24?"
+    a: "The /24 means the first 24 bits are the network portion, leaving 8 bits for hosts. This gives you 256 addresses (254 usable hosts) and corresponds to a subnet mask of 255.255.255.0."
+  - q: "What is the difference between /24 and /16?"
+    a: "A /24 network has 254 usable hosts. A /16 network has 65,534 usable hosts. The smaller the number after the slash, the larger the network."
+  - q: "What does 0.0.0.0/0 mean?"
+    a: "0.0.0.0/0 represents all possible IP addresses — the entire internet. In routing tables and firewall rules, it's the default route meaning match everything."
+  - q: "How many IP addresses are in a /24 subnet?"
+    a: "A /24 subnet contains 256 IP addresses total: 1 network address, 254 usable host addresses, and 1 broadcast address."
 ---
 
 ## What Is CIDR?

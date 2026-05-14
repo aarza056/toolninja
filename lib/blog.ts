@@ -4,6 +4,11 @@ import matter from "gray-matter";
 
 const BLOG_DIR = path.join(process.cwd(), "content", "blog");
 
+export interface FAQ {
+  q: string;
+  a: string;
+}
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -15,6 +20,7 @@ export interface BlogPost {
   content: string;
   relatedTools: string[];
   coverEmoji?: string;
+  faqs: FAQ[];
 }
 
 export type BlogPostMeta = Omit<BlogPost, "content">;
@@ -50,6 +56,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     content,
     relatedTools: data.relatedTools ?? [],
     coverEmoji: data.coverEmoji ?? "🥷",
+    faqs: data.faqs ?? [],
   };
 }
 

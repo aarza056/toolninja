@@ -1,11 +1,20 @@
 ---
 title: "chmod Explained: Linux File Permissions for Developers"
 description: "Master Linux file permissions with chmod. Understand octal notation, symbolic mode, chmod 755 vs 777 vs 644, and real-world examples for web servers and scripts."
-date: "2025-11-01"
+date: "2026-05-01"
 author: "ToolNinja"
 coverEmoji: "🔐"
-tags: ["linux", "chmod", "permissions", "devops", "security"]
+tags: ["chmod calculator", "chmod 755", "chmod 777", "chmod 644", "linux file permissions", "rwxr-xr-x", "octal permissions", "unix permissions calculator", "chmod converter", "linux permission calculator", "file permission linux", "chmod explained"]
 relatedTools: ["chmod-calculator"]
+faqs:
+  - q: "What does chmod 755 mean?"
+    a: "chmod 755 gives the owner full read, write, and execute permissions (7), while group and others get read and execute only (5). It's the standard permission for web server directories and executable scripts."
+  - q: "What is the difference between chmod 644 and chmod 755?"
+    a: "chmod 644 is for regular files — owner can read and write, everyone else can only read. chmod 755 is for directories and executables — adds execute permission so the directory can be entered or the file can be run."
+  - q: "Is chmod 777 dangerous?"
+    a: "Yes, especially on production servers. chmod 777 gives every user on the system full read, write, and execute access. This can allow malicious users or compromised processes to modify or delete your files. Always use the most restrictive permissions that still allow your application to function."
+  - q: "How do I apply chmod recursively to a directory?"
+    a: "Use chmod -R 755 /your/directory to apply permissions recursively. For better control, use find to apply different permissions to files vs directories separately."
 ---
 
 ## What Is chmod?

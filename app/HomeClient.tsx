@@ -7,6 +7,9 @@ import type { Tool } from "@/lib/tools";
 import * as LucideIcons from "lucide-react";
 import { Search, X, RefreshCw } from "lucide-react";
 import { devPhrases } from "@/lib/phrases";
+import { getRecentTools, getFavoriteTools } from "@/lib/user-prefs";
+import StarButton from "@/components/StarButton";
+import TrustBar from "@/components/TrustBar";
 
 type FilterCategory = typeof categories[number] | "All";
 
@@ -58,20 +61,22 @@ function ToolCard({ tool, featured = false }: { tool: Tool; featured?: boolean }
       href={`/tools/${tool.slug}`}
       className={`group relative flex flex-col gap-3 bg-[#111111] border border-[#222222] rounded-[8px] hover:border-[#a855f7]/50 hover:bg-[#1a1a1a] transition-all duration-150 overflow-hidden ${featured ? "p-6" : "p-5"}`}
     >
-      {isNew && (
-        <span className="absolute top-3 right-3 text-[10px] px-1.5 py-0.5 bg-[#a855f7]/15 text-[#a855f7] rounded-[4px] font-semibold tracking-wider">
-          NEW
-        </span>
-      )}
       <div className="flex items-start justify-between">
         <div className="p-2 bg-[#1a1a1a] rounded-[6px] group-hover:bg-[#a855f7]/10 transition-colors">
           <ToolIcon name={tool.icon} size={featured ? 22 : 18} />
         </div>
-        {!isNew && (
-          <span className={`text-[10px] px-2 py-0.5 rounded-[4px] border ${CATEGORY_COLORS[tool.category] ?? "bg-gray-500/10 text-gray-400 border-gray-500/20"}`}>
-            {tool.category}
-          </span>
-        )}
+        <div className="flex items-center gap-1.5">
+          {isNew ? (
+            <span className="text-[10px] px-1.5 py-0.5 bg-[#a855f7]/15 text-[#a855f7] rounded-[4px] font-semibold tracking-wider">
+              NEW
+            </span>
+          ) : (
+            <span className={`text-[10px] px-2 py-0.5 rounded-[4px] border ${CATEGORY_COLORS[tool.category] ?? "bg-gray-500/10 text-gray-400 border-gray-500/20"}`}>
+              {tool.category}
+            </span>
+          )}
+          <StarButton slug={tool.slug} size="sm" />
+        </div>
       </div>
       <div>
         <h3 className={`font-semibold text-[#f5f5f5] mb-1 group-hover:text-[#a855f7] transition-colors ${featured ? "text-base" : "text-sm"}`}>
@@ -110,9 +115,13 @@ export default function HomeClient() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("All");
   const [phraseIdx, setPhraseIdx] = useState(0);
+  const [recentSlugs, setRecentSlugs] = useState<string[]>([]);
+  const [favSlugs, setFavSlugs] = useState<string[]>([]);
 
   useEffect(() => {
     setPhraseIdx(Math.floor(Math.random() * devPhrases.length));
+    setRecentSlugs(getRecentTools());
+    setFavSlugs(getFavoriteTools());
   }, []);
 
   const nextPhrase = useCallback(() => {
@@ -139,6 +148,13 @@ export default function HomeClient() {
   const featuredTools = tools.filter((t) => FEATURED_SLUGS.includes(t.slug));
   const latestTools = tools.filter((t) => LATEST_SLUGS.includes(t.slug));
   const isFiltering = search.trim() !== "" || activeCategory !== "All";
+
+  const favoriteTools = favSlugs
+    .map((s) => tools.find((t) => t.slug === s))
+    .filter(Boolean) as Tool[];
+  const recentTools = recentSlugs
+    .map((s) => tools.find((t) => t.slug === s))
+    .filter(Boolean) as Tool[];
 
   return (
     <div className="px-6 py-10 max-w-5xl mx-auto">
@@ -170,6 +186,10 @@ export default function HomeClient() {
           >
             <RefreshCw size={13} />
           </button>
+        </div>
+
+        <div className="flex justify-center">
+          <TrustBar />
         </div>
 
         <p className="text-[#666666] text-base max-w-md mx-auto mb-8 leading-relaxed">
@@ -214,6 +234,34 @@ export default function HomeClient() {
           </button>
         ))}
       </div>
+
+      {/* Favorites ───────────────────────────────────────────────────────── */}
+      {!isFiltering && favoriteTools.length > 0 && (
+        <div className="mb-10">
+          <h2 className="flex items-center gap-2 text-xs font-semibold text-[#555555] uppercase tracking-wider mb-4">
+            <span className="text-[#f59e0b]">★</span> Your Favorites
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {favoriteTools.map((t) => (
+              <ToolCard key={t.slug} tool={t} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recently Used ────────────────────────────────────────────────────── */}
+      {!isFiltering && recentTools.length > 0 && (
+        <div className="mb-10">
+          <h2 className="flex items-center gap-2 text-xs font-semibold text-[#555555] uppercase tracking-wider mb-4">
+            <span>🕐</span> Recently Used
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {recentTools.map((t) => (
+              <ToolCard key={t.slug} tool={t} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* New ──────────────────────────────────────────────────────────────── */}
       {!isFiltering && (

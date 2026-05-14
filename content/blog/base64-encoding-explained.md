@@ -1,11 +1,20 @@
 ---
 title: "Base64 Encoding Explained: What It Is, When to Use It"
 description: "Understand how Base64 encoding works, the difference between Base64 and Base64URL, when to encode vs encrypt, and practical use cases in web development, APIs, and data transfer."
-date: "2025-11-29"
+date: "2026-05-05"
 author: "ToolNinja"
 coverEmoji: "🔢"
-tags: ["base64", "encoding", "api", "javascript", "security"]
+tags: ["base64 encoding explained", "base64 decoder online", "base64 vs encryption", "base64url encoding", "what is base64", "base64 padding equals sign", "base64 encode decode free", "binary to text encoding", "base64 in jwt tokens", "base64 image encoding", "base64 encode online"]
 relatedTools: ["base64-encoder"]
+faqs:
+  - q: "Is Base64 the same as encryption?"
+    a: "No. Base64 is encoding, not encryption. It transforms binary data into ASCII text — anyone can decode it without a key. Never use Base64 to hide sensitive data."
+  - q: "Why does Base64 output end with == or =?"
+    a: "Base64 encodes data in 3-byte chunks. If the input length is not divisible by 3, padding characters = are added to complete the final group."
+  - q: "What is the difference between Base64 and Base64URL?"
+    a: "Base64URL replaces + with - and / with _, and omits padding =. This makes it safe for URLs. JWT tokens use Base64URL encoding."
+  - q: "When should I use Base64 encoding?"
+    a: "Use Base64 when transferring binary data through text-only systems — embedding images in CSS as data URIs, sending binary in JSON APIs, or storing binary in environment variables."
 ---
 
 ## What Is Base64?
