@@ -13,7 +13,7 @@ export interface ToolContent {
 export const toolContent: Record<string, ToolContent> = {
   "json-formatter": {
     about:
-      "The JSON Formatter validates and beautifies JSON data with automatic indentation and syntax highlighting. Paste minified JSON from an API response, config file, or database record to make it instantly human-readable. It catches common errors like trailing commas, missing brackets, and unquoted keys — highlighting exactly where the problem is.",
+      "The ToolNinja JSON Formatter is a free online JSON formatter, validator and beautifier. Paste any JSON string and instantly format it with proper indentation, syntax highlighting, and clear error messages if your JSON is invalid.\n\nUse it as a JSON beautifier to make minified API responses readable, as a JSON validator to catch syntax errors like trailing commas, unquoted keys, or mismatched brackets, or as a JSON minifier to compress formatted JSON for production use. The tree view mode lets you explore deeply nested structures visually, and JSONPath query support lets you extract specific values without writing any code.\n\nWhether you're debugging an API response, validating config files, or pretty printing JSON for documentation — the ToolNinja JSON formatter handles it instantly with no page reloads.\n\nEverything runs 100% in your browser. Your JSON data — including any sensitive API keys, tokens or private data — never leaves your machine. No login required.",
     useCases: [
       "Inspecting API responses from Postman, curl, or browser DevTools",
       "Formatting config files (package.json, tsconfig.json) before committing",
@@ -47,7 +47,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "base64": {
     about:
-      "The Base64 Encoder/Decoder converts text and binary data to Base64 encoding and back. Base64 represents binary data using 64 printable ASCII characters, making it safe to transmit through text-based protocols like HTTP headers, JSON, XML, and email where raw binary would be corrupted.",
+      "The ToolNinja Base64 tool is a free online Base64 encoder and decoder. Encode any text or data to Base64 format, or decode Base64 strings back to plain text — instantly, with no page reload.\n\nUse the Base64 encoder when you need to embed binary data in JSON APIs, create data URIs for images in CSS or HTML, encode credentials for HTTP Basic Authentication headers, or prepare data for email transmission. Use the Base64 decoder to inspect encoded strings in API responses, JWT token segments, or any Base64 encoded content you encounter during development.\n\nSupports both standard Base64 and Base64URL encoding (used in JWT tokens and URLs). The tool automatically handles padding and correctly encodes all Unicode characters.\n\nRuns entirely in your browser — your data never leaves your machine. No login, no server, no tracking.",
     useCases: [
       "Encoding credentials for HTTP Basic Authentication headers",
       "Embedding small images as data URIs directly in HTML or CSS",
@@ -115,12 +115,14 @@ export const toolContent: Record<string, ToolContent> = {
 
   "regex-tester": {
     about:
-      "The ToolNinja Regex Tester is a free online regular expression tester with live match highlighting, match table with indices and capture groups, flag controls, and replace mode. Test JavaScript regex patterns instantly as you type. A fast, privacy-focused regex101 alternative — your data never leaves the browser.",
+      "The ToolNinja Regex Tester is a free online regular expression tester with live match highlighting. Test any regex pattern against a string and see all matches highlighted in real time as you type — no button press needed.\n\nWhether you need to quickly regex test a pattern, debug a complex regular expression, or use it as a regex web tool for JavaScript development — the results appear instantly. The match table shows every match with its exact index, length, and capture groups so you can verify your pattern precisely.\n\nUse it to test email validation regex, URL matching patterns, phone number formats, date patterns, and anything else your project requires. Replace mode lets you preview regex substitutions before using them in code. Supports all JavaScript regex flags: global (g), case-insensitive (i), multiline (m), and dotAll (s). A fast, privacy-first regex101 alternative.\n\nRuns 100% in your browser — your test strings and patterns never leave your machine. No login, no account required.",
     useCases: [
-      "Validating input formats such as emails, phone numbers, and URLs",
-      "Writing parsing logic for structured text like log files or CSV",
-      "Extracting data from strings using capture groups",
-      "Learning regex syntax interactively with instant visual feedback",
+      "Testing email validation, URL matching and phone number regex patterns",
+      "Debugging complex regular expressions with live match highlighting",
+      "Verifying regex capture groups before using them in JavaScript code",
+      "Testing regex replace patterns to preview substitution results",
+      "Learning regex syntax interactively with real-time feedback",
+      "Validating regex patterns for form input validation and data parsing",
     ],
     tips: [
       "The g flag finds all matches — without it, only the first match is returned.",
@@ -217,7 +219,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "jwt-decoder": {
     about:
-      "The ToolNinja JWT Decoder lets you decode and inspect JSON Web Tokens (JWTs) directly in your browser — your token never leaves your machine. Instantly view the header, payload, and signature. Check expiration times, inspect claims, and validate token structure. A privacy-first alternative to jwt.io.",
+      "The ToolNinja JWT Decoder is a free online JSON Web Token decoder. Paste any JWT and instantly see the decoded header, payload, and signature in color-coded sections — purple for header, blue for payload, red for signature.\n\nUse it to decode JWT tokens when debugging authentication issues, inspect JWT claims like sub, iat, exp, and aud, check JWT expiry time in human readable format, or verify the token structure before implementing JWT validation in your code. The expiry countdown tells you immediately if a token is still valid or has already expired.\n\nUnlike some online JWT tools, ToolNinja's JWT decoder runs 100% in your browser using JavaScript — your token, including any sensitive claims like user IDs, roles, and permissions, never leaves your machine. It's a privacy-first alternative to jwt.io for developers who work with sensitive authentication tokens.\n\nNo login, no account, no server calls. Just paste and decode.",
     useCases: [
       "Debugging authentication failures by inspecting what claims the token contains",
       "Checking whether a token is expired without waiting for an API call to fail",
@@ -353,7 +355,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "uuid-generator": {
     about:
-      "The UUID Generator creates version 4 UUIDs (Universally Unique Identifiers) that are randomly generated per RFC 4122. V4 UUIDs contain 122 bits of randomness, giving a collision probability of roughly 1 in 2^122 — effectively impossible to collide in any real-world application.",
+      "The ToolNinja UUID Generator is a free online UUID and GUID generator. Generate cryptographically random UUID v4 identifiers instantly — individually or in bulk up to 100 at a time.\n\nUUIDs (Universally Unique Identifiers) are 128-bit identifiers used as primary keys in databases, unique file names, session tokens, correlation IDs in distributed systems, and anywhere a guaranteed-unique identifier is needed. UUID v4 uses random generation making it ideal for privacy-sensitive use cases where sequential IDs would reveal information about your data volume or timing.\n\nGenerate a single UUID for quick use, or bulk generate up to 100 UUIDs for seeding test databases, creating fixture data, or batch processing. Copy individually or copy all at once. Each UUID follows the standard 8-4-4-4-12 format (xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx).\n\n100% browser-based using the Web Crypto API for true cryptographic randomness. No login, no server calls required.",
     useCases: [
       "Primary keys for database records in distributed or multi-writer systems",
       "Correlation IDs for tracing requests across microservices and logs",
@@ -453,7 +455,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "hash-generator": {
     about:
-      "The Hash Generator computes SHA-1, SHA-256, SHA-384, and SHA-512 cryptographic hashes using the browser's native Web Crypto API. Hashes are deterministic one-way functions: identical inputs always produce identical outputs, but the hash cannot be reversed to recover the original input.",
+      "The ToolNinja Hash Generator is a free online hash calculator supporting MD5, SHA-1, SHA-256, SHA-512 and other cryptographic hash algorithms. Enter any text and instantly generate its hash value — useful for checksums, data integrity verification, and security research.\n\nUse the MD5 generator for file checksums and non-security fingerprinting, the SHA-256 generator for data integrity verification and digital signatures, or SHA-512 when you need maximum hash length. All hashing runs using the Web Crypto API built into your browser for accurate, standard-compliant results.\n\nCommon use cases include verifying downloaded file integrity by comparing checksums, generating content hashes for cache busting in web development, creating hash-based identifiers, and understanding how different algorithms compare in output length and security properties.\n\nEverything runs 100% in your browser. Your input data — no matter how sensitive — never leaves your machine. No login required.",
     useCases: [
       "Verifying file integrity by comparing checksums before and after transfer",
       "Generating content-based cache keys for assets or API responses",
@@ -756,7 +758,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "chmod-calculator": {
     about:
-      "The ToolNinja Chmod Calculator is a free online Linux file permission calculator. Convert between symbolic (rwxr-xr-x) and octal (755) notation instantly. Perfect for calculating chmod 755, chmod 777, chmod 644 and any other Unix/Linux file permissions without memorizing the octal values. Works entirely in your browser — no login, no server calls.",
+      "The ToolNinja Chmod Calculator is a free online Linux file permission calculator. Convert between symbolic notation (rwxr-xr-x) and octal values (755, 644, 777) visually by clicking checkboxes — no need to memorize octal values or permission combinations.\n\nUse it as a chmod calculator to find the right permission for any file or directory. Calculate chmod 755 for web server directories and executable scripts, chmod 644 for standard files and config files, chmod 600 for private SSH keys and sensitive credentials, or chmod 777 when you need full access (and understand the security implications). The Linux permission calculator shows Owner, Group and Other permissions side by side so you can see exactly what each user class can do.\n\nWhether you're working with rwxr-xr-x permissions and need the octal equivalent, or have an octal value and need to understand what symbolic permissions it represents — the chmod converter handles both directions instantly. Also supports special permission bits: setuid, setgid and sticky bit.\n\nRuns entirely in your browser — no login, no server calls. Your permission calculations stay completely private.",
     useCases: [
       "Setting correct permissions for web server files (644 for files, 755 for directories)",
       "Debugging 'Permission denied' errors in Linux and macOS environments",
@@ -1130,12 +1132,14 @@ export const toolContent: Record<string, ToolContent> = {
 
   "cidr-calculator": {
     about:
-      "The ToolNinja CIDR Calculator is a free online subnet calculator and IP address calculator. Enter any CIDR notation (e.g. 192.168.1.0/24) to instantly calculate subnet mask, network address, broadcast address, host range, and total number of hosts. Perfect for network engineers, sysadmins, and DevOps professionals.",
+      "The ToolNinja CIDR Calculator is a free online subnet calculator and IP range calculator. Enter any CIDR notation (e.g. 192.168.1.0/24) to instantly calculate the subnet mask, network address, broadcast address, first and last usable host, and total number of hosts — all displayed with a full binary breakdown.\n\nWhether you need to calculate CIDR from an IP address, convert IP to CIDR notation, find CIDR ranges for a network, or use it as a subnetting CIDR calculator — ToolNinja handles every scenario directly in your browser. The CIDR to IP range calculator shows the complete host range so you can immediately see which addresses fall within your subnet.\n\nUse it as an ip to cidr calculator when configuring cloud VPCs in AWS, GCP or Azure, as a subnet CIDR calculator for firewall rules, or as a subnetting calculator for network planning. The binary display makes it ideal for learning how CIDR notation and subnet masks work at the bit level.\n\nEverything runs 100% in your browser — no login, no server calls, no data ever leaves your machine.",
     useCases: [
-      "Planning IP address ranges for VPC and cloud network configurations",
-      "Verifying subnet masks when setting up routers and firewall rules",
-      "Checking if two IPs are in the same subnet during debugging",
-      "Learning subnetting and binary IP notation for networking certifications",
+      "Calculating subnet ranges for AWS VPC, GCP VPC or Azure Virtual Network CIDR blocks",
+      "Converting IP addresses to CIDR notation for firewall rules and security groups",
+      "Subnetting large networks into smaller CIDR ranges for network segmentation",
+      "Verifying CIDR to IP range calculations before deploying network infrastructure",
+      "Learning how CIDR notation and subnet masks work with the binary display",
+      "Calculating how many hosts fit in a given subnet for capacity planning",
     ],
     tips: [
       "A /24 gives 254 usable hosts (256 minus network and broadcast). A /25 splits that into two subnets of 126 usable hosts each.",
