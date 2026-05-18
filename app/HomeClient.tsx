@@ -26,13 +26,11 @@ const NEW_SLUGS = new Set([
   "sql-formatter","color-palette","jwt-generator","crypto-tools",
   "http-request","html-formatter","config-validator","text-diff",
   "cidr-calculator","unicode-explorer",
-  "git-command-generator","markdown-table-generator","meta-tags-generator",
+  "xpath-tester",
 ]);
 
 const LATEST_SLUGS = [
-  "git-command-generator",
-  "markdown-table-generator",
-  "meta-tags-generator",
+  "xpath-tester",
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {

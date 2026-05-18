@@ -1130,6 +1130,44 @@ export const toolContent: Record<string, ToolContent> = {
     ],
   },
 
+  "xpath-tester": {
+    about:
+      "The ToolNinja XPath Tester is a free online XPath evaluator and debugger. Paste any XML or HTML document, enter an XPath expression, and instantly see all matching nodes highlighted with their values, types, and positions — directly in your browser.\n\nXPath (XML Path Language) is the standard query language for navigating XML and HTML documents. Use this XPath tester online to select elements by tag name, filter by attribute values, traverse parent-child relationships with axis expressions (child::, parent::, ancestor::, descendant::), or extract text content and attribute values.\n\nThe tool supports all XPath 1.0 expressions: location paths, predicates, wildcards, node tests, and built-in functions (string(), number(), count(), contains(), starts-with(), and more). Switch between XML and HTML mode — HTML mode uses the browser's DOMParser in HTML mode so you can test XPath against real web content.\n\nPerfect for web scraping, XML data extraction, XSLT development, API XML parsing, and learning XPath syntax. Everything runs 100% in your browser using the native document.evaluate() API — your data never leaves your machine.",
+    useCases: [
+      "Testing XPath selectors for web scraping scripts before running them",
+      "Debugging XPath expressions in XSLT stylesheets or XML transformation pipelines",
+      "Extracting data from XML API responses or SOAP envelopes",
+      "Learning XPath syntax with instant visual feedback on a real document",
+      "Validating XPath queries for Selenium, Playwright, or Robot Framework tests",
+      "Inspecting HTML structure to find reliable XPath selectors for browser automation",
+    ],
+    tips: [
+      "Use // to search anywhere in the document: //div[@class='price'] finds all divs with that class regardless of nesting.",
+      "Predicates with position() or [n] select specific nodes: //li[1] selects the first list item, //li[last()] selects the last.",
+      "The text() node test selects text content: //h1/text() returns just the text inside h1 tags, not the element itself.",
+      "Use @attribute to select by attribute: //*[@id='main'] selects any element with id='main'. @* selects all attributes.",
+      "contains() handles partial matches: //a[contains(@href, 'github')] finds links where the href includes 'github'.",
+    ],
+    faq: [
+      {
+        q: "What is XPath and when should I use it?",
+        a: "XPath (XML Path Language) is a query language for selecting nodes from XML and HTML documents. Use it when you need to extract specific elements from XML APIs or feeds, write web scraping selectors, define locators for browser automation (Selenium, Playwright), or build XSLT transformations. CSS selectors are often simpler for HTML, but XPath is more powerful — it can navigate upward in the tree (parent/ancestor axes), select by text content, and handle XML namespaces.",
+      },
+      {
+        q: "What is the difference between / and // in XPath?",
+        a: "A single / is a direct child step — /root/child means 'child is a direct child of root'. Double // is the descendant-or-self axis shorthand — //child means 'child anywhere in the document'. Use // when you don't know or don't care how deeply nested the target element is. Be careful with // on large documents as it scans every node.",
+      },
+      {
+        q: "Why does my XPath expression return no results on HTML?",
+        a: "HTML documents may have a default namespace or case differences that trip up XPath. Ensure you're using HTML mode in the tester. Common issues: HTML tag names are uppercase in some parsers (use local-name() or uppercase), elements may be nested differently than expected, or the document uses namespaces that need to be declared. Try a simpler expression first (//*) to verify the document parsed correctly.",
+      },
+      {
+        q: "What is the difference between XPath and CSS selectors?",
+        a: "CSS selectors can only traverse downward (parent to child/descendant). XPath can navigate in any direction — up to parents and ancestors, sideways to siblings, and down to children and descendants. XPath can also select by text content (text()), by attribute value with functions like contains(), and works on both XML and HTML. Use CSS selectors for simple HTML selection; use XPath when you need to navigate upward, match text content, or work with XML.",
+      },
+    ],
+  },
+
   "cidr-calculator": {
     about:
       "The ToolNinja CIDR Calculator is a free online subnet calculator and IP range calculator. Enter any CIDR notation (e.g. 192.168.1.0/24) to instantly calculate the subnet mask, network address, broadcast address, first and last usable host, and total number of hosts — all displayed with a full binary breakdown.\n\nWhether you need to calculate CIDR from an IP address, convert IP to CIDR notation, find CIDR ranges for a network, or use it as a subnetting CIDR calculator — ToolNinja handles every scenario directly in your browser. The CIDR to IP range calculator shows the complete host range so you can immediately see which addresses fall within your subnet.\n\nUse it as an ip to cidr calculator when configuring cloud VPCs in AWS, GCP or Azure, as a subnet CIDR calculator for firewall rules, or as a subnetting calculator for network planning. The binary display makes it ideal for learning how CIDR notation and subnet masks work at the bit level.\n\nEverything runs 100% in your browser — no login, no server calls, no data ever leaves your machine.",

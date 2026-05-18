@@ -168,6 +168,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online text diff tool. Compare strings at character, word or line level with inline diff highlighting. Uses Myers algorithm for accurate differences. Perfect for comparing code snippets. No login required.",
   },
+  "xpath-tester": {
+    title: "XPath Tester Online — Test & Evaluate XPath Expressions | ToolNinja",
+    description:
+      "Free online XPath tester and evaluator. Test XPath expressions against XML and HTML documents with live results. Supports XPath 1.0, node selection, axis expressions and predicates. No login, 100% browser-based.",
+  },
 
   // ── Design ───────────────────────────────────────────────────────────────
   "css-animations": {

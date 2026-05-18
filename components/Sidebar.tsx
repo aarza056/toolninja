@@ -8,9 +8,7 @@ import { Menu, X, Search } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 
 const NEW_TOOL_SLUGS = new Set([
-  "git-command-generator",
-  "markdown-table-generator",
-  "meta-tags-generator",
+  "xpath-tester",
 ]);
 
 function ToolIcon({ name }: { name: string }) {

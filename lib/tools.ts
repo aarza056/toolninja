@@ -447,6 +447,20 @@ export const tools: Tool[] = [
       "compare strings online", "string diff tool", "text diff viewer",
     ],
   },
+  {
+    slug: "xpath-tester",
+    name: "XPath Tester",
+    description: "Test XPath expressions against XML and HTML with live results",
+    icon: "Code2",
+    category: "Test",
+    keywords: [
+      "xpath tester", "xpath tester online", "xpath evaluator",
+      "xpath query tester", "test xpath expression", "xpath online",
+      "xpath tool", "xml xpath tester", "html xpath tester",
+      "xpath checker", "xpath validator", "xpath expression tester",
+      "xpath browser", "xpath selector tester", "xpath debugger",
+    ],
+  },
 
   // ─── Design ───────────────────────────────────────────────────────────────
   {
