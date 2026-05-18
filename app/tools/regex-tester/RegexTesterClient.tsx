@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import { AlertCircle, Table2, Repeat2 } from "lucide-react";
+import { regexPatterns, patternCategories, type RegexPattern } from "@/lib/regex-patterns";
 
 const STORAGE_KEY = "toolninja:regex-tester";
 
@@ -18,6 +19,9 @@ export default function RegexTesterClient() {
   const [testString, setTestString] = useState("");
   const [replaceWith, setReplaceWith] = useState("");
   const [mode, setMode] = useState<Mode>("match");
+  const [showLibrary, setShowLibrary] = useState(false);
+  const [patternSearch, setPatternSearch] = useState("");
+  const [patternCategory, setPatternCategory] = useState<string>("All");
 
   useEffect(() => {
     try {
@@ -75,6 +79,29 @@ export default function RegexTesterClient() {
 
   const { highlighted, matches, replaceResult, error } = result;
   const hasResults = !!(pattern && testString && !error);
+
+  const filteredPatterns = regexPatterns.filter((p) => {
+    const matchesCategory = patternCategory === "All" || p.category === patternCategory;
+    const q = patternSearch.toLowerCase();
+    const matchesSearch =
+      !q ||
+      p.name.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      p.tags.some((t) => t.includes(q));
+    return matchesCategory && matchesSearch;
+  });
+
+  const loadPattern = (p: RegexPattern) => {
+    setPattern(p.pattern);
+    setFlags({
+      g: p.flags.includes("g"),
+      i: p.flags.includes("i"),
+      m: p.flags.includes("m"),
+      s: p.flags.includes("s"),
+    });
+    setTestString(p.testString);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <ToolLayout
@@ -262,6 +289,88 @@ export default function RegexTesterClient() {
       <style>{`
         .regex-match { background-color: rgba(251,191,36,0.3); color: #fbbf24; border-radius: 2px; padding: 0 1px; }
       `}</style>
+
+      {/* Patterns Library */}
+      <div className="mt-8">
+        <button
+          onClick={() => setShowLibrary((prev) => !prev)}
+          className="flex items-center gap-2 text-sm text-[#888888] hover:text-[#a855f7] transition-colors mb-4"
+        >
+          <span className="text-xs">{showLibrary ? "▲" : "▼"}</span>
+          <span>Patterns Library</span>
+          <span className="text-xs bg-[#1a1a1a] border border-[#333333] px-2 py-0.5 rounded-full text-[#555555]">
+            {regexPatterns.length} patterns
+          </span>
+        </button>
+
+        {showLibrary && (
+          <div className="border border-[#222222] rounded-xl p-5 bg-[#0d0d0d]">
+            {/* Search + Category Filter */}
+            <div className="flex flex-wrap gap-3 mb-5">
+              <input
+                placeholder="Search patterns..."
+                value={patternSearch}
+                onChange={(e) => setPatternSearch(e.target.value)}
+                className="flex-1 min-w-48 bg-[#111111] border border-[#333333] rounded-lg px-3 py-2 text-sm text-[#f5f5f5] placeholder:text-[#444444] focus:outline-none focus:border-[#a855f7]"
+              />
+              <div className="flex flex-wrap gap-1.5">
+                {patternCategories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setPatternCategory(cat)}
+                    className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                      patternCategory === cat
+                        ? "bg-[#a855f7] text-white"
+                        : "bg-[#1a1a1a] border border-[#333333] text-[#666666] hover:text-[#888888]"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Patterns Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {filteredPatterns.map((p) => (
+                <div
+                  key={p.id}
+                  className="bg-[#111111] border border-[#222222] rounded-lg p-4 hover:border-[#a855f7]/50 transition-colors group"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div>
+                      <h4 className="text-sm font-medium text-[#f5f5f5] group-hover:text-[#a855f7] transition-colors">
+                        {p.name}
+                      </h4>
+                      <span className="text-xs text-[#555555]">{p.category}</span>
+                    </div>
+                    <button
+                      onClick={() => loadPattern(p)}
+                      className="flex-shrink-0 px-3 py-1 text-xs bg-[#a855f7]/10 text-[#a855f7] border border-[#a855f7]/25 rounded-lg hover:bg-[#a855f7] hover:text-white transition-colors"
+                    >
+                      Use →
+                    </button>
+                  </div>
+                  <code className="block text-xs text-[#a855f7] font-mono bg-[#0a0a0a] border border-[#222222] rounded px-2 py-1.5 mb-2 truncate">
+                    {p.pattern.length > 50 ? p.pattern.slice(0, 50) + "…" : p.pattern}
+                  </code>
+                  <p className="text-xs text-[#555555] leading-relaxed">{p.description}</p>
+                </div>
+              ))}
+            </div>
+
+            {filteredPatterns.length === 0 && (
+              <p className="text-center text-sm text-[#444444] py-8">
+                No patterns found for &ldquo;{patternSearch}&rdquo;
+              </p>
+            )}
+
+            <p className="text-xs text-[#444444] text-center mt-4">
+              Click &ldquo;Use →&rdquo; to load any pattern directly into the tester above
+            </p>
+          </div>
+        )}
+      </div>
     </ToolLayout>
   );
 }

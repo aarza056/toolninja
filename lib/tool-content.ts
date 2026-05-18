@@ -118,11 +118,12 @@ export const toolContent: Record<string, ToolContent> = {
       "The ToolNinja Regex Tester is a free online regular expression tester with live match highlighting. Test any regex pattern against a string and see all matches highlighted in real time as you type — no button press needed.\n\nWhether you need to quickly regex test a pattern, debug a complex regular expression, or use it as a regex web tool for JavaScript development — the results appear instantly. The match table shows every match with its exact index, length, and capture groups so you can verify your pattern precisely.\n\nUse it to test email validation regex, URL matching patterns, phone number formats, date patterns, and anything else your project requires. Replace mode lets you preview regex substitutions before using them in code. Supports all JavaScript regex flags: global (g), case-insensitive (i), multiline (m), and dotAll (s). A fast, privacy-first regex101 alternative.\n\nRuns 100% in your browser — your test strings and patterns never leave your machine. No login, no account required.",
     useCases: [
       "Testing email validation, URL matching and phone number regex patterns",
+      "Using ready-made patterns for common validations — no regex knowledge needed",
       "Debugging complex regular expressions with live match highlighting",
-      "Verifying regex capture groups before using them in JavaScript code",
+      "Verifying regex capture groups before using them in JavaScript or Python code",
       "Testing regex replace patterns to preview substitution results",
-      "Learning regex syntax interactively with real-time feedback",
-      "Validating regex patterns for form input validation and data parsing",
+      "Extracting data from logs, configuration files and API responses",
+      "Learning regex syntax interactively with 40+ example patterns across 7 categories",
     ],
     tips: [
       "The g flag finds all matches — without it, only the first match is returned.",

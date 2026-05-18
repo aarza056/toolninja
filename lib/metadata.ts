@@ -139,9 +139,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
 
   // ── Test ─────────────────────────────────────────────────────────────────
   "regex-tester": {
-    title: "Regex Tester Online — Test & Debug Regular Expressions | ToolNinja",
+    title: "Regex Tester Online — Live Highlighting, Patterns Library | ToolNinja",
     description:
-      "Free online regex tester with live match highlighting. Test regular expressions with real-time results, match tables, capture groups and replace mode. Supports all JavaScript regex flags. No login, browser-only.",
+      "Test regular expressions with live match highlighting and capture groups table. 40+ ready-to-use regex patterns for email, URL, date, IP, password validation and more. No login, 100% browser-based.",
   },
   "diff-checker": {
     title: "Diff Checker Online — Compare Two Texts & Find Differences | ToolNinja",
