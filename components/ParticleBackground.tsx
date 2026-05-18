@@ -15,7 +15,7 @@ export default function ParticleBackground() {
   }, []);
 
   const particleCount =
-    typeof window !== "undefined" && window.innerWidth < 768 ? 40 : 80;
+    typeof window !== "undefined" && window.innerWidth < 768 ? 70 : 140;
 
   const particlesOptions: ISourceOptions = {
     background: {
@@ -36,10 +36,10 @@ export default function ParticleBackground() {
       modes: {
         grab: {
           distance: 160,
-          links: { opacity: 0.3 },
+          links: { opacity: 0.4 },
         },
         push: {
-          quantity: 3,
+          quantity: 4,
         },
       },
     },
@@ -51,7 +51,7 @@ export default function ParticleBackground() {
         color: "#a855f7",
         distance: 150,
         enable: true,
-        opacity: 0.06,
+        opacity: 0.1,
         width: 1,
       },
       move: {
@@ -69,7 +69,7 @@ export default function ParticleBackground() {
         },
       },
       opacity: {
-        value: { min: 0.07, max: 0.28 },
+        value: { min: 0.1, max: 0.35 },
         animation: {
           enable: true,
           speed: 0.8,
