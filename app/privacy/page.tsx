@@ -37,21 +37,43 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">2. Cookies and local storage</h2>
+          <p className="mb-3">
+            Some tools store preferences (selected options, tab state) in your browser&apos;s local storage
+            for convenience. This data stays on your device and is never transmitted anywhere.
+          </p>
           <p>
-            ToolNinja does not use tracking cookies or persistent identifiers. Some tools may store
-            preferences (such as selected options or tab state) in your browser&apos;s local storage for
-            convenience within that browser session. This data is stored only on your device and is
-            never transmitted anywhere.
+            We also store your cookie consent choice (<code className="text-xs text-[#a855f7] bg-[#a855f7]/10 px-1 py-0.5 rounded">toolninja_cookie_consent</code>)
+            in local storage so the banner only appears once. You can reset this at any time using
+            the &quot;Cookies&quot; link in the sidebar.
           </p>
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">3. Analytics</h2>
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">3. Analytics &amp; cookies</h2>
+          <p className="mb-3">
+            If you accept analytics, we use Google Analytics to understand which tools developers use
+            most. This helps us decide which tools to improve and which new ones to build.
+            Google Analytics is only loaded <strong className="text-[#d4d4d4]">after you explicitly accept</strong> —
+            it never fires on decline.
+          </p>
+          <p className="mb-3">Google Analytics sets the following cookies:</p>
+          <ul className="space-y-1 mb-3 pl-4">
+            <li><code className="text-xs text-[#a855f7] bg-[#a855f7]/10 px-1 py-0.5 rounded">_ga</code> — distinguishes users (expires 2 years)</li>
+            <li><code className="text-xs text-[#a855f7] bg-[#a855f7]/10 px-1 py-0.5 rounded">_gid</code> — distinguishes users (expires 24 hours)</li>
+            <li><code className="text-xs text-[#a855f7] bg-[#a855f7]/10 px-1 py-0.5 rounded">_ga_*</code> — session state (expires 2 years)</li>
+          </ul>
+          <p className="mb-3">
+            We use <code className="text-xs text-[#a855f7] bg-[#a855f7]/10 px-1 py-0.5 rounded">anonymize_ip: true</code> to
+            mask the last octet of your IP address before it reaches Google.
+          </p>
           <p>
-            We do not use Google Analytics, Mixpanel, Segment, or any third-party analytics service
-            that tracks individual users. We may use aggregated, anonymous server access logs
-            (e.g. page views by URL, not by user) to understand which tools are popular. These logs
-            contain no personally identifiable information.
+            <strong className="text-[#d4d4d4]">Important:</strong> your tool inputs (JSON, code, passwords, JWT tokens, etc.)
+            are <strong className="text-[#d4d4d4]">never tracked or sent to Google</strong> or any other third party.
+            Analytics only tracks page views and navigation — never what you paste into our tools.
+            You can opt out at any time using the &quot;Cookies&quot; link in the sidebar, or by installing the{" "}
+            <a href="https://tools.google.com/dlpage/gaoptout" className="text-[#a855f7] hover:underline" target="_blank" rel="noopener noreferrer">
+              Google Analytics Opt-out Browser Add-on
+            </a>.
           </p>
         </section>
 

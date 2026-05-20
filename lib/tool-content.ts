@@ -13,7 +13,7 @@ export interface ToolContent {
 export const toolContent: Record<string, ToolContent> = {
   "json-formatter": {
     about:
-      "The JSON Formatter validates and beautifies JSON data with automatic indentation and syntax highlighting. Paste minified JSON from an API response, config file, or database record to make it instantly human-readable. It catches common errors like trailing commas, missing brackets, and unquoted keys — highlighting exactly where the problem is.",
+      "The ToolNinja JSON Formatter is a free online JSON formatter, validator and beautifier. Paste any JSON string and instantly format it with proper indentation, syntax highlighting, and clear error messages if your JSON is invalid.\n\nUse it as a JSON beautifier to make minified API responses readable, as a JSON validator to catch syntax errors like trailing commas, unquoted keys, or mismatched brackets, or as a JSON minifier to compress formatted JSON for production use. The tree view mode lets you explore deeply nested structures visually, and JSONPath query support lets you extract specific values without writing any code.\n\nWhether you're debugging an API response, validating config files, or pretty printing JSON for documentation — the ToolNinja JSON formatter handles it instantly with no page reloads.\n\nEverything runs 100% in your browser. Your JSON data — including any sensitive API keys, tokens or private data — never leaves your machine. No login required.",
     useCases: [
       "Inspecting API responses from Postman, curl, or browser DevTools",
       "Formatting config files (package.json, tsconfig.json) before committing",
@@ -47,7 +47,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "base64": {
     about:
-      "The Base64 Encoder/Decoder converts text and binary data to Base64 encoding and back. Base64 represents binary data using 64 printable ASCII characters, making it safe to transmit through text-based protocols like HTTP headers, JSON, XML, and email where raw binary would be corrupted.",
+      "The ToolNinja Base64 tool is a free online Base64 encoder and decoder. Encode any text or data to Base64 format, or decode Base64 strings back to plain text — instantly, with no page reload.\n\nUse the Base64 encoder when you need to embed binary data in JSON APIs, create data URIs for images in CSS or HTML, encode credentials for HTTP Basic Authentication headers, or prepare data for email transmission. Use the Base64 decoder to inspect encoded strings in API responses, JWT token segments, or any Base64 encoded content you encounter during development.\n\nSupports both standard Base64 and Base64URL encoding (used in JWT tokens and URLs). The tool automatically handles padding and correctly encodes all Unicode characters.\n\nRuns entirely in your browser — your data never leaves your machine. No login, no server, no tracking.",
     useCases: [
       "Encoding credentials for HTTP Basic Authentication headers",
       "Embedding small images as data URIs directly in HTML or CSS",
@@ -115,12 +115,15 @@ export const toolContent: Record<string, ToolContent> = {
 
   "regex-tester": {
     about:
-      "The Regex Tester lets you write and test JavaScript regular expressions against sample text with live match highlighting. It shows match count, the full match string, and all captured groups. Supports the full JavaScript regex feature set including lookaheads, lookbehinds, named capture groups, and Unicode.",
+      "The ToolNinja Regex Tester is a free online regular expression tester with live match highlighting. Test any regex pattern against a string and see all matches highlighted in real time as you type — no button press needed.\n\nWhether you need to quickly regex test a pattern, debug a complex regular expression, or use it as a regex web tool for JavaScript development — the results appear instantly. The match table shows every match with its exact index, length, and capture groups so you can verify your pattern precisely.\n\nUse it to test email validation regex, URL matching patterns, phone number formats, date patterns, and anything else your project requires. Replace mode lets you preview regex substitutions before using them in code. Supports all JavaScript regex flags: global (g), case-insensitive (i), multiline (m), and dotAll (s). A fast, privacy-first regex101 alternative.\n\nRuns 100% in your browser — your test strings and patterns never leave your machine. No login, no account required.",
     useCases: [
-      "Validating input formats such as emails, phone numbers, and URLs",
-      "Writing parsing logic for structured text like log files or CSV",
-      "Extracting data from strings using capture groups",
-      "Learning regex syntax interactively with instant visual feedback",
+      "Testing email validation, URL matching and phone number regex patterns",
+      "Using ready-made patterns for common validations — no regex knowledge needed",
+      "Debugging complex regular expressions with live match highlighting",
+      "Verifying regex capture groups before using them in JavaScript or Python code",
+      "Testing regex replace patterns to preview substitution results",
+      "Extracting data from logs, configuration files and API responses",
+      "Learning regex syntax interactively with 40+ example patterns across 7 categories",
     ],
     tips: [
       "The g flag finds all matches — without it, only the first match is returned.",
@@ -217,7 +220,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "jwt-decoder": {
     about:
-      "The JWT Decoder parses JSON Web Tokens into their three components: header (algorithm and type), payload (claims), and signature. It decodes the Base64URL-encoded sections and displays them as readable JSON — showing all claims including expiry time (exp), issued-at (iat), issuer (iss), and subject (sub).",
+      "The ToolNinja JWT Decoder is a free online JSON Web Token decoder. Paste any JWT and instantly see the decoded header, payload, and signature in color-coded sections — purple for header, blue for payload, red for signature.\n\nUse it to decode JWT tokens when debugging authentication issues, inspect JWT claims like sub, iat, exp, and aud, check JWT expiry time in human readable format, or verify the token structure before implementing JWT validation in your code. The expiry countdown tells you immediately if a token is still valid or has already expired.\n\nUnlike some online JWT tools, ToolNinja's JWT decoder runs 100% in your browser using JavaScript — your token, including any sensitive claims like user IDs, roles, and permissions, never leaves your machine. It's a privacy-first alternative to jwt.io for developers who work with sensitive authentication tokens.\n\nNo login, no account, no server calls. Just paste and decode.",
     useCases: [
       "Debugging authentication failures by inspecting what claims the token contains",
       "Checking whether a token is expired without waiting for an API call to fail",
@@ -353,7 +356,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "uuid-generator": {
     about:
-      "The UUID Generator creates version 4 UUIDs (Universally Unique Identifiers) that are randomly generated per RFC 4122. V4 UUIDs contain 122 bits of randomness, giving a collision probability of roughly 1 in 2^122 — effectively impossible to collide in any real-world application.",
+      "The ToolNinja UUID Generator is a free online UUID and GUID generator. Generate cryptographically random UUID v4 identifiers instantly — individually or in bulk up to 100 at a time.\n\nUUIDs (Universally Unique Identifiers) are 128-bit identifiers used as primary keys in databases, unique file names, session tokens, correlation IDs in distributed systems, and anywhere a guaranteed-unique identifier is needed. UUID v4 uses random generation making it ideal for privacy-sensitive use cases where sequential IDs would reveal information about your data volume or timing.\n\nGenerate a single UUID for quick use, or bulk generate up to 100 UUIDs for seeding test databases, creating fixture data, or batch processing. Copy individually or copy all at once. Each UUID follows the standard 8-4-4-4-12 format (xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx).\n\n100% browser-based using the Web Crypto API for true cryptographic randomness. No login, no server calls required.",
     useCases: [
       "Primary keys for database records in distributed or multi-writer systems",
       "Correlation IDs for tracing requests across microservices and logs",
@@ -453,7 +456,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "hash-generator": {
     about:
-      "The Hash Generator computes SHA-1, SHA-256, SHA-384, and SHA-512 cryptographic hashes using the browser's native Web Crypto API. Hashes are deterministic one-way functions: identical inputs always produce identical outputs, but the hash cannot be reversed to recover the original input.",
+      "The ToolNinja Hash Generator is a free online hash calculator supporting MD5, SHA-1, SHA-256, SHA-512 and other cryptographic hash algorithms. Enter any text and instantly generate its hash value — useful for checksums, data integrity verification, and security research.\n\nUse the MD5 generator for file checksums and non-security fingerprinting, the SHA-256 generator for data integrity verification and digital signatures, or SHA-512 when you need maximum hash length. All hashing runs using the Web Crypto API built into your browser for accurate, standard-compliant results.\n\nCommon use cases include verifying downloaded file integrity by comparing checksums, generating content hashes for cache busting in web development, creating hash-based identifiers, and understanding how different algorithms compare in output length and security properties.\n\nEverything runs 100% in your browser. Your input data — no matter how sensitive — never leaves your machine. No login required.",
     useCases: [
       "Verifying file integrity by comparing checksums before and after transfer",
       "Generating content-based cache keys for assets or API responses",
@@ -756,7 +759,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "chmod-calculator": {
     about:
-      "The Chmod Calculator converts between symbolic Unix permission notation (rwxr-xr-x) and octal notation (755) for all three permission classes: owner, group, and others. Each class has three bits: read (4), write (2), and execute (1) — the octal digit is their sum.",
+      "The ToolNinja Chmod Calculator is a free online Linux file permission calculator. Convert between symbolic notation (rwxr-xr-x) and octal values (755, 644, 777) visually by clicking checkboxes — no need to memorize octal values or permission combinations.\n\nUse it as a chmod calculator to find the right permission for any file or directory. Calculate chmod 755 for web server directories and executable scripts, chmod 644 for standard files and config files, chmod 600 for private SSH keys and sensitive credentials, or chmod 777 when you need full access (and understand the security implications). The Linux permission calculator shows Owner, Group and Other permissions side by side so you can see exactly what each user class can do.\n\nWhether you're working with rwxr-xr-x permissions and need the octal equivalent, or have an octal value and need to understand what symbolic permissions it represents — the chmod converter handles both directions instantly. Also supports special permission bits: setuid, setgid and sticky bit.\n\nRuns entirely in your browser — no login, no server calls. Your permission calculations stay completely private.",
     useCases: [
       "Setting correct permissions for web server files (644 for files, 755 for directories)",
       "Debugging 'Permission denied' errors in Linux and macOS environments",
@@ -1128,14 +1131,54 @@ export const toolContent: Record<string, ToolContent> = {
     ],
   },
 
+  "xpath-tester": {
+    about:
+      "The ToolNinja XPath Tester is a free online XPath evaluator and debugger. Paste any XML or HTML document, enter an XPath expression, and instantly see all matching nodes highlighted with their values, types, and positions — directly in your browser.\n\nXPath (XML Path Language) is the standard query language for navigating XML and HTML documents. Use this XPath tester online to select elements by tag name, filter by attribute values, traverse parent-child relationships with axis expressions (child::, parent::, ancestor::, descendant::), or extract text content and attribute values.\n\nThe tool supports all XPath 1.0 expressions: location paths, predicates, wildcards, node tests, and built-in functions (string(), number(), count(), contains(), starts-with(), and more). Switch between XML and HTML mode — HTML mode uses the browser's DOMParser in HTML mode so you can test XPath against real web content.\n\nPerfect for web scraping, XML data extraction, XSLT development, API XML parsing, and learning XPath syntax. Everything runs 100% in your browser using the native document.evaluate() API — your data never leaves your machine.",
+    useCases: [
+      "Testing XPath selectors for web scraping scripts before running them",
+      "Debugging XPath expressions in XSLT stylesheets or XML transformation pipelines",
+      "Extracting data from XML API responses or SOAP envelopes",
+      "Learning XPath syntax with instant visual feedback on a real document",
+      "Validating XPath queries for Selenium, Playwright, or Robot Framework tests",
+      "Inspecting HTML structure to find reliable XPath selectors for browser automation",
+    ],
+    tips: [
+      "Use // to search anywhere in the document: //div[@class='price'] finds all divs with that class regardless of nesting.",
+      "Predicates with position() or [n] select specific nodes: //li[1] selects the first list item, //li[last()] selects the last.",
+      "The text() node test selects text content: //h1/text() returns just the text inside h1 tags, not the element itself.",
+      "Use @attribute to select by attribute: //*[@id='main'] selects any element with id='main'. @* selects all attributes.",
+      "contains() handles partial matches: //a[contains(@href, 'github')] finds links where the href includes 'github'.",
+    ],
+    faq: [
+      {
+        q: "What is XPath and when should I use it?",
+        a: "XPath (XML Path Language) is a query language for selecting nodes from XML and HTML documents. Use it when you need to extract specific elements from XML APIs or feeds, write web scraping selectors, define locators for browser automation (Selenium, Playwright), or build XSLT transformations. CSS selectors are often simpler for HTML, but XPath is more powerful — it can navigate upward in the tree (parent/ancestor axes), select by text content, and handle XML namespaces.",
+      },
+      {
+        q: "What is the difference between / and // in XPath?",
+        a: "A single / is a direct child step — /root/child means 'child is a direct child of root'. Double // is the descendant-or-self axis shorthand — //child means 'child anywhere in the document'. Use // when you don't know or don't care how deeply nested the target element is. Be careful with // on large documents as it scans every node.",
+      },
+      {
+        q: "Why does my XPath expression return no results on HTML?",
+        a: "HTML documents may have a default namespace or case differences that trip up XPath. Ensure you're using HTML mode in the tester. Common issues: HTML tag names are uppercase in some parsers (use local-name() or uppercase), elements may be nested differently than expected, or the document uses namespaces that need to be declared. Try a simpler expression first (//*) to verify the document parsed correctly.",
+      },
+      {
+        q: "What is the difference between XPath and CSS selectors?",
+        a: "CSS selectors can only traverse downward (parent to child/descendant). XPath can navigate in any direction — up to parents and ancestors, sideways to siblings, and down to children and descendants. XPath can also select by text content (text()), by attribute value with functions like contains(), and works on both XML and HTML. Use CSS selectors for simple HTML selection; use XPath when you need to navigate upward, match text content, or work with XML.",
+      },
+    ],
+  },
+
   "cidr-calculator": {
     about:
-      "The IP/CIDR Calculator computes all subnet details from a CIDR notation like 192.168.1.0/24. Instantly see the network address, broadcast address, subnet mask, wildcard mask, first and last usable host, total host count, and the full binary representation of each address.",
+      "The ToolNinja CIDR Calculator is a free online subnet calculator and IP range calculator. Enter any CIDR notation (e.g. 192.168.1.0/24) to instantly calculate the subnet mask, network address, broadcast address, first and last usable host, and total number of hosts — all displayed with a full binary breakdown.\n\nWhether you need to calculate CIDR from an IP address, convert IP to CIDR notation, find CIDR ranges for a network, or use it as a subnetting CIDR calculator — ToolNinja handles every scenario directly in your browser. The CIDR to IP range calculator shows the complete host range so you can immediately see which addresses fall within your subnet.\n\nUse it as an ip to cidr calculator when configuring cloud VPCs in AWS, GCP or Azure, as a subnet CIDR calculator for firewall rules, or as a subnetting calculator for network planning. The binary display makes it ideal for learning how CIDR notation and subnet masks work at the bit level.\n\nEverything runs 100% in your browser — no login, no server calls, no data ever leaves your machine.",
     useCases: [
-      "Planning IP address ranges for VPC and cloud network configurations",
-      "Verifying subnet masks when setting up routers and firewall rules",
-      "Checking if two IPs are in the same subnet during debugging",
-      "Learning subnetting and binary IP notation for networking certifications",
+      "Calculating subnet ranges for AWS VPC, GCP VPC or Azure Virtual Network CIDR blocks",
+      "Converting IP addresses to CIDR notation for firewall rules and security groups",
+      "Subnetting large networks into smaller CIDR ranges for network segmentation",
+      "Verifying CIDR to IP range calculations before deploying network infrastructure",
+      "Learning how CIDR notation and subnet masks work with the binary display",
+      "Calculating how many hosts fit in a given subnet for capacity planning",
     ],
     tips: [
       "A /24 gives 254 usable hosts (256 minus network and broadcast). A /25 splits that into two subnets of 126 usable hosts each.",
@@ -1158,6 +1201,145 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "What are the private IP address ranges and when do I use them?",
         a: "RFC 1918 defines three private ranges: 10.0.0.0/8 (16.7M addresses), 172.16.0.0/12 (1M addresses), and 192.168.0.0/16 (65K addresses). These are non-routable on the public internet — use them for internal networks, VPCs, and home LANs. Traffic to/from these ranges must go through NAT to reach the internet. 169.254.0.0/16 is link-local (APIPA), used when DHCP fails.",
+      },
+    ],
+  },
+
+  "docker-run-to-compose": {
+    about:
+      "The Docker Run to Compose Converter is a free online tool that instantly converts docker run commands into production-ready docker-compose.yml files. Paste any docker run command — including complex ones with multiple flags — and get a complete Compose service definition with correct YAML structure, named volumes, networks, environment variables, healthchecks, resource limits, and all standard Docker options.\n\nIt also works in reverse: paste a docker-compose.yml and get the equivalent docker run commands for every service, useful for quick debugging or running individual services outside of Compose.\n\nThe built-in Best Practices Scorer analyzes your service configuration and scores it out of 100 across four categories: security (privileged mode, root user, hardcoded secrets), reliability (restart policy, healthchecks, pinned image tags), performance (memory limits), and maintainability (named volumes, custom networks). Each failed check explains the issue and the recommended fix.\n\nSupports multi-service input: paste multiple docker run commands separated by blank lines and the tool generates a complete multi-service docker-compose.yml with shared volumes and network declarations.\n\nEverything runs 100% in your browser. No login, no server, no data ever leaves your machine.",
+    useCases: [
+      "Converting a working docker run command to a Compose file to commit to source control",
+      "Generating docker-compose.yml for an existing containerized app from its run script",
+      "Auditing a container's configuration for security and reliability issues with the best practices scorer",
+      "Learning Compose syntax by seeing exactly how run flags map to YAML keys",
+      "Converting Compose services back to docker run commands for quick one-off debugging",
+      "Combining multiple docker run commands into a multi-service Compose stack",
+    ],
+    tips: [
+      "Separate multiple docker run commands with a blank line to generate a multi-service compose file in one step.",
+      "Pin image tags (e.g. nginx:1.25.3 instead of nginx:latest) to prevent unexpected breakage when upstream releases a new version.",
+      "Use ${VARIABLE} syntax in your environment values and a .env file to keep secrets out of the compose file.",
+      "The best practices scorer shows all checks even when passed — expand it to see what your service is already doing right.",
+    ],
+    faq: [
+      {
+        q: "What Docker run flags are not supported in Compose?",
+        a: "--rm is intentionally ignored (containers in Compose are not auto-removed; they restart based on the restart policy instead). --gpus requires the deploy.resources syntax in Compose v3.8+ and is flagged as unsupported. Flags that have no Compose equivalent are listed in the 'unsupported flags' section after conversion.",
+      },
+      {
+        q: "Why should I use docker-compose.yml instead of docker run scripts?",
+        a: "Compose files are declarative, version-controllable, and self-documenting. A docker run command is imperative and easy to lose. Compose also handles service dependencies, shared networks, named volumes, and environment files natively — things you'd otherwise script by hand. docker compose up -d starts all services; docker compose down stops and removes them cleanly.",
+      },
+      {
+        q: "What does the best practices score measure?",
+        a: "The score starts at 100 and deducts points for each failed check: no pinned image tag (-15), no restart policy (-10), privileged mode (-20), no memory limit (-10), host network mode (-15), absolute-path bind mounts (-5), no healthcheck (-10), root user (-10), hardcoded secrets in environment (-15), no custom network (-5). A score of 80+ indicates a well-configured service.",
+      },
+      {
+        q: "Does the Compose file generated work with Docker Compose v1 (docker-compose) and v2 (docker compose)?",
+        a: "Yes. The generated YAML does not include a version: field, which is the recommended practice as of Docker Compose v2. The spec-compliant format works with both docker compose (Compose v2, plugin) and docker-compose (Compose v1, standalone), though Compose v1 is deprecated.",
+      },
+    ],
+  },
+
+  "git-command-generator": {
+    about:
+      "The Git Command Generator is a searchable reference for 60+ git commands organized by category — Setup, Branches, Staging, Commits, Remote, Undo, History, Tags, Stash, and Advanced. Search by name or keyword to find the exact command, copy it with one click, and see warning badges on destructive commands that rewrite history.",
+    useCases: [
+      "Quickly finding the right git syntax without leaving the browser",
+      "Learning git commands beyond the basics (reflog, bisect, worktree)",
+      "Checking the correct flags for destructive operations before running them",
+      "Onboarding new developers to git workflows with a visual reference",
+    ],
+    tips: [
+      "Commands marked with a Caution badge rewrite history — never use them on branches others have already pulled.",
+      "Search by concept, not just command name: try 'undo', 'linear', or 'recover' to find commands by what they do.",
+      "Your recently copied commands are saved in localStorage for quick re-access.",
+    ],
+    faq: [
+      {
+        q: "What is the difference between git reset and git revert?",
+        a: "git revert creates a new commit that undoes a previous commit — it's safe to use on shared branches because it doesn't rewrite history. git reset moves the HEAD pointer backward, effectively removing commits from the history — this rewrites history and is destructive. Only use git reset on commits that haven't been pushed to a shared branch.",
+      },
+      {
+        q: "When should I use git rebase instead of git merge?",
+        a: "Use rebase when you want a linear, clean commit history — your commits are replayed on top of the target branch as if they were written there. Use merge when you want to preserve the true divergence history with a merge commit. The golden rule: never rebase branches that others have already pulled from, as it rewrites the commit hashes they reference.",
+      },
+      {
+        q: "What does git stash do and when should I use it?",
+        a: "git stash temporarily saves your uncommitted changes (both staged and unstaged) to a stack, leaving your working directory clean. Use it when you need to quickly switch branches or pull changes without committing half-finished work. Run git stash pop to restore the most recent stash, or git stash list to see all stored stashes.",
+      },
+      {
+        q: "How do I recover commits after a git reset --hard?",
+        a: "Use git reflog — it logs every position HEAD has been at, even after hard resets. Find the commit hash you want to recover in the reflog output, then run git checkout <hash> to inspect it, or git reset --hard <hash> to restore your branch to that state. The reflog is local and expires after 90 days by default.",
+      },
+    ],
+  },
+
+  "markdown-table-generator": {
+    about:
+      "The Markdown Table Generator lets you build tables in a visual spreadsheet-style editor without memorizing Markdown syntax. Add and remove rows and columns, toggle per-column alignment (left, center, right), import data from a CSV file, and export as Markdown, HTML, or a live rendered preview.",
+    useCases: [
+      "Creating comparison tables for README files and documentation",
+      "Converting CSV data to Markdown for GitHub wikis and pull request descriptions",
+      "Building HTML tables for web content without writing raw HTML",
+      "Generating formatted tables for blog posts and technical writing",
+    ],
+    tips: [
+      "Press Tab in the last cell to automatically add a new row.",
+      "Import a CSV file to populate the table — headers in the first row are treated as column names.",
+      "Use the alignment buttons under each header to control text alignment in Markdown and the exported HTML.",
+    ],
+    faq: [
+      {
+        q: "How do I add rows and columns quickly?",
+        a: "Use the + and – buttons in the toolbar to add or remove rows and columns. Pressing Tab in the last cell of the last row also automatically adds a new row. For large datasets, importing a CSV file is the fastest approach.",
+      },
+      {
+        q: "Does Markdown support table cell merging (colspan/rowspan)?",
+        a: "Standard GitHub Flavored Markdown (GFM) does not support cell merging. Markdown tables are limited to basic rectangular grids. If you need merged cells, use the HTML export — HTML tables support colspan and rowspan, which you can add manually after export.",
+      },
+      {
+        q: "What CSV format does the importer accept?",
+        a: "The importer accepts comma-separated values where the first row is treated as column headers. Quoted fields (surrounded by double quotes) are supported. Line endings can be CRLF or LF. Import files with .csv extension or plain text files formatted as CSV.",
+      },
+      {
+        q: "Will the Markdown table render correctly on GitHub?",
+        a: "Yes. The generator produces GitHub Flavored Markdown (GFM) table syntax, which renders in GitHub README files, wikis, pull request descriptions, and issue comments. The column alignment (left, center, right) is controlled by the colon position in the separator row, which GFM supports fully.",
+      },
+    ],
+  },
+
+  "meta-tags-generator": {
+    about:
+      "The Meta Tags Generator creates all the HTML meta tags your page needs for SEO, Open Graph (Facebook/LinkedIn), and Twitter Cards. Fill in the fields and watch the live previews update for Google search, Twitter, and LinkedIn simultaneously. A quality checklist tracks what's missing. Copy all generated tags with one click.",
+    useCases: [
+      "Setting up complete meta tags for a new web page or blog post",
+      "Previewing how a page will appear when shared on social media before publishing",
+      "Auditing existing pages for missing or incorrect social meta tags",
+      "Generating Twitter Card and Open Graph tags for marketing campaigns",
+    ],
+    tips: [
+      "Keep your title under 60 characters — search engines truncate longer titles in results.",
+      "The description should be 120-160 characters — enough to describe the page but short enough to display fully.",
+      "Your OG image should be 1200×630px for best display across all platforms. Twitter Cards also accept this size.",
+    ],
+    faq: [
+      {
+        q: "What is the difference between Open Graph and Twitter Card tags?",
+        a: "Open Graph (og:) tags were created by Facebook and are used by Facebook, LinkedIn, Slack, Discord, WhatsApp, and most other platforms to generate link previews. Twitter Card (twitter:) tags are specific to Twitter/X. Both use similar fields — title, description, image — but different property names. Many platforms fall back to og: tags if twitter: tags are absent, so setting both is recommended.",
+      },
+      {
+        q: "Do meta keywords still matter for SEO?",
+        a: "No. Google and most major search engines stopped using the meta keywords tag as a ranking signal around 2009. Including it does no harm, but it provides no SEO benefit. Focus on the meta description — while it doesn't directly affect rankings either, a compelling description improves click-through rates from search results.",
+      },
+      {
+        q: "What is the ideal OG image size?",
+        a: "The recommended Open Graph image size is 1200×630 pixels (1.91:1 aspect ratio). This displays correctly on Facebook, LinkedIn, Twitter, and Slack. Minimum size is 200×200px, but smaller images may be displayed as a small thumbnail rather than a full-width card. Use PNG or JPG format; keep the file size under 1MB.",
+      },
+      {
+        q: "When should I use noindex or nofollow?",
+        a: "noindex tells search engines not to include the page in search results — use it for admin pages, duplicate content, thank-you pages, and staging environments. nofollow tells search engines not to follow the links on the page — use it sparingly, typically on user-generated content pages. Avoid noindexing pages you want to rank. Combining both (noindex, nofollow) is the most restrictive setting.",
       },
     ],
   },

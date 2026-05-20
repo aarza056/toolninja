@@ -2,10 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { tools, categories } from "@/lib/tools";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import * as LucideIcons from "lucide-react";
+
+const NEW_TOOL_SLUGS = new Set([
+  "xpath-tester",
+  "docker-run-to-compose",
+]);
 
 function ToolIcon({ name }: { name: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[name];
@@ -16,6 +21,18 @@ function ToolIcon({ name }: { name: string }) {
 export default function Sidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMac, setIsMac] = useState(false);
+  const [hasConsent, setHasConsent] = useState(false);
+
+  useEffect(() => {
+    setIsMac(/Mac|iPhone|iPod|iPad/.test(navigator.userAgent));
+    setHasConsent(!!localStorage.getItem("toolninja_cookie_consent"));
+  }, []);
+
+  const openPalette = () => {
+    window.dispatchEvent(new CustomEvent("toolninja:openpalette"));
+    setMobileOpen(false);
+  };
 
   const sidebarContent = (
     <div className="flex flex-col h-full">
@@ -25,6 +42,22 @@ export default function Sidebar() {
           <span className="text-xl">🥷</span>
           <span className="font-bold text-[#a855f7] text-base tracking-tight">ToolNinja</span>
         </Link>
+      </div>
+
+      {/* Search trigger */}
+      <div className="px-3 pb-2 pt-1">
+        <button
+          onClick={openPalette}
+          className="w-full flex items-center justify-between px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg text-sm text-[#555555] hover:text-[#888888] hover:border-[#333333] transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Search size={12} />
+            <span className="text-xs">Search tools...</span>
+          </div>
+          <kbd className="text-[10px] bg-[#111111] border border-[#333333] px-1.5 py-0.5 rounded text-[#444444]">
+            {isMac ? "⌘K" : "Ctrl+K"}
+          </kbd>
+        </button>
       </div>
 
       {/* Tool list */}
@@ -50,7 +83,12 @@ export default function Sidebar() {
                     }`}
                   >
                     <ToolIcon name={tool.icon} />
-                    <span>{tool.name}</span>
+                    <span className="flex-1 truncate">{tool.name}</span>
+                    {NEW_TOOL_SLUGS.has(tool.slug) && (
+                      <span className="text-[9px] px-1 py-0.5 bg-[#a855f7]/20 text-[#a855f7] rounded-[3px] font-bold tracking-wider flex-shrink-0">
+                        NEW
+                      </span>
+                    )}
                   </Link>
                 );
               })}
@@ -64,14 +102,30 @@ export default function Sidebar() {
         <p className="text-xs text-[#888888] leading-relaxed mb-2">
           Your data never leaves the browser 🔒
         </p>
-        <div className="flex gap-3 text-xs text-[#555555]">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-[#555555]">
           <Link href="/privacy" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Privacy
           </Link>
-          <span>·</span>
           <Link href="/terms" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Terms
           </Link>
+          <Link href="/changelog" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+            Changelog
+          </Link>
+          <Link href="/blog" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+            Blog
+          </Link>
+          {hasConsent && (
+            <button
+              onClick={() => {
+                localStorage.removeItem("toolninja_cookie_consent");
+                window.location.reload();
+              }}
+              className="text-xs text-[#555555] hover:text-[#888888] transition-colors bg-transparent border-0 p-0 m-0 cursor-pointer text-left"
+            >
+              Cookies
+            </button>
+          )}
         </div>
       </div>
     </div>

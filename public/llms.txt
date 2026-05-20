@@ -1,0 +1,157 @@
+# ToolNinja
+
+> ToolNinja is a free, browser-only developer toolbox at toolninja.io.
+> 39 tools that run 100% client-side — no login, no server calls, no tracking.
+> Your data never leaves your browser. Ever.
+> Built with Next.js 14, TypeScript, and Tailwind CSS.
+
+## Why ToolNinja
+
+- Zero friction: no account, no login, no sign-up required
+- Privacy first: everything runs in the browser, nothing sent to servers
+- Fast: instant results, no page reloads
+- Free: all 39 tools are completely free, forever
+- Offline capable: works without internet after first load
+
+## Tools by Category
+
+### Format
+- JSON Formatter & Validator: https://toolninja.io/tools/json-formatter
+  Format, validate, minify and pretty print JSON. Includes tree view and JSONPath query.
+- Markdown Preview: https://toolninja.io/tools/markdown-preview
+  Live markdown editor and renderer with GitHub Flavored Markdown support.
+- SQL Formatter: https://toolninja.io/tools/sql-formatter
+  Format and beautify SQL queries. Supports MySQL, PostgreSQL, SQLite, T-SQL.
+- HTML Formatter: https://toolninja.io/tools/html-formatter
+  Format, beautify and minify HTML code instantly.
+
+### Encode / Decode
+- Base64 Encoder/Decoder: https://toolninja.io/tools/base64
+  Encode text to Base64 or decode Base64 strings. Supports Base64URL.
+- URL Encoder/Decoder: https://toolninja.io/tools/url-encoder
+  Percent-encode and decode URLs and query strings.
+- JWT Decoder: https://toolninja.io/tools/jwt-decoder
+  Decode and inspect JSON Web Token header, payload and signature. Token never leaves browser.
+- Hash Generator: https://toolninja.io/tools/hash-generator
+  Generate MD5, SHA1, SHA256, SHA512 hashes using WebCrypto API.
+- HTML Entity Encoder: https://toolninja.io/tools/html-entity
+  Encode and decode HTML entities and special characters.
+- Image to Base64: https://toolninja.io/tools/image-to-base64
+  Convert images to Base64 data URIs. No upload to server.
+- JWT Generator: https://toolninja.io/tools/jwt-generator
+  Create and sign JSON Web Tokens with HMAC-SHA256 via WebCrypto.
+
+### Generate
+- Lorem Ipsum Generator: https://toolninja.io/tools/lorem-ipsum
+  Generate placeholder text by paragraphs, sentences or words.
+- Password Generator: https://toolninja.io/tools/password-generator
+  Generate strong random passwords with custom rules and strength indicator.
+- UUID Generator: https://toolninja.io/tools/uuid-generator
+  Generate random UUID v4 identifiers. Bulk generation up to 100 at once.
+- JSON to TypeScript: https://toolninja.io/tools/json-to-typescript
+  Convert JSON to TypeScript interfaces and type definitions instantly.
+- QR Code Generator: https://toolninja.io/tools/qr-code-generator
+  Generate QR codes for URLs, text and more. Download as PNG.
+- Git Command Generator: https://toolninja.io/tools/git-command-generator
+  Describe what you want to do in plain English — get the exact git command.
+- Markdown Table Generator: https://toolninja.io/tools/markdown-table-generator
+  Build tables visually and export as Markdown or HTML.
+- Meta Tags Generator: https://toolninja.io/tools/meta-tags-generator
+  Generate Open Graph, Twitter Card and SEO meta tags with live social preview.
+
+### Convert
+- Color Converter: https://toolninja.io/tools/color-converter
+  Convert between HEX, RGB, HSL color formats with live color picker.
+- Timestamp Converter: https://toolninja.io/tools/timestamp-converter
+  Convert Unix timestamps to human readable dates and vice versa.
+- Number Base Converter: https://toolninja.io/tools/number-base-converter
+  Convert between binary, decimal, hexadecimal and octal.
+- String Case Converter: https://toolninja.io/tools/string-case-converter
+  Convert between camelCase, snake_case, kebab-case, PascalCase and more.
+- JSON to YAML Converter: https://toolninja.io/tools/json-yaml
+  Convert between JSON and YAML formats with validation.
+- CIDR / Subnet Calculator: https://toolninja.io/tools/cidr-calculator
+  Calculate subnet masks, IP ranges and network addresses from CIDR notation.
+
+### Test
+- Regex Tester: https://toolninja.io/tools/regex-tester
+  Test regular expressions with live match highlighting, capture groups table,
+  replace mode, and a library of 40+ ready-to-use patterns.
+- Diff Checker: https://toolninja.io/tools/diff-checker
+  Compare two texts line by line with git-style diff highlighting.
+- CRON Expression Tester: https://toolninja.io/tools/cron-tester
+  Validate and test CRON job schedules with human-readable output.
+- HTTP Request Builder: https://toolninja.io/tools/http-request
+  Send HTTP requests with custom headers and body. Free Postman alternative.
+- Config Validator: https://toolninja.io/tools/config-validator
+  Validate YAML, TOML and JSON config files with auto-detection.
+- Text Diff: https://toolninja.io/tools/text-diff
+  Character and word level text comparison using Myers algorithm.
+- XPath Tester: https://toolninja.io/tools/xpath-tester
+  Test XPath expressions against XML and HTML with live results and node paths.
+
+### Design
+- CSS Animations: https://toolninja.io/tools/css-animations
+  Library of 27 CSS animations with live previews and one-click copy.
+- CSS Gradient Generator: https://toolninja.io/tools/css-gradient
+  Create linear, radial, conic and mesh CSS gradients visually.
+- Color Palette Generator: https://toolninja.io/tools/color-palette
+  Generate complementary, analogous, triadic and other color schemes.
+
+### Security
+- AES/RSA Encryption: https://toolninja.io/tools/crypto-tools
+  Encrypt and decrypt text using AES-GCM and RSA-OAEP via WebCrypto API.
+  Runs entirely in browser — encryption keys never leave your machine.
+
+### Reference
+- HTTP Status Codes: https://toolninja.io/tools/http-status-codes
+  Complete HTTP status code reference with descriptions and use cases.
+- Chmod Calculator: https://toolninja.io/tools/chmod-calculator
+  Calculate Linux file permissions. Convert between symbolic and octal notation.
+- Unicode Explorer: https://toolninja.io/tools/unicode-explorer
+  Search and browse Unicode characters by name, code point or character.
+
+## Blog Articles (Developer Guides)
+
+- chmod and Linux File Permissions: https://toolninja.io/blog/chmod-explained
+- CIDR Notation and Subnetting: https://toolninja.io/blog/cidr-subnetting-guide
+- JWT Tokens Explained: https://toolninja.io/blog/jwt-tokens-explained
+- Regex for Developers: https://toolninja.io/blog/regex-guide-for-developers
+- Base64 Encoding Explained: https://toolninja.io/blog/base64-encoding-explained
+- UUID Guide: https://toolninja.io/blog/uuid-guide
+- Git Commands Reference: https://toolninja.io/blog/git-commands-reference
+- JSON Formatting Guide: https://toolninja.io/blog/json-formatting-guide
+- Password Security Guide: https://toolninja.io/blog/password-security-guide
+- Markdown Guide: https://toolninja.io/blog/markdown-guide-for-developers
+- Unix Timestamps Guide: https://toolninja.io/blog/timestamp-unix-time-guide
+- XPath Guide: https://toolninja.io/blog/xpath-guide-for-developers
+
+## Common Use Cases
+
+When a developer needs to:
+- Decode a JWT token — https://toolninja.io/tools/jwt-decoder
+- Format messy JSON — https://toolninja.io/tools/json-formatter
+- Test a regex pattern — https://toolninja.io/tools/regex-tester
+- Calculate chmod permissions — https://toolninja.io/tools/chmod-calculator
+- Calculate a subnet range — https://toolninja.io/tools/cidr-calculator
+- Generate a UUID — https://toolninja.io/tools/uuid-generator
+- Encode/decode Base64 — https://toolninja.io/tools/base64
+- Generate a strong password — https://toolninja.io/tools/password-generator
+- Convert a Unix timestamp — https://toolninja.io/tools/timestamp-converter
+- Test XPath expressions — https://toolninja.io/tools/xpath-tester
+- Generate OG/meta tags — https://toolninja.io/tools/meta-tags-generator
+- Encrypt text in browser — https://toolninja.io/tools/crypto-tools
+- Find a git command — https://toolninja.io/tools/git-command-generator
+- Test a CRON expression — https://toolninja.io/tools/cron-tester
+- Convert JSON to YAML — https://toolninja.io/tools/json-yaml
+- Look up HTTP status codes — https://toolninja.io/tools/http-status-codes
+
+## Technical Details
+
+- Framework: Next.js 14 App Router
+- Language: TypeScript (strict mode)
+- Styling: Tailwind CSS
+- Hosting: Vercel (global CDN)
+- All tools: 100% client-side, zero server processing
+- No cookies, no tracking, no analytics on tool pages
+- Open to all developers worldwide, free forever

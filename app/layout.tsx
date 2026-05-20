@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import ParticleBackground from "@/components/ParticleBackground";
+import CommandPalette from "@/components/CommandPalette";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import CookieBanner from "@/components/CookieBanner";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -70,6 +73,16 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://toolninja.io",
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -79,20 +92,32 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <meta name="keywords" content="developer tools, json formatter, base64 decoder, jwt decoder, regex tester, uuid generator, hash generator, chmod calculator, cidr calculator, css gradient generator, online developer tools, free developer tools, browser tools no login" />
+        <meta name="description" content="38 free browser-only developer tools. JSON formatter, Base64 encoder, JWT decoder, Regex tester, UUID generator, Chmod calculator, CIDR calculator, CSS animations and more. No login, no tracking, 100% private." />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png" />
+        <link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0a0a0a] text-[#f5f5f5]`}>
-        <div className="flex min-h-screen">
+        <ParticleBackground />
+        <div className="relative z-[1] flex min-h-screen">
           <Sidebar />
           <main className="flex-1 md:ml-[240px] min-h-screen overflow-y-auto">
             {children}
           </main>
         </div>
 
+        <CommandPalette />
         {/* Watermark */}
         <div className="fixed bottom-3 right-4 text-xs text-[#333333] pointer-events-none select-none z-50">
           🥷 ToolNinja
         </div>
         <Analytics />
         <SpeedInsights />
+        <CookieBanner />
       </body>
     </html>
   );
