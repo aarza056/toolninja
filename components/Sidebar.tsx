@@ -22,9 +22,11 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMac, setIsMac] = useState(false);
+  const [hasConsent, setHasConsent] = useState(false);
 
   useEffect(() => {
     setIsMac(/Mac|iPhone|iPod|iPad/.test(navigator.userAgent));
+    setHasConsent(!!localStorage.getItem("toolninja_cookie_consent"));
   }, []);
 
   const openPalette = () => {
@@ -100,22 +102,30 @@ export default function Sidebar() {
         <p className="text-xs text-[#888888] leading-relaxed mb-2">
           Your data never leaves the browser 🔒
         </p>
-        <div className="flex gap-3 text-xs text-[#555555]">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-[#555555]">
           <Link href="/privacy" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Privacy
           </Link>
-          <span>·</span>
           <Link href="/terms" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Terms
           </Link>
-          <span>·</span>
           <Link href="/changelog" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Changelog
           </Link>
-          <span>·</span>
           <Link href="/blog" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Blog
           </Link>
+          {hasConsent && (
+            <button
+              onClick={() => {
+                localStorage.removeItem("toolninja_cookie_consent");
+                window.location.reload();
+              }}
+              className="text-xs text-[#555555] hover:text-[#888888] transition-colors bg-transparent border-0 p-0 m-0 cursor-pointer text-left"
+            >
+              Cookies
+            </button>
+          )}
         </div>
       </div>
     </div>

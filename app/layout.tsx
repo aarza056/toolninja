@@ -6,7 +6,7 @@ import ParticleBackground from "@/components/ParticleBackground";
 import CommandPalette from "@/components/CommandPalette";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import Script from "next/script";
+import CookieBanner from "@/components/CookieBanner";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -117,18 +117,7 @@ export default function RootLayout({
         </div>
         <Analytics />
         <SpeedInsights />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-RF8XE3DC9X"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-RF8XE3DC9X');
-          `}
-        </Script>
+        <CookieBanner />
       </body>
     </html>
   );
