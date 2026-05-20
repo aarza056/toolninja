@@ -26,11 +26,11 @@ const NEW_SLUGS = new Set([
   "sql-formatter","color-palette","jwt-generator","crypto-tools",
   "http-request","html-formatter","config-validator","text-diff",
   "cidr-calculator","unicode-explorer",
-  "xpath-tester",
+  "xpath-tester","docker-run-to-compose",
 ]);
 
 const LATEST_SLUGS = [
-  "xpath-tester",
+  "docker-run-to-compose",
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {

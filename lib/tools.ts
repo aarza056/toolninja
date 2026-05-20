@@ -364,6 +364,21 @@ export const tools: Tool[] = [
     ],
   },
 
+  {
+    slug: "docker-run-to-compose",
+    name: "Docker Run to Compose",
+    description: "Convert docker run commands to docker-compose.yml and back",
+    icon: "Container",
+    category: "Convert",
+    keywords: [
+      "docker run to compose", "docker run to docker-compose", "docker compose converter",
+      "docker run converter", "docker to compose yaml", "docker compose generator",
+      "convert docker run command", "docker-compose.yml generator", "docker run parser",
+      "docker compose online", "docker compose tool", "docker run to yaml",
+      "docker compose best practices", "docker run translator",
+    ],
+  },
+
   // ─── Test ─────────────────────────────────────────────────────────────────
   {
     slug: "regex-tester",

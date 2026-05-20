@@ -137,6 +137,12 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online CIDR calculator and subnet calculator. Calculate IP ranges, subnet masks, network and broadcast addresses instantly. Supports ip to cidr conversion, cidr ranges calculator and subnetting. 100% browser-based, no login.",
   },
 
+  "docker-run-to-compose": {
+    title: "Docker Run to Compose Converter — Generate docker-compose.yml Online | ToolNinja",
+    description:
+      "Free online Docker run to Compose converter. Paste any docker run command and instantly get a ready-to-use docker-compose.yml. Supports ports, volumes, environment variables, healthchecks, networks and 40+ flags. Includes best practices scorer and Compose to docker run conversion. No login, 100% browser-based.",
+  },
+
   // ── Test ─────────────────────────────────────────────────────────────────
   "regex-tester": {
     title: "Regex Tester Online — Live Highlighting, Patterns Library | ToolNinja",

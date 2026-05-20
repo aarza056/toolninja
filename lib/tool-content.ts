@@ -1205,6 +1205,43 @@ export const toolContent: Record<string, ToolContent> = {
     ],
   },
 
+  "docker-run-to-compose": {
+    about:
+      "The Docker Run to Compose Converter is a free online tool that instantly converts docker run commands into production-ready docker-compose.yml files. Paste any docker run command — including complex ones with multiple flags — and get a complete Compose service definition with correct YAML structure, named volumes, networks, environment variables, healthchecks, resource limits, and all standard Docker options.\n\nIt also works in reverse: paste a docker-compose.yml and get the equivalent docker run commands for every service, useful for quick debugging or running individual services outside of Compose.\n\nThe built-in Best Practices Scorer analyzes your service configuration and scores it out of 100 across four categories: security (privileged mode, root user, hardcoded secrets), reliability (restart policy, healthchecks, pinned image tags), performance (memory limits), and maintainability (named volumes, custom networks). Each failed check explains the issue and the recommended fix.\n\nSupports multi-service input: paste multiple docker run commands separated by blank lines and the tool generates a complete multi-service docker-compose.yml with shared volumes and network declarations.\n\nEverything runs 100% in your browser. No login, no server, no data ever leaves your machine.",
+    useCases: [
+      "Converting a working docker run command to a Compose file to commit to source control",
+      "Generating docker-compose.yml for an existing containerized app from its run script",
+      "Auditing a container's configuration for security and reliability issues with the best practices scorer",
+      "Learning Compose syntax by seeing exactly how run flags map to YAML keys",
+      "Converting Compose services back to docker run commands for quick one-off debugging",
+      "Combining multiple docker run commands into a multi-service Compose stack",
+    ],
+    tips: [
+      "Separate multiple docker run commands with a blank line to generate a multi-service compose file in one step.",
+      "Pin image tags (e.g. nginx:1.25.3 instead of nginx:latest) to prevent unexpected breakage when upstream releases a new version.",
+      "Use ${VARIABLE} syntax in your environment values and a .env file to keep secrets out of the compose file.",
+      "The best practices scorer shows all checks even when passed — expand it to see what your service is already doing right.",
+    ],
+    faq: [
+      {
+        q: "What Docker run flags are not supported in Compose?",
+        a: "--rm is intentionally ignored (containers in Compose are not auto-removed; they restart based on the restart policy instead). --gpus requires the deploy.resources syntax in Compose v3.8+ and is flagged as unsupported. Flags that have no Compose equivalent are listed in the 'unsupported flags' section after conversion.",
+      },
+      {
+        q: "Why should I use docker-compose.yml instead of docker run scripts?",
+        a: "Compose files are declarative, version-controllable, and self-documenting. A docker run command is imperative and easy to lose. Compose also handles service dependencies, shared networks, named volumes, and environment files natively — things you'd otherwise script by hand. docker compose up -d starts all services; docker compose down stops and removes them cleanly.",
+      },
+      {
+        q: "What does the best practices score measure?",
+        a: "The score starts at 100 and deducts points for each failed check: no pinned image tag (-15), no restart policy (-10), privileged mode (-20), no memory limit (-10), host network mode (-15), absolute-path bind mounts (-5), no healthcheck (-10), root user (-10), hardcoded secrets in environment (-15), no custom network (-5). A score of 80+ indicates a well-configured service.",
+      },
+      {
+        q: "Does the Compose file generated work with Docker Compose v1 (docker-compose) and v2 (docker compose)?",
+        a: "Yes. The generated YAML does not include a version: field, which is the recommended practice as of Docker Compose v2. The spec-compliant format works with both docker compose (Compose v2, plugin) and docker-compose (Compose v1, standalone), though Compose v1 is deprecated.",
+      },
+    ],
+  },
+
   "git-command-generator": {
     about:
       "The Git Command Generator is a searchable reference for 60+ git commands organized by category — Setup, Branches, Staging, Commits, Remote, Undo, History, Tags, Stash, and Advanced. Search by name or keyword to find the exact command, copy it with one click, and see warning badges on destructive commands that rewrite history.",
