@@ -1377,4 +1377,40 @@ export const toolContent: Record<string, ToolContent> = {
       },
     ],
   },
+  "curl-to-code": {
+    about:
+      "The ToolNinja cURL to Code Converter transforms any cURL command into clean, ready-to-run code in 8 programming languages. Paste your curl command and get Python requests, JavaScript fetch, Node.js axios, PHP cURL, Go net/http, Java HttpClient, C# HttpClient, or Ruby net/http code — with headers, authentication, request body, cookies and timeouts all correctly translated.\n\nDevelopers constantly encounter curl commands in API documentation, Postman exports, Stack Overflow answers and terminal history — and need to translate them into application code. Doing this manually is error-prone and slow. ToolNinja handles it automatically, supporting all common flags: -X (method), -H (headers), -d/--data/--data-raw (body), -u (basic auth), -b (cookies), -F (multipart), -L (follow redirects), -k (insecure), --max-time (timeout) and more.\n\nSwitch between all 8 languages instantly without re-pasting the command. Download the generated code as a file (.py, .js, .php, .go, .java, .cs, .rb) or share the curl command with a direct link.\n\n100% client-side. Your API endpoints, tokens, keys and request data never leave your browser.",
+    useCases: [
+      "Converting Postman-exported curl commands to Python for test automation scripts",
+      "Translating API documentation curl examples to JavaScript fetch or axios",
+      "Turning terminal curl history into Go or Java code for microservices",
+      "Converting curl commands to PHP for server-side API integrations",
+      "Translating curl to C# HttpClient for .NET applications",
+      "Learning how different languages implement the same HTTP request",
+    ],
+    tips: [
+      "Multi-line curl commands with backslash continuation (\\) are fully supported — paste them as-is.",
+      "JSON bodies (-d with Content-Type: application/json) use the language-native JSON method — no manual serialization.",
+      "Switch between all 8 languages instantly without re-pasting the command.",
+      "Download the file directly — .py, .js, .php, .go, .java, .cs, .rb — ready to run with no changes.",
+    ],
+    faq: [
+      {
+        q: "What curl flags does this converter support?",
+        a: "Supports all common flags: -X (method), -H (headers), -d/--data/--data-raw/--data-binary (body), -u (basic auth), -b/--cookie (cookies), -F/--form (multipart), -L (follow redirects), -k/--insecure (skip SSL), --max-time (timeout), -A (user agent), -e (referer), --data-urlencode, and -I/--head.",
+      },
+      {
+        q: "Is my curl command sent to any server?",
+        a: "No. All parsing and code generation happens in your browser. Your API endpoints, authentication tokens, API keys, headers, and body data never leave your machine — completely safe for real credentials.",
+      },
+      {
+        q: "Why does my Python code use json= instead of data=?",
+        a: "When curl sends JSON (-d with Content-Type: application/json), the Python converter uses json= which automatically serializes the dictionary and sets the correct Content-Type. Use data= only for raw string bodies or form-encoded data.",
+      },
+      {
+        q: "How do I convert a Postman request to Python code?",
+        a: "In Postman, click the </> Code button in the right sidebar, select cURL from the dropdown, copy the command, then paste it into ToolNinja's cURL to Code converter and select Python. The generated code is ready to run.",
+      },
+    ],
+  },
 };

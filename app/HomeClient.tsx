@@ -23,10 +23,7 @@ const FEATURED_SLUGS = [
 ];
 
 const NEW_SLUGS = new Set([
-  "sql-formatter","color-palette","jwt-generator","crypto-tools",
-  "http-request","html-formatter","config-validator","text-diff",
-  "cidr-calculator","unicode-explorer",
-  "xpath-tester","docker-run-to-compose",
+  "curl-to-code",
 ]);
 
 const LATEST_SLUGS = [

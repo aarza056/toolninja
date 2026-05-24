@@ -143,6 +143,12 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online Docker run to Compose converter. Paste any docker run command and instantly get a ready-to-use docker-compose.yml. Supports ports, volumes, environment variables, healthchecks, networks and 40+ flags. Includes best practices scorer and Compose to docker run conversion. No login, 100% browser-based.",
   },
 
+  "curl-to-code": {
+    title: "cURL to Code Converter — Python, JavaScript, PHP, Go, Java | ToolNinja",
+    description:
+      "Free online cURL to code converter. Convert any cURL command to Python requests, JavaScript fetch, Axios, PHP, Go, Java, C# and Ruby instantly. No login, 100% browser-based.",
+  },
+
   // ── Test ─────────────────────────────────────────────────────────────────
   "regex-tester": {
     title: "Regex Tester Online — Live Highlighting, Patterns Library | ToolNinja",

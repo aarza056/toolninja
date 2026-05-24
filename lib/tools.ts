@@ -378,6 +378,23 @@ export const tools: Tool[] = [
       "docker compose best practices", "docker run translator",
     ],
   },
+  {
+    slug: "curl-to-code",
+    name: "cURL to Code",
+    description: "Convert cURL commands to Python, JavaScript, PHP, Go, Java, C# and Ruby instantly",
+    icon: "Terminal",
+    category: "Convert",
+    keywords: [
+      "curl to python", "curl to javascript", "curl to code",
+      "convert curl to python", "curl command to python requests",
+      "curl to fetch", "curl to axios", "curl to php",
+      "curl to go", "curl to java", "curl converter online",
+      "curl to code converter", "postman curl to python",
+      "curl command converter", "curl to node.js", "curl to c#",
+      "curl to ruby", "convert curl command to code",
+      "curl to requests python", "curl to axios converter",
+    ],
+  },
 
   // ─── Test ─────────────────────────────────────────────────────────────────
   {

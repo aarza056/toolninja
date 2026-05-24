@@ -2,6 +2,11 @@
 
 All notable changes to ToolNinja, auto-generated from commit history.
 
+## 2026-05-24
+
+- Added cURL to Code Converter — convert any curl command to Python requests, JavaScript fetch, Node.js axios, PHP, Go, Java, C# and Ruby instantly; supports -X, -H, -d, -u, -b, -F, -L, -k, --max-time and more; share via URL, download as file, 100% browser-based
+- Added blog post: How to Convert cURL Commands to Python, JavaScript, PHP and More
+
 ## 2026-05-20
 
 - Added Docker Run to Compose Converter — convert docker run commands to docker-compose.yml (and back) with multi-service support, best practices scorer, and 10 real-world examples
