@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import ToolLayout from "@/components/ToolLayout";
-import { Loader2, Plus, Trash2, Copy, Check, ChevronDown, ChevronRight } from "lucide-react";
+import { Loader2, Plus, Trash2, Copy, Check, ChevronDown, ChevronRight, Upload, Download, X } from "lucide-react";
+import { importFromPostman, exportToPostman, type ImportedRequest } from "@/lib/postman-collection";
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS";
 
@@ -80,6 +81,11 @@ export default function HttpRequestClient() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("headers");
   const [responseHeadersOpen, setResponseHeadersOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState("");
+  const [importError, setImportError] = useState("");
+  const [importPicker, setImportPicker] = useState<ImportedRequest[] | null>(null);
+  const [exportCopied, setExportCopied] = useState(false);
 
   const sendRequest = async () => {
     setLoading(true);
@@ -141,6 +147,56 @@ export default function HttpRequestClient() {
     });
   };
 
+  const applyImportedRequest = (req: ImportedRequest) => {
+    setMethod((METHODS.includes(req.method as Method) ? req.method : "GET") as Method);
+    setUrl(req.url);
+    setHeaders(
+      Object.entries(req.headers).map(([key, value]) => ({
+        id: headerIdCounter++,
+        key,
+        value,
+      }))
+    );
+    setBody(req.body);
+    setImportOpen(false);
+    setImportText("");
+    setImportError("");
+    setImportPicker(null);
+  };
+
+  const handleImport = () => {
+    const { requests, error: err } = importFromPostman(importText);
+    if (err) {
+      setImportError(err);
+      return;
+    }
+    setImportError("");
+    if (requests.length === 1) {
+      applyImportedRequest(requests[0]);
+    } else {
+      setImportPicker(requests);
+    }
+  };
+
+  const handleExport = () => {
+    const hdrs = Object.fromEntries(
+      headers.filter((h) => h.key && h.value).map((h) => [h.key, h.value])
+    );
+    let name = "ToolNinja Export";
+    try {
+      name = `${method} ${new URL(url).pathname}`;
+    } catch {}
+    const json = exportToPostman(name, method, url, hdrs, body);
+    const blob = new Blob([json], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "toolninja.postman_collection.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    setExportCopied(true);
+    setTimeout(() => setExportCopied(false), 1500);
+  };
+
   const inputClass =
     "flex-1 px-3 py-2 font-mono text-sm bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]";
 
@@ -191,6 +247,27 @@ export default function HttpRequestClient() {
             <Loader2 size={14} className="animate-spin" />
           ) : null}
           {loading ? "Sending…" : "Send"}
+        </button>
+      </div>
+
+      {/* Postman import/export toolbar */}
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => setImportOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] hover:text-[#f5f5f5] border border-[#222222] rounded-[6px] transition-colors"
+        >
+          <Upload size={12} /> Import Postman Collection
+        </button>
+        <button
+          onClick={handleExport}
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-[6px] border transition-colors ${
+            exportCopied
+              ? "border-[#22c55e] text-[#22c55e] bg-[#22c55e]/10"
+              : "bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] hover:text-[#f5f5f5] border-[#222222]"
+          }`}
+        >
+          {exportCopied ? <Check size={12} /> : <Download size={12} />}
+          {exportCopied ? "Downloaded!" : "Export as Postman Collection"}
         </button>
       </div>
 
@@ -379,6 +456,75 @@ export default function HttpRequestClient() {
               Send a request to see the response here
             </div>
           )}
+        </div>
+      )}
+
+      {/* Import Postman Collection modal */}
+      {importOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setImportOpen(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-[#111111] border border-[#222222] rounded-[8px] p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-semibold text-[#f5f5f5]">Import Postman Collection</h2>
+              <button
+                onClick={() => setImportOpen(false)}
+                className="text-[#555555] hover:text-[#f5f5f5] transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {!importPicker ? (
+              <>
+                <textarea
+                  value={importText}
+                  onChange={(e) => setImportText(e.target.value)}
+                  placeholder="Paste your Postman collection JSON here…"
+                  rows={8}
+                  className="w-full p-3 font-mono text-xs resize-none bg-[#0d0d0d] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+                  spellCheck={false}
+                />
+                {importError && (
+                  <p className="text-xs text-[#ef4444] mt-2">{importError}</p>
+                )}
+                <button
+                  onClick={handleImport}
+                  disabled={!importText.trim()}
+                  className="mt-3 flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-[#a855f7] hover:bg-[#9333ea] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-[6px] transition-colors"
+                >
+                  <Upload size={14} /> Import
+                </button>
+              </>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-xs text-[#888888] mb-2">
+                  This collection has {importPicker.length} requests — pick one to load:
+                </p>
+                <div className="max-h-72 overflow-y-auto space-y-1.5">
+                  {importPicker.map((req, i) => (
+                    <button
+                      key={i}
+                      onClick={() => applyImportedRequest(req)}
+                      className="w-full flex items-center gap-2 p-2.5 text-left bg-[#0d0d0d] hover:bg-[#1a1a1a] border border-[#222222] rounded-[6px] transition-colors"
+                    >
+                      <span
+                        className="text-xs font-mono font-semibold shrink-0"
+                        style={{ color: METHOD_COLORS[req.method as Method] ?? "#888888" }}
+                      >
+                        {req.method}
+                      </span>
+                      <span className="text-sm text-[#f5f5f5] truncate">{req.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </ToolLayout>

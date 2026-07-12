@@ -232,6 +232,7 @@ export const toolContent: Record<string, ToolContent> = {
       "The exp claim is a Unix timestamp — compare it to the current time to check expiry.",
       "Never store sensitive user data (passwords, SSNs, credit cards) in JWT claims.",
       "The signature validates that the token was issued by the expected server — but you need the secret key to verify it.",
+      "Click 'Use in a cURL request' to quickly test an endpoint with this token, or convert straight to Python/JavaScript code",
     ],
     faq: [
       {
@@ -626,9 +627,11 @@ export const toolContent: Record<string, ToolContent> = {
       "The QR Code Generator creates QR codes from any URL or text string with configurable size, foreground and background colors, and error correction levels. QR codes can store up to approximately 4,000 characters and remain scannable even if part of the code is damaged, depending on the error correction level selected.",
     useCases: [
       "Creating scannable links for print materials, posters, and business cards",
-      "Generating QR codes for Wi-Fi credentials (SSID and password)",
+      "Generating QR codes for Wi-Fi credentials (SSID and password) so guests can join without typing a password",
       "Linking physical products, labels, or packaging to digital resources",
       "Creating quick-scan links for presentations and conference materials",
+      "Building digital business cards with the Contact (vCard) mode for conference badges",
+      "Generating event invites with the Event mode so scanning adds the date directly to a calendar",
     ],
     tips: [
       "Error correction level L is sufficient for clean digital display. Use H for printed codes that might get scratched or partially covered.",
@@ -651,6 +654,14 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Can I embed a logo in the middle of a QR code?",
         a: "Yes, because QR codes have built-in error correction. If the logo covers less than ~30% of the code area and you use Error Correction Level H, the code remains scannable despite the obscured region. Design tools that generate logo QR codes exploit this property — the logo sits in the covered area and error correction reconstructs the missing data.",
+      },
+      {
+        q: "How do I make a WiFi QR code?",
+        a: "Switch to the WiFi tab, enter your network name (SSID), password, and encryption type, and the QR code updates live. Scanning it with a phone camera offers to join the network directly — no need to say the password out loud or type it on a screen.",
+      },
+      {
+        q: "How do I make a QR code for my contact info?",
+        a: "Switch to the Contact tab and fill in name, phone, email, and optionally company, title, and website. This generates a vCard-format QR code — scanning it on most phones offers to save the details directly to Contacts, which is why it works well on business cards and conference badges.",
       },
     ],
   },
@@ -1003,11 +1014,13 @@ export const toolContent: Record<string, ToolContent> = {
       "Quickly verifying authentication headers and response formats",
       "Debugging webhook payloads by sending POST requests with custom bodies",
       "Checking CORS headers and response codes from public APIs",
+      "Importing an existing Postman collection to quickly test a request without opening Postman",
     ],
     tips: [
       "Browser requests are subject to CORS — cross-origin APIs that don't set Access-Control-Allow-Origin will fail. Use a CORS proxy or test same-origin APIs.",
       "Set Content-Type: application/json when sending JSON bodies so the server parses the body correctly.",
       "For APIs requiring Bearer token auth, add an Authorization header with value: Bearer <your-token>.",
+      "Export any request as a Postman collection to share with teammates who use Postman",
     ],
     faq: [
       {
