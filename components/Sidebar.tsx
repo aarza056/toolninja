@@ -115,6 +115,9 @@ export default function Sidebar() {
           <Link href="/blog" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Blog
           </Link>
+          <Link href="/explain-error" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+            Explain Error
+          </Link>
           {hasConsent && (
             <button
               onClick={() => {

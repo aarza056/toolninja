@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
-import { Calendar, Clock, ArrowRight } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Search } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Blog — Developer Guides & Tutorials",
@@ -58,10 +58,17 @@ export default function BlogIndexPage() {
         <h1 className="text-3xl font-bold text-[#f5f5f5] mb-3">
           Developer Guides
         </h1>
-        <p className="text-[#888888] text-base leading-relaxed">
+        <p className="text-[#888888] text-base leading-relaxed mb-4">
           Practical references for tools developers use every day — Linux
           permissions, networking, authentication, and more.
         </p>
+        <Link
+          href="/explain-error"
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm bg-[#111111] border border-[#a855f7]/30 rounded-lg text-[#a855f7] hover:border-[#a855f7]/60 transition-colors"
+        >
+          <Search size={14} />
+          Got an error? Paste it here →
+        </Link>
       </div>
 
       {/* Post list */}

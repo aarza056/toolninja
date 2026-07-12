@@ -1,9 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock, Terminal, ArrowRight } from "lucide-react";
+
+function generateCurlFromJwt(token: string, url: string): string {
+  return `curl -X GET "${url}" \\
+  -H "Authorization: Bearer ${token}" \\
+  -H "Content-Type: application/json"`;
+}
+
+function toBase64Url(str: string): string {
+  return btoa(unescape(encodeURIComponent(str)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
 
 const STORAGE_KEY = "toolninja:jwt-decoder";
 
@@ -47,6 +61,8 @@ export default function JwtDecoderClient() {
   const [token, setToken] = useState("");
   const [decoded, setDecoded] = useState<{ header: unknown; payload: unknown; signature: string } | null>(null);
   const [error, setError] = useState("");
+  const [curlPanelOpen, setCurlPanelOpen] = useState(false);
+  const [curlUrl, setCurlUrl] = useState("");
 
   useEffect(() => {
     try {
@@ -137,6 +153,53 @@ export default function JwtDecoderClient() {
           </div>
         </div>
       ))}
+
+      {decoded && (
+        <div className="mb-4">
+          <button
+            onClick={() => setCurlPanelOpen((o) => !o)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] hover:text-[#f5f5f5] border border-[#222222] rounded-[6px] transition-colors"
+          >
+            <Terminal size={12} /> Use in a cURL request →
+          </button>
+
+          {curlPanelOpen && (
+            <div className="mt-2 p-3 bg-[#111111] border border-[#222222] rounded-[8px] space-y-3">
+              <div>
+                <label className="text-xs text-[#888888] font-medium block mb-1">Target URL</label>
+                <input
+                  type="text"
+                  value={curlUrl}
+                  onChange={(e) => setCurlUrl(e.target.value)}
+                  placeholder="https://api.example.com/endpoint"
+                  className="w-full px-3 py-2 font-mono text-sm bg-[#0d0d0d] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+                  spellCheck={false}
+                />
+              </div>
+
+              {curlUrl.trim() && (
+                <>
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs text-[#888888] font-medium">Generated cURL command</label>
+                      <CopyButton text={generateCurlFromJwt(token.trim(), curlUrl.trim())} size="sm" />
+                    </div>
+                    <pre className="p-3 font-mono text-xs bg-[#0d0d0d] border border-[#222222] rounded-[6px] text-[#f5f5f5] overflow-auto whitespace-pre-wrap break-all">
+                      {generateCurlFromJwt(token.trim(), curlUrl.trim())}
+                    </pre>
+                  </div>
+                  <Link
+                    href={`/tools/curl-to-code?cmd=${toBase64Url(generateCurlFromJwt(token.trim(), curlUrl.trim()))}`}
+                    className="inline-flex items-center gap-1 text-xs text-[#a855f7] hover:text-[#c084fc] transition-colors"
+                  >
+                    Convert this to Python/JS/PHP <ArrowRight size={12} />
+                  </Link>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {!decoded && !error && !token && (
         <div className="p-8 text-center text-[#444444] border border-dashed border-[#222222] rounded-[8px]">
