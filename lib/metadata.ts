@@ -104,6 +104,16 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online meta tags generator. Generate Open Graph, Twitter Card and SEO meta tags with live social preview for Twitter, LinkedIn and Slack. See exactly how your link looks when shared. No login required.",
   },
+  "favicon-generator": {
+    title: "Favicon Generator Online — Generate All Favicon Sizes Free | ToolNinja",
+    description:
+      "Free online favicon generator. Upload one image and instantly get favicon-16x16, favicon-32x32, apple-touch-icon, and Android Chrome icons, plus the HTML snippet to add them. No login, 100% browser-based.",
+  },
+  "fake-data-generator": {
+    title: "Fake Data Generator — Mock JSON & CSV Test Data | ToolNinja",
+    description:
+      "Free online fake data generator. Define a schema with names, emails, UUIDs, dates and more, and instantly generate realistic mock JSON or CSV test data. Optional seed for reproducible output. No login required.",
+  },
 
   // ── Convert ──────────────────────────────────────────────────────────────
   "color-converter": {
@@ -142,6 +152,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online Docker run to Compose converter. Paste any docker run command and instantly get a ready-to-use docker-compose.yml. Supports ports, volumes, environment variables, healthchecks, networks and 40+ flags. Includes best practices scorer and Compose to docker run conversion. No login, 100% browser-based.",
   },
+  "csv-json": {
+    title: "CSV to JSON Converter Online — Convert CSV & JSON Both Ways | ToolNinja",
+    description:
+      "Free online CSV to JSON and JSON to CSV converter. Convert instantly in either direction with support for custom delimiters, quoted fields, and file upload. No login, 100% browser-based.",
+  },
 
   // ── Test ─────────────────────────────────────────────────────────────────
   "regex-tester": {
@@ -179,6 +194,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online XPath tester and evaluator. Test XPath expressions against XML and HTML documents with live results. Supports XPath 1.0, node selection, axis expressions and predicates. No login, 100% browser-based.",
   },
+  "json-diff": {
+    title: "JSON Diff Checker Online — Compare Two JSON Objects | ToolNinja",
+    description:
+      "Free online JSON diff checker. Compare two JSON objects structurally and see exactly what was added, removed, or changed, path by path — key order doesn't matter. No login, 100% browser-based.",
+  },
 
   // ── Design ───────────────────────────────────────────────────────────────
   "css-animations": {
@@ -202,6 +222,13 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "AES & RSA Encryption Online — Encrypt & Decrypt Text | ToolNinja",
     description:
       "Free online AES-GCM and RSA-OAEP encryption tool. Encrypt and decrypt text directly in your browser using WebCrypto API. AES 256-bit with PBKDF2 key derivation. Your data never leaves your machine. No login.",
+  },
+
+  // ── Accessibility ────────────────────────────────────────────────────────
+  "contrast-checker": {
+    title: "Color Contrast Checker — WCAG AA/AAA Compliance Tool | ToolNinja",
+    description:
+      "Free online WCAG color contrast checker. Check contrast ratio between foreground and background colors against AA and AAA thresholds for normal text, large text, and UI components. No login, 100% browser-based.",
   },
 
   // ── Reference ────────────────────────────────────────────────────────────

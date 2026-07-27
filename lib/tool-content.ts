@@ -1390,4 +1390,178 @@ export const toolContent: Record<string, ToolContent> = {
       },
     ],
   },
+
+  "json-diff": {
+    about:
+      "The JSON Diff Checker compares two JSON objects structurally and shows exactly what was added, removed, or changed — path by path, using JSONPath-style notation like $.user.email or $.items[2].price. Unlike a line-by-line text diff, it understands JSON structure: keys in a different order are treated as identical, and only real content differences are reported.\n\nUse it to compare API responses before and after a change, verify a config file migration didn't silently alter values, or review what a deploy actually changed in a serialized data blob. Each difference is color-coded — green for additions, red for removals, yellow for changes — with the exact old and new values shown inline.\n\nEverything runs 100% in your browser. Your JSON never leaves your machine — no server calls, no logging.",
+    useCases: [
+      "Comparing an API response before and after a backend change to catch unintended field changes",
+      "Verifying a config file or feature flag migration didn't alter values it shouldn't have",
+      "Reviewing what changed between two versions of a serialized state object during debugging",
+      "Checking that a refactor produces byte-for-byte equivalent JSON output regardless of key order",
+    ],
+    tips: [
+      "Key order never affects the result — only real value differences are reported, unlike a plain text diff.",
+      "Arrays are compared index by index, so inserting an item in the middle of an array will show every later item as 'changed' — this is a known limitation of positional array diffing.",
+      "The path shown for each difference (e.g. $.user.roles[1]) can be pasted directly into a JSONPath-aware tool to locate the value.",
+    ],
+    faq: [
+      {
+        q: "How is this different from a regular text diff tool?",
+        a: "A text diff (like ToolNinja's Diff Checker) compares JSON as plain text line by line — so reformatting, reordering keys, or changing whitespace shows up as a difference even when the data is identical. The JSON Diff Checker parses both inputs and compares the actual data structure, so key order and formatting never produce false positives — only genuine content differences are reported.",
+      },
+      {
+        q: "Why does reordering array items show as many changes instead of one?",
+        a: "Arrays are compared by position (index 0 vs index 0, index 1 vs index 1, and so on), not by content matching. If you insert or remove an item in the middle of an array, every item after that position will appear as 'changed' even though most of them didn't really change — they just shifted position. This is standard behavior for positional diffing; a content-aware array diff would need to identify moved items, which this tool doesn't attempt.",
+      },
+      {
+        q: "What does the path notation like $.user.address[0].city mean?",
+        a: "It's JSONPath-style notation describing where in the JSON structure the difference occurs. $ is the root object, .user.address means the address property of the user object, and [0] means the first item in that array, followed by .city for the city property within it. It's the same notation used by JSONPath query tools.",
+      },
+      {
+        q: "Is my data uploaded anywhere when I use this tool?",
+        a: "No. Both JSON inputs are parsed and compared entirely in your browser using JavaScript. Nothing is sent to a server — this is safe to use with real API responses, even ones containing sensitive data.",
+      },
+    ],
+  },
+
+  "contrast-checker": {
+    about:
+      "The Color Contrast Checker calculates the WCAG contrast ratio between a foreground and background color and checks it against the official accessibility thresholds — AA and AAA, for normal text, large text, and UI components/graphics. Enter any two colors as hex or rgb() and see a live preview of how real text and buttons would actually look.\n\nWCAG 2.x defines minimum contrast ratios so text remains readable for users with low vision or color blindness: 4.5:1 for normal text at AA, 3:1 for large text, and stricter 7:1 / 4.5:1 thresholds at the AAA level. This tool computes the exact ratio using the WCAG relative luminance formula and tells you plainly which levels your color pair passes or fails — plus suggests an adjusted foreground shade that would pass AA if your current pair fails.\n\nRuns entirely in your browser — no login, no server calls.",
+    useCases: [
+      "Verifying text and background color combinations meet WCAG AA before shipping a design",
+      "Auditing an existing design system's color tokens for accessibility compliance",
+      "Checking button and UI component contrast against the 3:1 non-text threshold",
+      "Finding a passing shade quickly when a brand color fails contrast against its background",
+    ],
+    tips: [
+      "AA is the legal minimum most accessibility standards (ADA, EN 301 549) reference — aim for AA at minimum, AAA where practical for body text.",
+      "Large text (18pt+/24px+, or 14pt/18.66px+ bold) has a lower bar (3:1) because bigger glyphs remain legible at lower contrast.",
+      "UI components like button borders, icons, and form field outlines only need to meet the 3:1 threshold, not the stricter text ratios.",
+      "Use the swap button to quickly check the reverse combination — useful when deciding between light-on-dark and dark-on-light variants.",
+    ],
+    faq: [
+      {
+        q: "What's the difference between WCAG AA and AAA?",
+        a: "AA is the standard most accessibility regulations require (4.5:1 for normal text, 3:1 for large text) — it's the widely-adopted baseline. AAA is a stricter, optional standard (7:1 normal, 4.5:1 large) intended for content where readability is especially critical. Most products target AA; AAA is aspirational for body copy on content-heavy sites.",
+      },
+      {
+        q: "How is the contrast ratio actually calculated?",
+        a: "It's derived from the WCAG relative luminance formula, which weights each RGB channel by how the human eye perceives brightness (green contributes most, blue least), then compares the lighter and darker of the two colors: (L1 + 0.05) / (L2 + 0.05). The result ranges from 1:1 (identical colors, no contrast) to 21:1 (pure black on pure white, maximum contrast).",
+      },
+      {
+        q: "Why does my brand color fail contrast, and what should I do?",
+        a: "Many brand colors (especially mid-tone blues, purples, and reds) sit right in the range that fails against both black and white text at small sizes. Common fixes: darken or lighten the color slightly for text use while keeping the original for logos/graphics, increase the text size so it qualifies as 'large text' with a lower threshold, or use the brand color only for large UI elements where the 3:1 threshold applies.",
+      },
+      {
+        q: "Does passing WCAG contrast guarantee my design is accessible?",
+        a: "No — contrast is one of many accessibility requirements. It doesn't account for color blindness (two colors can have great contrast but still be indistinguishable to someone with color vision deficiency if they differ only in hue), font legibility, or screen reader compatibility. Treat this as one check among a broader accessibility review, not a complete audit.",
+      },
+    ],
+  },
+
+  "csv-json": {
+    about:
+      "The CSV ↔ JSON Converter converts in both directions instantly — paste CSV, get a JSON array of objects; paste a JSON array, get CSV. It correctly handles quoted fields containing commas, embedded quotes, and newlines per the standard CSV format, and supports comma, semicolon, tab, or pipe delimiters for exports from different regional spreadsheet settings.\n\nUpload a .csv file directly, or paste JSON and get CSV back — useful when an API returns JSON but you need to hand a spreadsheet to a non-technical teammate, or when you have a CSV export that needs to become structured JSON for a script or API payload.\n\nRuns 100% in your browser. Your data — including anything from a spreadsheet with sensitive rows — never leaves your machine.",
+    useCases: [
+      "Converting a CSV export from Excel or Google Sheets into JSON for an API payload or script",
+      "Turning a JSON array from an API response into a CSV file to share with a non-technical teammate",
+      "Handling European-format CSVs that use semicolons instead of commas as the delimiter",
+      "Quickly inspecting the structure of a CSV file by seeing it as JSON objects with named keys",
+    ],
+    tips: [
+      "The first row of your CSV is always treated as the header row — those become the JSON object keys.",
+      "When converting JSON to CSV, the column headers are the union of all keys across every object, so it's fine if some objects are missing a field.",
+      "Nested objects or arrays inside JSON values are stringified into the CSV cell — CSV itself has no concept of nested structure.",
+      "Switch the delimiter to semicolon if you're opening the CSV in a European-locale version of Excel, which uses commas as decimal separators.",
+    ],
+    faq: [
+      {
+        q: "How does the converter handle commas inside a CSV field?",
+        a: "Standard CSV wraps any field containing the delimiter, a quote character, or a newline in double quotes — e.g. \"Smith, John\" for a value containing a comma. This tool follows that convention on both parsing and export, so fields with embedded commas or quotes round-trip correctly as long as the source CSV was quoted properly.",
+      },
+      {
+        q: "What happens to nested JSON objects or arrays when converting to CSV?",
+        a: "CSV is inherently flat — it has no way to represent nested structure. When a JSON value is an object or array, it gets serialized as a JSON string inside that CSV cell (e.g. {\"street\":\"Main St\"}) rather than being flattened into separate columns. If you need flattened columns, restructure the JSON to be flat before converting.",
+      },
+      {
+        q: "Why do some rows have empty cells after converting JSON to CSV?",
+        a: "If your JSON array contains objects with different sets of keys, the CSV header row is the union of every key seen across all objects. Any object missing a particular key gets an empty cell in that column — this keeps every row the same width, which CSV requires.",
+      },
+      {
+        q: "Can I convert a CSV that uses tabs instead of commas (TSV)?",
+        a: "Yes — select Tab from the delimiter dropdown before pasting or uploading your file. The same parser handles comma, semicolon, tab, and pipe-delimited files; just make sure the selected delimiter matches your source file's actual separator.",
+      },
+    ],
+  },
+
+  "favicon-generator": {
+    about:
+      "The Favicon Generator takes a single uploaded image and renders it into every standard favicon size a modern site needs: 16×16 and 32×32 for browser tabs, 48×48 for the Windows taskbar, 180×180 for Apple touch icons (iOS home screen), and 192×192 / 512×512 for Android and web app manifests.\n\nEach size is generated on an HTML canvas — the image is scaled to fit and centered, with an optional solid background fill for source images with transparency that need a solid favicon. Download each size individually or all at once, and copy the exact HTML <link> tags to paste into your site's <head>.\n\nProcessing happens entirely in your browser via the Canvas API — your image is never uploaded to a server.",
+    useCases: [
+      "Generating a complete favicon set from a single logo file for a new site launch",
+      "Re-generating favicons after a logo redesign without manually resizing in an image editor",
+      "Producing the specific sizes required for PWA manifests (192×192, 512×512) alongside classic favicons",
+      "Adding a solid background to a transparent logo so it reads clearly as a small favicon",
+    ],
+    tips: [
+      "Start with a square source image at least 512×512px — the generator scales down cleanly but can't add detail when scaling up from a small source.",
+      "If your logo has transparency and looks washed out as a tiny favicon, enable the solid background option and pick a color that matches your brand.",
+      "Browsers and OSes cache favicons aggressively — after replacing your favicon files, a hard refresh or cache-busting query string may be needed to see the update.",
+      "The 512×512 size doubles as your PWA manifest icon — keep it if you have (or plan to add) a web app manifest.",
+    ],
+    faq: [
+      {
+        q: "Why do I need so many different favicon sizes?",
+        a: "Different platforms request different sizes for different contexts: browsers use 16×16 and 32×32 for tabs and bookmarks, Windows uses 48×48 for taskbar pins, iOS uses 180×180 when you 'Add to Home Screen', and Android/PWA manifests use 192×192 and 512×512 for home screen icons and splash screens. Providing all of them ensures your icon looks sharp everywhere instead of being stretched from a single small file.",
+      },
+      {
+        q: "Do I still need a favicon.ico file?",
+        a: "Modern browsers all support PNG favicons referenced via <link rel=\"icon\">, which is what this tool generates — a .ico file is no longer strictly required for current browser versions. Some very old browsers or crawlers still fall back to requesting /favicon.ico by default, so keeping one at your site root as a fallback doesn't hurt, but PNG favicons with proper <link> tags are sufficient for virtually all modern traffic.",
+      },
+      {
+        q: "What's the difference between the apple-touch-icon and the regular favicon?",
+        a: "The apple-touch-icon (180×180) is what iOS uses specifically when a user adds your site to their home screen — it appears as a full app-like icon, so it should not have transparency (iOS fills transparent areas with black). The smaller favicon sizes are used for browser tabs and bookmarks and can keep transparency.",
+      },
+      {
+        q: "Why does my icon look pixelated at 16×16 even though the source image was high resolution?",
+        a: "At very small sizes, fine detail in a logo simply can't render clearly — this is a physical limit of a 16×16 pixel grid, not a bug in the generator. Simplify complex logos (remove fine text or thin lines) for the smallest sizes, or accept that the 16px favicon will always be a simplified impression of the full logo.",
+      },
+    ],
+  },
+
+  "fake-data-generator": {
+    about:
+      "The Fake Data Generator lets you define a custom schema — field name plus type — and instantly generates realistic-looking mock data as JSON or CSV. Choose from 20 field types including names, emails, phone numbers, UUIDs, addresses, companies, job titles, dates, and Lorem-style text.\n\nUse it to populate a frontend with realistic test data before a real API exists, generate CSV fixtures for a data pipeline test, or quickly produce a batch of sample records for a demo. An optional seed value makes output reproducible — the same seed with the same schema always generates identical data, useful for consistent test fixtures across CI runs.\n\nAll generation happens in your browser using JavaScript — no data is sent anywhere, and there's no rate limit like hosted mock-data APIs often impose.",
+    useCases: [
+      "Populating a frontend UI with realistic-looking data before the real backend API is ready",
+      "Generating CSV fixtures for testing a data import or ETL pipeline",
+      "Creating reproducible test data for CI by setting a fixed seed value",
+      "Producing quick demo datasets (users, products, orders) for a presentation or prototype",
+    ],
+    tips: [
+      "Set a seed value to get the exact same generated data every time — useful for deterministic test fixtures instead of random data that changes each run.",
+      "Field names become JSON object keys or CSV column headers directly — use camelCase or snake_case to match what your API or database expects.",
+      "Generate up to 500 rows per run — for larger datasets, generate in multiple batches or increase the row count and re-download.",
+      "Switch to CSV output to get a file you can drag straight into Excel, Google Sheets, or a database import tool.",
+    ],
+    faq: [
+      {
+        q: "Is the generated data safe to use — does it resemble real people?",
+        a: "The names, emails, and addresses are drawn from small fixed lists of common placeholder values (similar to how Lorem Ipsum works for text) combined randomly — they are not sourced from real user records and any resemblance to a real person is coincidental, the same as with any synthetic test data generator.",
+      },
+      {
+        q: "What does the seed value actually do?",
+        a: "Without a seed, each generation uses fresh randomness and produces different data every time. With a seed, the generator uses that value to initialize a deterministic pseudo-random sequence — the same seed plus the same field schema and row count will always produce identical output, which is useful when you need a stable fixture that doesn't change between test runs.",
+      },
+      {
+        q: "Can I generate nested JSON objects, like an address object inside a user object?",
+        a: "Not directly — each field generates a single flat value (string, number, boolean, or date). For nested structures, generate the flat fields you need and restructure the JSON afterward, or generate separate arrays (users, addresses) and join them in your own code.",
+      },
+      {
+        q: "How is this different from a hosted service like Mockaroo?",
+        a: "The core schema-to-mock-data workflow is similar, but this tool runs entirely client-side with no account, no row limits tied to a free tier, and no data ever leaves your browser. Hosted services offer a wider variety of field types and API-based generation for live mock endpoints — for a quick one-off dataset without signing up, this tool covers the common field types you'd need.",
+      },
+    ],
+  },
 };

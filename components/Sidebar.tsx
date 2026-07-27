@@ -8,8 +8,11 @@ import { Menu, X, Search } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 
 const NEW_TOOL_SLUGS = new Set([
-  "xpath-tester",
-  "docker-run-to-compose",
+  "json-diff",
+  "contrast-checker",
+  "csv-json",
+  "favicon-generator",
+  "fake-data-generator",
 ]);
 
 function ToolIcon({ name }: { name: string }) {

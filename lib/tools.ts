@@ -275,6 +275,32 @@ export const tools: Tool[] = [
       "og tags preview", "social share preview tool",
     ],
   },
+  {
+    slug: "favicon-generator",
+    name: "Favicon Generator",
+    description: "Upload one image and get every favicon size your site needs",
+    icon: "ImagePlus",
+    category: "Generate",
+    keywords: [
+      "favicon generator", "favicon generator online", "generate favicon",
+      "favicon.ico generator", "apple touch icon generator", "png favicon generator",
+      "favicon from image", "free favicon generator", "favicon maker",
+      "android chrome icon generator", "favicon sizes generator", "site icon generator",
+    ],
+  },
+  {
+    slug: "fake-data-generator",
+    name: "Fake Data Generator",
+    description: "Define a schema and generate realistic mock JSON or CSV data",
+    icon: "Dices",
+    category: "Generate",
+    keywords: [
+      "fake data generator", "mock data generator", "test data generator",
+      "json mock data generator", "random data generator", "fake json generator",
+      "mock api data", "sample data generator online", "csv mock data generator",
+      "dummy data generator", "generate fake users json", "mockaroo alternative",
+    ],
+  },
 
   // ─── Convert ──────────────────────────────────────────────────────────────
   {
@@ -378,6 +404,19 @@ export const tools: Tool[] = [
       "docker compose best practices", "docker run translator",
     ],
   },
+  {
+    slug: "csv-json",
+    name: "CSV ↔ JSON Converter",
+    description: "Convert between CSV and JSON formats instantly, in either direction",
+    icon: "FileSpreadsheet",
+    category: "Convert",
+    keywords: [
+      "csv to json", "json to csv", "csv to json converter online",
+      "json to csv converter online", "convert csv to json", "convert json to csv",
+      "csv json converter free", "csv parser online", "csv to json array",
+      "excel csv to json", "csv json transform", "tsv to json converter",
+    ],
+  },
 
   // ─── Test ─────────────────────────────────────────────────────────────────
   {
@@ -476,6 +515,19 @@ export const tools: Tool[] = [
       "xpath browser", "xpath selector tester", "xpath debugger",
     ],
   },
+  {
+    slug: "json-diff",
+    name: "JSON Diff Checker",
+    description: "Compare two JSON objects and see exactly what changed, path by path",
+    icon: "FileDiff",
+    category: "Test",
+    keywords: [
+      "json diff checker", "json diff online", "compare json objects",
+      "json comparison tool", "diff two json files", "json diff tool free",
+      "structural json diff", "json compare online", "api response diff",
+      "json diff viewer", "compare json online", "json delta checker",
+    ],
+  },
 
   // ─── Design ───────────────────────────────────────────────────────────────
   {
@@ -542,6 +594,21 @@ export const tools: Tool[] = [
     ],
   },
 
+  // ─── Accessibility ────────────────────────────────────────────────────────
+  {
+    slug: "contrast-checker",
+    name: "Color Contrast Checker",
+    description: "Check WCAG AA/AAA contrast compliance between two colors",
+    icon: "Contrast",
+    category: "Accessibility",
+    keywords: [
+      "color contrast checker", "wcag contrast checker", "contrast ratio checker",
+      "wcag aa contrast checker online", "accessibility contrast checker",
+      "text background contrast checker", "wcag aaa checker", "contrast checker free",
+      "color accessibility checker", "a11y contrast checker", "contrast ratio calculator",
+    ],
+  },
+
   // ─── Reference ────────────────────────────────────────────────────────────
   {
     slug: "http-status-codes",
@@ -591,6 +658,6 @@ export const tools: Tool[] = [
   },
 ];
 
-export const categories = ["Format", "Encode", "Generate", "Convert", "Test", "Design", "Security", "Reference"] as const;
+export const categories = ["Format", "Encode", "Generate", "Convert", "Test", "Design", "Security", "Accessibility", "Reference"] as const;
 
 export type Category = (typeof categories)[number];
