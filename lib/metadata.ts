@@ -114,6 +114,16 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online fake data generator. Define a schema with names, emails, UUIDs, dates and more, and instantly generate realistic mock JSON or CSV test data. Optional seed for reproducible output. No login required.",
   },
+  "gitignore-generator": {
+    title: ".gitignore Generator — Create a .gitignore for Any Stack | ToolNinja",
+    description:
+      "Free online .gitignore generator. Pick your language, framework, editor and OS and get a combined, ready-to-use .gitignore file instantly. Node, Python, Java, Go, VS Code, JetBrains and more. No login required.",
+  },
+  "json-schema-generator": {
+    title: "JSON Schema Generator — Infer Schema From JSON Online | ToolNinja",
+    description:
+      "Free online JSON Schema generator. Paste a sample JSON object and instantly generate a JSON Schema (draft-07) with inferred types and required fields. No login, 100% browser-based.",
+  },
 
   // ── Convert ──────────────────────────────────────────────────────────────
   "color-converter": {
@@ -156,6 +166,16 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "CSV to JSON Converter Online — Convert CSV & JSON Both Ways | ToolNinja",
     description:
       "Free online CSV to JSON and JSON to CSV converter. Convert instantly in either direction with support for custom delimiters, quoted fields, and file upload. No login, 100% browser-based.",
+  },
+  "env-file-tool": {
+    title: "Env File Tool — Parse, Convert & Generate .env.example | ToolNinja",
+    description:
+      "Free online .env file tool. Parse and validate .env files, convert to JSON, and generate a safe-to-commit .env.example with values stripped. Catches duplicate keys instantly. No login, 100% browser-based.",
+  },
+  "curl-to-code": {
+    title: "cURL to Code Converter — curl to JavaScript, Python, PHP, Go | ToolNinja",
+    description:
+      "Free online curl command converter. Paste any curl command and instantly get working code in JavaScript (fetch), Node.js (axios), Python (requests), PHP (cURL), or Go (net/http). No login required.",
   },
 
   // ── Test ─────────────────────────────────────────────────────────────────
@@ -216,6 +236,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online color palette generator. Create complementary, analogous, triadic, tetradic and monochromatic color schemes from any base color. Copy HEX, RGB and HSL values. No login required.",
   },
+  "mermaid-editor": {
+    title: "Mermaid Diagram Editor Online — Live Flowchart & Sequence Diagrams | ToolNinja",
+    description:
+      "Free online Mermaid diagram editor. Write flowcharts, sequence diagrams, class diagrams, ER diagrams, Gantt charts and more as text, with a live preview. Export as SVG or PNG. No login, 100% browser-based.",
+  },
 
   // ── Security ─────────────────────────────────────────────────────────────
   "crypto-tools": {
@@ -261,8 +286,13 @@ export function generateToolMetadata(slug: string): Metadata {
   const url = `${BASE_URL}/tools/${slug}`;
   const ogImage = `/api/og?title=${encodeURIComponent(tool.name)}&desc=${encodeURIComponent(tool.description)}`;
 
+  // The root layout applies a "%s | ToolNinja" title template, so strip the
+  // trailing " | ToolNinja" here to avoid it appearing twice in the <title> tag.
+  // meta.title itself keeps the full branded string for openGraph/twitter below.
+  const pageTitle = meta.title.replace(/\s*\|\s*ToolNinja\s*$/, "");
+
   return {
-    title: meta.title,
+    title: pageTitle,
     description: meta.description,
     keywords: [
       ...tool.keywords,

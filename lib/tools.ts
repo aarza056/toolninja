@@ -301,6 +301,32 @@ export const tools: Tool[] = [
       "dummy data generator", "generate fake users json", "mockaroo alternative",
     ],
   },
+  {
+    slug: "gitignore-generator",
+    name: ".gitignore Generator",
+    description: "Pick your stack and get a ready-to-use .gitignore instantly",
+    icon: "FileX2",
+    category: "Generate",
+    keywords: [
+      "gitignore generator", ".gitignore generator online", "generate gitignore",
+      "gitignore template", "gitignore for node", "gitignore for python",
+      "create gitignore file", "gitignore online free", "combine gitignore templates",
+      "gitignore generator no signup", "gitignore builder",
+    ],
+  },
+  {
+    slug: "json-schema-generator",
+    name: "JSON Schema Generator",
+    description: "Infer a JSON Schema (draft-07) from a sample JSON object",
+    icon: "FileJson2",
+    category: "Generate",
+    keywords: [
+      "json schema generator", "generate json schema from json", "json to json schema",
+      "json schema generator online", "infer json schema", "json schema draft-07 generator",
+      "json schema from example", "json schema validator generator", "create json schema online",
+      "json schema tool free",
+    ],
+  },
 
   // ─── Convert ──────────────────────────────────────────────────────────────
   {
@@ -415,6 +441,31 @@ export const tools: Tool[] = [
       "json to csv converter online", "convert csv to json", "convert json to csv",
       "csv json converter free", "csv parser online", "csv to json array",
       "excel csv to json", "csv json transform", "tsv to json converter",
+    ],
+  },
+  {
+    slug: "env-file-tool",
+    name: "Env File Tool",
+    description: "Parse, convert, and generate .env.example files from your .env",
+    icon: "FileKey2",
+    category: "Convert",
+    keywords: [
+      "env file parser", "env to json converter", "dotenv converter",
+      "env file validator", "generate env example", ".env.example generator",
+      "env file duplicate keys", "convert env to json online", "dotenv to json",
+      "env file tool online",
+    ],
+  },
+  {
+    slug: "curl-to-code",
+    name: "cURL to Code",
+    description: "Paste a curl command, get working code in JavaScript, Python, PHP, or Go",
+    icon: "SquareTerminal",
+    category: "Convert",
+    keywords: [
+      "curl to code", "curl to python", "curl to javascript", "curl command converter",
+      "curl to fetch", "curl to axios", "curl to requests", "convert curl command",
+      "curl to php", "curl to go", "curl parser online", "curl converter free",
     ],
   },
 
@@ -573,6 +624,19 @@ export const tools: Tool[] = [
       "color palette creator", "color scheme creator online",
       "triadic color generator", "color harmony generator",
       "web color palette generator", "brand color palette generator",
+    ],
+  },
+  {
+    slug: "mermaid-editor",
+    name: "Mermaid Diagram Editor",
+    description: "Write flowcharts, sequence diagrams, and more as text — rendered live",
+    icon: "Workflow",
+    category: "Design",
+    keywords: [
+      "mermaid editor", "mermaid live editor", "mermaid diagram generator",
+      "flowchart from text", "sequence diagram generator", "mermaid js editor online",
+      "text to diagram", "mermaid syntax editor", "free diagram tool online",
+      "mermaid chart generator",
     ],
   },
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — ToolNinja",
+  title: "Privacy Policy",
   description: "ToolNinja privacy policy. All tools run in your browser — we collect no personal data, no usage analytics, and make no server calls.",
 };
 

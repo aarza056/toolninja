@@ -4,7 +4,7 @@ import { buildErrorIndex } from "@/lib/error-matcher";
 import ExplainErrorClient from "./ExplainErrorClient";
 
 export const metadata: Metadata = {
-  title: "Explain This Error — Paste an Error, Get a Solution | ToolNinja",
+  title: "Explain This Error — Paste an Error, Get a Solution",
   description:
     "Paste any error message and get matched to the closest ToolNinja developer guide and relevant tool. A simple error message lookup tool — no AI, no login required.",
   keywords: [

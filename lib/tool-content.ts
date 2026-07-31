@@ -124,12 +124,14 @@ export const toolContent: Record<string, ToolContent> = {
       "Testing regex replace patterns to preview substitution results",
       "Extracting data from logs, configuration files and API responses",
       "Learning regex syntax interactively with 40+ example patterns across 7 categories",
+      "Understanding an unfamiliar regex pattern you inherited, using the plain-English 'Explain this regex' breakdown",
     ],
     tips: [
       "The g flag finds all matches — without it, only the first match is returned.",
       "The i flag makes the pattern case-insensitive.",
       "Named capture groups (?<name>pattern) make extraction code far more readable than numbered groups.",
       "Use ^ and $ anchors to match the full string — without them the pattern can match anywhere.",
+      "Click 'Explain this regex' to get a token-by-token plain-English breakdown of any pattern, including quantifiers, groups, and character classes.",
     ],
     faq: [
       {
@@ -557,17 +559,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "json-to-typescript": {
     about:
-      "The JSON to TypeScript converter automatically generates TypeScript interface definitions from any JSON object or array. It handles nested objects, arrays, union types from mixed arrays, and optional fields — saving the tedious manual work of writing types by hand from API responses.",
+      "The JSON to TypeScript converter automatically generates TypeScript interface definitions from any JSON object or array. It handles nested objects, arrays, union types from mixed arrays, and optional fields — saving the tedious manual work of writing types by hand from API responses.\n\nBeyond TypeScript, it also generates Python dataclasses and Go structs from the same JSON — switch languages with one click, quicktype-style, without re-pasting your sample data.",
     useCases: [
       "Creating TypeScript interfaces from API response payloads",
       "Generating types from database query results or fixture data",
       "Getting a typed starting point when adding TypeScript to an existing JavaScript project",
       "Quickly typing third-party API responses you don't control",
+      "Generating Python dataclasses or Go structs from the same JSON response for a polyglot backend",
     ],
     tips: [
       "Paste a real API response to generate accurate types — the generator infers types from actual values.",
       "For arrays with mixed element types, the generator creates union types (string | number).",
       "Review generated types — null values produce type | null, which may need adjustment based on your API contract.",
+      "Switch the language tab to Python or Go to generate dataclasses or structs from the exact same JSON input.",
     ],
     faq: [
       {
@@ -1015,12 +1019,14 @@ export const toolContent: Record<string, ToolContent> = {
       "Debugging webhook payloads by sending POST requests with custom bodies",
       "Checking CORS headers and response codes from public APIs",
       "Importing an existing Postman collection to quickly test a request without opening Postman",
+      "Copying the current request as a curl command to run from a terminal or paste into a bug report",
     ],
     tips: [
       "Browser requests are subject to CORS — cross-origin APIs that don't set Access-Control-Allow-Origin will fail. Use a CORS proxy or test same-origin APIs.",
       "Set Content-Type: application/json when sending JSON bodies so the server parses the body correctly.",
       "For APIs requiring Bearer token auth, add an Authorization header with value: Bearer <your-token>.",
       "Export any request as a Postman collection to share with teammates who use Postman",
+      "Use 'Copy as cURL' then 'Convert to another language' to get the same request as ready-to-run JavaScript, Python, PHP, or Go code.",
     ],
     faq: [
       {
@@ -1561,6 +1567,175 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "How is this different from a hosted service like Mockaroo?",
         a: "The core schema-to-mock-data workflow is similar, but this tool runs entirely client-side with no account, no row limits tied to a free tier, and no data ever leaves your browser. Hosted services offer a wider variety of field types and API-based generation for live mock endpoints — for a quick one-off dataset without signing up, this tool covers the common field types you'd need.",
+      },
+    ],
+  },
+
+  "gitignore-generator": {
+    about:
+      "The .gitignore Generator builds a combined .gitignore file from curated templates for languages, frameworks, editors, and operating systems. Select Node.js, Python, VS Code, macOS — or any combination — and get a ready-to-use file with clearly labeled sections for each stack you picked.\n\nStarting a repository without a proper .gitignore leads to committed node_modules folders, IDE config files, and OS junk files that clutter every future diff. This generator front-loads that decision so it's done correctly from the first commit.",
+    useCases: [
+      "Setting up a new repository's .gitignore correctly from the very first commit",
+      "Combining multiple stacks — e.g. a Python backend with a Node.js frontend — into one file",
+      "Adding editor and OS ignores (VS Code, JetBrains, macOS, Windows) to an existing project that's missing them",
+      "Quickly checking what a standard .gitignore for a given language typically excludes",
+    ],
+    tips: [
+      "Combine categories freely — most real projects need at least a language template, an editor template, and an OS template together.",
+      "If you're already tracking a file that a new .gitignore excludes, adding it to .gitignore alone won't stop tracking it — run git rm --cached <file> first.",
+      "Re-generate and diff against your existing .gitignore periodically — new tooling (a new editor, a new framework) often needs its own ignore rules added later.",
+    ],
+    faq: [
+      {
+        q: "Why doesn't adding a file to .gitignore remove it from the repository?",
+        a: ".gitignore only affects untracked files — it tells Git which new files to ignore, not what to do with files already being tracked. If a file was committed before you added it to .gitignore, Git keeps tracking it. Untrack it first with git rm --cached <file> (this removes it from tracking but keeps it on your disk), then commit — the .gitignore rule takes effect from that point forward.",
+      },
+      {
+        q: "Should I commit a .gitignore file to a public repository?",
+        a: "Yes, always — a .gitignore file itself contains no sensitive information (it just lists patterns), and committing it ensures every contributor gets the same ignore rules automatically instead of relying on their own local, uncommitted ignore list.",
+      },
+      {
+        q: "What's the difference between .gitignore and a global gitignore?",
+        a: "A repository's .gitignore is committed and shared with everyone who clones it — use it for anything specific to the project (build output, dependency folders). A global gitignore (configured via git config --global core.excludesfile) applies to every repository on your machine and is not shared — use it for personal editor/OS files so you don't have to add them to every project's .gitignore individually.",
+      },
+      {
+        q: "Why is node_modules ignored instead of committed?",
+        a: "node_modules can be regenerated exactly from package.json and the lockfile via npm install, and it's often hundreds of megabytes of third-party code that changes with every dependency update. Committing it would bloat the repository's history permanently and create massive, unreviewable diffs on every install. The lockfile (package-lock.json / yarn.lock) is committed instead — that's what makes the install reproducible.",
+      },
+    ],
+  },
+
+  "json-schema-generator": {
+    about:
+      "The JSON Schema Generator infers a JSON Schema (draft-07) directly from a sample JSON object — no manual schema authoring required. It detects types for every field, including nested objects and arrays, and marks fields present in your sample as required by default.\n\nJSON Schema is the standard way to formally describe the shape of JSON data — used for API request/response validation, form generation, and configuration file validation across the JavaScript, Python, and Java ecosystems alike. Generating one from a real example is far faster than hand-writing the schema from a specification document.",
+    useCases: [
+      "Generating a starting JSON Schema from a real API response to use with a validation library (Ajv, jsonschema, etc.)",
+      "Documenting the expected shape of a request or response body for API documentation",
+      "Creating a schema to validate configuration files against before your application loads them",
+      "Producing a schema other tools (form generators, mock servers) can consume from real example data",
+    ],
+    tips: [
+      "Generated schemas mark every field present in your sample as required — uncheck 'Mark all present fields as required' if your sample happens to have every optional field filled in.",
+      "Arrays with mixed-type elements produce a schema based on the first element's shape — review array schemas manually if your data has genuinely heterogeneous array contents.",
+      "A generated schema is a draft, not a final spec — add format validators (email, date-time, uri) and value constraints (minimum, maxLength, pattern) by hand for fields that need them.",
+    ],
+    faq: [
+      {
+        q: "Can a schema generated from one example be trusted as complete?",
+        a: "Treat it as a solid first draft, not a final schema. It reflects only the fields and types present in the one sample you provided — if a field is sometimes null, sometimes absent, or sometimes a different type across different real responses, the generated schema won't capture that variation. Validate against several real examples and adjust the schema for fields you know vary.",
+      },
+      {
+        q: "What is JSON Schema actually used for?",
+        a: "JSON Schema formally describes what valid JSON should look like — required fields, types, formats, and constraints. It's used to validate API requests before processing them, validate API responses in tests, generate documentation and client SDKs, auto-generate form UIs, and validate configuration files at load time. Libraries like Ajv (JavaScript), jsonschema (Python), and everit-org/json-schema (Java) all validate against the same standard.",
+      },
+      {
+        q: "Why does the schema say type: 'integer' for some numbers and 'number' for others?",
+        a: "JSON Schema draft-07 distinguishes whole numbers (integer) from numbers with a fractional component (number). The generator checks each numeric value in your sample: 30 produces integer, 30.5 produces number. If a field is sometimes a whole number and sometimes has decimals across different real responses, use number in the schema since it's the broader type that also accepts integers.",
+      },
+    ],
+  },
+
+  "curl-to-code": {
+    about:
+      "The cURL to Code converter parses a curl command — including headers, method, body, and basic auth — and generates equivalent, ready-to-run code in JavaScript (fetch), Node.js (axios), Python (requests), PHP (cURL), or Go (net/http).\n\ncURL is still the default way API documentation shows example requests, but translating that into the language you're actually working in is tedious and error-prone by hand — especially with multiple headers and a JSON body. This tool does the translation instantly.",
+    useCases: [
+      "Converting a curl example from API documentation into the language your project actually uses",
+      "Turning a request copied from browser DevTools ('Copy as cURL') into a script for testing or automation",
+      "Quickly prototyping an API call in Python or Go without hand-translating headers and body syntax",
+      "Sharing a runnable code snippet with a teammate who doesn't want to run a raw curl command",
+    ],
+    tips: [
+      "Paste multi-line curl commands (with trailing backslashes) copied directly from a terminal or browser DevTools — they're handled automatically.",
+      "Basic auth (-u user:pass) is converted into an Authorization: Basic header automatically, matching what curl does under the hood.",
+      "Switch the language tab after pasting once — the same parsed command regenerates instantly in every supported language.",
+      "From the HTTP Request Builder, use 'Copy as cURL' then 'Convert to another language' to deep-link a request you built visually straight into this tool.",
+    ],
+    faq: [
+      {
+        q: "Does this tool actually execute the curl command?",
+        a: "No — it only parses the command's text (method, URL, headers, body) and generates equivalent source code. Nothing is sent over the network. This makes it safe to paste commands containing real tokens or credentials, since nothing leaves your browser either during parsing or in the generated code.",
+      },
+      {
+        q: "What curl flags are supported?",
+        a: "The parser handles -X/--request, -H/--header, -d/--data (and its variants), -u/--user (basic auth), -b/--cookie, --url, -A/--user-agent, and common no-argument flags like -k, -s, -L, and --compressed (safely ignored since they don't affect the generated code's request semantics). Multipart form uploads (-F) and more exotic flags aren't currently translated.",
+      },
+      {
+        q: "Why does the generated Authorization header show a Base64 string instead of my username and password?",
+        a: "That's exactly what curl -u user:pass does internally — HTTP Basic Authentication sends credentials as Base64-encoded text in the Authorization header, not encrypted. The generated code reproduces the same header curl itself would send. Note that Base64 is trivially reversible, so Basic Auth should only ever be used over HTTPS.",
+      },
+      {
+        q: "Can I convert code back into a curl command?",
+        a: "Not with this tool directly, but the HTTP Request Builder's 'Copy as cURL' button does the reverse — build a request visually with the method, URL, headers, and body fields, and it generates the equivalent curl command for you.",
+      },
+    ],
+  },
+
+  "env-file-tool": {
+    about:
+      "The Env File Tool parses a .env file, flags duplicate keys before they cause a confusing bug, converts it to JSON, and generates a safe-to-commit .env.example with every value stripped but every key preserved.\n\nA missing or outdated .env.example is one of the most common onboarding friction points on a team — a new developer clones the repo, runs the app, and it fails with no clear indication of which environment variables were actually required. This tool keeps that file trivially easy to regenerate from the real .env.",
+    useCases: [
+      "Generating an up-to-date .env.example whenever new environment variables are added, so onboarding a new teammate doesn't require guessing",
+      "Catching duplicate keys in a .env file — the last one silently wins, which is a common source of 'why isn't my config taking effect' bugs",
+      "Converting a .env file to JSON for tooling that expects configuration as JSON rather than KEY=value pairs",
+      "Auditing exactly which keys a .env file defines before sharing a sanitized version with a teammate or in documentation",
+    ],
+    tips: [
+      "Regenerate .env.example every time you add a new environment variable — a stale one is worse than none, since it silently omits a variable someone actually needs to set.",
+      "The duplicate-key check exists because .env parsers universally let the last occurrence of a key win with no warning — this is one of the most common invisible config bugs.",
+      "Quoted values ('...' or \"...\") have their quotes stripped automatically when converting to JSON, matching how most .env parser libraries (dotenv, python-dotenv) behave.",
+      "Never paste a production .env with real secrets into a tool you haven't verified is client-side only — this one is, but make that check a habit.",
+    ],
+    faq: [
+      {
+        q: "Is it safe to paste a .env file with real secrets into this tool?",
+        a: "Yes — parsing, duplicate detection, and both conversions run entirely in JavaScript in your browser. Nothing is uploaded to a server. That said, treat any tool handling real secrets with healthy caution generally, and prefer generating the .env.example from a copy with placeholder values if you're at all unsure.",
+      },
+      {
+        q: "Why does a duplicate key in .env not cause an error when I run my app?",
+        a: "Virtually every .env parser (dotenv for Node, python-dotenv for Python, and others) silently lets the last occurrence of a duplicate key win, with no warning printed. This means a duplicate can sit in a .env file for months, quietly overriding an earlier value, until someone spends an hour debugging why a config change 'isn't taking effect' — when in fact a later duplicate line was overriding it the whole time.",
+      },
+      {
+        q: "What exactly goes into the generated .env.example?",
+        a: "Every key found in your .env file, each set to an empty value (KEY=), with no actual secrets included. This preserves the complete list of what needs to be configured — which is the entire point of an example file — without exposing any real credentials, API keys, or connection strings.",
+      },
+      {
+        q: "Does this tool support export KEY=value syntax?",
+        a: "Yes — the export prefix (used so a .env file can also be sourced directly in a shell with source .env) is stripped automatically during parsing, so both export DATABASE_URL=... and DATABASE_URL=... parse identically.",
+      },
+    ],
+  },
+
+  "mermaid-editor": {
+    about:
+      "The Mermaid Diagram Editor renders flowcharts, sequence diagrams, class diagrams, state diagrams, Gantt charts, pie charts, and entity-relationship diagrams from plain text — using the same Mermaid syntax that renders natively in GitHub, GitLab, and Notion markdown.\n\nWriting a diagram as text instead of dragging boxes in a GUI means it can live in version control, get reviewed in a pull request like any other code change, and stay in sync with the codebase it documents — rather than going stale in a separate design tool nobody remembers to update.",
+    useCases: [
+      "Drafting a sequence diagram for an API flow or a system design doc before writing the implementation",
+      "Writing architecture diagrams that live in the repository as text and get reviewed in pull requests",
+      "Creating a flowchart to document a decision process or onboarding workflow",
+      "Exporting a diagram as SVG or PNG to drop into a slide deck or external documentation",
+    ],
+    tips: [
+      "Diagrams written in Mermaid syntax render natively in GitHub and GitLab markdown — write it once here, verify it looks right, then paste it straight into a README's code fence.",
+      "Start from one of the built-in templates (Flowchart, Sequence, Class, State, Gantt, Pie, ER) and modify it — it's faster than writing Mermaid syntax from a blank page.",
+      "SVG export stays crisp at any zoom level for documentation; PNG export is better for pasting directly into tools that don't render SVG well, like some slide software.",
+      "Keep node labels short — Mermaid's automatic layout engine handles long labels by making the diagram wider, which can push it off the page in exports.",
+    ],
+    faq: [
+      {
+        q: "Where else can I use the diagrams I write here?",
+        a: "Anywhere Mermaid is supported natively — GitHub and GitLab render ```mermaid code fences directly in markdown (READMEs, issues, pull requests), as does Notion. Paste the exact same syntax you wrote here into any of those and it renders identically, no image export required.",
+      },
+      {
+        q: "Why did my diagram fail to render?",
+        a: "Mermaid syntax is diagram-type-specific — a flowchart uses graph TD or graph LR as its first line, a sequence diagram uses sequenceDiagram, and so on. The most common cause of a render failure is mixing syntax from two different diagram types, or a typo in an arrow (-->) or connector. Start from the matching template and modify incrementally to isolate what broke.",
+      },
+      {
+        q: "Is Mermaid the same as diagrams made in Lucidchart or draw.io?",
+        a: "Different approach entirely. Lucidchart and draw.io are GUI-based, drag-and-drop diagramming tools that produce a proprietary file format. Mermaid diagrams are plain text — which means they diff cleanly in version control, can be generated programmatically, and don't require a specific paid tool to open and edit. The tradeoff is layout control: Mermaid's automatic layout engine positions elements for you, rather than pixel-perfect manual placement.",
+      },
+      {
+        q: "Can I control the exact position of each node?",
+        a: "Not precisely — Mermaid uses an automatic layout algorithm rather than manual positioning, which is the core tradeoff for writing diagrams as text instead of dragging shapes. You can influence layout indirectly through diagram direction (TD, LR, etc.) and the order nodes are declared, but pixel-level control isn't part of the Mermaid model.",
       },
     ],
   },

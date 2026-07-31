@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
-import { AlertCircle, Table2, Repeat2 } from "lucide-react";
+import { AlertCircle, Table2, Repeat2, Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
 import { regexPatterns, patternCategories, type RegexPattern } from "@/lib/regex-patterns";
+import { explainRegex } from "@/lib/regex-explainer";
 
 const STORAGE_KEY = "toolninja:regex-tester";
 
@@ -20,6 +21,7 @@ export default function RegexTesterClient() {
   const [replaceWith, setReplaceWith] = useState("");
   const [mode, setMode] = useState<Mode>("match");
   const [showLibrary, setShowLibrary] = useState(false);
+  const [showExplain, setShowExplain] = useState(false);
   const [patternSearch, setPatternSearch] = useState("");
   const [patternCategory, setPatternCategory] = useState<string>("All");
 
@@ -79,6 +81,7 @@ export default function RegexTesterClient() {
 
   const { highlighted, matches, replaceResult, error } = result;
   const hasResults = !!(pattern && testString && !error);
+  const explainTokens = useMemo(() => (pattern && !error ? explainRegex(pattern) : []), [pattern, error]);
 
   const filteredPatterns = regexPatterns.filter((p) => {
     const matchesCategory = patternCategory === "All" || p.category === patternCategory;
@@ -141,6 +144,28 @@ export default function RegexTesterClient() {
         {error && (
           <div className="flex items-center gap-1.5 text-xs text-[#ef4444]">
             <AlertCircle size={12} /> {error}
+          </div>
+        )}
+        {pattern && !error && (
+          <button
+            onClick={() => setShowExplain((v) => !v)}
+            className="flex items-center gap-1.5 text-xs text-[#a855f7] hover:text-[#c084fc] transition-colors w-fit"
+          >
+            <Lightbulb size={12} />
+            Explain this regex
+            {showExplain ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+        )}
+        {showExplain && explainTokens.length > 0 && (
+          <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px] space-y-1.5">
+            {explainTokens.map((t, i) => (
+              <div key={i} className="flex items-start gap-2 text-xs" style={{ paddingLeft: t.depth * 16 }}>
+                <code className="shrink-0 px-1.5 py-0.5 rounded bg-[#a855f7]/10 text-[#a855f7] font-mono">
+                  {t.token}
+                </code>
+                <span className="text-[#888888] leading-relaxed pt-0.5">{t.explanation}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>

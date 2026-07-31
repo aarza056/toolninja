@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
 
 export const metadata: Metadata = {
-  title: "Changelog | ToolNinja",
+  title: "Changelog",
   description: "What's new in ToolNinja — updates, new tools, and fixes.",
 };
 

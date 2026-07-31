@@ -4,8 +4,20 @@ import { useState, useEffect, useCallback } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { AlertCircle, Trash2 } from "lucide-react";
+import { jsonToPythonDataclasses, jsonToGoStructs } from "@/lib/json-type-gen";
 
 const STORAGE_KEY = "toolninja:json-to-typescript";
+
+type Language = "typescript" | "python" | "go";
+const LANGUAGES: { id: Language; label: string }[] = [
+  { id: "typescript", label: "TypeScript" },
+  { id: "python", label: "Python" },
+  { id: "go", label: "Go" },
+];
+
+function escHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
 
 // ── Type inference ─────────────────────────────────────────────────────────────
 
@@ -172,6 +184,7 @@ export default function JsonToTypeScriptClient() {
   const [useTypeAlias, setUseTypeAlias] = useState(false);
   const [optionalFields, setOptionalFields] = useState(false);
   const [exportKw, setExportKw] = useState(true);
+  const [language, setLanguage] = useState<Language>("typescript");
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
 
@@ -191,15 +204,21 @@ export default function JsonToTypeScriptClient() {
   }, [input]);
 
   const convert = useCallback(
-    (text: string, name: string, alias: boolean, opt: boolean, exp: boolean) => {
+    (text: string, name: string, alias: boolean, opt: boolean, exp: boolean, lang: Language) => {
       if (!text.trim()) {
         setOutput("");
         setError("");
         return;
       }
       try {
-        const { interfaces } = jsonToTypeScript(text, name, alias, opt, exp);
-        setOutput(interfaces.join("\n\n"));
+        if (lang === "python") {
+          setOutput(jsonToPythonDataclasses(text, name));
+        } else if (lang === "go") {
+          setOutput(jsonToGoStructs(text, name));
+        } else {
+          const { interfaces } = jsonToTypeScript(text, name, alias, opt, exp);
+          setOutput(interfaces.join("\n\n"));
+        }
         setError("");
       } catch (e: unknown) {
         setError(e instanceof Error ? e.message : "Invalid JSON");
@@ -211,8 +230,8 @@ export default function JsonToTypeScriptClient() {
 
   // Re-run conversion whenever any option changes
   useEffect(() => {
-    convert(input, rootName, useTypeAlias, optionalFields, exportKw);
-  }, [input, rootName, useTypeAlias, optionalFields, exportKw, convert]);
+    convert(input, rootName, useTypeAlias, optionalFields, exportKw, language);
+  }, [input, rootName, useTypeAlias, optionalFields, exportKw, language, convert]);
 
   const clear = () => {
     setInput("");
@@ -244,8 +263,17 @@ export default function JsonToTypeScriptClient() {
   return (
     <ToolLayout
       title="JSON → TypeScript"
-      description="Generate TypeScript interfaces from JSON automatically"
+      description="Generate TypeScript, Python, or Go types from JSON automatically"
     >
+      {/* Language row */}
+      <div className="flex items-center gap-1 bg-[#111111] border border-[#222222] rounded-[6px] p-0.5 mb-3 w-fit">
+        {LANGUAGES.map((l) => (
+          <ToggleButton key={l.id} active={language === l.id} onClick={() => setLanguage(l.id)}>
+            {l.label}
+          </ToggleButton>
+        ))}
+      </div>
+
       {/* Options row */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         {/* Interface name */}
@@ -259,25 +287,29 @@ export default function JsonToTypeScriptClient() {
           />
         </div>
 
-        {/* interface vs type alias */}
-        <div className="flex items-center gap-1 bg-[#111111] border border-[#222222] rounded-[6px] p-0.5">
-          <ToggleButton active={!useTypeAlias} onClick={() => setUseTypeAlias(false)}>
-            interface
-          </ToggleButton>
-          <ToggleButton active={useTypeAlias} onClick={() => setUseTypeAlias(true)}>
-            type alias
-          </ToggleButton>
-        </div>
+        {language === "typescript" && (
+          <>
+            {/* interface vs type alias */}
+            <div className="flex items-center gap-1 bg-[#111111] border border-[#222222] rounded-[6px] p-0.5">
+              <ToggleButton active={!useTypeAlias} onClick={() => setUseTypeAlias(false)}>
+                interface
+              </ToggleButton>
+              <ToggleButton active={useTypeAlias} onClick={() => setUseTypeAlias(true)}>
+                type alias
+              </ToggleButton>
+            </div>
 
-        {/* Optional fields */}
-        <ToggleButton active={optionalFields} onClick={() => setOptionalFields((v) => !v)}>
-          Optional fields {optionalFields ? "on" : "off"}
-        </ToggleButton>
+            {/* Optional fields */}
+            <ToggleButton active={optionalFields} onClick={() => setOptionalFields((v) => !v)}>
+              Optional fields {optionalFields ? "on" : "off"}
+            </ToggleButton>
 
-        {/* Export keyword */}
-        <ToggleButton active={exportKw} onClick={() => setExportKw((v) => !v)}>
-          export {exportKw ? "on" : "off"}
-        </ToggleButton>
+            {/* Export keyword */}
+            <ToggleButton active={exportKw} onClick={() => setExportKw((v) => !v)}>
+              export {exportKw ? "on" : "off"}
+            </ToggleButton>
+          </>
+        )}
 
         <button
           onClick={clear}
@@ -313,7 +345,9 @@ export default function JsonToTypeScriptClient() {
         {/* Output */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
-            <label className="text-xs text-[#888888] font-medium">TypeScript Output</label>
+            <label className="text-xs text-[#888888] font-medium">
+              {LANGUAGES.find((l) => l.id === language)?.label} Output
+            </label>
             {output && <CopyButton text={output} size="sm" />}
           </div>
           <div
@@ -323,7 +357,9 @@ export default function JsonToTypeScriptClient() {
             {output ? (
               <pre
                 className="m-0 p-0 bg-transparent border-0 text-sm leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: highlightTs(output) }}
+                dangerouslySetInnerHTML={{
+                  __html: language === "typescript" ? highlightTs(output) : escHtml(output),
+                }}
                 style={{ whiteSpace: "pre-wrap", wordBreak: "break-all" }}
               />
             ) : (
