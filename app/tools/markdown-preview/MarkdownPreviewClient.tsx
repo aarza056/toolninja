@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Columns, FileText, Eye, Download } from "lucide-react";
+import { Columns, FileText, Eye, Download, Printer } from "lucide-react";
 
 const STORAGE_KEY = "toolninja:markdown-preview";
 
@@ -92,9 +92,9 @@ export default function MarkdownPreviewClient() {
   const wordCount = useMemo(() => countWords(body), [body]);
   const readingTime = Math.max(1, Math.round(wordCount / 200));
 
-  const handleExportHtml = () => {
-    if (!previewRef.current) return;
-    const html = `<!DOCTYPE html>
+  const buildExportHtml = (forPrint: boolean) => {
+    if (!previewRef.current) return "";
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -111,12 +111,18 @@ export default function MarkdownPreviewClient() {
   th { background: #f5f5f5; }
   blockquote { border-left: 4px solid #ddd; margin-left: 0; padding-left: 1rem; color: #666; }
   img { max-width: 100%; }
+  ${forPrint ? "@media print { body { padding: 0; max-width: none; } }" : ""}
 </style>
 </head>
 <body>
 ${previewRef.current.innerHTML}
 </body>
 </html>`;
+  };
+
+  const handleExportHtml = () => {
+    const html = buildExportHtml(false);
+    if (!html) return;
     const blob = new Blob([html], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -124,6 +130,19 @@ ${previewRef.current.innerHTML}
     a.download = `${meta?.title?.toLowerCase().replace(/\s+/g, "-") ?? "export"}.html`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleExportPdf = () => {
+    const html = buildExportHtml(true);
+    if (!html) return;
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
   };
 
   const showEditor = view === "split" || view === "editor";
@@ -162,12 +181,20 @@ ${previewRef.current.innerHTML}
         </div>
 
         {/* Export */}
-        <button
-          onClick={handleExportHtml}
-          className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] border border-[#222222] rounded-[6px] transition-colors"
-        >
-          <Download size={13} /> Export HTML
-        </button>
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            onClick={handleExportPdf}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] border border-[#222222] rounded-[6px] transition-colors"
+          >
+            <Printer size={13} /> Export PDF
+          </button>
+          <button
+            onClick={handleExportHtml}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] border border-[#222222] rounded-[6px] transition-colors"
+          >
+            <Download size={13} /> Export HTML
+          </button>
+        </div>
       </div>
 
       {/* Frontmatter metadata table */}

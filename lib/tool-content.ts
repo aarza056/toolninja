@@ -264,11 +264,13 @@ export const toolContent: Record<string, ToolContent> = {
       "Drafting pull request descriptions with formatted tables and code blocks",
       "Checking table alignment before committing to a documentation site",
       "Writing blog posts in Markdown format before converting or publishing",
+      "Exporting a finished document as a PDF via the browser's print dialog, or as standalone HTML",
     ],
     tips: [
       "Three backticks followed by a language name (```javascript) enables syntax-highlighted code blocks.",
       "Use | pipes to create tables — the preview renders them as proper HTML tables.",
       "- [ ] creates an unchecked task list item, - [x] creates a checked one.",
+      "Export PDF opens a clean, print-formatted version in a new tab and triggers your browser's print dialog — choose 'Save as PDF' as the destination.",
     ],
     faq: [
       {
@@ -331,11 +333,13 @@ export const toolContent: Record<string, ToolContent> = {
       "Creating API keys and secrets during development setup",
       "Producing bulk temporary passwords for user onboarding scripts",
       "Testing password strength requirements in your own app's validation logic",
+      "Generating a memorable diceware-style passphrase for a master password or disk encryption",
     ],
     tips: [
       "16+ characters with all character types is sufficient for most accounts.",
       "For master passwords (password managers, disk encryption), use 24+ characters.",
       "A random 16-character password with full character set has ~95 bits of entropy — essentially uncrackable by brute force.",
+      "Switch to Passphrase mode for a password you actually need to type or remember — NIST SP 800-63B (2025) recommends passphrases as a practical alternative to complex random strings.",
     ],
     faq: [
       {
@@ -352,23 +356,26 @@ export const toolContent: Record<string, ToolContent> = {
       },
       {
         q: "Should I use a passphrase instead of a random password?",
-        a: "Passphrases (4-5 random words like 'correct-horse-battery-staple') are easier to remember and can have comparable entropy to shorter random passwords. For accounts you type frequently without a password manager, a passphrase may be more practical.",
+        a: "Passphrases (4-5 random words like 'correct-horse-battery-staple') are easier to remember and can have comparable entropy to shorter random passwords. For accounts you type frequently without a password manager, a passphrase may be more practical — use the Passphrase mode above to generate one.",
       },
     ],
   },
 
   "uuid-generator": {
     about:
-      "The ToolNinja UUID Generator is a free online UUID and GUID generator. Generate cryptographically random UUID v4 identifiers instantly — individually or in bulk up to 100 at a time.\n\nUUIDs (Universally Unique Identifiers) are 128-bit identifiers used as primary keys in databases, unique file names, session tokens, correlation IDs in distributed systems, and anywhere a guaranteed-unique identifier is needed. UUID v4 uses random generation making it ideal for privacy-sensitive use cases where sequential IDs would reveal information about your data volume or timing.\n\nGenerate a single UUID for quick use, or bulk generate up to 100 UUIDs for seeding test databases, creating fixture data, or batch processing. Copy individually or copy all at once. Each UUID follows the standard 8-4-4-4-12 format (xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx).\n\n100% browser-based using the Web Crypto API for true cryptographic randomness. No login, no server calls required.",
+      "The ToolNinja UUID Generator generates UUID v4, UUID v7, and NanoID identifiers instantly — individually or in bulk up to 100 at a time.\n\nUUID v4 is fully random and the classic default. UUID v7 encodes a millisecond timestamp in its first 48 bits, making generated IDs sort chronologically — this has become the default recommendation for new database primary keys in 2026 because it avoids the random-insert performance penalty v4 causes on B-tree indexes. NanoID produces a much shorter, URL-safe random string — the better choice for public-facing identifiers like share links and invite codes, where a 36-character UUID is overkill.\n\nGenerate a single ID for quick use, or bulk generate up to 100 for seeding test databases or fixture data. 100% browser-based using the Web Crypto API for true cryptographic randomness. No login, no server calls required.",
     useCases: [
       "Primary keys for database records in distributed or multi-writer systems",
       "Correlation IDs for tracing requests across microservices and logs",
       "File names for user-uploaded assets to prevent naming collisions",
       "Idempotency keys for payment APIs and write-once operations",
+      "Short, URL-safe public identifiers (share links, invite codes) using NanoID mode",
+      "Time-sortable primary keys using UUID v7 mode, without the database index fragmentation v4 causes",
     ],
     tips: [
       "The format is 8-4-4-4-12 hex digits: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx. The 4 indicates version 4, and the y is one of 8, 9, a, or b.",
       "For database primary keys, UUIDs have higher storage overhead than auto-increment integers but work safely in distributed systems without a central coordinator.",
+      "For a new project in 2026 with no legacy v4 data to stay consistent with, default to UUID v7 for primary keys and NanoID for anything user-facing.",
     ],
     faq: [
       {
@@ -377,11 +384,15 @@ export const toolContent: Record<string, ToolContent> = {
       },
       {
         q: "What's the difference between UUID v1, v4, and v7?",
-        a: "V1 is time-based and includes the machine's MAC address — deterministic but leaks information. V4 is fully random — the most widely used version. V7 is a newer standard that's time-ordered (sortable) while remaining random enough to be collision-safe — better for database index performance.",
+        a: "V1 is time-based and includes the machine's MAC address — deterministic but leaks information. V4 is fully random — historically the most widely used version. V7 encodes a millisecond timestamp in the first 48 bits, so generated IDs sort chronologically, which avoids the random-insert performance penalty v4 causes on database indexes — it's now the recommended default for new database primary keys.",
+      },
+      {
+        q: "When should I use NanoID instead of a UUID?",
+        a: "NanoID is a better fit for identifiers users actually see or type — share links, invite codes, short URLs — where a 36-character UUID is unnecessarily long. It's not time-ordered, so don't use it as a high-write table's primary key unless you also keep a separate created_at column for ordering.",
       },
       {
         q: "Should I use UUID or auto-increment integers for database IDs?",
-        a: "Auto-increment integers are simpler and more storage-efficient. UUIDs are better when you need IDs generated client-side before writing to the database, when merging records from multiple sources, or when you don't want sequential IDs that expose record counts.",
+        a: "Auto-increment integers are simpler and more storage-efficient. UUIDs are better when you need IDs generated client-side before writing to the database, when merging records from multiple sources, or when you don't want sequential IDs that expose record counts. If you do use UUIDs for a primary key, prefer v7 over v4 for better index locality.",
       },
       {
         q: "Is GUID the same as UUID?",
@@ -465,11 +476,13 @@ export const toolContent: Record<string, ToolContent> = {
       "Generating content-based cache keys for assets or API responses",
       "Creating deterministic identifiers from arbitrary string inputs",
       "Understanding what algorithm produced a stored hash",
+      "Computing an HMAC signature to verify a webhook payload from Stripe, GitHub, or similar services",
     ],
     tips: [
       "SHA-1 is cryptographically broken — don't use it for security. SHA-256 is the current standard for general-purpose integrity checks.",
       "Two different inputs that produce the same hash are called a collision. SHA-256 and SHA-512 have no known practical collisions.",
       "Hashing is not encryption — you cannot recover the original input. Use it for integrity, not confidentiality.",
+      "Switch to HMAC mode and paste the raw request body plus your webhook secret to verify a Stripe/GitHub signature header matches — compare the result byte-for-byte, not just visually.",
     ],
     faq: [
       {
@@ -1331,17 +1344,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "meta-tags-generator": {
     about:
-      "The Meta Tags Generator creates all the HTML meta tags your page needs for SEO, Open Graph (Facebook/LinkedIn), and Twitter Cards. Fill in the fields and watch the live previews update for Google search, Twitter, and LinkedIn simultaneously. A quality checklist tracks what's missing. Copy all generated tags with one click.",
+      "The Meta Tags Generator creates all the HTML meta tags your page needs for SEO, Open Graph (Facebook/LinkedIn), Twitter Cards, and schema.org structured data. Fill in the fields and watch the live previews update for Google search, Twitter, and LinkedIn simultaneously. A quality checklist tracks what's missing. Copy all generated tags with one click.\n\nIt also generates a matching JSON-LD structured data block (WebSite, Article, or Person schema, based on the OG type you select) — the format Google actually parses for rich results, separate from meta tags entirely.",
     useCases: [
       "Setting up complete meta tags for a new web page or blog post",
       "Previewing how a page will appear when shared on social media before publishing",
       "Auditing existing pages for missing or incorrect social meta tags",
       "Generating Twitter Card and Open Graph tags for marketing campaigns",
+      "Adding schema.org JSON-LD markup so search engines understand the page as an Article, WebSite, or Person",
     ],
     tips: [
       "Keep your title under 60 characters — search engines truncate longer titles in results.",
       "The description should be 120-160 characters — enough to describe the page but short enough to display fully.",
       "Your OG image should be 1200×630px for best display across all platforms. Twitter Cards also accept this size.",
+      "The JSON-LD block follows the OG type field — set it to 'article' for blog posts to get Article schema instead of generic WebSite schema.",
     ],
     faq: [
       {
@@ -1736,6 +1751,176 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Can I control the exact position of each node?",
         a: "Not precisely — Mermaid uses an automatic layout algorithm rather than manual positioning, which is the core tradeoff for writing diagrams as text instead of dragging shapes. You can influence layout indirectly through diagram direction (TD, LR, etc.) and the order nodes are declared, but pixel-level control isn't part of the Mermaid model.",
+      },
+    ],
+  },
+
+  "word-counter": {
+    about:
+      "The Word Counter gives you live word, character, sentence, and paragraph counts as you type or paste text, plus reading time and speaking time estimates. It also surfaces the most frequently used words in your text, excluding common stop words — a quick way to spot repetition before publishing.",
+    useCases: [
+      "Checking a blog post or article against a publication's word count requirement",
+      "Verifying a meta description or title fits within a character limit before publishing",
+      "Estimating how long a presentation script will take to deliver out loud",
+      "Spotting overused words in a draft before final edits",
+    ],
+    tips: [
+      "Reading time is estimated at 200 words per minute, the commonly cited average adult silent-reading speed.",
+      "Speaking time is estimated at 130 words per minute, closer to a natural spoken pace than reading pace.",
+      "The frequent-words list filters out common stop words (the, and, is, etc.) so it surfaces words that actually reflect your content's topic.",
+    ],
+    faq: [
+      {
+        q: "How is reading time calculated?",
+        a: "Reading time uses a standard estimate of 200 words per minute, a commonly cited average for adult silent reading of general text. It's an estimate — actual reading speed varies by content density, reader familiarity with the topic, and whether the text includes code or technical jargon.",
+      },
+      {
+        q: "Why is my character count different from what my editor shows?",
+        a: "Character counts can differ based on whether an editor counts newline characters, tab characters, or Unicode combining characters (like accents) as one character or several. This tool counts every character in the string exactly as stored, including whitespace, matching JavaScript's native string length.",
+      },
+      {
+        q: "Does this tool count words the same way as Microsoft Word or Google Docs?",
+        a: "Very close, but not always identical — word counters differ slightly in how they handle hyphenated words, em-dashes, and numbers with punctuation. This tool splits on whitespace, which matches most word processors for standard prose but may count a hyphenated compound word as one word where another tool counts it as two.",
+      },
+      {
+        q: "Is my text uploaded anywhere?",
+        a: "No. All counting happens in JavaScript in your browser. Nothing is sent to a server, which makes it safe to paste unpublished drafts or confidential text.",
+      },
+    ],
+  },
+
+  "svg-optimizer": {
+    about:
+      "The SVG Optimizer strips the invisible bloat that design tools like Illustrator, Figma, and Inkscape add to exported SVG files — comments, metadata, editor-specific namespaces, empty groups, and excessive coordinate precision — often shrinking file size by 50% or more without any visible change to the image.\n\nExported SVGs frequently carry editor cruft that serves the editor, not the browser: Inkscape and Sodipodi namespaces recording tool state, XML comments, <title> and <desc> elements duplicating alt text, and path coordinates specified to 6+ decimal places when 2 is visually indistinguishable.",
+    useCases: [
+      "Shrinking icon sets exported from Figma or Illustrator before adding them to a project",
+      "Cleaning up SVGs before inlining them directly in HTML or JSX, where every byte is duplicated per use",
+      "Removing Inkscape/Sodipodi editor metadata that leaks tool version and workspace info",
+      "Reducing SVG file size for faster page loads on image-heavy sites",
+    ],
+    tips: [
+      "2 decimal places of coordinate precision is visually indistinguishable from the original in almost all cases — try 1 for icons if you want to push size down further.",
+      "Removing width/height (keeping only viewBox) makes an SVG scale cleanly to any container size via CSS — useful for icon components.",
+      "Always spot-check the visual preview after optimizing — aggressive precision rounding can occasionally distort very small or highly detailed paths.",
+    ],
+    faq: [
+      {
+        q: "Will optimizing change how my SVG looks?",
+        a: "The default settings (2 decimal places, removing comments/metadata/empty groups) are chosen to be visually lossless for the vast majority of SVGs. Reducing precision further, or removing width/height on an SVG that relies on them for layout, can occasionally cause visible differences — always check the before/after preview.",
+      },
+      {
+        q: "Why is my exported SVG so much larger than it needs to be?",
+        a: "Design tools optimize for editability, not file size — they preserve full undo history context, layer names, tool-specific metadata (Inkscape/Sodipodi namespaces), and high-precision coordinates from every anchor point adjustment. None of that is needed for the SVG to render correctly in a browser.",
+      },
+      {
+        q: "Is this the same as running SVGO?",
+        a: "It targets the same class of bloat — comments, metadata, editor namespaces, empty elements, coordinate precision — using a lighter, browser-native implementation rather than the full SVGO plugin pipeline. For typical icon and illustration exports, the size reduction is comparable; SVGO's more advanced optimizations (path merging, attribute-to-CSS conversion) aren't included.",
+      },
+      {
+        q: "Can I optimize an SVG that has embedded raster images or fonts?",
+        a: "Yes, but the savings will be smaller in percentage terms — this tool optimizes SVG markup (paths, groups, metadata), not embedded base64-encoded images or font data, which typically account for most of the file size when present.",
+      },
+    ],
+  },
+
+  "slug-generator": {
+    about:
+      "The Slug Generator converts titles or arbitrary text into clean, URL-safe slugs — lowercase, hyphen-separated, with accented characters transliterated to their closest ASCII equivalent (café becomes cafe, not café or c%C3%A9af%C3%A9). Paste multiple lines to batch-convert an entire list of titles at once.",
+    useCases: [
+      "Generating a URL slug for a new blog post or documentation page title",
+      "Batch-converting a spreadsheet export of article titles into slugs for a CMS import",
+      "Creating consistent, readable URLs from product names for an e-commerce catalog",
+      "Cleaning up user-submitted titles before using them in a URL path",
+    ],
+    tips: [
+      "Batch mode processes one line at a time — paste an entire list of titles to get a matching list of slugs instantly.",
+      "Accented and non-Latin characters are transliterated where possible (café → cafe) rather than stripped, keeping the slug readable.",
+      "Set a max length to keep slugs from becoming unreasonably long for titles with many words — the cut respects word boundaries via the separator.",
+    ],
+    faq: [
+      {
+        q: "Why use hyphens instead of underscores in a slug?",
+        a: "Google has confirmed it treats hyphens as word separators in URLs but treats underscores as joining characters, meaning 'my-post-title' is read as three words while 'my_post_title' may be read as one token. Hyphens are the SEO-conventional choice; underscores are mainly seen in older systems or specific frameworks that expect them.",
+      },
+      {
+        q: "What happens to special characters and emoji in the title?",
+        a: "Accented Latin characters are transliterated to their closest plain-ASCII equivalent (é → e, ñ → n). Characters with no reasonable ASCII equivalent — emoji, symbols, most non-Latin scripts — are stripped and treated as word breaks, collapsing into the surrounding separator.",
+      },
+      {
+        q: "Should slugs match the page title exactly?",
+        a: "Not necessarily — slugs are commonly shortened versions of the full title, dropping filler words (a, the, of) to keep the URL concise. Search engines don't require an exact match between title and slug, but including your primary keyword in the slug is still a commonly cited on-page SEO practice.",
+      },
+      {
+        q: "Can I change a slug after a page is already published and indexed?",
+        a: "You can, but it breaks the existing URL unless you add a redirect. Changing a published slug without a 301 redirect from the old URL to the new one loses any search ranking and backlinks the original URL had accumulated. If you must change it, always redirect the old slug to the new one.",
+      },
+    ],
+  },
+
+  "robots-txt-generator": {
+    about:
+      "The robots.txt Generator builds a complete robots.txt file from per-bot User-agent rules — Allow and Disallow paths, optional crawl-delay, and sitemap links — with a one-click preset to block the most common AI training crawlers (GPTBot, Google-Extended, ClaudeBot, CCBot, and others) by name.\n\nrobots.txt remains the standard, actually-honored mechanism for controlling crawler access: OpenAI and Anthropic both officially point to robots.txt (not the newer, largely unsupported llms.txt proposal) for managing how their crawlers interact with your site.",
+    useCases: [
+      "Setting up a robots.txt for a new site with sensible defaults for admin/API paths",
+      "Blocking specific AI training crawlers (GPTBot, Google-Extended, CCBot) while still allowing search engine indexing",
+      "Declaring sitemap locations so crawlers discover your full page list efficiently",
+      "Building different crawl rules for different bots — e.g. stricter rules for aggressive scrapers than for Googlebot",
+    ],
+    tips: [
+      "One User-agent group can list multiple bots on separate lines above shared Allow/Disallow rules — you don't need a separate group per bot unless the rules actually differ.",
+      "robots.txt is a request, not enforcement — well-behaved crawlers (Googlebot, Bingbot, and the major AI crawlers) respect it, but nothing stops a scraper from ignoring it entirely.",
+      "Use the 'Block AI crawlers' preset as a starting point, then remove any bots you actually want indexing your content for AI-powered search or citation.",
+    ],
+    faq: [
+      {
+        q: "Does blocking AI crawlers in robots.txt actually work?",
+        a: "For crawlers that respect the standard — OpenAI's GPTBot, Anthropic's ClaudeBot, Google-Extended — yes, since both OpenAI and Anthropic have officially stated they honor robots.txt for managing crawler access. It won't stop crawlers that don't respect the file at all, which does happen with some more aggressive or less reputable scrapers.",
+      },
+      {
+        q: "Should I use llms.txt instead of or alongside robots.txt?",
+        a: "As of 2026, llms.txt has real adoption among documentation platforms but is not honored by the major AI systems — Google has stated it has no plans to support it, and OpenAI/Anthropic point to robots.txt instead. robots.txt is the mechanism that actually controls crawler access today; llms.txt does not reliably improve AI visibility.",
+      },
+      {
+        q: "What's the difference between Disallow and noindex?",
+        a: "Disallow in robots.txt tells a crawler not to fetch a path at all — but if another page links to it, search engines may still index the URL without visiting it, showing it in results with no description. A noindex meta tag (set on the page itself) explicitly tells search engines not to include the page in results, but requires the crawler to fetch the page to see the tag — the two mechanisms solve different problems and are sometimes used together incorrectly.",
+      },
+      {
+        q: "Do I need a separate robots.txt for each subdomain?",
+        a: "Yes — robots.txt only applies to the exact host and scheme it's served from. A file at example.com/robots.txt has no effect on blog.example.com or a different subdomain; each needs its own robots.txt at its own root.",
+      },
+    ],
+  },
+
+  "csp-builder": {
+    about:
+      "The CSP Header Builder & Analyzer helps with both directions of Content-Security-Policy work: build a policy visually by setting allowed sources per directive (script-src, style-src, img-src, and more), or paste an existing policy to check it for common misconfigurations like 'unsafe-inline', 'unsafe-eval', and wildcard sources that undermine CSP's core protection.\n\nCSP is one of the most effective browser-level defenses against XSS, but it's also one of the most commonly misconfigured security headers — a policy with 'unsafe-inline' in script-src provides close to zero XSS protection while looking like a real security control.",
+    useCases: [
+      "Building a starting CSP for a new project's security headers, directive by directive",
+      "Auditing an existing CSP (your own, or a security scan's report) for directives that silently undermine XSS protection",
+      "Generating both the HTTP header and equivalent <meta> tag versions of the same policy",
+      "Understanding what a specific CSP directive actually restricts before adding it to production",
+    ],
+    tips: [
+      "Set CSP via the HTTP header, not the <meta> tag, whenever possible — frame-ancestors, report-uri, and sandbox are silently ignored in the <meta> tag form.",
+      "'unsafe-inline' in script-src is the single most common CSP mistake — it defeats most of CSP's XSS protection while still looking like a real policy. Use nonces or hashes for inline scripts you can't externalize.",
+      "Start restrictive (default-src 'self') and add specific sources as you find real violations in the browser console, rather than starting permissive and trying to tighten later.",
+    ],
+    faq: [
+      {
+        q: "What does Content-Security-Policy actually protect against?",
+        a: "CSP's primary purpose is mitigating Cross-Site Scripting (XSS) — even if an attacker manages to inject a <script> tag into your page (via a stored XSS bug, for example), a correctly configured CSP prevents that script from executing because it didn't come from an allowed source. It also restricts other risky behaviors: framing (clickjacking), form submission targets, and base URI manipulation.",
+      },
+      {
+        q: "Why does 'unsafe-inline' defeat the purpose of CSP?",
+        a: "CSP's core XSS defense works by only allowing scripts from trusted, explicitly listed sources. 'unsafe-inline' tells the browser to allow ANY inline <script> tag or inline event handler to execute — which is exactly the mechanism most XSS attacks use to run injected code. A policy with 'unsafe-inline' in script-src is only marginally better than no CSP at all for XSS purposes.",
+      },
+      {
+        q: "What should I use instead of 'unsafe-inline' for scripts I can't move to external files?",
+        a: "Use a nonce (a random, per-request token added to both the CSP header and the script tag: <script nonce=\"random123\">) or a hash of the exact script content (CSP allows 'sha256-<hash>' as a source). Both let specific inline scripts run without opening the door to arbitrary injected scripts, since an attacker can't guess the nonce or produce content matching the hash.",
+      },
+      {
+        q: "Do I need report-uri or report-to in my CSP?",
+        a: "Not strictly required, but strongly recommended for production — it tells the browser to send a report whenever the policy blocks something, which is how you discover legitimate resources your policy is accidentally blocking (or catch real attack attempts) without waiting for a user to report a broken page. Set it via the HTTP header, since it's ignored in the <meta> tag form.",
       },
     ],
   },

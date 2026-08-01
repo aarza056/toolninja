@@ -10,6 +10,19 @@ const STORAGE_KEY = "toolninja:hash-generator";
 type Algorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
 type OutputFormat = "hex" | "base64";
 type CaseFormat = "lower" | "upper";
+type Mode = "hash" | "hmac";
+
+async function computeHmac(message: string, secret: string, algorithm: Algorithm): Promise<ArrayBuffer> {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(secret),
+    { name: "HMAC", hash: algorithm },
+    false,
+    ["sign"]
+  );
+  return crypto.subtle.sign("HMAC", key, enc.encode(message));
+}
 
 const ALGORITHMS: Algorithm[] = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"];
 
@@ -37,7 +50,9 @@ function bufferToBase64(buffer: ArrayBuffer): string {
 }
 
 export default function HashGeneratorClient() {
+  const [mode, setMode] = useState<Mode>("hash");
   const [input, setInput] = useState("");
+  const [secret, setSecret] = useState("");
   const [algorithm, setAlgorithm] = useState<Algorithm>("SHA-256");
   const [outputFormat, setOutputFormat] = useState<OutputFormat>("hex");
   const [caseFormat, setCaseFormat] = useState<CaseFormat>("lower");
@@ -59,7 +74,7 @@ export default function HashGeneratorClient() {
   }, [input]);
 
   useEffect(() => {
-    if (!input) {
+    if (!input || (mode === "hmac" && !secret)) {
       setHash("");
       setError("");
       return;
@@ -74,9 +89,10 @@ export default function HashGeneratorClient() {
           setHash("");
           return;
         }
-        const encoder = new TextEncoder();
-        const data = encoder.encode(input);
-        const hashBuffer = await window.crypto.subtle.digest(algorithm, data);
+        const hashBuffer =
+          mode === "hmac"
+            ? await computeHmac(input, secret, algorithm)
+            : await window.crypto.subtle.digest(algorithm, new TextEncoder().encode(input));
         if (outputFormat === "hex") {
           setHash(bufferToHex(hashBuffer, caseFormat === "upper"));
         } else {
@@ -91,17 +107,55 @@ export default function HashGeneratorClient() {
     }
 
     computeHash();
-  }, [input, algorithm, outputFormat, caseFormat]);
+  }, [input, secret, mode, algorithm, outputFormat, caseFormat]);
 
   const clear = () => {
     setInput("");
+    setSecret("");
     setHash("");
     setError("");
   };
 
   return (
-    <ToolLayout title="Hash Generator" description="Generate cryptographic hashes using SHA-1, SHA-256, SHA-384, and SHA-512">
+    <ToolLayout title="Hash Generator" description="Generate cryptographic hashes, or HMAC signatures for verifying webhook payloads">
       <div className="max-w-2xl space-y-5">
+        {/* Mode tabs */}
+        <div className="flex">
+          <button
+            onClick={() => setMode("hash")}
+            className={`px-4 py-2 text-sm border first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+              mode === "hash" ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+            }`}
+          >
+            Hash
+          </button>
+          <button
+            onClick={() => setMode("hmac")}
+            className={`px-4 py-2 text-sm border border-l-0 first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+              mode === "hmac" ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+            }`}
+          >
+            HMAC
+          </button>
+        </div>
+
+        {mode === "hmac" && (
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs text-[#888888] font-medium">Secret Key</label>
+            <input
+              type="text"
+              value={secret}
+              onChange={(e) => setSecret(e.target.value)}
+              placeholder="whsec_..."
+              spellCheck={false}
+              className="w-full p-3 font-mono text-sm bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
+            />
+            <p className="text-xs text-[#555555]">
+              Used to verify webhook signatures (Stripe, GitHub, etc.) — paste the payload below and compare the result to the signature header.
+            </p>
+          </div>
+        )}
+
         {/* Controls row */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Algorithm tabs */}

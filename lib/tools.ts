@@ -63,6 +63,32 @@ export const tools: Tool[] = [
       "html cleaner", "html validator online", "html indenter",
     ],
   },
+  {
+    slug: "word-counter",
+    name: "Word Counter",
+    description: "Count words, characters, sentences, and estimate reading time",
+    icon: "Type",
+    category: "Format",
+    keywords: [
+      "word counter", "word count online", "character counter",
+      "count words online", "character count online", "reading time calculator",
+      "sentence counter", "word counter free", "text counter tool",
+      "speaking time calculator", "paragraph counter",
+    ],
+  },
+  {
+    slug: "svg-optimizer",
+    name: "SVG Optimizer",
+    description: "Strip editor cruft and shrink SVG file size — entirely in your browser",
+    icon: "FileImage",
+    category: "Format",
+    keywords: [
+      "svg optimizer", "svg optimizer online", "svg minifier",
+      "optimize svg free", "reduce svg file size", "clean svg code",
+      "svg cleaner", "remove svg metadata", "svgo online",
+      "compress svg online", "svg file size reducer",
+    ],
+  },
 
   // ─── Encode ───────────────────────────────────────────────────────────────
   {
@@ -325,6 +351,32 @@ export const tools: Tool[] = [
       "json schema generator online", "infer json schema", "json schema draft-07 generator",
       "json schema from example", "json schema validator generator", "create json schema online",
       "json schema tool free",
+    ],
+  },
+  {
+    slug: "slug-generator",
+    name: "Slug Generator",
+    description: "Turn titles into clean, URL-safe slugs — batch supported",
+    icon: "Link2",
+    category: "Generate",
+    keywords: [
+      "slug generator", "url slug generator", "slugify online",
+      "generate url slug", "title to slug converter", "seo slug generator",
+      "clean url generator", "slug creator free", "convert text to slug",
+      "url friendly slug",
+    ],
+  },
+  {
+    slug: "robots-txt-generator",
+    name: "robots.txt Generator",
+    description: "Build a robots.txt with per-bot rules, AI crawler blocking, and sitemap links",
+    icon: "Bot",
+    category: "Generate",
+    keywords: [
+      "robots.txt generator", "robots txt generator online", "create robots.txt",
+      "block ai crawlers robots.txt", "gptbot disallow", "robots.txt generator free",
+      "sitemap robots.txt", "robots.txt online tool", "block google-extended",
+      "ai bot blocker robots.txt",
     ],
   },
 
@@ -655,6 +707,19 @@ export const tools: Tool[] = [
       "rsa encrypt decrypt online", "encrypt decrypt text browser",
       "aes 256 encryption online", "secure encryption tool free",
       "encrypt without uploading", "private encryption tool",
+    ],
+  },
+  {
+    slug: "csp-builder",
+    name: "CSP Header Builder & Analyzer",
+    description: "Build a Content-Security-Policy header visually, or paste one to check for unsafe directives",
+    icon: "ShieldAlert",
+    category: "Security",
+    keywords: [
+      "csp builder", "content security policy generator", "csp header generator",
+      "csp analyzer online", "csp checker free", "content-security-policy builder",
+      "csp meta tag generator", "unsafe-inline checker", "csp validator online",
+      "security headers builder",
     ],
   },
 

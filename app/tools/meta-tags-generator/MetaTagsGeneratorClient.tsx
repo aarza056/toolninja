@@ -84,6 +84,7 @@ export default function MetaTagsGeneratorClient() {
     noIndex: false,
     noFollow: false,
   });
+  const [includeJsonLd, setIncludeJsonLd] = useState(true);
 
   const set = <K extends keyof MetaForm>(key: K, val: MetaForm[K]) =>
     setForm((f) => ({ ...f, [key]: val }));
@@ -162,6 +163,39 @@ export default function MetaTagsGeneratorClient() {
   );
 
   const score = checks.filter((c) => c.ok).length;
+
+  const jsonLd = useMemo(() => {
+    if (!includeJsonLd || !form.title) return "";
+
+    const schemaType = form.type === "article" ? "Article" : form.type === "profile" ? "Person" : "WebSite";
+    const data: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": schemaType,
+    };
+
+    if (schemaType === "Person") {
+      data.name = form.title;
+      if (form.description) data.description = form.description;
+      if (form.url) data.url = form.url;
+      if (form.image) data.image = form.image;
+    } else if (schemaType === "Article") {
+      data.headline = form.title;
+      if (form.description) data.description = form.description;
+      if (form.url) data.mainEntityOfPage = { "@type": "WebPage", "@id": form.url };
+      if (form.image) data.image = form.image;
+      if (form.author) data.author = { "@type": "Person", name: form.author };
+      if (form.siteName) {
+        data.publisher = { "@type": "Organization", name: form.siteName };
+      }
+    } else {
+      data.name = form.title;
+      if (form.description) data.description = form.description;
+      if (form.url) data.url = form.url;
+      if (form.siteName) data.name = form.siteName || form.title;
+    }
+
+    return `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n</script>`;
+  }, [includeJsonLd, form]);
 
   return (
     <ToolLayout
@@ -441,6 +475,31 @@ export default function MetaTagsGeneratorClient() {
             </span>
           )}
         </pre>
+      </div>
+
+      {/* JSON-LD structured data */}
+      <div className="mt-4 border border-[#222222] rounded-[8px] overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#222222] bg-[#0d0d0d]">
+          <label className="flex items-center gap-2 text-xs text-[#888888] font-medium cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeJsonLd}
+              onChange={(e) => setIncludeJsonLd(e.target.checked)}
+              className="accent-[#a855f7]"
+            />
+            JSON-LD Structured Data ({form.type === "article" ? "Article" : form.type === "profile" ? "Person" : "WebSite"})
+          </label>
+          {jsonLd && <CopyButton text={jsonLd} size="sm" label="Copy" />}
+        </div>
+        {includeJsonLd && (
+          <pre className="p-4 text-xs text-[#a855f7] font-mono overflow-x-auto whitespace-pre leading-relaxed bg-[#111111]">
+            {jsonLd || (
+              <span className="text-[#444444] italic not-italic">
+                Fill in the title field above to generate schema.org markup…
+              </span>
+            )}
+          </pre>
+        )}
       </div>
     </ToolLayout>
   );

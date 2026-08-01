@@ -8,11 +8,11 @@ import { Menu, X, Search } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 
 const NEW_TOOL_SLUGS = new Set([
-  "gitignore-generator",
-  "env-file-tool",
-  "curl-to-code",
-  "json-schema-generator",
-  "mermaid-editor",
+  "word-counter",
+  "slug-generator",
+  "robots-txt-generator",
+  "csp-builder",
+  "svg-optimizer",
 ]);
 
 function ToolIcon({ name }: { name: string }) {

@@ -25,6 +25,16 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online HTML formatter, beautifier and minifier. Format messy HTML instantly with proper indentation and clean output. Also minifies HTML for production. No login, 100% browser-based.",
   },
+  "word-counter": {
+    title: "Word Counter Online — Count Words, Characters & Reading Time | ToolNinja",
+    description:
+      "Free online word counter. Count words, characters, sentences and paragraphs instantly, with reading time and speaking time estimates. No login, 100% browser-based.",
+  },
+  "svg-optimizer": {
+    title: "SVG Optimizer Online — Minify & Clean SVG Files Free | ToolNinja",
+    description:
+      "Free online SVG optimizer. Strip comments, metadata, and editor cruft (Inkscape/Sodipodi) from SVG files and shrink file size instantly. No login, 100% browser-based.",
+  },
 
   // ── Encode ───────────────────────────────────────────────────────────────
   "base64": {
@@ -123,6 +133,16 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "JSON Schema Generator — Infer Schema From JSON Online | ToolNinja",
     description:
       "Free online JSON Schema generator. Paste a sample JSON object and instantly generate a JSON Schema (draft-07) with inferred types and required fields. No login, 100% browser-based.",
+  },
+  "slug-generator": {
+    title: "Slug Generator Online — Convert Titles to URL-Safe Slugs | ToolNinja",
+    description:
+      "Free online slug generator. Turn titles into clean, URL-safe slugs instantly — batch mode supported, one per line. No login, 100% browser-based.",
+  },
+  "robots-txt-generator": {
+    title: "robots.txt Generator Online — Block AI Crawlers & Bots | ToolNinja",
+    description:
+      "Free online robots.txt generator. Build per-bot Allow/Disallow rules, block AI crawlers like GPTBot and Google-Extended with one click, and add sitemap links. No login required.",
   },
 
   // ── Convert ──────────────────────────────────────────────────────────────
@@ -247,6 +267,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "AES & RSA Encryption Online — Encrypt & Decrypt Text | ToolNinja",
     description:
       "Free online AES-GCM and RSA-OAEP encryption tool. Encrypt and decrypt text directly in your browser using WebCrypto API. AES 256-bit with PBKDF2 key derivation. Your data never leaves your machine. No login.",
+  },
+  "csp-builder": {
+    title: "CSP Header Builder & Analyzer — Content-Security-Policy Tool | ToolNinja",
+    description:
+      "Free online Content-Security-Policy builder and analyzer. Build a CSP header visually with per-directive source lists, or paste an existing policy to check for unsafe-inline, unsafe-eval, and other risky directives. No login required.",
   },
 
   // ── Accessibility ────────────────────────────────────────────────────────

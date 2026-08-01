@@ -4,11 +4,14 @@ import { useState } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { RefreshCw } from "lucide-react";
+import { generatePassphrase, passphraseEntropyBits } from "@/lib/passphrase";
 
 const UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
 const NUMBERS = "0123456789";
 const SYMBOLS = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+type Mode = "random" | "passphrase";
 
 function getStrength(pwd: string): { label: string; color: string; width: string } {
   let score = 0;
@@ -36,62 +39,154 @@ function generatePassword(length: number, opts: { upper: boolean; lower: boolean
 }
 
 export default function PasswordGeneratorClient() {
+  const [mode, setMode] = useState<Mode>("random");
   const [length, setLength] = useState(20);
   const [opts, setOpts] = useState({ upper: true, lower: true, numbers: true, symbols: true });
   const [count, setCount] = useState(1);
   const [passwords, setPasswords] = useState<string[]>([]);
 
+  // Passphrase options
+  const [wordCount, setWordCount] = useState(5);
+  const [separator, setSeparator] = useState("-");
+  const [capitalize, setCapitalize] = useState(true);
+  const [includeNumber, setIncludeNumber] = useState(true);
+
   const generate = () => {
-    setPasswords(Array.from({ length: count }, () => generatePassword(length, opts)));
+    if (mode === "random") {
+      setPasswords(Array.from({ length: count }, () => generatePassword(length, opts)));
+    } else {
+      setPasswords(
+        Array.from({ length: count }, () => generatePassphrase({ wordCount, separator, capitalize, includeNumber }))
+      );
+    }
   };
 
   const toggleOpt = (key: keyof typeof opts) => {
     setOpts((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const strength = passwords[0] ? getStrength(passwords[0]) : null;
+  const strength = mode === "random" && passwords[0] ? getStrength(passwords[0]) : null;
+  const entropyBits = mode === "passphrase" ? Math.round(passphraseEntropyBits(wordCount, includeNumber)) : null;
 
   return (
-    <ToolLayout title="Password Generator" description="Generate strong, random passwords">
+    <ToolLayout title="Password Generator" description="Generate strong random passwords or memorable diceware-style passphrases">
       <div className="max-w-lg">
-        {/* Length slider */}
-        <div className="mb-5">
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-sm text-[#888888] font-medium">Length</label>
-            <span className="text-sm font-mono text-[#a855f7] font-semibold">{length}</span>
-          </div>
-          <input
-            type="range"
-            min={8}
-            max={128}
-            value={length}
-            onChange={(e) => setLength(+e.target.value)}
-            className="w-full accent-[#a855f7]"
-          />
-          <div className="flex justify-between text-xs text-[#555555] mt-1">
-            <span>8</span><span>128</span>
-          </div>
+        {/* Mode tabs */}
+        <div className="flex mb-4">
+          <button
+            onClick={() => setMode("random")}
+            className={`px-4 py-2 text-sm border first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+              mode === "random" ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+            }`}
+          >
+            Random Password
+          </button>
+          <button
+            onClick={() => setMode("passphrase")}
+            className={`px-4 py-2 text-sm border border-l-0 first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+              mode === "passphrase" ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+            }`}
+          >
+            Passphrase
+          </button>
         </div>
 
-        {/* Character options */}
-        <div className="grid grid-cols-2 gap-2 mb-5">
-          {[
-            { key: "upper", label: "Uppercase (A-Z)" },
-            { key: "lower", label: "Lowercase (a-z)" },
-            { key: "numbers", label: "Numbers (0-9)" },
-            { key: "symbols", label: "Symbols (!@#...)" },
-          ].map(({ key, label }) => (
-            <label key={key} className="flex items-center gap-2 p-3 bg-[#111111] border border-[#222222] rounded-[8px] cursor-pointer hover:border-[#333333] transition-colors">
+        {mode === "random" ? (
+          <>
+            {/* Length slider */}
+            <div className="mb-5">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm text-[#888888] font-medium">Length</label>
+                <span className="text-sm font-mono text-[#a855f7] font-semibold">{length}</span>
+              </div>
               <input
-                type="checkbox"
-                checked={opts[key as keyof typeof opts]}
-                onChange={() => toggleOpt(key as keyof typeof opts)}
-                className="accent-[#a855f7]"
+                type="range"
+                min={8}
+                max={128}
+                value={length}
+                onChange={(e) => setLength(+e.target.value)}
+                className="w-full accent-[#a855f7]"
               />
-              <span className="text-sm text-[#888888]">{label}</span>
-            </label>
-          ))}
-        </div>
+              <div className="flex justify-between text-xs text-[#555555] mt-1">
+                <span>8</span><span>128</span>
+              </div>
+            </div>
+
+            {/* Character options */}
+            <div className="grid grid-cols-2 gap-2 mb-5">
+              {[
+                { key: "upper", label: "Uppercase (A-Z)" },
+                { key: "lower", label: "Lowercase (a-z)" },
+                { key: "numbers", label: "Numbers (0-9)" },
+                { key: "symbols", label: "Symbols (!@#...)" },
+              ].map(({ key, label }) => (
+                <label key={key} className="flex items-center gap-2 p-3 bg-[#111111] border border-[#222222] rounded-[8px] cursor-pointer hover:border-[#333333] transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={opts[key as keyof typeof opts]}
+                    onChange={() => toggleOpt(key as keyof typeof opts)}
+                    className="accent-[#a855f7]"
+                  />
+                  <span className="text-sm text-[#888888]">{label}</span>
+                </label>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Word count */}
+            <div className="mb-5">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm text-[#888888] font-medium">Words</label>
+                <span className="text-sm font-mono text-[#a855f7] font-semibold">{wordCount}</span>
+              </div>
+              <input
+                type="range"
+                min={3}
+                max={10}
+                value={wordCount}
+                onChange={(e) => setWordCount(+e.target.value)}
+                className="w-full accent-[#a855f7]"
+              />
+              <div className="flex justify-between text-xs text-[#555555] mt-1">
+                <span>3</span><span>10</span>
+              </div>
+            </div>
+
+            {/* Passphrase options */}
+            <div className="grid grid-cols-2 gap-2 mb-5">
+              <div>
+                <label className="text-xs text-[#888888] font-medium block mb-1.5">Separator</label>
+                <select
+                  value={separator}
+                  onChange={(e) => setSeparator(e.target.value)}
+                  className="w-full px-3 py-2 text-sm bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+                >
+                  <option value="-">hyphen (-)</option>
+                  <option value="_">underscore (_)</option>
+                  <option value=".">dot (.)</option>
+                  <option value=" ">space</option>
+                </select>
+              </div>
+              <div className="flex flex-col justify-end gap-2 pb-0.5">
+                <label className="flex items-center gap-2 text-sm text-[#888888]">
+                  <input type="checkbox" checked={capitalize} onChange={(e) => setCapitalize(e.target.checked)} className="accent-[#a855f7]" />
+                  Capitalize words
+                </label>
+                <label className="flex items-center gap-2 text-sm text-[#888888]">
+                  <input type="checkbox" checked={includeNumber} onChange={(e) => setIncludeNumber(e.target.checked)} className="accent-[#a855f7]" />
+                  Append a number
+                </label>
+              </div>
+            </div>
+
+            {entropyBits !== null && (
+              <p className="text-xs text-[#555555] mb-5">
+                ≈ {entropyBits} bits of entropy — NIST SP 800-63B recommends passphrases as an alternative to complex passwords.
+              </p>
+            )}
+          </>
+        )}
 
         {/* Count */}
         <div className="flex items-center gap-3 mb-5">
@@ -102,7 +197,7 @@ export default function PasswordGeneratorClient() {
             className="px-3 py-1.5 text-sm bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
           >
             {[1, 5, 10].map((n) => (
-              <option key={n} value={n}>{n} password{n > 1 ? "s" : ""}</option>
+              <option key={n} value={n}>{n} {mode === "random" ? "password" : "passphrase"}{n > 1 ? "s" : ""}</option>
             ))}
           </select>
           <button
@@ -113,7 +208,7 @@ export default function PasswordGeneratorClient() {
           </button>
         </div>
 
-        {/* Strength */}
+        {/* Strength (random mode only) */}
         {strength && (
           <div className="mb-4">
             <div className="flex items-center justify-between mb-1">
@@ -144,7 +239,7 @@ export default function PasswordGeneratorClient() {
 
         {passwords.length === 0 && (
           <div className="p-8 text-center text-[#444444] border border-dashed border-[#222222] rounded-[8px]">
-            Click Generate to create passwords
+            Click Generate to create {mode === "random" ? "passwords" : "passphrases"}
           </div>
         )}
       </div>
