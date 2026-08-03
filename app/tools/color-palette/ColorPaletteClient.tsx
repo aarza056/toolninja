@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import { Copy, Check } from "lucide-react";
+import { contrastRatio } from "@/lib/contrast";
 
 // ─── HSL / HEX / RGB math ────────────────────────────────────────────────────
 
@@ -121,6 +122,15 @@ function generatePalette(baseHex: string, harmony: HarmonyType): SwatchColor[] {
 
 // ─── Swatch card ─────────────────────────────────────────────────────────────
 
+function bestTextContrast(rgb: [number, number, number]): { textColor: "white" | "black"; ratio: number; passesAA: boolean } {
+  const [r, g, b] = rgb;
+  const whiteRatio = contrastRatio({ r, g, b }, { r: 255, g: 255, b: 255 });
+  const blackRatio = contrastRatio({ r, g, b }, { r: 0, g: 0, b: 0 });
+  return whiteRatio >= blackRatio
+    ? { textColor: "white", ratio: whiteRatio, passesAA: whiteRatio >= 4.5 }
+    : { textColor: "black", ratio: blackRatio, passesAA: blackRatio >= 4.5 };
+}
+
 function SwatchCard({ color }: { color: SwatchColor }) {
   const [copied, setCopied] = useState(false);
 
@@ -133,6 +143,7 @@ function SwatchCard({ color }: { color: SwatchColor }) {
 
   const [r, g, b] = color.rgb;
   const [ch, cs, cl] = color.hsl;
+  const contrast = bestTextContrast(color.rgb);
 
   return (
     <div className="flex-1 min-w-[110px] max-w-[160px] rounded-[8px] border border-[#222222] overflow-hidden bg-[#111111]">
@@ -166,7 +177,17 @@ function SwatchCard({ color }: { color: SwatchColor }) {
         <p className="text-xs text-[#555555] font-mono truncate">
           rgb({r},{g},{b})
         </p>
-        <p className="text-[10px] text-[#444444]">{color.label}</p>
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] text-[#444444]">{color.label}</p>
+          <span
+            className={`text-[9px] px-1 py-0.5 rounded font-medium ${
+              contrast.passesAA ? "bg-[#22c55e]/10 text-[#22c55e]" : "bg-[#ef4444]/10 text-[#ef4444]"
+            }`}
+            title={`${contrast.textColor} text: ${contrast.ratio.toFixed(2)}:1`}
+          >
+            AA {contrast.textColor === "white" ? "⚪" : "⚫"} {contrast.ratio.toFixed(1)}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -305,12 +326,14 @@ export default function ColorPaletteClient() {
                   <th className="text-left px-3 py-2 text-xs text-[#555555] font-medium">HEX</th>
                   <th className="text-left px-3 py-2 text-xs text-[#555555] font-medium">HSL</th>
                   <th className="text-left px-3 py-2 text-xs text-[#555555] font-medium">RGB</th>
+                  <th className="text-left px-3 py-2 text-xs text-[#555555] font-medium">WCAG AA Text</th>
                 </tr>
               </thead>
               <tbody>
                 {palette.map((color, i) => {
                   const [ch, cs, cl] = color.hsl;
                   const [cr, cg, cb] = color.rgb;
+                  const contrast = bestTextContrast(color.rgb);
                   return (
                     <tr key={i} className="border-b border-[#1a1a1a] last:border-0">
                       <td className="px-3 py-2">
@@ -322,6 +345,11 @@ export default function ColorPaletteClient() {
                       <td className="px-3 py-2 font-mono text-[#f5f5f5]">{color.hex.toUpperCase()}</td>
                       <td className="px-3 py-2 font-mono text-[#888888]">hsl({ch}, {cs}%, {cl}%)</td>
                       <td className="px-3 py-2 font-mono text-[#888888]">rgb({cr}, {cg}, {cb})</td>
+                      <td className="px-3 py-2 font-mono">
+                        <span className={contrast.passesAA ? "text-[#22c55e]" : "text-[#ef4444]"}>
+                          {contrast.textColor} · {contrast.ratio.toFixed(2)}:1 {contrast.passesAA ? "✓" : "✗"}
+                        </span>
+                      </td>
                     </tr>
                   );
                 })}

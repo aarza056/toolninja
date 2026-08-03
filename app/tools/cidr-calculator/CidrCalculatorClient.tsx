@@ -99,6 +99,33 @@ function calculateCidr(cidr: string): CidrResult | null {
   };
 }
 
+interface Subnet {
+  cidr: string;
+  network: string;
+  broadcast: string;
+  firstHost: string;
+  lastHost: string;
+}
+
+function splitIntoSubnets(networkNum: number, newPrefix: number, count: number): Subnet[] {
+  const subnetSize = Math.pow(2, 32 - newPrefix);
+  const subnets: Subnet[] = [];
+  for (let i = 0; i < count; i++) {
+    const subNetworkNum = (networkNum + i * subnetSize) >>> 0;
+    const subBroadcastNum = (subNetworkNum + subnetSize - 1) >>> 0;
+    const firstHostNum = newPrefix >= 31 ? subNetworkNum : (subNetworkNum + 1) >>> 0;
+    const lastHostNum = newPrefix >= 31 ? subBroadcastNum : (subBroadcastNum - 1) >>> 0;
+    subnets.push({
+      cidr: `${numToIp(subNetworkNum)}/${newPrefix}`,
+      network: numToIp(subNetworkNum),
+      broadcast: numToIp(subBroadcastNum),
+      firstHost: numToIp(firstHostNum),
+      lastHost: numToIp(lastHostNum),
+    });
+  }
+  return subnets;
+}
+
 function getIpClass(ip: string): string {
   const first = parseInt(ip.split(".")[0], 10);
   if (first >= 1 && first <= 126) return "A";
@@ -178,6 +205,7 @@ export default function CidrCalculatorClient() {
   const [input, setInput] = useState("192.168.1.0/24");
   const [result, setResult] = useState<CidrResult | null>(null);
   const [error, setError] = useState("");
+  const [splitCount, setSplitCount] = useState(4);
 
   const calculate = useCallback((value: string) => {
     const trimmed = value.trim();
@@ -286,6 +314,61 @@ export default function CidrCalculatorClient() {
                 <BinaryRow label="Subnet Mask" binary={result.binaryMask} prefix={result.prefix} />
               </div>
             </div>
+
+            {/* Subnet splitter */}
+            {result.prefix < 30 && (
+              <div className="p-4 bg-[#111111] border border-[#222222] rounded-[8px] space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-xs text-[#888888] font-medium uppercase tracking-wide">Split into Subnets</h3>
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs text-[#555555]">Split into</label>
+                    <select
+                      value={splitCount}
+                      onChange={(e) => setSplitCount(Number(e.target.value))}
+                      className="px-2 py-1 text-xs bg-[#0a0a0a] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+                    >
+                      {[2, 4, 8, 16, 32, 64, 128, 256]
+                        .filter((n) => result.prefix + Math.log2(n) <= 30)
+                        .map((n) => (
+                          <option key={n} value={n}>{n} subnets</option>
+                        ))}
+                    </select>
+                  </div>
+                </div>
+                {(() => {
+                  const newPrefix = result.prefix + Math.log2(splitCount);
+                  const subnets = splitIntoSubnets(ipToNum(result.network), newPrefix, splitCount);
+                  const summary = subnets.map((s) => `${s.cidr}  (${s.firstHost} – ${s.lastHost})`).join("\n");
+                  return (
+                    <>
+                      <div className="flex justify-end">
+                        <CopyButton text={summary} size="sm" label="Copy all" />
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs font-mono">
+                          <thead>
+                            <tr className="text-[#555555] text-left">
+                              <th className="pb-1.5 pr-3 font-medium">Subnet</th>
+                              <th className="pb-1.5 pr-3 font-medium">Broadcast</th>
+                              <th className="pb-1.5 font-medium">Usable Range</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {subnets.map((s) => (
+                              <tr key={s.cidr} className="border-t border-[#1e1e1e]">
+                                <td className="py-1.5 pr-3 text-[#a855f7]">{s.cidr}</td>
+                                <td className="py-1.5 pr-3 text-[#888888]">{s.broadcast}</td>
+                                <td className="py-1.5 text-[#888888]">{s.firstHost} – {s.lastHost}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
 
             {/* Copy summary */}
             <div>

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { parseMultipleDockerRuns } from "@/lib/docker-parser";
+import { parseMultipleDockerRuns, type DockerService } from "@/lib/docker-parser";
 import { generateComposeYaml, generateMultiServiceCompose, getServiceName } from "@/lib/docker-to-yaml";
+import { generateK8sYaml } from "@/lib/docker-to-k8s";
 import { analyzeBestPractices } from "@/lib/docker-analyzer";
 import { composeToDockerRun } from "@/lib/compose-parser";
 import { DOCKER_EXAMPLES } from "@/lib/docker-examples";
@@ -55,6 +56,15 @@ export default function DockerConverterClient() {
   const [practicesData, setPracticesData] = useState<ReturnType<typeof analyzeBestPractices> | null>(null);
   const [multiCommands, setMultiCommands] = useState<{ name: string; command: string }[]>([]);
   const [serviceCount, setServiceCount] = useState(0);
+  const [singleService, setSingleService] = useState<DockerService | null>(null);
+  const [outputFormat, setOutputFormat] = useState<"compose" | "kubernetes">("compose");
+
+  const displayedOutput = useMemo(() => {
+    if (mode === "run-to-compose" && outputFormat === "kubernetes" && singleService) {
+      return generateK8sYaml(singleService);
+    }
+    return output;
+  }, [mode, outputFormat, singleService, output]);
 
   const convert = useCallback(() => {
     setError("");
@@ -90,13 +100,16 @@ export default function DockerConverterClient() {
         const yaml = generateComposeYaml(service, name);
         setOutput(yaml);
         setPracticesData(analyzeBestPractices(service));
+        setSingleService(service);
       } else {
         const yaml = generateMultiServiceCompose(validResults);
         setOutput(yaml);
         const firstService = validResults[0].service;
         setPracticesData(analyzeBestPractices(firstService));
+        setSingleService(null);
       }
     } else {
+      setSingleService(null);
       const result = composeToDockerRun(input);
       if (result.error) {
         setError(result.error);
@@ -123,6 +136,8 @@ export default function DockerConverterClient() {
     setIgnoredFlags([]);
     setPracticesData(null);
     setMultiCommands([]);
+    setSingleService(null);
+    setOutputFormat("compose");
   };
 
   const reset = () => {
@@ -134,6 +149,8 @@ export default function DockerConverterClient() {
     setPracticesData(null);
     setMultiCommands([]);
     setServiceCount(0);
+    setSingleService(null);
+    setOutputFormat("compose");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -236,19 +253,39 @@ export default function DockerConverterClient() {
 
         {/* Output */}
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <label className="text-xs text-gray-400 uppercase tracking-wide">
-              {mode === "run-to-compose" ? "docker-compose.yml" : "docker run command(s)"}
+              {mode === "run-to-compose"
+                ? outputFormat === "kubernetes" ? "kubernetes.yaml" : "docker-compose.yml"
+                : "docker run command(s)"}
               {serviceCount > 0 && (
                 <span className="ml-2 text-purple-400">({serviceCount} service{serviceCount !== 1 ? "s" : ""})</span>
               )}
             </label>
-            {output && <CopyButton text={output} />}
+            <div className="flex items-center gap-2">
+              {mode === "run-to-compose" && singleService && (
+                <div className="flex rounded-md border border-white/10 overflow-hidden">
+                  <button
+                    onClick={() => setOutputFormat("compose")}
+                    className={`px-2.5 py-1 text-xs transition-colors ${outputFormat === "compose" ? "bg-purple-600 text-white" : "bg-[#111] text-gray-400 hover:text-gray-200"}`}
+                  >
+                    Compose
+                  </button>
+                  <button
+                    onClick={() => setOutputFormat("kubernetes")}
+                    className={`px-2.5 py-1 text-xs border-l border-white/10 transition-colors ${outputFormat === "kubernetes" ? "bg-purple-600 text-white" : "bg-[#111] text-gray-400 hover:text-gray-200"}`}
+                  >
+                    Kubernetes
+                  </button>
+                </div>
+              )}
+              {displayedOutput && <CopyButton text={displayedOutput} />}
+            </div>
           </div>
           <div className="relative h-72">
             <textarea
               readOnly
-              value={output}
+              value={displayedOutput}
               placeholder="Output will appear here..."
               className="w-full h-full bg-[#111] border border-white/10 rounded-lg p-4 text-sm font-mono text-gray-200 placeholder-gray-600 focus:outline-none resize-none"
             />

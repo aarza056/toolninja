@@ -89,6 +89,33 @@ export const tools: Tool[] = [
       "compress svg online", "svg file size reducer",
     ],
   },
+  {
+    slug: "image-compressor",
+    name: "Image Compressor",
+    description: "Compress and resize JPEG, PNG, and WebP images entirely in your browser",
+    icon: "ImageDown",
+    category: "Format",
+    keywords: [
+      "image compressor", "image compressor online", "compress image online",
+      "reduce image file size", "jpeg compressor", "png compressor",
+      "webp compressor", "compress png online", "compress jpeg online",
+      "image size reducer", "resize and compress image", "image optimizer online",
+      "compress photo online free", "shrink image file size",
+    ],
+  },
+  {
+    slug: "graphql-formatter",
+    name: "GraphQL Query Formatter",
+    description: "Format and minify GraphQL queries, mutations, and fragments",
+    icon: "Waypoints",
+    category: "Format",
+    keywords: [
+      "graphql formatter", "graphql formatter online", "graphql beautifier",
+      "format graphql query", "graphql query formatter", "graphql minifier",
+      "graphql pretty print", "graphql schema formatter", "beautify graphql",
+      "graphql indenter", "graphql query beautifier",
+    ],
+  },
 
   // ─── Encode ───────────────────────────────────────────────────────────────
   {
@@ -520,6 +547,19 @@ export const tools: Tool[] = [
       "curl to php", "curl to go", "curl parser online", "curl converter free",
     ],
   },
+  {
+    slug: "url-parser",
+    name: "URL Parser & Query String Builder",
+    description: "Break down a URL into its parts and build query strings visually",
+    icon: "Route",
+    category: "Convert",
+    keywords: [
+      "url parser", "url parser online", "query string builder",
+      "parse url online", "url breakdown tool", "query parameter builder",
+      "url component parser", "build query string", "url query string parser",
+      "url structure analyzer", "add utm parameters to url", "url analyzer online",
+    ],
+  },
 
   // ─── Test ─────────────────────────────────────────────────────────────────
   {
@@ -691,6 +731,19 @@ export const tools: Tool[] = [
       "mermaid chart generator",
     ],
   },
+  {
+    slug: "image-color-picker",
+    name: "Image Color Palette Extractor",
+    description: "Upload an image and extract its dominant colors as a usable palette",
+    icon: "Pipette",
+    category: "Design",
+    keywords: [
+      "image color picker", "extract colors from image", "image color palette generator",
+      "dominant color extractor", "color palette from image", "image to color palette",
+      "photo color picker online", "get colors from picture", "color palette extractor free",
+      "image color scheme generator", "picture color extractor",
+    ],
+  },
 
   // ─── Security ─────────────────────────────────────────────────────────────
   {
@@ -720,6 +773,20 @@ export const tools: Tool[] = [
       "csp analyzer online", "csp checker free", "content-security-policy builder",
       "csp meta tag generator", "unsafe-inline checker", "csp validator online",
       "security headers builder",
+    ],
+  },
+  {
+    slug: "jwt-keypair-generator",
+    name: "JWT Key Pair Generator",
+    description: "Generate RSA and ECDSA key pairs for signing JWTs — PEM and JWK formats",
+    icon: "KeySquare",
+    category: "Security",
+    keywords: [
+      "jwt key pair generator", "rs256 key generator", "es256 key generator",
+      "generate rsa key pair online", "jwt signing key generator", "jwk generator",
+      "public private key generator jwt", "ecdsa key pair generator",
+      "rs256 public private key", "jwt rsa key generator", "generate pem key pair",
+      "jwt keypair online",
     ],
   },
 

@@ -35,6 +35,16 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online SVG optimizer. Strip comments, metadata, and editor cruft (Inkscape/Sodipodi) from SVG files and shrink file size instantly. No login, 100% browser-based.",
   },
+  "image-compressor": {
+    title: "Image Compressor Online — Compress JPEG, PNG & WebP Free | ToolNinja",
+    description:
+      "Free online image compressor. Compress and resize JPEG, PNG and WebP images with adjustable quality, right in your browser. See before/after size comparison instantly. No upload to a server — images never leave your device.",
+  },
+  "graphql-formatter": {
+    title: "GraphQL Formatter Online — Beautify & Minify GraphQL Queries | ToolNinja",
+    description:
+      "Free online GraphQL query formatter and minifier. Beautify queries, mutations, subscriptions and fragments with proper indentation, or minify for production. Handles inline fragments and directives correctly. No login, browser-only.",
+  },
 
   // ── Encode ───────────────────────────────────────────────────────────────
   "base64": {
@@ -197,6 +207,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online curl command converter. Paste any curl command and instantly get working code in JavaScript (fetch), Node.js (axios), Python (requests), PHP (cURL), or Go (net/http). No login required.",
   },
+  "url-parser": {
+    title: "URL Parser Online — Parse URLs & Build Query Strings | ToolNinja",
+    description:
+      "Free online URL parser and query string builder. Break any URL down into protocol, host, path, and query parameters, then edit params and rebuild the URL live. One-click UTM parameter add. No login, 100% browser-based.",
+  },
 
   // ── Test ─────────────────────────────────────────────────────────────────
   "regex-tester": {
@@ -261,6 +276,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online Mermaid diagram editor. Write flowcharts, sequence diagrams, class diagrams, ER diagrams, Gantt charts and more as text, with a live preview. Export as SVG or PNG. No login, 100% browser-based.",
   },
+  "image-color-picker": {
+    title: "Image Color Palette Extractor — Get Colors From an Image | ToolNinja",
+    description:
+      "Free online image color palette extractor. Upload any image and instantly extract its dominant colors as HEX and RGB values, ready to copy as CSS variables. No login, 100% browser-based — images never leave your device.",
+  },
 
   // ── Security ─────────────────────────────────────────────────────────────
   "crypto-tools": {
@@ -272,6 +292,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "CSP Header Builder & Analyzer — Content-Security-Policy Tool | ToolNinja",
     description:
       "Free online Content-Security-Policy builder and analyzer. Build a CSP header visually with per-directive source lists, or paste an existing policy to check for unsafe-inline, unsafe-eval, and other risky directives. No login required.",
+  },
+  "jwt-keypair-generator": {
+    title: "JWT Key Pair Generator — RS256, ES256, PS256 Key Generator | ToolNinja",
+    description:
+      "Free online JWT key pair generator. Generate RSA and ECDSA key pairs for RS256, RS384, RS512, PS256, ES256 and more, in both PEM and JWK format, using WebCrypto. Private keys never leave your browser. No login required.",
   },
 
   // ── Accessibility ────────────────────────────────────────────────────────

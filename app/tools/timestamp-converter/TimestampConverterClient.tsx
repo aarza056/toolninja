@@ -3,7 +3,34 @@
 import { useState } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Clock, RefreshCw } from "lucide-react";
+import { Clock, RefreshCw, Globe2 } from "lucide-react";
+
+const TIMEZONES = [
+  { id: "UTC", label: "UTC" },
+  { id: "America/Los_Angeles", label: "Los Angeles" },
+  { id: "America/New_York", label: "New York" },
+  { id: "America/Sao_Paulo", label: "São Paulo" },
+  { id: "Europe/London", label: "London" },
+  { id: "Europe/Paris", label: "Paris" },
+  { id: "Europe/Moscow", label: "Moscow" },
+  { id: "Asia/Dubai", label: "Dubai" },
+  { id: "Asia/Kolkata", label: "Mumbai" },
+  { id: "Asia/Shanghai", label: "Shanghai" },
+  { id: "Asia/Tokyo", label: "Tokyo" },
+  { id: "Australia/Sydney", label: "Sydney" },
+];
+
+function formatInZone(ms: number, timeZone: string): string {
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(ms));
+  } catch {
+    return "—";
+  }
+}
 
 function getRelative(ts: number): string {
   const diff = Math.floor((Date.now() / 1000) - ts);
@@ -62,8 +89,8 @@ export default function TimestampConverterClient() {
   };
 
   return (
-    <ToolLayout title="Timestamp Converter" description="Convert Unix timestamps to human-readable dates">
-      <div className="max-w-lg space-y-8">
+    <ToolLayout title="Timestamp Converter" description="Convert Unix timestamps to human-readable dates across time zones">
+      <div className="max-w-2xl space-y-8">
         {/* Timestamp → Date */}
         <div>
           <h3 className="text-sm font-semibold text-[#f5f5f5] mb-3 flex items-center gap-2">
@@ -99,6 +126,22 @@ export default function TimestampConverterClient() {
                   <CopyButton text={row.value} size="sm" />
                 </div>
               ))}
+            </div>
+          )}
+
+          {tsResult && (
+            <div className="mt-4">
+              <h4 className="text-xs font-semibold text-[#888888] mb-2 flex items-center gap-1.5">
+                <Globe2 size={12} /> World Clock
+              </h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {TIMEZONES.map((tz) => (
+                  <div key={tz.id} className="p-2.5 bg-[#111111] border border-[#222222] rounded-[6px]">
+                    <div className="text-[10px] text-[#555555] uppercase tracking-wide">{tz.label}</div>
+                    <div className="text-xs font-mono text-[#f5f5f5] mt-0.5">{formatInZone(tsResult.ts * 1000, tz.id)}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

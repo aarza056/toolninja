@@ -13,17 +13,20 @@ export interface ToolContent {
 export const toolContent: Record<string, ToolContent> = {
   "json-formatter": {
     about:
-      "The ToolNinja JSON Formatter is a free online JSON formatter, validator and beautifier. Paste any JSON string and instantly format it with proper indentation, syntax highlighting, and clear error messages if your JSON is invalid.\n\nUse it as a JSON beautifier to make minified API responses readable, as a JSON validator to catch syntax errors like trailing commas, unquoted keys, or mismatched brackets, or as a JSON minifier to compress formatted JSON for production use. The tree view mode lets you explore deeply nested structures visually, and JSONPath query support lets you extract specific values without writing any code.\n\nWhether you're debugging an API response, validating config files, or pretty printing JSON for documentation — the ToolNinja JSON formatter handles it instantly with no page reloads.\n\nEverything runs 100% in your browser. Your JSON data — including any sensitive API keys, tokens or private data — never leaves your machine. No login required.",
+      "The ToolNinja JSON Formatter is a free online JSON formatter, validator and beautifier. Paste any JSON string and instantly format it with proper indentation, syntax highlighting, and clear error messages if your JSON is invalid.\n\nUse it as a JSON beautifier to make minified API responses readable, as a JSON validator to catch syntax errors like trailing commas, unquoted keys, or mismatched brackets, or as a JSON minifier to compress formatted JSON for production use. The tree view mode lets you explore deeply nested structures visually, and JSONPath query support lets you extract specific values without writing any code.\n\nThe Flatten tab converts nested JSON into single-level dot-notation keys (e.g. `user.address.city`) — useful for CSV export, spreadsheet import, or flat key-value config formats — and Unflatten does the reverse, rebuilding a nested object (including arrays) from flat dot-notation keys.\n\nWhether you're debugging an API response, validating config files, or pretty printing JSON for documentation — the ToolNinja JSON formatter handles it instantly with no page reloads.\n\nEverything runs 100% in your browser. Your JSON data — including any sensitive API keys, tokens or private data — never leaves your machine. No login required.",
     useCases: [
       "Inspecting API responses from Postman, curl, or browser DevTools",
       "Formatting config files (package.json, tsconfig.json) before committing",
       "Debugging serialized data from logs, queues, or databases",
       "Minifying JSON before storing in environment variables or payloads",
+      "Flattening nested JSON into dot-notation keys for CSV or spreadsheet export",
+      "Rebuilding a nested object from flat, dot-notation config keys",
     ],
     tips: [
       "Paste minified JSON and it auto-formats on input — no button required.",
       "Use the Minify button to compress JSON for size-sensitive environments.",
       "The error indicator shows the exact line and character of syntax problems.",
+      "Flatten turns array indices into numeric key segments (e.g. items.0.name) — Unflatten automatically rebuilds them back into real arrays.",
     ],
     faq: [
       {
@@ -294,16 +297,18 @@ export const toolContent: Record<string, ToolContent> = {
 
   "timestamp-converter": {
     about:
-      "The Unix Timestamp Converter translates between Unix epoch timestamps (integer seconds or milliseconds since January 1, 1970 UTC) and human-readable dates. Unix timestamps are the standard time representation in databases, APIs, JWT tokens, server logs, and most programming languages.",
+      "The Unix Timestamp Converter translates between Unix epoch timestamps (integer seconds or milliseconds since January 1, 1970 UTC) and human-readable dates. Unix timestamps are the standard time representation in databases, APIs, JWT tokens, server logs, and most programming languages.\n\nA World Clock section shows the converted timestamp across a dozen major time zones simultaneously — UTC, US and European cities, and key Asia-Pacific zones — so you can see what a given moment looks like for a distributed team or a global user base without opening a separate timezone converter.",
     useCases: [
       "Converting timestamps from API responses or database records to readable dates",
       "Debugging JWT token expiry — the exp and iat claims are Unix timestamps",
       "Generating timestamp values for date range queries in SQL or APIs",
       "Understanding what a numeric timestamp in a log file actually represents",
+      "Checking what a scheduled job or meeting time looks like across a distributed team's time zones",
     ],
     tips: [
       "JavaScript timestamps are in milliseconds — divide by 1000 for Unix seconds.",
       "The year 2038 problem affects 32-bit signed integers, which overflow on January 19, 2038. 64-bit systems are not affected.",
+      "The World Clock grid updates automatically whenever you convert a timestamp — no separate lookup needed.",
     ],
     faq: [
       {
@@ -923,17 +928,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "color-palette": {
     about:
-      "The Color Palette Generator creates harmonious color schemes from any base color using color theory relationships. Choose from complementary, analogous, triadic, split-complementary, tetradic, and monochromatic harmonies. Each palette shows HEX, RGB, and HSL values ready to copy.",
+      "The Color Palette Generator creates harmonious color schemes from any base color using color theory relationships. Choose from complementary, analogous, triadic, split-complementary, tetradic, and monochromatic harmonies. Each palette shows HEX, RGB, and HSL values ready to copy.\n\nEvery swatch also shows a WCAG AA contrast badge, comparing the color against both white and black text and picking whichever passes — so you can see at a glance which palette colors are safe to use as a background behind body text and which need to stay decorative-only.",
     useCases: [
       "Picking a cohesive UI color scheme from a brand's primary color",
       "Generating accessible foreground/background color pairs",
       "Creating theme variables for design systems and CSS custom properties",
       "Exploring complementary accent colors for data visualizations",
+      "Checking which palette colors pass WCAG AA before using them behind text",
     ],
     tips: [
       "Start with a mid-range saturation (40-60%) for the base — extreme saturation makes harmonics look garish.",
       "Monochromatic palettes (same hue, varied lightness) are the safest for UI backgrounds and text.",
       "Triadic palettes (3 colors 120 degrees apart) create vibrant contrast — use one as dominant, one as accent, one as neutral.",
+      "The WCAG AA badge on each swatch shows the best of white-text or black-text contrast — a failing badge means avoid that color as a text background.",
     ],
     faq: [
       {
@@ -1203,7 +1210,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "cidr-calculator": {
     about:
-      "The ToolNinja CIDR Calculator is a free online subnet calculator and IP range calculator. Enter any CIDR notation (e.g. 192.168.1.0/24) to instantly calculate the subnet mask, network address, broadcast address, first and last usable host, and total number of hosts — all displayed with a full binary breakdown.\n\nWhether you need to calculate CIDR from an IP address, convert IP to CIDR notation, find CIDR ranges for a network, or use it as a subnetting CIDR calculator — ToolNinja handles every scenario directly in your browser. The CIDR to IP range calculator shows the complete host range so you can immediately see which addresses fall within your subnet.\n\nUse it as an ip to cidr calculator when configuring cloud VPCs in AWS, GCP or Azure, as a subnet CIDR calculator for firewall rules, or as a subnetting calculator for network planning. The binary display makes it ideal for learning how CIDR notation and subnet masks work at the bit level.\n\nEverything runs 100% in your browser — no login, no server calls, no data ever leaves your machine.",
+      "The ToolNinja CIDR Calculator is a free online subnet calculator and IP range calculator. Enter any CIDR notation (e.g. 192.168.1.0/24) to instantly calculate the subnet mask, network address, broadcast address, first and last usable host, and total number of hosts — all displayed with a full binary breakdown.\n\nWhether you need to calculate CIDR from an IP address, convert IP to CIDR notation, find CIDR ranges for a network, or use it as a subnetting CIDR calculator — ToolNinja handles every scenario directly in your browser. The CIDR to IP range calculator shows the complete host range so you can immediately see which addresses fall within your subnet.\n\nUse it as an ip to cidr calculator when configuring cloud VPCs in AWS, GCP or Azure, as a subnet CIDR calculator for firewall rules, or as a subnetting calculator for network planning. The binary display makes it ideal for learning how CIDR notation and subnet masks work at the bit level.\n\nEverything runs 100% in your browser — no login, no server calls, no data ever leaves your machine.\n\nA Split into Subnets tool takes your calculated network and divides it into equal-sized smaller subnets in one step, showing the CIDR, broadcast address, and usable range for each — handy when you've settled on a parent block and need to carve it up across multiple availability zones or network segments.",
     useCases: [
       "Calculating subnet ranges for AWS VPC, GCP VPC or Azure Virtual Network CIDR blocks",
       "Converting IP addresses to CIDR notation for firewall rules and security groups",
@@ -1211,11 +1218,13 @@ export const toolContent: Record<string, ToolContent> = {
       "Verifying CIDR to IP range calculations before deploying network infrastructure",
       "Learning how CIDR notation and subnet masks work with the binary display",
       "Calculating how many hosts fit in a given subnet for capacity planning",
+      "Splitting a parent CIDR block into equal subnets for multi-AZ VPC layouts",
     ],
     tips: [
       "A /24 gives 254 usable hosts (256 minus network and broadcast). A /25 splits that into two subnets of 126 usable hosts each.",
       "AWS VPCs reserve 5 addresses per subnet (network, broadcast, and 3 AWS-reserved). Factor this in when choosing your CIDR block.",
       "Use /32 to represent a single host route and /0 to represent the default route (all traffic).",
+      "Use Split into Subnets when planning a multi-AZ VPC — dividing a /22 into four /24s gives one clean subnet per zone.",
     ],
     faq: [
       {
@@ -1239,7 +1248,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "docker-run-to-compose": {
     about:
-      "The Docker Run to Compose Converter is a free online tool that instantly converts docker run commands into production-ready docker-compose.yml files. Paste any docker run command — including complex ones with multiple flags — and get a complete Compose service definition with correct YAML structure, named volumes, networks, environment variables, healthchecks, resource limits, and all standard Docker options.\n\nIt also works in reverse: paste a docker-compose.yml and get the equivalent docker run commands for every service, useful for quick debugging or running individual services outside of Compose.\n\nThe built-in Best Practices Scorer analyzes your service configuration and scores it out of 100 across four categories: security (privileged mode, root user, hardcoded secrets), reliability (restart policy, healthchecks, pinned image tags), performance (memory limits), and maintainability (named volumes, custom networks). Each failed check explains the issue and the recommended fix.\n\nSupports multi-service input: paste multiple docker run commands separated by blank lines and the tool generates a complete multi-service docker-compose.yml with shared volumes and network declarations.\n\nEverything runs 100% in your browser. No login, no server, no data ever leaves your machine.",
+      "The Docker Run to Compose Converter is a free online tool that instantly converts docker run commands into production-ready docker-compose.yml files. Paste any docker run command — including complex ones with multiple flags — and get a complete Compose service definition with correct YAML structure, named volumes, networks, environment variables, healthchecks, resource limits, and all standard Docker options.\n\nIt also works in reverse: paste a docker-compose.yml and get the equivalent docker run commands for every service, useful for quick debugging or running individual services outside of Compose.\n\nThe built-in Best Practices Scorer analyzes your service configuration and scores it out of 100 across four categories: security (privileged mode, root user, hardcoded secrets), reliability (restart policy, healthchecks, pinned image tags), performance (memory limits), and maintainability (named volumes, custom networks). Each failed check explains the issue and the recommended fix.\n\nSupports multi-service input: paste multiple docker run commands separated by blank lines and the tool generates a complete multi-service docker-compose.yml with shared volumes and network declarations.\n\nWhen converting a single-service docker run command, you can also switch the output to Kubernetes mode to get an equivalent Deployment + Service YAML manifest — image, ports, environment variables, and resource limits map directly, with bind-mount volumes and restart policies called out as comments since they have no direct Kubernetes equivalent.\n\nEverything runs 100% in your browser. No login, no server, no data ever leaves your machine.",
     useCases: [
       "Converting a working docker run command to a Compose file to commit to source control",
       "Generating docker-compose.yml for an existing containerized app from its run script",
@@ -1247,12 +1256,14 @@ export const toolContent: Record<string, ToolContent> = {
       "Learning Compose syntax by seeing exactly how run flags map to YAML keys",
       "Converting Compose services back to docker run commands for quick one-off debugging",
       "Combining multiple docker run commands into a multi-service Compose stack",
+      "Getting a starting Kubernetes Deployment + Service manifest from an existing docker run command",
     ],
     tips: [
       "Separate multiple docker run commands with a blank line to generate a multi-service compose file in one step.",
       "Pin image tags (e.g. nginx:1.25.3 instead of nginx:latest) to prevent unexpected breakage when upstream releases a new version.",
       "Use ${VARIABLE} syntax in your environment values and a .env file to keep secrets out of the compose file.",
       "The best practices scorer shows all checks even when passed — expand it to see what your service is already doing right.",
+      "Switch to Kubernetes mode after converting a single-service command to get a Deployment + Service YAML starting point.",
     ],
     faq: [
       {
@@ -1921,6 +1932,156 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Do I need report-uri or report-to in my CSP?",
         a: "Not strictly required, but strongly recommended for production — it tells the browser to send a report whenever the policy blocks something, which is how you discover legitimate resources your policy is accidentally blocking (or catch real attack attempts) without waiting for a user to report a broken page. Set it via the HTTP header, since it's ignored in the <meta> tag form.",
+      },
+    ],
+  },
+
+  "image-compressor": {
+    about:
+      "The Image Compressor shrinks JPEG, PNG, and WebP images directly in your browser using the Canvas API — no upload, no server round-trip, no waiting on a queue. Drop in an image, pick an output format and quality level, and optionally cap the maximum width or height, and you get a compressed file with a live before/after size comparison.\n\nThis is the same core operation tools like TinyPNG or Squoosh perform, but entirely client-side: the image is decoded into a canvas, re-encoded at your chosen quality, and never transmitted anywhere. That matters for screenshots containing sensitive data, unreleased product images, or any asset you'd rather not hand to a third-party server.\n\nConverting between formats is also supported — compress a PNG down to WebP for smaller file size, or force JPEG output when you need broad compatibility and don't need transparency.",
+    useCases: [
+      "Shrinking screenshots and product images before adding them to a blog post or PR description",
+      "Converting PNG screenshots to WebP for smaller page weight without a build step",
+      "Resizing oversized camera photos down to a sane max width before uploading",
+      "Compressing images for email attachments that have strict size limits",
+    ],
+    tips: [
+      "WebP typically gives the smallest file size at equivalent visual quality — use it unless you specifically need JPEG or PNG compatibility.",
+      "PNG output ignores the quality slider since PNG compression is lossless; use JPEG or WebP if you need to trade quality for size.",
+      "Setting a max width/height resizes proportionally — you don't need to know the exact target dimensions, just the upper bound.",
+    ],
+    faq: [
+      {
+        q: "Does compressing an image reduce its dimensions?",
+        a: "Not unless you set a max width or height. By default, compression only reduces file size by re-encoding at a lower quality — the pixel dimensions stay the same. Use the max width/height option if you also want to downscale.",
+      },
+      {
+        q: "Why is my PNG still large after compression?",
+        a: "PNG is a lossless format, so the quality slider has no effect on it. If you need a smaller file, convert to WebP or JPEG — both support lossy compression and will typically produce a much smaller file for photographic content.",
+      },
+      {
+        q: "Is my image uploaded anywhere?",
+        a: "No. The entire compression process happens in your browser using the HTML Canvas API. Your image file never leaves your device or gets sent to any server.",
+      },
+    ],
+  },
+
+  "graphql-formatter": {
+    about:
+      "The GraphQL Query Formatter beautifies and minifies GraphQL operations — queries, mutations, subscriptions, and fragment definitions — with correct handling of the parts of GraphQL syntax that trip up naive formatters: inline fragments (`... on Type`), named fragment spreads (`...FragmentName`), directives (`@include`, `@skip`), aliases, and nested input object literals.\n\nPaste a minified or inconsistently indented GraphQL document and get back cleanly indented output with consistent brace placement. Or switch to Minify mode to strip an operation down to the smallest valid form for sending over the wire.\n\nEverything runs client-side with a purpose-built tokenizer — your GraphQL schema and queries, which often reveal internal API structure, never leave your browser.",
+    useCases: [
+      "Cleaning up a GraphQL query copied from browser DevTools' Network tab before sharing it in a bug report",
+      "Formatting queries pasted from a minified GraphQL Playground or Apollo Studio export",
+      "Minifying GraphQL operations before embedding them in application code to save bytes",
+      "Reviewing a teammate's PR that adds a new GraphQL operation by formatting it consistently first",
+    ],
+    tips: [
+      "Inline fragments (`... on User { ... }`) and named fragment spreads (`...UserFields`) are formatted correctly — most simple indenters break on these.",
+      "Minify mode is useful for embedding queries in source code where you want a single-line string rather than a template literal.",
+      "Comments (lines starting with #) are preserved by the formatter but stripped by the minifier, matching how GraphQL servers treat them.",
+    ],
+    faq: [
+      {
+        q: "Does this validate my GraphQL against a schema?",
+        a: "No — this is a syntax formatter, not a schema validator. It reformats whatever valid GraphQL syntax you paste in, but doesn't check field names, types, or arguments against an actual schema.",
+      },
+      {
+        q: "What's the difference between an inline fragment and a fragment spread?",
+        a: "An inline fragment (`... on User { name }`) is defined right where it's used, typically to select type-specific fields on a union or interface. A fragment spread (`...UserFields`) references a separately defined `fragment UserFields on User { ... }` block elsewhere in the document. Both use the `...` syntax but format differently, which this tool handles correctly.",
+      },
+      {
+        q: "Can I format a whole .graphql schema file, not just an operation?",
+        a: "The formatter is built for operations (queries, mutations, subscriptions, fragments) rather than SDL schema definitions (type User { ... }). Simple SDL will often format reasonably, but it isn't the primary target.",
+      },
+    ],
+  },
+
+  "url-parser": {
+    about:
+      "The URL Parser breaks any URL down into its component parts — protocol, credentials, host, port, path, query parameters, and hash — and displays them individually, making it easy to see exactly what a long or unfamiliar URL actually contains.\n\nThe query string side works as a live builder: parameters are shown as editable rows, so you can add, remove, or edit them and watch the full URL rebuild in real time. A one-click button adds the standard five UTM parameters (utm_source, utm_medium, utm_campaign, utm_term, utm_content) for building campaign tracking links without typing them by hand.\n\nParsing uses the browser's native URL API, so behavior matches exactly what your JavaScript code would see when constructing a `new URL()` — no surprises when you copy the result into application code.",
+    useCases: [
+      "Decomposing a long URL with tracking parameters to see what data it's actually carrying",
+      "Building a UTM-tagged marketing link without hand-editing a query string",
+      "Debugging why a URL isn't parsing the way your application code expects",
+      "Adding, removing, or renaming query parameters on an existing URL without starting from scratch",
+    ],
+    tips: [
+      "Use \"Add UTM params\" to quickly scaffold the five standard utm_* parameters, then edit their values for your campaign.",
+      "The parsed breakdown updates live as you type — useful for spotting an unexpected extra parameter or malformed segment.",
+      "Editing a query parameter's key or value immediately rebuilds the full URL shown at the bottom, so you can copy it as soon as it looks right.",
+    ],
+    faq: [
+      {
+        q: "Can I edit the host or path directly, not just query parameters?",
+        a: "The protocol, host, path, and other base components are shown as a read-only breakdown for inspection. To change them, edit the full URL text field directly — only the query parameters have a dedicated editable table.",
+      },
+      {
+        q: "What happens if I paste an invalid URL?",
+        a: "The parser uses the browser's native URL API, so it flags anything that isn't a valid absolute URL (missing protocol, malformed syntax) rather than guessing at a partial parse.",
+      },
+      {
+        q: "Are UTM parameters the only thing the query builder supports?",
+        a: "No — the UTM button is a shortcut for a common case. You can add, edit, or remove any query parameter by key and value, not just UTM ones.",
+      },
+    ],
+  },
+
+  "image-color-picker": {
+    about:
+      "The Image Color Palette Extractor analyzes an uploaded image and pulls out its most dominant colors, ranked by how much of the image they cover. Drop in a photo, screenshot, or design mockup and get back a ranked palette of HEX and RGB values — plus a ready-to-copy block of CSS custom properties.\n\nUnder the hood, the image is downscaled onto a canvas and every sampled pixel is bucketed into a coarse RGB grid so that near-identical shades count as the same color, then buckets are sorted by frequency. This gives a genuinely representative palette rather than just the first few unique pixel values.\n\nEverything happens in-browser via the Canvas API — the image itself is never uploaded anywhere.",
+    useCases: [
+      "Pulling a brand color palette out of a logo or existing marketing image",
+      "Generating a matching UI theme from a hero photo or product shot",
+      "Extracting CSS custom properties directly from a design mockup screenshot",
+      "Checking what colors actually dominate a photo before using it in a design",
+    ],
+    tips: [
+      "Increase the color count slider if the image has subtle variation you want captured — the default 6 favors the most visually dominant shades.",
+      "Semi-transparent pixels are excluded from analysis, so palettes extracted from PNGs with transparency reflect only the visible content.",
+      "Use the CSS Variables export to paste extracted colors directly into a stylesheet as `--color-1`, `--color-2`, etc.",
+    ],
+    faq: [
+      {
+        q: "How are the dominant colors determined?",
+        a: "The image is sampled on a canvas and each pixel's color is grouped into a coarse RGB bucket so visually similar shades count together, rather than treating every slightly different pixel as a unique color. Buckets are then ranked by how many pixels fall into them.",
+      },
+      {
+        q: "Does image size affect extraction speed or accuracy?",
+        a: "The image is downscaled internally before sampling, so large images process quickly without materially changing the resulting palette — the dominant colors of a downscaled version match the full-resolution image closely.",
+      },
+      {
+        q: "Is the image uploaded to a server for analysis?",
+        a: "No. Extraction runs entirely client-side using the Canvas API's pixel data. The image file never leaves your browser.",
+      },
+    ],
+  },
+
+  "jwt-keypair-generator": {
+    about:
+      "The JWT Key Pair Generator creates asymmetric key pairs for signing JSON Web Tokens with RSA (RS256/384/512, PS256/384/512) or ECDSA (ES256/384/512) algorithms, using the browser's native WebCrypto API. Unlike HMAC-based JWTs which share a single secret between signer and verifier, these algorithms let you keep a private key for signing and distribute a public key for verification — the setup required by OAuth providers, OpenID Connect, and most production JWT-based auth systems.\n\nBoth keys are exported in two formats: PEM (the classic `-----BEGIN...-----` text format used by most server libraries and CLI tools) and JWK (JSON Web Key, used by JWKS endpoints and browser-native crypto APIs). Pick your algorithm and, for RSA, a key size (2048 or 4096-bit), and get all four key representations at once.\n\nKey generation happens entirely in your browser via WebCrypto — private keys are never transmitted anywhere, but treat any private key generated on a shared or untrusted machine with the same caution you'd apply to a production secret.",
+    useCases: [
+      "Generating an RS256 key pair for signing JWTs in a Node.js or Python auth service",
+      "Creating an ES256 key pair for a JWKS endpoint used by OpenID Connect clients",
+      "Producing test key pairs for local development without touching production key material",
+      "Getting both PEM and JWK formats of the same key without running separate conversion tools",
+    ],
+    tips: [
+      "ES256 (ECDSA) produces much shorter keys and signatures than RS256 for equivalent security — prefer it for new systems if your libraries support it.",
+      "2048-bit RSA is the current minimum recommended size; use 4096-bit only if a specific compliance requirement calls for it, since it's slower and produces larger tokens.",
+      "Never paste a generated private key into a public repository, client-side code, or a chat tool — treat it exactly like a database password.",
+    ],
+    faq: [
+      {
+        q: "What's the difference between RS256, PS256, and ES256?",
+        a: "RS256 and PS256 are both RSA-based (PS256 uses the more modern RSA-PSS padding scheme instead of PKCS#1 v1.5). ES256 uses ECDSA on elliptic curves, producing much smaller keys and signatures for equivalent security. Most modern systems prefer ES256 for its size, but RS256 remains the most widely supported across older libraries.",
+      },
+      {
+        q: "Which key do I use for signing vs. verifying?",
+        a: "The private key signs tokens and must be kept secret on your auth server. The public key verifies tokens and can be shared freely — it's typically published at a JWKS endpoint so any service can verify tokens without holding the private key.",
+      },
+      {
+        q: "Should I use this to generate production keys?",
+        a: "The cryptography (WebCrypto's RSA and ECDSA implementations) is sound and suitable for real use, but for production systems, prefer generating keys on the server or infrastructure that will actually hold the private key, using your standard key-management process — minimizing how many places a private key is ever displayed or copied.",
       },
     ],
   },
