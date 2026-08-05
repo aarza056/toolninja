@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { tools, categories } from "@/lib/tools";
+import { tools, categories, LATEST_TOOL_SLUGS } from "@/lib/tools";
 import type { Tool } from "@/lib/tools";
 import * as LucideIcons from "lucide-react";
 import { Search, X, RefreshCw } from "lucide-react";
@@ -22,16 +22,7 @@ const FEATURED_SLUGS = [
   "color-palette",
 ];
 
-const NEW_SLUGS = new Set([
-  "sql-formatter","color-palette","jwt-generator","crypto-tools",
-  "http-request","html-formatter","config-validator","text-diff",
-  "cidr-calculator","unicode-explorer",
-  "xpath-tester","docker-run-to-compose",
-]);
-
-const LATEST_SLUGS = [
-  "docker-run-to-compose",
-];
+const NEW_SLUGS = new Set(LATEST_TOOL_SLUGS);
 
 const CATEGORY_COLORS: Record<string, string> = {
   Format:    "bg-purple-500/10 text-purple-400 border-purple-500/20",
@@ -144,7 +135,7 @@ export default function HomeClient() {
   }, [search, activeCategory]);
 
   const featuredTools = tools.filter((t) => FEATURED_SLUGS.includes(t.slug));
-  const latestTools = tools.filter((t) => LATEST_SLUGS.includes(t.slug));
+  const latestTools = LATEST_TOOL_SLUGS.map((slug) => tools.find((t) => t.slug === slug)).filter(Boolean) as Tool[];
   const isFiltering = search.trim() !== "" || activeCategory !== "All";
 
   const favoriteTools = favSlugs

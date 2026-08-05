@@ -78,10 +78,22 @@ const INITIAL_PERMS: Permissions = {
   others: { read: true, write: false, execute: true },
 };
 
+// Directories need execute (traverse) permission to be usable, but that bit doesn't belong
+// on regular files — stripping it is the standard convention when splitting dir vs file perms.
+function stripExecute(octal: string): string {
+  return octal
+    .split("")
+    .map((d) => (Number(d) & 6).toString())
+    .join("");
+}
+
 export default function ChmodCalculatorClient() {
   const [perms, setPerms] = useState<Permissions>(INITIAL_PERMS);
   const [octalInput, setOctalInput] = useState("755");
   const [octalError, setOctalError] = useState("");
+  const [recursivePath, setRecursivePath] = useState("/path/to/dir");
+  const [splitFileDir, setSplitFileDir] = useState(false);
+  const [fileOctal, setFileOctal] = useState("644");
 
   const ownerDigit = permSetToDigit(perms.owner);
   const groupDigit = permSetToDigit(perms.group);
@@ -228,6 +240,74 @@ export default function ChmodCalculatorClient() {
           <div className="flex items-center gap-3 p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
             <code className="flex-1 text-sm font-mono text-[#f5f5f5]">{chmodCommand}</code>
           </div>
+        </div>
+
+        {/* Recursive / directory command builder */}
+        <div className="p-4 bg-[#111111] border border-[#222222] rounded-[8px] space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-xs text-[#888888] font-medium flex items-center gap-1.5">
+              <Terminal size={12} />
+              Apply recursively to a directory
+            </label>
+            <label className="flex items-center gap-2 text-xs text-[#888888] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={splitFileDir}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setSplitFileDir(checked);
+                  if (checked) setFileOctal(stripExecute(octal));
+                }}
+                className="accent-[#a855f7] w-3.5 h-3.5"
+              />
+              Different permissions for files vs. directories
+            </label>
+          </div>
+
+          <input
+            type="text"
+            value={recursivePath}
+            onChange={(e) => setRecursivePath(e.target.value || "/path/to/dir")}
+            placeholder="/path/to/dir"
+            className="w-full px-3 py-1.5 text-sm font-mono bg-[#0a0a0a] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+          />
+
+          {!splitFileDir ? (
+            <div className="flex items-center gap-3 p-3 bg-[#0a0a0a] border border-[#222222] rounded-[8px]">
+              <code className="flex-1 text-sm font-mono text-[#f5f5f5]">
+                chmod -R {octal} {recursivePath}
+              </code>
+              <CopyButton text={`chmod -R ${octal} ${recursivePath}`} size="sm" />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[#555555] w-20 shrink-0">Directories</span>
+                <code className="text-xs font-mono text-[#a855f7]">{octal}</code>
+                <span className="text-xs text-[#555555]">(from the calculator above)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[#555555] w-20 shrink-0">Files</span>
+                <input
+                  type="text"
+                  value={fileOctal}
+                  onChange={(e) => setFileOctal(e.target.value.replace(/\D/g, "").slice(0, 3))}
+                  maxLength={3}
+                  className="w-16 px-2 py-1 text-xs font-mono bg-[#0a0a0a] border border-[#222222] rounded-[4px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+                />
+                <span className="text-xs text-[#555555]">(execute stripped by default — directories need it to be traversed, files usually don&apos;t)</span>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-[#0a0a0a] border border-[#222222] rounded-[8px]">
+                <code className="flex-1 text-xs font-mono text-[#f5f5f5] whitespace-pre-wrap break-all">
+                  {`find ${recursivePath} -type d -exec chmod ${octal} {} \\;\nfind ${recursivePath} -type f -exec chmod ${/^[0-7]{3}$/.test(fileOctal) ? fileOctal : "644"} {} \\;`}
+                </code>
+                <CopyButton
+                  text={`find ${recursivePath} -type d -exec chmod ${octal} {} \\;\nfind ${recursivePath} -type f -exec chmod ${/^[0-7]{3}$/.test(fileOctal) ? fileOctal : "644"} {} \\;`}
+                  size="sm"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Description */}

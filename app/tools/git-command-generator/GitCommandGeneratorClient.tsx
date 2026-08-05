@@ -4,15 +4,20 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { gitCommands, gitCategories, GitCategory } from "@/lib/git-commands";
+import { explainGitCommand } from "@/lib/git-explainer";
 import { AlertTriangle, Clock, X } from "lucide-react";
 
 const RECENT_KEY = "git-cmd-recent";
 const MAX_RECENT = 5;
 
+type Mode = "find" | "explain";
+
 export default function GitCommandGeneratorClient() {
+  const [mode, setMode] = useState<Mode>("find");
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<GitCategory | "All">("All");
   const [recentIds, setRecentIds] = useState<string[]>([]);
+  const [explainInput, setExplainInput] = useState("");
 
   useEffect(() => {
     try {
@@ -55,12 +60,87 @@ export default function GitCommandGeneratorClient() {
     });
   }, [search, activeCategory]);
 
+  const explanation = useMemo(
+    () => (explainInput.trim() ? explainGitCommand(explainInput) : null),
+    [explainInput]
+  );
+
   return (
     <ToolLayout
       title="Git Command Generator"
-      description="Search and copy git commands — filter by category, find by keyword."
+      description="Search and copy git commands, or paste one you don't recognize to get a plain-English explanation."
     >
       <div className="space-y-5">
+        {/* Mode toggle */}
+        <div className="flex">
+          <button
+            onClick={() => setMode("find")}
+            className={`px-4 py-2 text-sm border first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+              mode === "find" ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+            }`}
+          >
+            Find a command
+          </button>
+          <button
+            onClick={() => setMode("explain")}
+            className={`px-4 py-2 text-sm border border-l-0 first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+              mode === "explain" ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+            }`}
+          >
+            Explain a command
+          </button>
+        </div>
+
+        {mode === "explain" ? (
+          <div className="space-y-4">
+            <input
+              type="text"
+              value={explainInput}
+              onChange={(e) => setExplainInput(e.target.value)}
+              placeholder="Paste a git command… e.g. git reset --hard HEAD~3"
+              spellCheck={false}
+              className="w-full font-mono bg-[#111111] border border-[#222222] rounded-[6px] px-4 py-2.5 text-sm text-[#f5f5f5] placeholder:text-[#555555] focus:outline-none focus:border-[#a855f7] transition-colors"
+            />
+
+            {explainInput.trim() && !explanation && (
+              <div className="text-center py-8 text-[#555555] text-sm">
+                Didn&apos;t recognize that subcommand — try one like reset, rebase, checkout, merge, push, or stash.
+              </div>
+            )}
+
+            {explanation && (
+              <div className="border border-[#222222] rounded-[8px] p-4 bg-[#111111] space-y-3">
+                {explanation.hasDangerousFlags && (
+                  <div className="flex items-center gap-1.5 text-xs text-[#f59e0b] border border-[#f59e0b]/30 bg-[#f59e0b]/5 px-2.5 py-1.5 rounded-[6px] w-fit">
+                    <AlertTriangle size={12} />
+                    Contains a flag that can permanently discard work — read the explanation below before running it.
+                  </div>
+                )}
+                <div>
+                  <code className="text-sm font-mono text-[#a855f7]">git {explanation.subcommand}</code>
+                  <p className="text-sm text-[#f5f5f5] mt-1">{explanation.subcommandMeaning}</p>
+                </div>
+                {explanation.tokens.length > 0 && (
+                  <div className="space-y-1.5 pt-2 border-t border-[#1a1a1a]">
+                    {explanation.tokens.map((t, i) => (
+                      <div key={i} className="flex items-start gap-2.5">
+                        <code
+                          className={`text-xs font-mono px-1.5 py-0.5 rounded-[4px] shrink-0 ${
+                            t.dangerous ? "bg-[#f59e0b]/10 text-[#f59e0b]" : "bg-[#1a1a1a] text-[#a855f7]"
+                          }`}
+                        >
+                          {t.token}
+                        </code>
+                        <p className="text-xs text-[#888888]">{t.meaning}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
         {/* Search */}
         <input
           type="text"
@@ -137,6 +217,8 @@ export default function GitCommandGeneratorClient() {
           {activeCategory !== "All" ? ` in ${activeCategory}` : ""}
           {search ? ` matching "${search}"` : ""}
         </p>
+          </>
+        )}
       </div>
     </ToolLayout>
   );

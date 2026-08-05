@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Plus, X } from "lucide-react";
+import { Plus, X, ImageUp } from "lucide-react";
+import { extractColors } from "@/lib/color-extractor";
 
 type GradientType = "linear" | "radial" | "conic" | "mesh";
 type RadialShape = "circle" | "ellipse";
@@ -44,6 +45,21 @@ const RADIAL_POSITIONS: RadialPosition[] = [
 ];
 
 let nextId = 3;
+
+// Simple RGB -> hue (0-360) so extracted colors can be sorted into a smoother gradient
+// order than their raw frequency-sorted order from extractColors.
+function hue([r, g, b]: [number, number, number]): number {
+  const rN = r / 255, gN = g / 255, bN = b / 255;
+  const max = Math.max(rN, gN, bN), min = Math.min(rN, gN, bN);
+  if (max === min) return 0;
+  const d = max - min;
+  let h: number;
+  if (max === rN) h = ((gN - bN) / d) % 6;
+  else if (max === gN) h = (bN - rN) / d + 2;
+  else h = (rN - gN) / d + 4;
+  h *= 60;
+  return h < 0 ? h + 360 : h;
+}
 
 function buildGradientCss(
   type: GradientType,
@@ -105,6 +121,31 @@ export default function CssGradientClient() {
 
   const updateBlob = (id: number, field: keyof MeshBlob, value: string | number) =>
     setBlobs((prev) => prev.map((b) => (b.id === id ? { ...b, [field]: value } : b)));
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [extracting, setExtracting] = useState(false);
+
+  const extractFromImage = (file: File) => {
+    setExtracting(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const colors = extractColors(img, 5).sort((a, b) => hue(a.rgb) - hue(b.rgb));
+        setStops(
+          colors.map((c, i) => ({
+            id: nextId++,
+            color: c.hex,
+            position: Math.round((i / (colors.length - 1)) * 100),
+          }))
+        );
+        setType("linear");
+        setExtracting(false);
+      };
+      img.src = String(reader.result ?? "");
+    };
+    reader.readAsDataURL(file);
+  };
 
   const types: GradientType[] = ["linear", "radial", "conic", "mesh"];
 
@@ -320,13 +361,33 @@ export default function CssGradientClient() {
               <label className="text-xs text-[#888888] font-medium">
                 Color Stops ({stops.length}/6)
               </label>
-              <button
-                onClick={addStop}
-                disabled={stops.length >= 6}
-                className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-[6px] bg-[#1a1a1a] hover:bg-[#222222] text-[#f5f5f5] border border-[#222222] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <Plus size={11} /> Add Stop
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={extracting}
+                  className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-[6px] bg-[#1a1a1a] hover:bg-[#222222] text-[#f5f5f5] border border-[#222222] transition-colors disabled:opacity-40"
+                >
+                  <ImageUp size={11} /> {extracting ? "Extracting…" : "From Image"}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) extractFromImage(f);
+                    e.target.value = "";
+                  }}
+                />
+                <button
+                  onClick={addStop}
+                  disabled={stops.length >= 6}
+                  className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-[6px] bg-[#1a1a1a] hover:bg-[#222222] text-[#f5f5f5] border border-[#222222] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <Plus size={11} /> Add Stop
+                </button>
+              </div>
             </div>
             <div className="space-y-2">
               {stops.map((stop) => (

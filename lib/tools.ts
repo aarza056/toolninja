@@ -406,6 +406,19 @@ export const tools: Tool[] = [
       "ai bot blocker robots.txt",
     ],
   },
+  {
+    slug: "barcode-generator",
+    name: "Barcode Generator",
+    description: "Generate Code 128, EAN-13, and UPC-A barcodes — download as PNG",
+    icon: "Barcode",
+    category: "Generate",
+    keywords: [
+      "barcode generator", "barcode generator online", "code 128 generator",
+      "ean-13 generator", "upc-a generator", "generate barcode free",
+      "barcode maker online", "product barcode generator", "barcode creator",
+      "barcode generator no signup",
+    ],
+  },
 
   // ─── Convert ──────────────────────────────────────────────────────────────
   {
@@ -558,6 +571,19 @@ export const tools: Tool[] = [
       "parse url online", "url breakdown tool", "query parameter builder",
       "url component parser", "build query string", "url query string parser",
       "url structure analyzer", "add utm parameters to url", "url analyzer online",
+    ],
+  },
+  {
+    slug: "htaccess-to-nginx",
+    name: ".htaccess to Nginx Converter",
+    description: "Convert Apache .htaccess rules to nginx server block syntax",
+    icon: "Server",
+    category: "Convert",
+    keywords: [
+      "htaccess to nginx converter", "apache to nginx converter", "convert htaccess to nginx",
+      "rewriterule to nginx", "apache rewrite rules to nginx", "nginx config converter",
+      "htaccess to nginx online", "apache nginx migration tool", "mod_rewrite to nginx",
+      "htaccess nginx equivalent",
     ],
   },
 
@@ -789,6 +815,32 @@ export const tools: Tool[] = [
       "jwt keypair online",
     ],
   },
+  {
+    slug: "ssh-key-generator",
+    name: "SSH Key Generator",
+    description: "Generate Ed25519 and RSA SSH key pairs in OpenSSH format, entirely in your browser",
+    icon: "Terminal",
+    category: "Security",
+    keywords: [
+      "ssh key generator", "ssh key generator online", "generate ssh key online",
+      "ed25519 key generator", "rsa ssh key generator", "openssh key generator",
+      "ssh keygen online", "generate ssh key pair", "ssh public private key generator",
+      "ssh key generator free", "create ssh key online",
+    ],
+  },
+  {
+    slug: "totp-generator",
+    name: "TOTP / 2FA Code Generator",
+    description: "Generate live TOTP authentication codes from a secret key — test 2FA integrations in your browser",
+    icon: "Smartphone",
+    category: "Security",
+    keywords: [
+      "totp generator", "totp generator online", "2fa code generator",
+      "generate totp code", "authenticator code generator", "otp generator online",
+      "test 2fa online", "totp secret generator", "google authenticator code generator",
+      "2fa testing tool", "otpauth generator",
+    ],
+  },
 
   // ─── Accessibility ────────────────────────────────────────────────────────
   {
@@ -802,6 +854,19 @@ export const tools: Tool[] = [
       "wcag aa contrast checker online", "accessibility contrast checker",
       "text background contrast checker", "wcag aaa checker", "contrast checker free",
       "color accessibility checker", "a11y contrast checker", "contrast ratio calculator",
+    ],
+  },
+  {
+    slug: "color-blindness-simulator",
+    name: "Color Blindness Simulator",
+    description: "Upload an image and see exactly how it looks under 7 types of color vision deficiency",
+    icon: "Eye",
+    category: "Accessibility",
+    keywords: [
+      "color blindness simulator", "color blindness simulator online", "deuteranopia simulator",
+      "protanopia simulator", "tritanopia simulator", "color vision deficiency simulator",
+      "colorblind simulator free", "test image for color blindness", "achromatopsia simulator",
+      "color blind accessibility checker", "simulate color blindness on image",
     ],
   },
 
@@ -857,3 +922,14 @@ export const tools: Tool[] = [
 export const categories = ["Format", "Encode", "Generate", "Convert", "Test", "Design", "Security", "Accessibility", "Reference"] as const;
 
 export type Category = (typeof categories)[number];
+
+// Single source of truth for "newest tool" badges and the homepage's "Just added" section —
+// update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
+// HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
+export const LATEST_TOOL_SLUGS = [
+  "ssh-key-generator",
+  "totp-generator",
+  "htaccess-to-nginx",
+  "color-blindness-simulator",
+  "barcode-generator",
+];

@@ -475,19 +475,21 @@ export const toolContent: Record<string, ToolContent> = {
 
   "hash-generator": {
     about:
-      "The ToolNinja Hash Generator is a free online hash calculator supporting MD5, SHA-1, SHA-256, SHA-512 and other cryptographic hash algorithms. Enter any text and instantly generate its hash value — useful for checksums, data integrity verification, and security research.\n\nUse the MD5 generator for file checksums and non-security fingerprinting, the SHA-256 generator for data integrity verification and digital signatures, or SHA-512 when you need maximum hash length. All hashing runs using the Web Crypto API built into your browser for accurate, standard-compliant results.\n\nCommon use cases include verifying downloaded file integrity by comparing checksums, generating content hashes for cache busting in web development, creating hash-based identifiers, and understanding how different algorithms compare in output length and security properties.\n\nEverything runs 100% in your browser. Your input data — no matter how sensitive — never leaves your machine. No login required.",
+      "The ToolNinja Hash Generator is a free online hash calculator supporting MD5, SHA-1, SHA-256, SHA-512 and other cryptographic hash algorithms. Enter any text and instantly generate its hash value — useful for checksums, data integrity verification, and security research.\n\nUse the MD5 generator for file checksums and non-security fingerprinting, the SHA-256 generator for data integrity verification and digital signatures, or SHA-512 when you need maximum hash length. All hashing runs using the Web Crypto API built into your browser for accurate, standard-compliant results.\n\nCommon use cases include verifying downloaded file integrity by comparing checksums, generating content hashes for cache busting in web development, creating hash-based identifiers, and understanding how different algorithms compare in output length and security properties.\n\nA File mode hashes an uploaded file directly — drag it in and get its checksum without needing a command-line tool, useful for verifying a download against a publisher's published SHA-256 sum. The file itself is read and hashed entirely in your browser and never uploaded anywhere.\n\nEverything runs 100% in your browser. Your input data — no matter how sensitive — never leaves your machine. No login required.",
     useCases: [
       "Verifying file integrity by comparing checksums before and after transfer",
       "Generating content-based cache keys for assets or API responses",
       "Creating deterministic identifiers from arbitrary string inputs",
       "Understanding what algorithm produced a stored hash",
       "Computing an HMAC signature to verify a webhook payload from Stripe, GitHub, or similar services",
+      "Checking a downloaded file against a publisher's published checksum without a command-line tool",
     ],
     tips: [
       "SHA-1 is cryptographically broken — don't use it for security. SHA-256 is the current standard for general-purpose integrity checks.",
       "Two different inputs that produce the same hash are called a collision. SHA-256 and SHA-512 have no known practical collisions.",
       "Hashing is not encryption — you cannot recover the original input. Use it for integrity, not confidentiality.",
       "Switch to HMAC mode and paste the raw request body plus your webhook secret to verify a Stripe/GitHub signature header matches — compare the result byte-for-byte, not just visually.",
+      "Use File mode to verify a download's checksum directly — no need to open a terminal for a one-off sha256sum check.",
     ],
     faq: [
       {
@@ -511,16 +513,18 @@ export const toolContent: Record<string, ToolContent> = {
 
   "number-base-converter": {
     about:
-      "The Number Base Converter translates integers between binary (base 2), octal (base 8), decimal (base 10), and hexadecimal (base 16). These four numeral systems cover the vast majority of computing use cases — from low-level bit manipulation to memory addresses, file permissions, and color codes.",
+      "The Number Base Converter translates integers between binary (base 2), octal (base 8), decimal (base 10), and hexadecimal (base 16). These four numeral systems cover the vast majority of computing use cases — from low-level bit manipulation to memory addresses, file permissions, and color codes.\n\nA Bitwise Operations panel takes the converted value as operand A and computes AND, OR, XOR, NOT, and left/right shifts against a second operand — with a selectable 8/16/32/64-bit width so results match the fixed-width behavior most languages actually use, rather than JavaScript's arbitrary-precision BigInt default.",
     useCases: [
       "Converting hex color values (#a855f7) to RGB decimal components",
       "Understanding binary representations when working with bitwise operations",
       "Converting Unix file permission octals (755, 644) to understand what they mean",
       "Working with memory addresses and CPU registers in systems programming",
+      "Computing an AND/OR/XOR/shift result at a specific bit width without opening a REPL",
     ],
     tips: [
       "Hex digits A-F represent decimal 10-15. One hex digit = 4 binary bits (a nibble).",
       "Binary inputs can use spaces for readability (1010 1111) — spaces are ignored during conversion.",
+      "Match the bit width to your target language's integer type (e.g. 32 for a C int, 64 for a Java long) — AND/OR/XOR/NOT results depend on it, since they're computed within that fixed width rather than arbitrary precision.",
     ],
     faq: [
       {
@@ -792,17 +796,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "chmod-calculator": {
     about:
-      "The ToolNinja Chmod Calculator is a free online Linux file permission calculator. Convert between symbolic notation (rwxr-xr-x) and octal values (755, 644, 777) visually by clicking checkboxes — no need to memorize octal values or permission combinations.\n\nUse it as a chmod calculator to find the right permission for any file or directory. Calculate chmod 755 for web server directories and executable scripts, chmod 644 for standard files and config files, chmod 600 for private SSH keys and sensitive credentials, or chmod 777 when you need full access (and understand the security implications). The Linux permission calculator shows Owner, Group and Other permissions side by side so you can see exactly what each user class can do.\n\nWhether you're working with rwxr-xr-x permissions and need the octal equivalent, or have an octal value and need to understand what symbolic permissions it represents — the chmod converter handles both directions instantly. Also supports special permission bits: setuid, setgid and sticky bit.\n\nRuns entirely in your browser — no login, no server calls. Your permission calculations stay completely private.",
+      "The ToolNinja Chmod Calculator is a free online Linux file permission calculator. Convert between symbolic notation (rwxr-xr-x) and octal values (755, 644, 777) visually by clicking checkboxes — no need to memorize octal values or permission combinations.\n\nUse it as a chmod calculator to find the right permission for any file or directory. Calculate chmod 755 for web server directories and executable scripts, chmod 644 for standard files and config files, chmod 600 for private SSH keys and sensitive credentials, or chmod 777 when you need full access (and understand the security implications). The Linux permission calculator shows Owner, Group and Other permissions side by side so you can see exactly what each user class can do.\n\nWhether you're working with rwxr-xr-x permissions and need the octal equivalent, or have an octal value and need to understand what symbolic permissions it represents — the chmod converter handles both directions instantly. Also supports special permission bits: setuid, setgid and sticky bit.\n\nA recursive command builder generates the exact chmod command for applying a permission to an entire directory tree — either a single chmod -R for uniform permissions, or a pair of find + chmod commands when directories and files need different permissions (the standard convention: directories keep execute so they can be traversed, files usually do not).\n\nRuns entirely in your browser — no login, no server calls. Your permission calculations stay completely private.",
     useCases: [
       "Setting correct permissions for web server files (644 for files, 755 for directories)",
       "Debugging 'Permission denied' errors in Linux and macOS environments",
       "Understanding what an octal permission string actually allows before applying it",
       "Writing deployment scripts that configure file permissions correctly",
+      "Generating a find + chmod command pair to fix an entire directory tree with correct file vs. directory permissions",
     ],
     tips: [
       "Never use 777 (rwxrwxrwx) in production — it gives full access to everyone on the system.",
       "Web server files: 644 (rw-r--r--). Directories: 755 (rwxr-xr-x). Private config files: 600 (rw-------).",
       "The execute bit on a directory controls whether users can enter it (cd into it), not just list its contents.",
+      "When fixing permissions recursively, use the split find + chmod commands rather than a single chmod -R — applying the same octal to both files and directories almost always makes files incorrectly executable.",
     ],
     faq: [
       {
@@ -826,17 +832,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "css-gradient": {
     about:
-      "The CSS Gradient Generator creates linear, radial, and conic CSS gradients visually with multiple color stops and live code output. It generates copy-paste ready background-image CSS declarations compatible with all modern browsers — no vendor prefixes required for linear and radial gradients.",
+      "The CSS Gradient Generator creates linear, radial, and conic CSS gradients visually with multiple color stops and live code output. It generates copy-paste ready background-image CSS declarations compatible with all modern browsers — no vendor prefixes required for linear and radial gradients.\n\nThe \"From Image\" option extracts a gradient directly from an uploaded photo — it pulls the dominant colors out of the image and arranges them by hue into a ready-to-use linear gradient, a fast way to get a palette that actually matches a hero image or brand photo instead of picking colors from scratch.",
     useCases: [
       "Designing hero section backgrounds and full-bleed imagery replacements",
       "Creating button hover states with gradient fills",
       "Building progress bars, loading indicators, and visual meters",
       "Generating brand-consistent gradient palettes for design systems",
+      "Extracting a matching gradient directly from a product photo or hero image",
     ],
     tips: [
       "Use conic gradients for pie charts and angular progress indicators.",
       "Add a solid fallback color (background-color) before the gradient for older browsers.",
       "Gradients in CSS are treated as images — they can be used anywhere background-image is accepted, including list-style-image.",
+      "Use \"From Image\" to seed color stops from a photo, then fine-tune the extracted stops manually — it's a fast starting point, not a final answer.",
     ],
     faq: [
       {
@@ -1287,17 +1295,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "git-command-generator": {
     about:
-      "The Git Command Generator is a searchable reference for 60+ git commands organized by category — Setup, Branches, Staging, Commits, Remote, Undo, History, Tags, Stash, and Advanced. Search by name or keyword to find the exact command, copy it with one click, and see warning badges on destructive commands that rewrite history.",
+      "The Git Command Generator is a searchable reference for 60+ git commands organized by category — Setup, Branches, Staging, Commits, Remote, Undo, History, Tags, Stash, and Advanced. Search by name or keyword to find the exact command, copy it with one click, and see warning badges on destructive commands that rewrite history.\n\nAn Explain a command mode flips the direction: paste any git command — including one with flags or arguments that do not exactly match a stored example — and get a plain-English breakdown of the subcommand and every flag, with dangerous flags (--hard, --force, -D, --no-verify, and more) called out explicitly. It correctly expands bundled short flags too, so `git clean -fdx` is explained as -f, -d, and -x individually rather than as one opaque token.",
     useCases: [
       "Quickly finding the right git syntax without leaving the browser",
       "Learning git commands beyond the basics (reflog, bisect, worktree)",
       "Checking the correct flags for destructive operations before running them",
       "Onboarding new developers to git workflows with a visual reference",
+      "Understanding exactly what an unfamiliar git command from a tutorial, Stack Overflow answer, or teammate actually does before running it",
     ],
     tips: [
       "Commands marked with a Caution badge rewrite history — never use them on branches others have already pulled.",
       "Search by concept, not just command name: try 'undo', 'linear', or 'recover' to find commands by what they do.",
       "Your recently copied commands are saved in localStorage for quick re-access.",
+      "Paste a command into Explain mode before running it if you are not 100% sure what a flag does — it flags anything that can discard work before you find out the hard way.",
     ],
     faq: [
       {
@@ -2082,6 +2092,164 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Should I use this to generate production keys?",
         a: "The cryptography (WebCrypto's RSA and ECDSA implementations) is sound and suitable for real use, but for production systems, prefer generating keys on the server or infrastructure that will actually hold the private key, using your standard key-management process — minimizing how many places a private key is ever displayed or copied.",
+      },
+    ],
+  },
+
+  "ssh-key-generator": {
+    about:
+      "The SSH Key Generator creates Ed25519 or RSA key pairs directly in your browser using the WebCrypto API, formatted exactly as OpenSSH expects — no separate conversion step needed. The public key comes out as a single-line `ssh-ed25519 AAAA...` or `ssh-rsa AAAA...` string ready to paste into a server's authorized_keys file or a Git host's SSH key settings. The private key comes out ready to save as-is: Ed25519 keys are written in the real OPENSSH PRIVATE KEY container format, and RSA keys as PKCS8 PEM, which OpenSSH (7.6+) reads natively.\n\nBoth formats were verified byte-for-byte against the real ssh-keygen tool during development — the public keys and SHA256 fingerprints it derives from ToolNinja-generated private keys match exactly, confirming genuine interoperability rather than just visually-plausible output.\n\nEd25519 is the modern recommendation for new keys: shorter, faster, and free of several implementation pitfalls that have affected RSA and ECDSA over the years. RSA remains available for the (increasingly rare) systems that don't yet support Ed25519.",
+    useCases: [
+      "Generating a new Ed25519 key for a fresh GitHub, GitLab, or server SSH setup",
+      "Creating a dedicated deploy key for a CI/CD pipeline without touching your personal key",
+      "Getting an RSA key pair for a legacy system that doesn't support Ed25519",
+      "Generating a disposable key pair for testing SSH configuration locally",
+    ],
+    tips: [
+      "Prefer Ed25519 over RSA for any new key — it's shorter, faster to verify, and the current best-practice default across GitHub, GitLab, and OpenSSH itself.",
+      "The private key never leaves your browser during generation, but once downloaded it's a real credential — store it like any other SSH private key (correct file permissions, never committed to a repo).",
+      "Add a comment (typically an email or hostname) to make it easy to identify which key is which later, especially if you'll have several in your authorized_keys file.",
+    ],
+    faq: [
+      {
+        q: "Is this actually compatible with real SSH clients and servers?",
+        a: "Yes — both the Ed25519 and RSA output were verified directly against ssh-keygen during development: deriving the public key from a ToolNinja-generated private key with `ssh-keygen -y` produces an identical result, and `ssh-keygen -l` computes the same SHA256 fingerprint. The keys are genuinely standard, not just formatted to look correct.",
+      },
+      {
+        q: "Why does the RSA private key look different from the Ed25519 one?",
+        a: "Ed25519 keys are written in the newer OPENSSH PRIVATE KEY container format (the same one `ssh-keygen` produces by default today). RSA keys are written as PKCS8 PEM (`BEGIN PRIVATE KEY`), which modern OpenSSH (7.6 and later) reads directly without conversion — both are fully standard, just different historical formats for the two algorithms.",
+      },
+      {
+        q: "Should I use 2048-bit or 4096-bit RSA?",
+        a: "2048-bit is the current baseline and is still considered secure — most systems default to it. 4096-bit adds a meaningful security margin at the cost of slower key operations and a larger key size; use it only if a specific compliance requirement calls for it. For new keys generally, Ed25519 is preferable to either.",
+      },
+      {
+        q: "Is my private key ever sent anywhere?",
+        a: "No. Key generation happens entirely client-side via the browser's WebCrypto API. Nothing is transmitted to a server at any point — but once you copy or download the key, treat the file itself with the same care as any other SSH private key.",
+      },
+    ],
+  },
+
+  "totp-generator": {
+    about:
+      "The TOTP / 2FA Code Generator produces live, auto-refreshing time-based one-time-password codes from a Base32 secret — the same codes an app like Google Authenticator or Authy would show, computed with the standard RFC 6238 algorithm directly in your browser. Paste in a secret (or generate a random one), and a 6- or 8-digit code updates automatically with a countdown showing exactly when it'll refresh.\n\nIt also builds and parses `otpauth://` URLs — the same format encoded into 2FA setup QR codes — so you can round-trip between a raw secret and the URL format your app or documentation actually uses. SHA-1, SHA-256, and SHA-512 are all supported, along with custom digit counts and refresh periods for testing non-default configurations.\n\nThe entire computation — HMAC, dynamic truncation, and the final code — runs through the Web Crypto API in your browser. Your secret is never transmitted anywhere, which matters given that a TOTP secret is exactly as sensitive as the 2FA codes it produces.",
+    useCases: [
+      "Testing a 2FA integration during development without reaching for your phone every 30 seconds",
+      "Generating a backup code source when setting up a new service's two-factor authentication",
+      "Debugging a TOTP implementation by comparing computed codes against expected values",
+      "Verifying an otpauth:// URL is correctly formatted before embedding it in a QR code",
+    ],
+    tips: [
+      "Most consumer apps (Google Authenticator, Authy) use SHA-1, 6 digits, and a 30-second period — only change these if you know your target system uses something different.",
+      "Use the otpauth:// import field to quickly load a secret straight from a URL you've copied out of a QR code payload or a service's manual setup instructions.",
+      "Treat any secret you paste in here as sensitive — anyone with the secret can generate valid 2FA codes for that account.",
+    ],
+    faq: [
+      {
+        q: "Is this the same algorithm my phone's authenticator app uses?",
+        a: "Yes — TOTP is a standardized algorithm (RFC 6238) built on HMAC-based one-time passwords (HOTP). Any correct implementation, whether it's Google Authenticator, Authy, or this tool, produces the identical code for the same secret, algorithm, digit count, and time period, because the math is fully specified by the standard rather than app-specific.",
+      },
+      {
+        q: "What's the difference between the secret and the otpauth:// URL?",
+        a: "The secret is the raw Base32-encoded key used in the HMAC computation — the actual sensitive credential. The otpauth:// URL wraps that secret together with metadata (account label, issuer name, algorithm, digits, period) in the single format that QR codes for 2FA setup encode, so a scanning app knows how to configure itself, not just what the secret is.",
+      },
+      {
+        q: "Why would I ever need SHA-256 or SHA-512, or a period other than 30 seconds?",
+        a: "The overwhelming majority of consumer 2FA uses SHA-1/6-digit/30-second by default, but the TOTP standard supports alternatives, and some enterprise or custom systems use them deliberately for a longer security margin or a different refresh cadence. These options exist here mainly for testing and verifying non-default TOTP configurations, not everyday use.",
+      },
+      {
+        q: "Is it safe to generate real account 2FA codes with an online tool?",
+        a: "The computation is 100% client-side — your secret is never sent to a server — but the safest practice for a production account's actual ongoing 2FA is still a dedicated authenticator app or hardware key, since this tool has no persistent, encrypted secret storage the way a real authenticator app does. It's best suited for testing, debugging, and one-off verification rather than as your daily-driver authenticator.",
+      },
+    ],
+  },
+
+  "htaccess-to-nginx": {
+    about:
+      "The .htaccess to Nginx Converter translates Apache's .htaccess directives into nginx server block syntax — RewriteRule and RewriteCond chains, Redirect/RedirectMatch, ErrorDocument, DirectoryIndex, Options -Indexes, <Files> blocks, and basic auth. It's built to get the handful of patterns that account for most real .htaccess files right, rather than attempting a mechanical, line-for-line translation that produces subtly broken nginx config.\n\nThat matters most for a few extremely common idioms that don't translate literally: forcing HTTPS, stripping or adding a www prefix, and the standard WordPress front-controller block. All three involve RewriteCond capture groups interacting with RewriteRule's own capture groups in ways that collide if translated naively — this tool handles those cases specifically, and for the WordPress pattern emits nginx's own recommended `try_files` idiom rather than an if-based port, since nginx's documentation itself favors try_files over if-based file-existence checks for exactly this scenario.\n\nAnything it doesn't have a confident translation for — a specific PHP handler directive, an unusual flag combination, RewriteBase — is called out explicitly as a warning rather than silently dropped or guessed at, so you know exactly what still needs manual attention.",
+    useCases: [
+      "Migrating a WordPress or PHP site's .htaccess rules when moving from Apache to nginx",
+      "Converting a force-HTTPS or www-redirect rule without hand-translating the regex capture groups",
+      "Getting a starting nginx config from an inherited .htaccess file with unclear history",
+      "Checking which .htaccess directives have no direct nginx equivalent before a server migration",
+    ],
+    tips: [
+      "The WordPress front-controller pattern (RewriteCond !-f, !-d, then a catch-all RewriteRule to index.php) is detected and converted to nginx's recommended try_files block — the standard, idiomatic form rather than a literal port.",
+      "Review every warning the tool surfaces before deploying — they mark directives Apache and nginx handle fundamentally differently, not just cosmetic differences.",
+      "PHP handling in nginx requires a dedicated `location ~ \\.php$` block passing requests to php-fpm — there's no direct equivalent to Apache's AddHandler, so the tool provides a starting template rather than a false translation.",
+    ],
+    faq: [
+      {
+        q: "Will this produce a 100% working nginx config from any .htaccess file?",
+        a: "For the common cases — redirects, rewrites, error pages, directory index, basic auth, simple <Files> blocks — yes, with correct handling of the tricky capture-group interactions in host/scheme redirects. For anything unusual, the tool flags it as needing manual review rather than guessing, since a confidently wrong nginx directive is worse than an honest gap.",
+      },
+      {
+        q: "Why can't nginx's if directive just be a direct swap for RewriteCond?",
+        a: "Apache chains multiple RewriteCond lines with implicit AND logic before a RewriteRule, and each cond's capture groups (%1, %2) are available to the rule's target. nginx's if doesn't chain the same way, and capture groups from a regex condition and from a rewrite pattern in the same scope can collide under the same $1 numbering — this tool handles the common single-condition cases correctly and flags multi-condition chains for manual review.",
+      },
+      {
+        q: "Why does the WordPress rule get converted to try_files instead of an if block?",
+        a: "nginx's own documentation explicitly recommends try_files over if-based file-existence checks for exactly this \"serve the file if it exists, otherwise route to index.php\" pattern — it's both more efficient and avoids nginx's well-documented if-directive quirks. Converting to the idiomatic form is more useful than a literal, more fragile port of the Apache logic.",
+      },
+    ],
+  },
+
+  "color-blindness-simulator": {
+    about:
+      "The Color Blindness Simulator shows you exactly how an uploaded image looks to someone with any of seven types of color vision deficiency — protanopia, deuteranopia, and tritanopia (complete loss of red, green, or blue cone function respectively), their milder anomalous counterparts, and achromatopsia (complete color blindness). Upload an image once and switch between all seven simulations instantly, with the original shown side-by-side for direct comparison.\n\nThe simulation uses published color-transformation matrices (Machado, Oliveira & Fernandes, 2009) applied in linearized RGB space — the same general approach used by established simulation tools — rather than a naive approximation, so the color shifts it shows genuinely reflect how each deficiency affects perception (reds shifting toward brown/yellow under protanopia, blues and yellows becoming hard to distinguish under tritanopia, and so on).\n\nColor vision deficiency affects roughly 1 in 12 men and 1 in 200 women worldwide, overwhelmingly the red-green forms — which makes checking a design against it a real accessibility concern, not an edge case. Everything runs on-canvas in your browser; the image is never uploaded anywhere.",
+    useCases: [
+      "Checking whether a chart or data visualization's color coding is still distinguishable for red-green color blindness",
+      "Reviewing a UI mockup or brand palette before it ships to catch color-only signals (error states, status indicators)",
+      "Understanding what a specific type of color vision deficiency actually looks like, for design education",
+      "Auditing marketing or product imagery for color-dependent information that colorblind users would miss",
+    ],
+    tips: [
+      "Deuteranomaly and protanomaly (the anomalous, partial forms) are far more common than full dichromacy — check those first if you're prioritizing which simulation matters most.",
+      "If a design relies on color alone to convey information (red vs. green status, for instance), that's the pattern most likely to break under any red-green deficiency — pair color with an icon, label, or pattern as well.",
+      "Achromatopsia is rare (roughly 1 in 30,000) but useful as a stress test — if your design is still readable in pure grayscale, it's in good shape for contrast-driven accessibility generally.",
+    ],
+    faq: [
+      {
+        q: "How accurate is this simulation compared to what someone with color blindness actually sees?",
+        a: "It uses published, peer-reviewed color transformation matrices (Machado, Oliveira & Fernandes, 2009) applied in linear RGB space, the same general method used by established simulation tools — it's a well-regarded approximation, not an exact replica of any individual's vision, since color vision deficiency varies in severity between people even within the same category.",
+      },
+      {
+        q: "What's the difference between protanopia and protanomaly?",
+        a: "The '-opia' forms (protanopia, deuteranopia, tritanopia) mean complete loss of function in one cone type — no red, green, or blue sensitivity at all. The '-omaly' forms (protanomaly, deuteranomaly, tritanomaly) mean that cone type still functions but with reduced sensitivity, producing a milder version of the same color confusion. Anomalous forms are significantly more common than complete dichromacy.",
+      },
+      {
+        q: "Is my image uploaded to a server?",
+        a: "No. All simulation happens on an HTML canvas in your browser — the image file itself never leaves your device or gets transmitted anywhere.",
+      },
+    ],
+  },
+
+  "barcode-generator": {
+    about:
+      "The Barcode Generator creates Code 128, EAN-13, and UPC-A barcodes directly in your browser — no server round-trip, and no external barcode library shipped to your browser either; the encoding logic is implemented from the published Code 128 and EAN/UPC specifications. Code 128 handles any printable ASCII text (letters, numbers, punctuation) via Subset B, while EAN-13 and UPC-A handle the numeric product codes used in retail, auto-computing and validating the check digit.\n\nDuring development, the encoder's output was verified byte-for-byte against a widely-used reference barcode library for a range of test inputs — matching not just visually, but at the level of individual black/white module widths — before being reimplemented independently for this tool. That verification step matters for a barcode specifically, since a single incorrect module makes the whole thing unscannable while still looking plausible to the eye.\n\nAdjust bar width and height, then download the result as a PNG ready to drop into a label, document, or product listing.",
+    useCases: [
+      "Generating a Code 128 barcode for an internal inventory or asset-tracking label",
+      "Creating an EAN-13 barcode from a product's GTIN for packaging or an e-commerce listing",
+      "Producing a UPC-A barcode for a US retail product without a subscription barcode service",
+      "Quickly checking whether a 12 or 13-digit product code's check digit is actually valid",
+    ],
+    tips: [
+      "EAN-13 and UPC-A both accept the code with or without its check digit — leave it off and the tool computes the correct one automatically.",
+      "Code 128 (Subset B) covers printable ASCII, making it the right choice for anything that isn't a pure numeric product code — asset tags, internal SKUs, alphanumeric identifiers.",
+      "Increase bar width before printing at small sizes — thin bars are the most common reason a printed barcode fails to scan reliably.",
+    ],
+    faq: [
+      {
+        q: "What's the difference between EAN-13 and UPC-A?",
+        a: "UPC-A is a 12-digit code used primarily in the US and Canada; EAN-13 is its 13-digit international superset. A UPC-A code is actually identical, bar-for-bar, to an EAN-13 code with a leading zero — any EAN-13 scanner can read a UPC-A barcode without special handling, which is why this tool implements UPC-A internally as exactly that case.",
+      },
+      {
+        q: "Why does Code 128 support text but EAN-13/UPC-A only support digits?",
+        a: "Code 128 is a general-purpose symbology designed to encode arbitrary text efficiently — it's what's used for things like shipping labels and internal tracking codes. EAN-13 and UPC-A are retail product-identification standards with a fixed, numeric structure (including a mandatory check digit) defined by GS1, so they're deliberately numeric-only by specification, not a limitation of this tool.",
+      },
+      {
+        q: "Can I use a barcode generated here for actual retail products?",
+        a: "The encoding is standards-compliant and verified against a reference implementation, but a real GTIN/UPC number for retail sale needs to be officially registered through GS1 (or a reseller) to be globally unique and legally usable on a product — this tool generates a correct barcode for whatever number you provide, but doesn't allocate or validate ownership of that number.",
       },
     ],
   },

@@ -7,6 +7,7 @@ import CommandPalette from "@/components/CommandPalette";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieBanner from "@/components/CookieBanner";
+import WhatsNewModal from "@/components/WhatsNewModal";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -124,6 +125,7 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
         <CookieBanner />
+        <WhatsNewModal />
       </body>
     </html>
   );

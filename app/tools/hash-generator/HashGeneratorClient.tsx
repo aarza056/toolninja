@@ -1,16 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Hash, Trash2, AlertCircle } from "lucide-react";
+import { Hash, Trash2, AlertCircle, Upload, FileIcon } from "lucide-react";
 
 const STORAGE_KEY = "toolninja:hash-generator";
 
 type Algorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
 type OutputFormat = "hex" | "base64";
 type CaseFormat = "lower" | "upper";
-type Mode = "hash" | "hmac";
+type Mode = "hash" | "hmac" | "file";
+
+function formatBytes(n: number): string {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(2)} MB`;
+}
 
 async function computeHmac(message: string, secret: string, algorithm: Algorithm): Promise<ArrayBuffer> {
   const enc = new TextEncoder();
@@ -59,6 +65,9 @@ export default function HashGeneratorClient() {
   const [hash, setHash] = useState("");
   const [error, setError] = useState("");
   const [computing, setComputing] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     try {
@@ -74,6 +83,36 @@ export default function HashGeneratorClient() {
   }, [input]);
 
   useEffect(() => {
+    if (mode === "file") {
+      if (!file) {
+        setHash("");
+        setError("");
+        return;
+      }
+      let cancelled = false;
+      setError("");
+      setComputing(true);
+      file
+        .arrayBuffer()
+        .then((buf) => window.crypto.subtle.digest(algorithm, buf))
+        .then((hashBuffer) => {
+          if (cancelled) return;
+          setHash(outputFormat === "hex" ? bufferToHex(hashBuffer, caseFormat === "upper") : bufferToBase64(hashBuffer));
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setError("Failed to hash this file. Please try again.");
+            setHash("");
+          }
+        })
+        .finally(() => {
+          if (!cancelled) setComputing(false);
+        });
+      return () => {
+        cancelled = true;
+      };
+    }
+
     if (!input || (mode === "hmac" && !secret)) {
       setHash("");
       setError("");
@@ -107,13 +146,21 @@ export default function HashGeneratorClient() {
     }
 
     computeHash();
-  }, [input, secret, mode, algorithm, outputFormat, caseFormat]);
+  }, [input, secret, mode, algorithm, outputFormat, caseFormat, file]);
 
   const clear = () => {
     setInput("");
     setSecret("");
+    setFile(null);
     setHash("");
     setError("");
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const f = e.dataTransfer.files?.[0];
+    if (f) setFile(f);
   };
 
   return (
@@ -131,11 +178,19 @@ export default function HashGeneratorClient() {
           </button>
           <button
             onClick={() => setMode("hmac")}
-            className={`px-4 py-2 text-sm border border-l-0 first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+            className={`px-4 py-2 text-sm border border-l-0 last:rounded-r-[6px] transition-colors ${
               mode === "hmac" ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
             }`}
           >
             HMAC
+          </button>
+          <button
+            onClick={() => setMode("file")}
+            className={`px-4 py-2 text-sm border border-l-0 first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+              mode === "file" ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+            }`}
+          >
+            File
           </button>
         </div>
 
@@ -231,18 +286,59 @@ export default function HashGeneratorClient() {
           </div>
         </div>
 
-        {/* Input textarea */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-[#888888] font-medium">Input Text</label>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Enter text to hash..."
-            rows={6}
-            spellCheck={false}
-            className="w-full p-3 font-mono text-sm resize-y bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
-          />
-        </div>
+        {/* Input: text, or file drop zone */}
+        {mode === "file" ? (
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs text-[#888888] font-medium">File</label>
+            <div
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed rounded-[8px] cursor-pointer transition-colors ${
+                dragOver ? "border-[#a855f7] bg-[#a855f7]/5" : "border-[#222222] hover:border-[#333333]"
+              }`}
+            >
+              {file ? (
+                <>
+                  <FileIcon size={28} strokeWidth={1} className="text-[#a855f7]" />
+                  <p className="text-sm text-[#f5f5f5]">{file.name}</p>
+                  <p className="text-xs text-[#555555]">{formatBytes(file.size)} — click or drop to replace</p>
+                </>
+              ) : (
+                <>
+                  <Upload size={28} strokeWidth={1} className="text-[#444444]" />
+                  <p className="text-sm text-[#888888]">Drag & drop a file, or click to upload</p>
+                </>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) setFile(f);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+            <p className="text-xs text-[#555555]">
+              The file never leaves your browser — hashing runs entirely client-side via the Web Crypto API.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs text-[#888888] font-medium">Input Text</label>
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Enter text to hash..."
+              rows={6}
+              spellCheck={false}
+              className="w-full p-3 font-mono text-sm resize-y bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
+            />
+          </div>
+        )}
 
         {/* Hash output */}
         <div className="flex flex-col gap-1.5">

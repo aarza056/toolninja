@@ -154,6 +154,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online robots.txt generator. Build per-bot Allow/Disallow rules, block AI crawlers like GPTBot and Google-Extended with one click, and add sitemap links. No login required.",
   },
+  "barcode-generator": {
+    title: "Barcode Generator Online — Code 128, EAN-13 & UPC-A | ToolNinja",
+    description:
+      "Free online barcode generator. Create Code 128, EAN-13, and UPC-A barcodes with automatic check digits and download as PNG. Verified byte-for-byte against a reference decoder. No login, 100% browser-based.",
+  },
 
   // ── Convert ──────────────────────────────────────────────────────────────
   "color-converter": {
@@ -211,6 +216,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "URL Parser Online — Parse URLs & Build Query Strings | ToolNinja",
     description:
       "Free online URL parser and query string builder. Break any URL down into protocol, host, path, and query parameters, then edit params and rebuild the URL live. One-click UTM parameter add. No login, 100% browser-based.",
+  },
+  "htaccess-to-nginx": {
+    title: ".htaccess to Nginx Converter — Convert Apache Rules Online | ToolNinja",
+    description:
+      "Free online .htaccess to nginx converter. Convert RewriteRule, RewriteCond, redirects, ErrorDocument, and the standard WordPress rewrite block to nginx server block syntax. No login, 100% browser-based.",
   },
 
   // ── Test ─────────────────────────────────────────────────────────────────
@@ -298,12 +308,27 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online JWT key pair generator. Generate RSA and ECDSA key pairs for RS256, RS384, RS512, PS256, ES256 and more, in both PEM and JWK format, using WebCrypto. Private keys never leave your browser. No login required.",
   },
+  "ssh-key-generator": {
+    title: "SSH Key Generator Online — Ed25519 & RSA Keys | ToolNinja",
+    description:
+      "Free online SSH key generator. Generate Ed25519 or RSA key pairs in real OpenSSH format, verified byte-for-byte against ssh-keygen. Private keys are generated locally via WebCrypto and never leave your browser. No login required.",
+  },
+  "totp-generator": {
+    title: "TOTP Generator Online — Live 2FA Authenticator Codes | ToolNinja",
+    description:
+      "Free online TOTP generator. Generate live, refreshing 2FA codes from a Base32 secret key — compatible with Google Authenticator and Authy. Supports SHA-1/256/512, 6/8 digits, and otpauth:// import/export. No login, browser-only.",
+  },
 
   // ── Accessibility ────────────────────────────────────────────────────────
   "contrast-checker": {
     title: "Color Contrast Checker — WCAG AA/AAA Compliance Tool | ToolNinja",
     description:
       "Free online WCAG color contrast checker. Check contrast ratio between foreground and background colors against AA and AAA thresholds for normal text, large text, and UI components. No login, 100% browser-based.",
+  },
+  "color-blindness-simulator": {
+    title: "Color Blindness Simulator — Test Images for Color Vision Deficiency | ToolNinja",
+    description:
+      "Free online color blindness simulator. Upload an image and instantly see how it looks under protanopia, deuteranopia, tritanopia, achromatopsia, and their anomalous variants. No login — images never leave your browser.",
   },
 
   // ── Reference ────────────────────────────────────────────────────────────

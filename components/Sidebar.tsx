@@ -3,17 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { tools, categories } from "@/lib/tools";
+import { tools, categories, LATEST_TOOL_SLUGS } from "@/lib/tools";
 import { Menu, X, Search } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 
-const NEW_TOOL_SLUGS = new Set([
-  "image-compressor",
-  "jwt-keypair-generator",
-  "image-color-picker",
-  "graphql-formatter",
-  "url-parser",
-]);
+const NEW_TOOL_SLUGS = new Set(LATEST_TOOL_SLUGS);
 
 function ToolIcon({ name }: { name: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[name];
