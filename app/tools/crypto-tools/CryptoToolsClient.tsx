@@ -79,7 +79,10 @@ async function aesDecryptBytes(data: ArrayBuffer, password: string): Promise<Arr
 }
 
 function downloadBytes(bytes: Uint8Array | ArrayBuffer, filename: string) {
-  const blob = new Blob([bytes]);
+  // Cast needed because TS's DOM lib types Uint8Array as generic over ArrayBufferLike (which
+  // includes SharedArrayBuffer), stricter than BlobPart's ArrayBuffer requirement — we never
+  // actually hold a SharedArrayBuffer here, so this is a type-level false positive.
+  const blob = new Blob([bytes as BlobPart]);
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = filename;
