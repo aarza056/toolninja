@@ -261,19 +261,21 @@ export const toolContent: Record<string, ToolContent> = {
 
   "markdown-preview": {
     about:
-      "The Markdown Preview renders GitHub-Flavored Markdown (GFM) in real time. It supports headings, bold and italic text, code blocks, inline code, tables, blockquotes, task lists, strikethrough, and horizontal rules — the full GFM specification used by GitHub, GitLab, Notion, and most documentation platforms.",
+      "The Markdown Preview renders GitHub-Flavored Markdown (GFM) in real time. It supports headings, bold and italic text, code blocks, inline code, tables, blockquotes, task lists, strikethrough, and horizontal rules — the full GFM specification used by GitHub, GitLab, Notion, and most documentation platforms.\n\nA Contents panel automatically extracts every heading into a clickable table of contents, using the same lowercase-hyphenated anchor scheme GitHub itself generates — so the structure you see here matches how the headings will actually link once the document is on GitHub. Click any entry to jump straight to that section in the preview.",
     useCases: [
       "Writing and previewing README files before pushing to GitHub",
       "Drafting pull request descriptions with formatted tables and code blocks",
       "Checking table alignment before committing to a documentation site",
       "Writing blog posts in Markdown format before converting or publishing",
       "Exporting a finished document as a PDF via the browser's print dialog, or as standalone HTML",
+      "Navigating a long document's structure via the auto-generated table of contents while editing",
     ],
     tips: [
       "Three backticks followed by a language name (```javascript) enables syntax-highlighted code blocks.",
       "Use | pipes to create tables — the preview renders them as proper HTML tables.",
       "- [ ] creates an unchecked task list item, - [x] creates a checked one.",
       "Export PDF opens a clean, print-formatted version in a new tab and triggers your browser's print dialog — choose 'Save as PDF' as the destination.",
+      "The Contents button only appears once your document has at least one heading — it's hidden for short documents where a table of contents wouldn't help.",
     ],
     faq: [
       {
@@ -581,19 +583,21 @@ export const toolContent: Record<string, ToolContent> = {
 
   "json-to-typescript": {
     about:
-      "The JSON to TypeScript converter automatically generates TypeScript interface definitions from any JSON object or array. It handles nested objects, arrays, union types from mixed arrays, and optional fields — saving the tedious manual work of writing types by hand from API responses.\n\nBeyond TypeScript, it also generates Python dataclasses and Go structs from the same JSON — switch languages with one click, quicktype-style, without re-pasting your sample data.",
+      "The JSON to TypeScript converter automatically generates TypeScript interface definitions from any JSON object or array. It handles nested objects, arrays, union types from mixed arrays, and optional fields — saving the tedious manual work of writing types by hand from API responses.\n\nBeyond TypeScript, it also generates Python dataclasses, Go structs, and Zod schemas from the same JSON — switch languages with one click, quicktype-style, without re-pasting your sample data. The Zod output goes a step further than a plain type: it's runtime-checkable validation code, with string fields that look like an email, URL, UUID, or ISO datetime automatically getting the matching Zod validator (z.string().email(), .url(), .uuid(), .datetime()) instead of a bare z.string().",
     useCases: [
       "Creating TypeScript interfaces from API response payloads",
       "Generating types from database query results or fixture data",
       "Getting a typed starting point when adding TypeScript to an existing JavaScript project",
       "Quickly typing third-party API responses you don't control",
       "Generating Python dataclasses or Go structs from the same JSON response for a polyglot backend",
+      "Generating a Zod schema to validate API responses at runtime, not just type them at compile time",
     ],
     tips: [
       "Paste a real API response to generate accurate types — the generator infers types from actual values.",
       "For arrays with mixed element types, the generator creates union types (string | number).",
       "Review generated types — null values produce type | null, which may need adjustment based on your API contract.",
-      "Switch the language tab to Python or Go to generate dataclasses or structs from the exact same JSON input.",
+      "Switch the language tab to Python, Go, or Zod to generate dataclasses, structs, or a runtime schema from the exact same JSON input.",
+      "Zod's format detection (email, URL, UUID, datetime) is based on the sample values you paste — always double check it against your actual API contract rather than trusting it blindly.",
     ],
     faq: [
       {
@@ -650,7 +654,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "qr-code-generator": {
     about:
-      "The QR Code Generator creates QR codes from any URL or text string with configurable size, foreground and background colors, and error correction levels. QR codes can store up to approximately 4,000 characters and remain scannable even if part of the code is damaged, depending on the error correction level selected.",
+      "The QR Code Generator creates QR codes from any URL or text string with configurable size, foreground and background colors, and error correction levels. QR codes can store up to approximately 4,000 characters and remain scannable even if part of the code is damaged, depending on the error correction level selected.\n\nYou can also embed a center logo — upload a small image and it's composited onto the middle of the code with a clean background pad behind it. Adding a logo automatically switches error correction to H (~30% damage recovery), since the logo itself covers part of the code's data area and needs that extra recovery margin to stay reliably scannable.",
     useCases: [
       "Creating scannable links for print materials, posters, and business cards",
       "Generating QR codes for Wi-Fi credentials (SSID and password) so guests can join without typing a password",
@@ -658,11 +662,13 @@ export const toolContent: Record<string, ToolContent> = {
       "Creating quick-scan links for presentations and conference materials",
       "Building digital business cards with the Contact (vCard) mode for conference badges",
       "Generating event invites with the Event mode so scanning adds the date directly to a calendar",
+      "Adding a brand logo to a QR code for marketing materials without breaking scannability",
     ],
     tips: [
       "Error correction level L is sufficient for clean digital display. Use H for printed codes that might get scratched or partially covered.",
       "Higher error correction makes codes denser and harder to scan from a distance — use the lowest level that works for your use case.",
       "Always test your generated QR code with a phone before printing.",
+      "Keep an embedded logo modest in size — a large overlay is the most common reason a logo'd QR code stops scanning, even at error correction H.",
     ],
     faq: [
       {
@@ -1006,17 +1012,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "crypto-tools": {
     about:
-      "The AES/RSA Encryption tool lets you encrypt and decrypt text in-browser using the Web Cryptography API. AES-GCM mode provides authenticated symmetric encryption — ideal for encrypting data with a password. RSA-OAEP provides asymmetric encryption with a generated key pair, useful for understanding public-key cryptography.",
+      "The AES/RSA Encryption tool lets you encrypt and decrypt text in-browser using the Web Cryptography API. AES-GCM mode provides authenticated symmetric encryption — ideal for encrypting data with a password. RSA-OAEP provides asymmetric encryption with a generated key pair, useful for understanding public-key cryptography.\n\nAES-GCM also has a File mode — drag in any file and get back an encrypted download, or drag in a previously encrypted file to decrypt it back to the original. The file is read, encrypted or decrypted, and re-downloaded entirely in your browser; it's never uploaded anywhere, which is the same privacy guarantee the text mode already had, just extended to arbitrary file contents.",
     useCases: [
       "Encrypting sensitive notes or config values before storing them",
       "Learning how AES and RSA encryption work in practice",
       "Testing encrypted payloads for API security implementations",
       "Generating RSA key pairs for development and testing purposes",
+      "Encrypting a file with a password before sending it somewhere you don't fully trust",
     ],
     tips: [
       "AES-GCM includes authentication — a tampered ciphertext will fail to decrypt, not silently produce garbage.",
       "The password you provide is stretched using PBKDF2 before deriving the AES key — a weak password is still a security risk.",
       "RSA is for encrypting small amounts of data (like an AES key). For large data, always use hybrid encryption: RSA + AES.",
+      "File mode uses the same AES-GCM + PBKDF2 scheme as text mode — the same password requirements and authentication guarantees apply.",
     ],
     faq: [
       {
@@ -1539,18 +1547,20 @@ export const toolContent: Record<string, ToolContent> = {
 
   "favicon-generator": {
     about:
-      "The Favicon Generator takes a single uploaded image and renders it into every standard favicon size a modern site needs: 16×16 and 32×32 for browser tabs, 48×48 for the Windows taskbar, 180×180 for Apple touch icons (iOS home screen), and 192×192 / 512×512 for Android and web app manifests.\n\nEach size is generated on an HTML canvas — the image is scaled to fit and centered, with an optional solid background fill for source images with transparency that need a solid favicon. Download each size individually or all at once, and copy the exact HTML <link> tags to paste into your site's <head>.\n\nProcessing happens entirely in your browser via the Canvas API — your image is never uploaded to a server.",
+      "The Favicon Generator takes a single uploaded image and renders it into every standard favicon size a modern site needs: 16×16 and 32×32 for browser tabs, 48×48 for the Windows taskbar, 180×180 for Apple touch icons (iOS home screen), and 192×192 / 512×512 for Android and web app manifests.\n\nEach size is generated on an HTML canvas — the image is scaled to fit and centered, with an optional solid background fill for source images with transparency that need a solid favicon. Download each size individually or all at once, and copy the exact HTML <link> tags to paste into your site's <head>.\n\nA Web App Manifest section generates the actual site.webmanifest file the HTML snippet already links to — set your app name, short name, theme color, background color, and display mode, and get a ready-to-download manifest referencing the 192×192 and 512×512 icons that were just generated, making your site properly installable as a PWA rather than just having the right icon sizes sitting unused.\n\nProcessing happens entirely in your browser via the Canvas API — your image is never uploaded to a server.",
     useCases: [
       "Generating a complete favicon set from a single logo file for a new site launch",
       "Re-generating favicons after a logo redesign without manually resizing in an image editor",
       "Producing the specific sizes required for PWA manifests (192×192, 512×512) alongside classic favicons",
       "Adding a solid background to a transparent logo so it reads clearly as a small favicon",
+      "Generating a complete site.webmanifest to make a site installable as a PWA",
     ],
     tips: [
       "Start with a square source image at least 512×512px — the generator scales down cleanly but can't add detail when scaling up from a small source.",
       "If your logo has transparency and looks washed out as a tiny favicon, enable the solid background option and pick a color that matches your brand.",
       "Browsers and OSes cache favicons aggressively — after replacing your favicon files, a hard refresh or cache-busting query string may be needed to see the update.",
       "The 512×512 size doubles as your PWA manifest icon — keep it if you have (or plan to add) a web app manifest.",
+      "Use standalone display mode in the manifest if you want the PWA to open without browser chrome (address bar, tabs) — browser is the right choice if you just want the installability without changing how it looks when opened.",
     ],
     faq: [
       {
@@ -2250,6 +2260,157 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Can I use a barcode generated here for actual retail products?",
         a: "The encoding is standards-compliant and verified against a reference implementation, but a real GTIN/UPC number for retail sale needs to be officially registered through GS1 (or a reseller) to be globally unique and legally usable on a product — this tool generates a correct barcode for whatever number you provide, but doesn't allocate or validate ownership of that number.",
+      },
+    ],
+  },
+
+  "xml-formatter": {
+    about:
+      "The XML Formatter prettifies, minifies, and structurally validates XML — the same category of tool as ToolNinja's JSON and HTML formatters, built for XML's specific quirks. CDATA sections (`<![CDATA[ ... ]]>`) are preserved exactly as written rather than reformatted, since their contents are explicitly meant to be treated as opaque, unparsed text. Before formatting, the tool also walks the tag structure and flags unclosed or mismatched tags with a specific error, rather than silently producing malformed output.\n\nXML still underpins a huge amount of real infrastructure — SOAP APIs, RSS/Atom feeds, Android layouts, Maven/Ant build files, SVG, configuration formats for countless enterprise systems — and a minified or inconsistently-indented XML payload is exactly as unreadable as minified JSON without a formatter.",
+    useCases: [
+      "Pretty-printing a minified SOAP request or response for debugging",
+      "Formatting an RSS or Atom feed to inspect its structure",
+      "Cleaning up an Android layout XML or Maven pom.xml copied from elsewhere",
+      "Minifying XML before storing it in a database column or sending it over the wire",
+      "Catching an unclosed or mismatched tag before it causes a confusing downstream parser error",
+    ],
+    tips: [
+      "CDATA sections are left completely untouched during formatting — their content is meant to be opaque to the XML parser, and reformatting it would change its meaning.",
+      "The structural validator catches unclosed and mismatched tags specifically — it's a syntax check, not a schema (XSD/DTD) validator, so it won't catch a tag that's well-formed but semantically wrong for a given format.",
+      "Minify before storing XML in a database column or config value — it can meaningfully shrink payload size on high-volume systems still using XML for interchange.",
+    ],
+    faq: [
+      {
+        q: "Does this validate XML against an XSD schema?",
+        a: "No — it performs structural validation (checking that every tag is properly opened and closed, correctly nested) rather than schema validation. A document can be well-formed XML and still violate a specific XSD or DTD schema; this tool only catches the former.",
+      },
+      {
+        q: "Why does my CDATA content stay as one long line instead of getting indented?",
+        a: "CDATA sections are designed to hold content — often HTML, code, or other markup — that should not be parsed or altered by the XML processor. Reformatting the whitespace inside a CDATA block would change what that content actually represents, so the formatter deliberately leaves it exactly as written.",
+      },
+      {
+        q: "Is my XML data uploaded anywhere?",
+        a: "No. Parsing, validation, and formatting all run in your browser via JavaScript. Your XML — which may contain sensitive API payloads or internal config — never leaves your device.",
+      },
+    ],
+  },
+
+  "iban-validator": {
+    about:
+      "The IBAN Validator & Generator checks whether an International Bank Account Number is structurally valid using the same MOD-97-10 checksum algorithm (ISO 7064) that every real IBAN is built on, plus a per-country length check across 35+ IBAN-using countries. Paste any IBAN and instantly see whether it passes, along with its country, check digits, and BBAN broken out separately.\n\nThe generator side produces random test IBANs that pass the real checksum for a chosen country — useful for populating a form, testing validation logic, or exercising a payment integration's IBAN field without needing a real bank account number. Generated IBANs are not tied to any real account; they're structurally valid but synthetic, the same approach used by other IBAN test-data generators.\n\nEverything runs client-side — no IBAN you paste in, real or generated, is transmitted anywhere.",
+    useCases: [
+      "Validating an IBAN a user entered in a form before submitting it to a payment processor",
+      "Generating test IBANs for a specific country to exercise payment-form validation logic",
+      "Checking whether an IBAN's check digits are internally consistent before troubleshooting a failed transfer",
+      "Learning how the MOD-97 checksum in an IBAN actually works",
+    ],
+    tips: [
+      "A failed checksum almost always means a typo somewhere in the number — re-check digit-by-digit rather than assuming the whole IBAN is fabricated.",
+      "Generated test IBANs pass the checksum and have correct length, but are not real, bank-issued accounts — never use them for anything beyond testing your own form or integration logic.",
+      "The length check only runs for countries in the built-in list — an unrecognized country code skips that check but still validates the checksum.",
+    ],
+    faq: [
+      {
+        q: "What does the MOD-97 checksum actually verify?",
+        a: "It confirms the IBAN's digits are internally self-consistent per the ISO 7064 MOD 97-10 algorithm — the same math every bank's IBAN validation uses. It does not confirm the account actually exists, is open, or belongs to any particular person; checksum validity and account existence are two completely different things.",
+      },
+      {
+        q: "Can I use a generated test IBAN to actually send or receive money?",
+        a: "No. A generated IBAN passes the structural checksum and length check, but it's randomly generated — it doesn't correspond to any real bank or account. It's meant purely for testing form validation and API integrations, not for any real transaction.",
+      },
+      {
+        q: "Why did a real IBAN I typed in fail validation?",
+        a: "The most common cause by far is a single mistyped or transposed digit — even one wrong character anywhere in the IBAN will fail the checksum. Double-check the number character by character against its source, paying particular attention to easily confused characters like 0/O and 1/I.",
+      },
+    ],
+  },
+
+  "meeting-planner": {
+    about:
+      "The Meeting Planner lays out working hours across multiple time zones on a single grid, so you can see at a glance when a meeting time actually overlaps with everyone's reasonable working hours instead of mentally converting each person's local time one at a time. Pick a reference time zone and date, add the cities you're scheduling across, and each row shows that city's local hour for every hour of the reference day — color-coded as working hours, awake-but-off-hours, or likely asleep.\n\nEvery time lookup goes through the browser's Intl API rather than manual UTC-offset math, so daylight saving time transitions are handled correctly automatically — including the case where two zones are on opposite sides of a DST transition on the day you're planning around, which is exactly the scenario naive offset arithmetic gets wrong.\n\nClick any hour column to see the exact local time it represents for every added city at once, including whether it falls on the previous or next calendar day for a given time zone.",
+    useCases: [
+      "Finding a meeting time that falls in working hours for a distributed team across 3+ time zones",
+      "Checking whether a proposed call time would wake someone up in another region",
+      "Planning an on-call handoff or deployment window across time zones",
+      "Scheduling around a specific city's business hours without doing manual offset arithmetic",
+    ],
+    tips: [
+      "The working-hours coloring (9am–6pm) is a fixed, general default, not a per-person customizable schedule — treat it as a starting point for the conversation, not a hard rule for everyone's actual calendar.",
+      "A city showing a +1 or -1 marker on an hour cell means that hour falls on the next or previous calendar day in that time zone relative to your reference date — worth calling out explicitly when proposing a time.",
+      "Because every conversion goes through the browser's own timezone database, results stay correct across DST transitions without needing a manual update.",
+    ],
+    faq: [
+      {
+        q: "Does this account for daylight saving time automatically?",
+        a: "Yes — every time zone lookup uses the browser's Intl API against the specific date you've selected, which resolves the correct UTC offset for that exact day including any DST rules in effect. This avoids the classic bug where a fixed offset table gives the wrong answer for part of the year.",
+      },
+      {
+        q: "Why do the 'working hours' look different from my team's actual schedule?",
+        a: "The 9am–6pm coloring is a general-purpose default meant to make the grid readable at a glance, not a customizable per-person calendar. Use it to narrow down a reasonable window, then confirm the specific time works against each person's actual schedule.",
+      },
+      {
+        q: "What does clicking an hour column actually show?",
+        a: "It highlights that hour in the reference time zone and shows a summary of exactly what local time it corresponds to in every city you've added, including a note when that hour falls on the previous or next day in a given time zone — useful for double-checking before you send a calendar invite.",
+      },
+    ],
+  },
+
+  "package-json-inspector": {
+    about:
+      "The package.json Script Inspector reads a pasted package.json and surfaces two things that matter for supply-chain risk but are easy to miss scrolling through the raw file: which npm lifecycle scripts run automatically (without anyone explicitly asking for them), and which dependencies aren't pinned to an exact version.\n\nnpm executes preinstall, install, and postinstall scripts automatically the moment npm install runs — with the full privileges of whoever's running it, before any test suite or code review happens. That combination is exactly why these specific scripts have been the recurring vector in real npm supply-chain worms, most recently the keyv/cacheable compromise in August 2026. This tool flags every lifecycle script present, explains what triggers it automatically versus what only runs when explicitly invoked, and calls out ones worth a closer look before you trust an install.\n\nIt also flags dependencies pinned with a range (^, ~), a bare tag (*, latest), or installed directly from a git URL rather than the npm registry — each of which means a compromised maintainer account could ship a bad version that gets pulled in on your next install without you doing anything differently.",
+    useCases: [
+      "Checking an unfamiliar package's install-time behavior before adding it to a project",
+      "Auditing your own project's package.json for lifecycle scripts you forgot were there",
+      "Reviewing dependency pinning practices before a security audit",
+      "Understanding exactly what changed in a suspicious dependency update",
+    ],
+    tips: [
+      "preinstall and postinstall are the two scripts worth the most scrutiny — they run automatically and are the most common vector for supply-chain malware in real incidents.",
+      "A dependency pinned with ^ or ~ isn't inherently dangerous, but it does mean the exact version installed can change between two people running npm install at different times — worth knowing before debugging a 'works on my machine' issue.",
+      "A dependency installed directly from a git URL skips the npm registry entirely, including whatever minimal review and provenance signals the registry provides — treat it with the same scrutiny as vendoring code directly.",
+    ],
+    faq: [
+      {
+        q: "Does flagging a script mean it's actually malicious?",
+        a: "No — plenty of legitimate packages use preinstall or postinstall for real reasons, like compiling a native addon. The flag means 'this runs automatically, so it's worth knowing it's there and understanding why' — not an accusation. The point is visibility, since the same automatic-execution mechanism that's convenient for legitimate build steps is also what supply-chain malware relies on.",
+      },
+      {
+        q: "Why does an unpinned dependency matter if the package hasn't been compromised?",
+        a: "It's not about the package being compromised right now — it's about what happens if its maintainer's account ever is. A range-pinned (^1.2.0) or tag-pinned (latest) dependency will silently pull in whatever the compromised account publishes on your very next install, with no action from you. An exact-pinned dependency (1.2.0) requires someone to deliberately bump the version, which is at least one more chance to notice something's wrong.",
+      },
+      {
+        q: "Does this tool check my dependencies against a list of known-malicious packages?",
+        a: "No, deliberately — a hardcoded list of compromised packages goes stale within days of a new incident and would give false confidence once it's outdated. Instead, this tool focuses on structural risk factors (auto-running scripts, loose version pinning) that stay relevant regardless of which specific package is compromised this week.",
+      },
+    ],
+  },
+
+  "readme-badge-generator": {
+    about:
+      "The README Badge Generator builds shields.io badge URLs and ready-to-paste Markdown/HTML — either a fully custom badge (any label, message, color, and style) or one of several common \"live\" badges that pull real data from npm, GitHub, or PyPI, like a package's current version, weekly download count, or star count.\n\nCustom badges use shields.io's static badge endpoint directly, so you get full control over the label and message text. The live badges use shields.io's service-specific endpoints for npm, GitHub, and PyPI, which means the badge image updates on its own as the underlying data changes — the version badge always shows the current published version, the star count badge always shows the current count, without regenerating anything.\n\nBoth Markdown and HTML output are provided, since most READMEs are Markdown but some project documentation sites render badges via raw HTML.",
+    useCases: [
+      "Adding a build-status, license, or version badge to a new project's README",
+      "Generating a live npm version or download-count badge that stays accurate without manual updates",
+      "Building a custom badge for something project-specific, like a coverage percentage or a deployment environment label",
+      "Getting both Markdown and HTML badge snippets for a documentation site that needs the HTML form",
+    ],
+    tips: [
+      "Live badges (npm version, GitHub stars, etc.) update automatically as the underlying data changes — you never need to regenerate or replace them after adding them once.",
+      "For custom badges, a literal hyphen in your label or message text is automatically escaped correctly — you don't need to work around shields.io's `-` segment separator yourself.",
+      "The for-the-badge style reads better at a glance in a README's top badge row; flat or flat-square tends to look better inline with body text.",
+    ],
+    faq: [
+      {
+        q: "Do the live badges (npm version, GitHub stars) need to be regenerated when the data changes?",
+        a: "No — that's the point of using shields.io's live endpoints instead of a static image. The badge URL always points at shields.io, which fetches current data from npm or GitHub's API every time the image is requested, so it reflects the current value automatically whenever your README is viewed.",
+      },
+      {
+        q: "What's the difference between the Markdown and HTML output?",
+        a: "They render identically — both just wrap the same shields.io image URL, optionally linking it to a URL. Markdown (![alt](url)) is what nearly all README.md files use; HTML (<img src=...>) is for documentation sites or platforms that render raw HTML instead of Markdown, or where you need HTML-only attributes shields.io's Markdown form doesn't cover.",
+      },
+      {
+        q: "Can I use any color name, or only the presets shown?",
+        a: "The color presets cover the common shields.io named colors, but you can type any valid CSS color name or hex code (without the #) into the color field directly — the presets are just a shortcut for the most commonly used ones.",
       },
     ],
   },

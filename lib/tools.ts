@@ -116,6 +116,19 @@ export const tools: Tool[] = [
       "graphql indenter", "graphql query beautifier",
     ],
   },
+  {
+    slug: "xml-formatter",
+    name: "XML Formatter",
+    description: "Prettify, minify, and validate XML with CDATA-safe formatting",
+    icon: "Brackets",
+    category: "Format",
+    keywords: [
+      "xml formatter", "xml formatter online", "xml beautifier",
+      "xml validator", "xml pretty print", "format xml online",
+      "xml minifier", "xml viewer online", "beautify xml",
+      "xml syntax checker", "xml validator online free",
+    ],
+  },
 
   // ─── Encode ───────────────────────────────────────────────────────────────
   {
@@ -419,6 +432,19 @@ export const tools: Tool[] = [
       "barcode generator no signup",
     ],
   },
+  {
+    slug: "readme-badge-generator",
+    name: "README Badge Generator",
+    description: "Build shields.io badges for your README — custom text badges or live repo stats",
+    icon: "BadgeCheck",
+    category: "Generate",
+    keywords: [
+      "readme badge generator", "shields.io badge generator", "github badge generator",
+      "npm version badge", "readme badges", "custom shield badge",
+      "markdown badge generator", "build status badge", "github readme badges",
+      "shields.io generator online",
+    ],
+  },
 
   // ─── Convert ──────────────────────────────────────────────────────────────
   {
@@ -586,6 +612,20 @@ export const tools: Tool[] = [
       "htaccess nginx equivalent",
     ],
   },
+  {
+    slug: "meeting-planner",
+    name: "Meeting Planner",
+    description: "Compare working hours across time zones and find a meeting time that works for everyone",
+    icon: "CalendarClock",
+    category: "Convert",
+    keywords: [
+      "meeting planner", "timezone meeting planner", "time zone converter",
+      "world time buddy alternative", "schedule meeting multiple timezones",
+      "meeting time zone finder", "working hours overlap calculator",
+      "international meeting scheduler", "time zone overlap tool",
+      "best meeting time calculator",
+    ],
+  },
 
   // ─── Test ─────────────────────────────────────────────────────────────────
   {
@@ -695,6 +735,19 @@ export const tools: Tool[] = [
       "json comparison tool", "diff two json files", "json diff tool free",
       "structural json diff", "json compare online", "api response diff",
       "json diff viewer", "compare json online", "json delta checker",
+    ],
+  },
+  {
+    slug: "iban-validator",
+    name: "IBAN Validator & Generator",
+    description: "Validate an IBAN's MOD-97 checksum, or generate a test IBAN for any supported country",
+    icon: "Landmark",
+    category: "Test",
+    keywords: [
+      "iban validator", "iban validator online", "iban generator",
+      "validate iban", "iban checksum validator", "generate test iban",
+      "iban mod-97 validator", "check iban number", "iban format validator",
+      "fake iban generator for testing",
     ],
   },
 
@@ -841,6 +894,19 @@ export const tools: Tool[] = [
       "2fa testing tool", "otpauth generator",
     ],
   },
+  {
+    slug: "package-json-inspector",
+    name: "package.json Script Inspector",
+    description: "See exactly which scripts run automatically on install, and which dependencies aren't pinned",
+    icon: "PackageSearch",
+    category: "Security",
+    keywords: [
+      "package.json checker", "npm postinstall script checker", "npm lifecycle script scanner",
+      "check package.json for malware", "npm supply chain security tool", "preinstall script checker",
+      "package.json security audit", "npm dependency pinning checker", "inspect package.json online",
+      "npm script security scanner",
+    ],
+  },
 
   // ─── Accessibility ────────────────────────────────────────────────────────
   {
@@ -927,9 +993,9 @@ export type Category = (typeof categories)[number];
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 export const LATEST_TOOL_SLUGS = [
-  "ssh-key-generator",
-  "totp-generator",
-  "htaccess-to-nginx",
-  "color-blindness-simulator",
-  "barcode-generator",
+  "iban-validator",
+  "xml-formatter",
+  "meeting-planner",
+  "package-json-inspector",
+  "readme-badge-generator",
 ];

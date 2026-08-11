@@ -4,7 +4,9 @@ import { useState, useRef, useCallback } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { Upload, Download, ImagePlus, X } from "lucide-react";
-import { FAVICON_SIZES, renderFaviconSize, buildFaviconHtmlSnippet } from "@/lib/favicon";
+import { FAVICON_SIZES, renderFaviconSize, buildFaviconHtmlSnippet, buildWebManifest, type WebManifestOptions } from "@/lib/favicon";
+
+const DISPLAY_MODES: WebManifestOptions["display"][] = ["standalone", "fullscreen", "minimal-ui", "browser"];
 
 export default function FaviconGeneratorClient() {
   const [image, setImage] = useState<HTMLImageElement | null>(null);
@@ -14,6 +16,12 @@ export default function FaviconGeneratorClient() {
   const [dragOver, setDragOver] = useState(false);
   const [renders, setRenders] = useState<Record<number, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [appName, setAppName] = useState("My App");
+  const [shortName, setShortName] = useState("My App");
+  const [themeColor, setThemeColor] = useState("#a855f7");
+  const [manifestBg, setManifestBg] = useState("#0a0a0a");
+  const [display, setDisplay] = useState<WebManifestOptions["display"]>("standalone");
 
   const renderAll = useCallback((img: HTMLImageElement, bg: string | null) => {
     const out: Record<number, string> = {};
@@ -80,6 +88,17 @@ export default function FaviconGeneratorClient() {
     FAVICON_SIZES.forEach((fs, i) => {
       setTimeout(() => downloadOne(fs.size, fs.filename), i * 150);
     });
+  };
+
+  const manifestJson = buildWebManifest({ name: appName, shortName, themeColor, backgroundColor: manifestBg, display });
+
+  const downloadManifest = () => {
+    const blob = new Blob([manifestJson], { type: "application/manifest+json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "site.webmanifest";
+    a.click();
+    URL.revokeObjectURL(a.href);
   };
 
   return (
@@ -182,6 +201,71 @@ export default function FaviconGeneratorClient() {
             <pre className="p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] overflow-auto">
               {buildFaviconHtmlSnippet()}
             </pre>
+          </div>
+
+          {/* Web app manifest */}
+          <div className="mt-6 pt-6 border-t border-[#1a1a1a]">
+            <label className="text-xs text-[#888888] font-medium block mb-3">Web App Manifest (PWA)</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+              <div>
+                <label className="text-xs text-[#666666] block mb-1">App name</label>
+                <input
+                  type="text"
+                  value={appName}
+                  onChange={(e) => setAppName(e.target.value)}
+                  className="w-full px-3 py-1.5 text-sm bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-[#666666] block mb-1">Short name</label>
+                <input
+                  type="text"
+                  value={shortName}
+                  onChange={(e) => setShortName(e.target.value)}
+                  className="w-full px-3 py-1.5 text-sm bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-[#666666] block mb-1">Theme color</label>
+                <div className="flex items-center gap-2">
+                  <input type="color" value={themeColor} onChange={(e) => setThemeColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border border-[#222222] bg-transparent p-0.5" />
+                  <input type="text" value={themeColor} onChange={(e) => setThemeColor(e.target.value)} className="flex-1 px-2 py-1.5 text-xs font-mono bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]" />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-[#666666] block mb-1">Background color</label>
+                <div className="flex items-center gap-2">
+                  <input type="color" value={manifestBg} onChange={(e) => setManifestBg(e.target.value)} className="w-8 h-8 rounded cursor-pointer border border-[#222222] bg-transparent p-0.5" />
+                  <input type="text" value={manifestBg} onChange={(e) => setManifestBg(e.target.value)} className="flex-1 px-2 py-1.5 text-xs font-mono bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]" />
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 mb-3">
+              <label className="text-xs text-[#666666]">Display mode</label>
+              <div className="flex">
+                {DISPLAY_MODES.map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => setDisplay(d)}
+                    className={`px-2.5 py-1 text-xs border first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+                      display === d ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+                    }`}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs text-[#888888] font-medium">site.webmanifest</label>
+              <div className="flex items-center gap-2">
+                <button onClick={downloadManifest} className="flex items-center gap-1 text-xs text-[#a855f7] hover:text-[#c084fc] transition-colors">
+                  <Download size={11} /> Download
+                </button>
+                <CopyButton text={manifestJson} size="sm" />
+              </div>
+            </div>
+            <pre className="p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] overflow-auto">{manifestJson}</pre>
           </div>
 
           <button

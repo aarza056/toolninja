@@ -4,13 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { AlertCircle, Trash2 } from "lucide-react";
-import { jsonToPythonDataclasses, jsonToGoStructs } from "@/lib/json-type-gen";
+import { jsonToPythonDataclasses, jsonToGoStructs, jsonToZodSchema } from "@/lib/json-type-gen";
 
 const STORAGE_KEY = "toolninja:json-to-typescript";
 
-type Language = "typescript" | "python" | "go";
+type Language = "typescript" | "zod" | "python" | "go";
 const LANGUAGES: { id: Language; label: string }[] = [
   { id: "typescript", label: "TypeScript" },
+  { id: "zod", label: "Zod" },
   { id: "python", label: "Python" },
   { id: "go", label: "Go" },
 ];
@@ -215,6 +216,8 @@ export default function JsonToTypeScriptClient() {
           setOutput(jsonToPythonDataclasses(text, name));
         } else if (lang === "go") {
           setOutput(jsonToGoStructs(text, name));
+        } else if (lang === "zod") {
+          setOutput(jsonToZodSchema(text, name, opt));
         } else {
           const { interfaces } = jsonToTypeScript(text, name, alias, opt, exp);
           setOutput(interfaces.join("\n\n"));
@@ -299,16 +302,17 @@ export default function JsonToTypeScriptClient() {
               </ToggleButton>
             </div>
 
-            {/* Optional fields */}
-            <ToggleButton active={optionalFields} onClick={() => setOptionalFields((v) => !v)}>
-              Optional fields {optionalFields ? "on" : "off"}
-            </ToggleButton>
-
             {/* Export keyword */}
             <ToggleButton active={exportKw} onClick={() => setExportKw((v) => !v)}>
               export {exportKw ? "on" : "off"}
             </ToggleButton>
           </>
+        )}
+
+        {(language === "typescript" || language === "zod") && (
+          <ToggleButton active={optionalFields} onClick={() => setOptionalFields((v) => !v)}>
+            Optional fields {optionalFields ? "on" : "off"}
+          </ToggleButton>
         )}
 
         <button

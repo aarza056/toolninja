@@ -45,6 +45,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online GraphQL query formatter and minifier. Beautify queries, mutations, subscriptions and fragments with proper indentation, or minify for production. Handles inline fragments and directives correctly. No login, browser-only.",
   },
+  "xml-formatter": {
+    title: "XML Formatter Online — Beautify, Minify & Validate XML | ToolNinja",
+    description:
+      "Free online XML formatter and validator. Prettify or minify XML instantly with CDATA-safe formatting and structural validation that catches unclosed and mismatched tags. No login, 100% browser-based.",
+  },
 
   // ── Encode ───────────────────────────────────────────────────────────────
   "base64": {
@@ -159,6 +164,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online barcode generator. Create Code 128, EAN-13, and UPC-A barcodes with automatic check digits and download as PNG. Verified byte-for-byte against a reference decoder. No login, 100% browser-based.",
   },
+  "readme-badge-generator": {
+    title: "README Badge Generator — Free shields.io Badge Maker | ToolNinja",
+    description:
+      "Free online README badge generator. Build custom shields.io badges with any label, message, color and style, or generate live npm/GitHub/PyPI stat badges instantly. No login, 100% browser-based.",
+  },
 
   // ── Convert ──────────────────────────────────────────────────────────────
   "color-converter": {
@@ -222,6 +232,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online .htaccess to nginx converter. Convert RewriteRule, RewriteCond, redirects, ErrorDocument, and the standard WordPress rewrite block to nginx server block syntax. No login, 100% browser-based.",
   },
+  "meeting-planner": {
+    title: "Meeting Planner Online — Compare Time Zones & Working Hours | ToolNinja",
+    description:
+      "Free online meeting planner and time zone converter. Compare working hours across multiple cities on one grid and find a meeting time that overlaps for everyone, DST-aware. No login, 100% browser-based.",
+  },
 
   // ── Test ─────────────────────────────────────────────────────────────────
   "regex-tester": {
@@ -263,6 +278,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "JSON Diff Checker Online — Compare Two JSON Objects | ToolNinja",
     description:
       "Free online JSON diff checker. Compare two JSON objects structurally and see exactly what was added, removed, or changed, path by path — key order doesn't matter. No login, 100% browser-based.",
+  },
+  "iban-validator": {
+    title: "IBAN Validator & Generator Online — MOD-97 Checksum Check | ToolNinja",
+    description:
+      "Free online IBAN validator and test IBAN generator. Validate an IBAN's MOD-97 checksum and country structure, or generate a valid test IBAN for 35+ countries. No login, 100% browser-based.",
   },
 
   // ── Design ───────────────────────────────────────────────────────────────
@@ -317,6 +337,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "TOTP Generator Online — Live 2FA Authenticator Codes | ToolNinja",
     description:
       "Free online TOTP generator. Generate live, refreshing 2FA codes from a Base32 secret key — compatible with Google Authenticator and Authy. Supports SHA-1/256/512, 6/8 digits, and otpauth:// import/export. No login, browser-only.",
+  },
+  "package-json-inspector": {
+    title: "package.json Script Inspector — Check for Risky Install Scripts | ToolNinja",
+    description:
+      "Free online package.json inspector. See exactly which scripts run automatically on npm install (preinstall, postinstall, prepare) and which dependencies aren't version-pinned. No login, 100% browser-based.",
   },
 
   // ── Accessibility ────────────────────────────────────────────────────────

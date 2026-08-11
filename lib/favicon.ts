@@ -37,6 +37,29 @@ export function renderFaviconSize(image: HTMLImageElement, size: number, bgColor
   return canvas.toDataURL("image/png");
 }
 
+export interface WebManifestOptions {
+  name: string;
+  shortName: string;
+  themeColor: string;
+  backgroundColor: string;
+  display: "standalone" | "fullscreen" | "minimal-ui" | "browser";
+}
+
+export function buildWebManifest(opts: WebManifestOptions): string {
+  const manifest = {
+    name: opts.name,
+    short_name: opts.shortName,
+    icons: [
+      { src: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { src: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    theme_color: opts.themeColor,
+    background_color: opts.backgroundColor,
+    display: opts.display,
+  };
+  return JSON.stringify(manifest, null, 2);
+}
+
 export function buildFaviconHtmlSnippet(): string {
   return [
     '<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">',

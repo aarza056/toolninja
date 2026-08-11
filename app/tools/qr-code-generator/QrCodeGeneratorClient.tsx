@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import QRCode from "qrcode";
 import ToolLayout from "@/components/ToolLayout";
-import { Download, Copy, Check, QrCode } from "lucide-react";
+import { Download, Copy, Check, QrCode, Upload, X } from "lucide-react";
 import { formatWifiQR, formatVCardQR, formatEventQR } from "@/lib/qr-formats";
 
 const STORAGE_KEY = "toolninja:qr-code-generator";
@@ -79,9 +79,11 @@ export default function QrCodeGeneratorClient() {
   const [bgColor, setBgColor] = useState("#ffffff");
   const [copied, setCopied] = useState(false);
   const [qrError, setQrError] = useState("");
+  const [logoDataUrl, setLogoDataUrl] = useState("");
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -124,7 +126,8 @@ export default function QrCodeGeneratorClient() {
     ec: ErrorCorrectionLevel,
     size: number,
     fg: string,
-    bg: string
+    bg: string,
+    logo: string
   ) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -150,6 +153,28 @@ export default function QrCodeGeneratorClient() {
           light: bg,
         },
       });
+
+      if (logo) {
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          const img = new Image();
+          await new Promise<void>((resolve, reject) => {
+            img.onload = () => resolve();
+            img.onerror = () => reject(new Error("Could not load the logo image"));
+            img.src = logo;
+          });
+          // Keep the logo modest relative to the code's total area — large overlays are the
+          // most common reason a "QR code with logo" stops scanning even at error level H.
+          const logoSize = size * 0.2;
+          const x = (size - logoSize) / 2;
+          const y = (size - logoSize) / 2;
+          const pad = logoSize * 0.15;
+          ctx.fillStyle = bg;
+          ctx.fillRect(x - pad, y - pad, logoSize + pad * 2, logoSize + pad * 2);
+          ctx.drawImage(img, x, y, logoSize, logoSize);
+        }
+      }
+
       setQrError("");
     } catch (e: unknown) {
       setQrError(e instanceof Error ? e.message : "Failed to generate QR code");
@@ -160,12 +185,23 @@ export default function QrCodeGeneratorClient() {
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      renderQr(qrValue, ecLevel, SIZE_MAP[sizeOption], fgColor, bgColor);
+      renderQr(qrValue, ecLevel, SIZE_MAP[sizeOption], fgColor, bgColor, logoDataUrl);
     }, 200);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [qrValue, ecLevel, sizeOption, fgColor, bgColor, renderQr]);
+  }, [qrValue, ecLevel, sizeOption, fgColor, bgColor, logoDataUrl, renderQr]);
+
+  const handleLogoUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setLogoDataUrl(String(reader.result ?? ""));
+      // A logo obscures a meaningful chunk of the code — H (~30% recovery) gives it the best
+      // chance of staying scannable; users can still drop back down manually if they want.
+      setEcLevel("H");
+    };
+    reader.readAsDataURL(file);
+  };
 
   const downloadPng = () => {
     const canvas = canvasRef.current;
@@ -460,6 +496,42 @@ export default function QrCodeGeneratorClient() {
                 />
               </div>
             </div>
+          </div>
+
+          {/* Logo */}
+          <div>
+            <label className="text-xs text-[#888888] font-medium block mb-2">Center logo (optional)</label>
+            {logoDataUrl ? (
+              <div className="flex items-center gap-3 p-2 bg-[#111111] border border-[#222222] rounded-[8px]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={logoDataUrl} alt="Logo" className="w-8 h-8 rounded object-contain bg-white" />
+                <span className="text-xs text-[#888888] flex-1">Logo added — error correction set to H</span>
+                <button
+                  onClick={() => setLogoDataUrl("")}
+                  className="text-[#555555] hover:text-[#ef4444] transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => logoInputRef.current?.click()}
+                className="flex items-center gap-2 px-3 py-2 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] hover:text-[#f5f5f5] border border-dashed border-[#222222] rounded-[8px] transition-colors w-full justify-center"
+              >
+                <Upload size={14} /> Upload a logo image
+              </button>
+            )}
+            <input
+              ref={logoInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleLogoUpload(f);
+                e.target.value = "";
+              }}
+            />
           </div>
 
           {/* Action buttons */}

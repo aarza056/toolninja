@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Eye, EyeOff, AlertCircle, Info, RefreshCw } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, Info, RefreshCw, Upload, FileIcon, Download } from "lucide-react";
 
 type Mode = "encrypt" | "decrypt";
 type Algorithm = "aes" | "rsa";
@@ -55,6 +55,42 @@ async function aesDecrypt(encoded: string, password: string): Promise<string> {
     ciphertext
   );
   return new TextDecoder().decode(plaintext);
+}
+
+async function aesEncryptBytes(data: ArrayBuffer, password: string): Promise<Uint8Array> {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveAesKey(password, salt);
+  const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, data);
+  const combined = new Uint8Array(16 + 12 + ciphertext.byteLength);
+  combined.set(salt, 0);
+  combined.set(iv, 16);
+  combined.set(new Uint8Array(ciphertext), 28);
+  return combined;
+}
+
+async function aesDecryptBytes(data: ArrayBuffer, password: string): Promise<ArrayBuffer> {
+  const bytes = new Uint8Array(data);
+  const salt = bytes.slice(0, 16);
+  const iv = bytes.slice(16, 28);
+  const ciphertext = bytes.slice(28);
+  const key = await deriveAesKey(password, salt);
+  return crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext);
+}
+
+function downloadBytes(bytes: Uint8Array | ArrayBuffer, filename: string) {
+  const blob = new Blob([bytes]);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function formatFileSize(n: number): string {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(2)} MB`;
 }
 
 // ─── RSA-OAEP helpers ──────────────────────────────────────────────────────
@@ -229,16 +265,48 @@ function ErrorBox({ message }: { message: string }) {
 
 // ─── AES Tab ───────────────────────────────────────────────────────────────
 
+type Source = "text" | "file";
+
 function AesTab() {
   const [mode, setMode] = useState<Mode>("encrypt");
+  const [source, setSource] = useState<Source>("text");
   const [password, setPassword] = useState("");
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [fileDone, setFileDone] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAction = useCallback(async () => {
     if (!password) { setError("Password is required"); return; }
+
+    if (source === "file") {
+      if (!file) { setError("Choose a file first"); return; }
+      setError("");
+      setFileDone(false);
+      setLoading(true);
+      try {
+        const buffer = await file.arrayBuffer();
+        if (mode === "encrypt") {
+          const bytes = await aesEncryptBytes(buffer, password);
+          downloadBytes(bytes, `${file.name}.enc`);
+        } else {
+          const bytes = await aesDecryptBytes(buffer, password);
+          const outName = file.name.endsWith(".enc") ? file.name.slice(0, -4) : `${file.name}.dec`;
+          downloadBytes(bytes, outName);
+        }
+        setFileDone(true);
+      } catch {
+        setError(mode === "decrypt" ? "Decryption failed. Check your password and that this is the correct .enc file." : "Encryption failed.");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     if (!input.trim()) { setError("Input is required"); return; }
     setError("");
     setOutput("");
@@ -260,13 +328,30 @@ function AesTab() {
     } finally {
       setLoading(false);
     }
-  }, [mode, password, input]);
+  }, [mode, source, password, input, file]);
 
   const handleModeChange = (m: Mode) => {
     setMode(m);
     setInput("");
     setOutput("");
     setError("");
+    setFile(null);
+    setFileDone(false);
+  };
+
+  const handleSourceChange = (s: Source) => {
+    setSource(s);
+    setOutput("");
+    setError("");
+    setFile(null);
+    setFileDone(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const f = e.dataTransfer.files?.[0];
+    if (f) { setFile(f); setFileDone(false); setError(""); }
   };
 
   return (
@@ -275,6 +360,22 @@ function AesTab() {
         <div>
           <label className="text-xs text-[#888888] font-medium block mb-1.5">Mode</label>
           <ModeToggle mode={mode} onChange={handleModeChange} />
+        </div>
+        <div>
+          <label className="text-xs text-[#888888] font-medium block mb-1.5">Source</label>
+          <div className="flex">
+            {(["text", "file"] as Source[]).map((s) => (
+              <button
+                key={s}
+                onClick={() => handleSourceChange(s)}
+                className={`px-4 py-1.5 text-sm border first:rounded-l-[6px] last:rounded-r-[6px] transition-colors capitalize ${
+                  source === s ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -290,29 +391,73 @@ function AesTab() {
         </p>
       </div>
 
-      <div>
-        <label className="text-xs text-[#888888] font-medium block mb-1.5">
-          {mode === "encrypt" ? "Plaintext" : "Ciphertext (Base64)"}
-        </label>
-        <textarea
-          value={input}
-          onChange={(e) => { setInput(e.target.value); setOutput(""); setError(""); }}
-          placeholder={
-            mode === "encrypt"
-              ? "Enter text to encrypt..."
-              : "Paste encrypted Base64 ciphertext here..."
-          }
-          rows={5}
-          spellCheck={false}
-          className="w-full p-3 font-mono text-sm resize-y bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
-        />
-      </div>
+      {source === "file" ? (
+        <div>
+          <label className="text-xs text-[#888888] font-medium block mb-1.5">
+            {mode === "encrypt" ? "File to encrypt" : "Encrypted file (.enc)"}
+          </label>
+          <div
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            className={`flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed rounded-[8px] cursor-pointer transition-colors ${
+              dragOver ? "border-[#a855f7] bg-[#a855f7]/5" : "border-[#222222] hover:border-[#333333]"
+            }`}
+          >
+            {file ? (
+              <>
+                <FileIcon size={28} strokeWidth={1} className="text-[#a855f7]" />
+                <p className="text-sm text-[#f5f5f5]">{file.name}</p>
+                <p className="text-xs text-[#555555]">{formatFileSize(file.size)} — click or drop to replace</p>
+              </>
+            ) : (
+              <>
+                <Upload size={28} strokeWidth={1} className="text-[#444444]" />
+                <p className="text-sm text-[#888888]">Drag & drop a file, or click to upload</p>
+              </>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) { setFile(f); setFileDone(false); setError(""); }
+                e.target.value = "";
+              }}
+            />
+          </div>
+          <p className="text-xs text-[#555555] mt-1">
+            The file is encrypted or decrypted entirely in your browser and never uploaded anywhere — the result downloads directly.
+          </p>
+        </div>
+      ) : (
+        <div>
+          <label className="text-xs text-[#888888] font-medium block mb-1.5">
+            {mode === "encrypt" ? "Plaintext" : "Ciphertext (Base64)"}
+          </label>
+          <textarea
+            value={input}
+            onChange={(e) => { setInput(e.target.value); setOutput(""); setError(""); }}
+            placeholder={
+              mode === "encrypt"
+                ? "Enter text to encrypt..."
+                : "Paste encrypted Base64 ciphertext here..."
+            }
+            rows={5}
+            spellCheck={false}
+            className="w-full p-3 font-mono text-sm resize-y bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
+          />
+        </div>
+      )}
 
       <button
         onClick={handleAction}
-        disabled={loading || !password || !input.trim()}
-        className="px-5 py-2.5 rounded-[8px] text-sm font-medium bg-[#a855f7] hover:bg-[#9333ea] text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={loading || !password || (source === "file" ? !file : !input.trim())}
+        className="flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-medium bg-[#a855f7] hover:bg-[#9333ea] text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
+        {source === "file" && !loading && <Download size={14} />}
         {loading
           ? mode === "encrypt"
             ? "Encrypting..."
@@ -323,7 +468,12 @@ function AesTab() {
       </button>
 
       {error && <ErrorBox message={error} />}
-      {output && (
+      {source === "file" && fileDone && !error && (
+        <div className="flex items-center gap-2 px-3 py-2.5 bg-[#22c55e]/10 border border-[#22c55e]/30 rounded-[8px] text-sm text-[#22c55e]">
+          {mode === "encrypt" ? "Encrypted file downloaded." : "Decrypted file downloaded."}
+        </div>
+      )}
+      {source === "text" && output && (
         <OutputBox
           value={output}
           label={mode === "encrypt" ? "Ciphertext (Base64)" : "Decrypted Plaintext"}
