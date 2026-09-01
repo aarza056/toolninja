@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { AlertTriangle, Download, KeyRound } from "lucide-react";
-import { parseEnv, envToJson, generateExample } from "@/lib/env-file";
+import { parseEnv, envToJson, generateExample, envToDockerRunFlags, envToKubernetesYaml } from "@/lib/env-file";
 
 const STORAGE_KEY = "toolninja:env-file-tool";
 
@@ -17,7 +17,7 @@ function download(filename: string, content: string) {
   URL.revokeObjectURL(a.href);
 }
 
-type OutputTab = "json" | "example";
+type OutputTab = "json" | "example" | "docker" | "k8s";
 
 export default function EnvFileToolClient() {
   const [envText, setEnvText] = useState("");
@@ -37,7 +37,9 @@ export default function EnvFileToolClient() {
   const { entries, duplicates } = useMemo(() => parseEnv(envText), [envText]);
   const jsonOutput = useMemo(() => (envText.trim() ? envToJson(envText) : ""), [envText]);
   const exampleOutput = useMemo(() => (envText.trim() ? generateExample(envText) : ""), [envText]);
-  const output = tab === "json" ? jsonOutput : exampleOutput;
+  const dockerOutput = useMemo(() => (envText.trim() ? envToDockerRunFlags(envText) : ""), [envText]);
+  const k8sOutput = useMemo(() => (envText.trim() ? envToKubernetesYaml(envText) : ""), [envText]);
+  const output = tab === "json" ? jsonOutput : tab === "example" ? exampleOutput : tab === "docker" ? dockerOutput : k8sOutput;
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -113,11 +115,32 @@ export default function EnvFileToolClient() {
               >
                 .env.example
               </button>
+              <button
+                onClick={() => setTab("docker")}
+                className={`px-3 py-1.5 text-xs border-l border-[#222222] transition-colors ${
+                  tab === "docker" ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"
+                }`}
+              >
+                docker run -e
+              </button>
+              <button
+                onClick={() => setTab("k8s")}
+                className={`px-3 py-1.5 text-xs border-l border-[#222222] transition-colors ${
+                  tab === "k8s" ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"
+                }`}
+              >
+                Kubernetes
+              </button>
             </div>
             <div className="flex items-center gap-2">
               {output && (
                 <button
-                  onClick={() => download(tab === "json" ? "env.json" : ".env.example", output)}
+                  onClick={() =>
+                    download(
+                      tab === "json" ? "env.json" : tab === "example" ? ".env.example" : tab === "docker" ? "docker-run-flags.txt" : "k8s-config.yaml",
+                      output
+                    )
+                  }
                   className="flex items-center gap-1 text-xs text-[#888888] hover:text-[#f5f5f5] transition-colors"
                 >
                   <Download size={12} /> Download
@@ -130,6 +153,11 @@ export default function EnvFileToolClient() {
           {tab === "example" && output && (
             <p className="mt-2 text-xs text-[#555555]">
               Values are stripped — safe to commit. Keys are preserved so teammates know what to fill in.
+            </p>
+          )}
+          {tab === "k8s" && output && (
+            <p className="mt-2 text-xs text-[#555555]">
+              Keys matching common secret patterns (PASSWORD, TOKEN, SECRET, etc.) go into a Secret; everything else goes into a ConfigMap. Review the split before applying — this is a heuristic, not a security scan.
             </p>
           )}
         </div>

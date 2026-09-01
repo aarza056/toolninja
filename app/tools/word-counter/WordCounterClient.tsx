@@ -67,6 +67,21 @@ export default function WordCounterClient() {
             ))}
           </div>
 
+          {stats.readability && (
+            <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
+              <div className="text-[11px] text-[#888888] font-medium uppercase tracking-wide mb-2">Readability</div>
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="text-lg font-semibold text-[#a855f7] font-mono">{stats.readability.fleschReadingEase}</span>
+                <span className="text-[11px] text-[#555555]">Flesch Reading Ease</span>
+              </div>
+              <p className="text-xs text-[#888888] mb-2">{stats.readability.level}</p>
+              <div className="flex items-center justify-between text-xs pt-2 border-t border-[#1a1a1a]">
+                <span className="text-[#555555]">Flesch-Kincaid grade level</span>
+                <span className="font-mono text-[#f5f5f5]">{stats.readability.fleschKincaidGrade}</span>
+              </div>
+            </div>
+          )}
+
           {stats.topWords.length > 0 && (
             <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
               <div className="text-[11px] text-[#888888] font-medium uppercase tracking-wide mb-2">Most frequent words</div>

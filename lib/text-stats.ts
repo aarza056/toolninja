@@ -7,6 +7,55 @@ export interface TextStats {
   readingTimeMinutes: number;
   speakingTimeMinutes: number;
   topWords: { word: string; count: number }[];
+  readability: ReadabilityStats | null;
+}
+
+export interface ReadabilityStats {
+  fleschReadingEase: number;
+  fleschKincaidGrade: number;
+  level: string;
+  syllables: number;
+}
+
+/** Approximates syllable count via the standard vowel-group heuristic used by most readability
+ * tools: count runs of consecutive vowels, drop a trailing silent "e", floor at 1 syllable. */
+function countSyllables(word: string): number {
+  const w = word.toLowerCase().replace(/[^a-z]/g, "");
+  if (!w) return 0;
+  const groups = w.match(/[aeiouy]+/g) || [];
+  let count = groups.length;
+  if (w.endsWith("e") && !w.endsWith("le") && count > 1) count--;
+  return Math.max(1, count);
+}
+
+function readabilityLevel(fleschScore: number): string {
+  if (fleschScore >= 90) return "Very easy (5th grade)";
+  if (fleschScore >= 70) return "Easy (7th grade)";
+  if (fleschScore >= 60) return "Standard (8th–9th grade)";
+  if (fleschScore >= 50) return "Fairly difficult (10th–12th grade)";
+  if (fleschScore >= 30) return "Difficult (college level)";
+  return "Very difficult (college graduate)";
+}
+
+function computeReadability(text: string, wordCount: number, sentenceCount: number): ReadabilityStats | null {
+  if (wordCount < 1 || sentenceCount < 1) return null;
+
+  const wordTokens = text.match(/[A-Za-z]+(?:'[A-Za-z]+)?/g) || [];
+  if (wordTokens.length === 0) return null;
+
+  const syllables = wordTokens.reduce((sum, w) => sum + countSyllables(w), 0);
+  const wordsPerSentence = wordCount / sentenceCount;
+  const syllablesPerWord = syllables / wordTokens.length;
+
+  const fleschReadingEase = 206.835 - 1.015 * wordsPerSentence - 84.6 * syllablesPerWord;
+  const fleschKincaidGrade = 0.39 * wordsPerSentence + 11.8 * syllablesPerWord - 15.59;
+
+  return {
+    fleschReadingEase: Math.round(fleschReadingEase * 10) / 10,
+    fleschKincaidGrade: Math.round(Math.max(0, fleschKincaidGrade) * 10) / 10,
+    level: readabilityLevel(fleschReadingEase),
+    syllables,
+  };
 }
 
 const STOP_WORDS = new Set([
@@ -41,5 +90,7 @@ export function computeTextStats(text: string): TextStats {
     .sort((a, b) => b.count - a.count)
     .slice(0, 8);
 
-  return { words, characters, charactersNoSpaces, sentences, paragraphs, readingTimeMinutes, speakingTimeMinutes, topWords };
+  const readability = computeReadability(trimmed, words, sentences);
+
+  return { words, characters, charactersNoSpaces, sentences, paragraphs, readingTimeMinutes, speakingTimeMinutes, topWords, readability };
 }

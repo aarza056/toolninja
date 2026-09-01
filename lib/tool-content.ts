@@ -225,24 +225,25 @@ export const toolContent: Record<string, ToolContent> = {
 
   "jwt-decoder": {
     about:
-      "The ToolNinja JWT Decoder is a free online JSON Web Token decoder. Paste any JWT and instantly see the decoded header, payload, and signature in color-coded sections — purple for header, blue for payload, red for signature.\n\nUse it to decode JWT tokens when debugging authentication issues, inspect JWT claims like sub, iat, exp, and aud, check JWT expiry time in human readable format, or verify the token structure before implementing JWT validation in your code. The expiry countdown tells you immediately if a token is still valid or has already expired.\n\nUnlike some online JWT tools, ToolNinja's JWT decoder runs 100% in your browser using JavaScript — your token, including any sensitive claims like user IDs, roles, and permissions, never leaves your machine. It's a privacy-first alternative to jwt.io for developers who work with sensitive authentication tokens.\n\nNo login, no account, no server calls. Just paste and decode.",
+      "The ToolNinja JWT Decoder is a free online JSON Web Token decoder. Paste any JWT and instantly see the decoded header, payload, and signature in color-coded sections — purple for header, blue for payload, red for signature.\n\nUse it to decode JWT tokens when debugging authentication issues, inspect JWT claims like sub, iat, exp, and aud, check JWT expiry time in human readable format, or verify the token structure before implementing JWT validation in your code. The expiry countdown tells you immediately if a token is still valid or has already expired.\n\nA Verify signature panel goes a step further than decoding: paste the shared secret (for HS256/384/512) or the PEM-encoded public key (for RS/PS/ES algorithms) and the tool checks, using the Web Crypto API, whether the signature actually matches — confirming the token wasn't altered and really was signed with that key, not just that it's structurally well-formed.\n\nUnlike some online JWT tools, ToolNinja's JWT decoder runs 100% in your browser using JavaScript — your token and any key material you provide for verification never leave your machine. It's a privacy-first alternative to jwt.io for developers who work with sensitive authentication tokens.\n\nNo login, no account, no server calls. Just paste and decode.",
     useCases: [
       "Debugging authentication failures by inspecting what claims the token contains",
       "Checking whether a token is expired without waiting for an API call to fail",
       "Understanding what data your identity provider (Auth0, Cognito, Clerk) puts in the payload",
       "Verifying the algorithm field in the header during a security review",
+      "Confirming a token's signature actually matches a given secret or public key, not just that it decodes",
     ],
     tips: [
       "JWTs are Base64URL-encoded, not encrypted. Anyone who has the token can read the payload.",
       "The exp claim is a Unix timestamp — compare it to the current time to check expiry.",
       "Never store sensitive user data (passwords, SSNs, credit cards) in JWT claims.",
-      "The signature validates that the token was issued by the expected server — but you need the secret key to verify it.",
+      "The signature validates that the token was issued by the expected server — use the Verify signature panel with the actual secret or public key to check it, rather than assuming a well-formed token is a validly signed one.",
       "Click 'Use in a cURL request' to quickly test an endpoint with this token, or convert straight to Python/JavaScript code",
     ],
     faq: [
       {
         q: "Does this tool verify the JWT signature?",
-        a: "No. Signature verification requires the secret key or public key, which should never be shared with a browser-based tool. This decoder only reads the header and payload. Use your backend or a library like jsonwebtoken to verify signature integrity.",
+        a: "Yes — the Verify signature panel checks it for you, using the Web Crypto API entirely in your browser. For HMAC algorithms (HS256/384/512) provide the shared secret; for RSA and ECDSA algorithms (RS/PS/ES) provide the PEM-encoded public key. Neither the token nor the key material you enter is ever sent anywhere.",
       },
       {
         q: "What does 'Token Expired' mean?",
@@ -1373,19 +1374,21 @@ export const toolContent: Record<string, ToolContent> = {
 
   "meta-tags-generator": {
     about:
-      "The Meta Tags Generator creates all the HTML meta tags your page needs for SEO, Open Graph (Facebook/LinkedIn), Twitter Cards, and schema.org structured data. Fill in the fields and watch the live previews update for Google search, Twitter, and LinkedIn simultaneously. A quality checklist tracks what's missing. Copy all generated tags with one click.\n\nIt also generates a matching JSON-LD structured data block (WebSite, Article, or Person schema, based on the OG type you select) — the format Google actually parses for rich results, separate from meta tags entirely.",
+      "The Meta Tags Generator creates all the HTML meta tags your page needs for SEO, Open Graph (Facebook/LinkedIn), Twitter Cards, and schema.org structured data. Fill in the fields and watch the live previews update for Google search, Twitter, and LinkedIn simultaneously. A quality checklist tracks what's missing. Copy all generated tags with one click.\n\nThe JSON-LD structured data block now covers seven schema.org types independently of the OG type — WebSite, Article, Person, Product, FAQ Page, How-To, and Local Business — each with the specific extra fields that type actually needs (price and availability for Product, a Q&A list for FAQ Page, numbered steps for How-To, address and phone for Local Business). This is the format Google actually parses for rich results, separate from meta tags entirely.",
     useCases: [
       "Setting up complete meta tags for a new web page or blog post",
       "Previewing how a page will appear when shared on social media before publishing",
       "Auditing existing pages for missing or incorrect social meta tags",
       "Generating Twitter Card and Open Graph tags for marketing campaigns",
-      "Adding schema.org JSON-LD markup so search engines understand the page as an Article, WebSite, or Person",
+      "Adding schema.org JSON-LD markup so search engines understand the page as an Article, Product, FAQ Page, How-To, or Local Business",
+      "Generating FAQ Page structured data to make a page eligible for expandable Q&A results in Google search",
     ],
     tips: [
       "Keep your title under 60 characters — search engines truncate longer titles in results.",
       "The description should be 120-160 characters — enough to describe the page but short enough to display fully.",
       "Your OG image should be 1200×630px for best display across all platforms. Twitter Cards also accept this size.",
-      "The JSON-LD block follows the OG type field — set it to 'article' for blog posts to get Article schema instead of generic WebSite schema.",
+      "The JSON-LD schema type is chosen independently of the Open Graph type — pick FAQ Page or How-To even for a page whose OG type is left as 'website', since those don't map to a standard OG type at all.",
+      "For FAQ Page, enter each pair as a Q: line followed by an A: line, with a blank line between pairs — the parser matches each answer to the question directly above it.",
     ],
     faq: [
       {
@@ -1403,6 +1406,10 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "When should I use noindex or nofollow?",
         a: "noindex tells search engines not to include the page in search results — use it for admin pages, duplicate content, thank-you pages, and staging environments. nofollow tells search engines not to follow the links on the page — use it sparingly, typically on user-generated content pages. Avoid noindexing pages you want to rank. Combining both (noindex, nofollow) is the most restrictive setting.",
+      },
+      {
+        q: "Which JSON-LD type should I use for a product page?",
+        a: "Use Product — it adds an Offer with price, currency, and availability, which is what makes a listing eligible for Google's rich product results (price and stock status shown directly in search). WebSite or Article schema won't include pricing information at all, since those types have no concept of an offer.",
       },
     ],
   },
@@ -1619,17 +1626,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "gitignore-generator": {
     about:
-      "The .gitignore Generator builds a combined .gitignore file from curated templates for languages, frameworks, editors, and operating systems. Select Node.js, Python, VS Code, macOS — or any combination — and get a ready-to-use file with clearly labeled sections for each stack you picked.\n\nStarting a repository without a proper .gitignore leads to committed node_modules folders, IDE config files, and OS junk files that clutter every future diff. This generator front-loads that decision so it's done correctly from the first commit.",
+      "The .gitignore Generator builds a combined .gitignore file from curated templates for languages, frameworks, editors, and operating systems. Select Node.js, Python, VS Code, macOS — or any combination — and get a ready-to-use file with clearly labeled sections for each stack you picked.\n\nStarting a repository without a proper .gitignore leads to committed node_modules folders, IDE config files, and OS junk files that clutter every future diff. This generator front-loads that decision so it's done correctly from the first commit.\n\nA Test a path field lets you check whether a specific file path would actually be ignored by the generated rules — paste something like node_modules/react/index.js or src/build/output.js and see which rule (if any) matches, including correctly distinguishing a root-anchored pattern like /build from an unanchored one that matches at any depth.",
     useCases: [
       "Setting up a new repository's .gitignore correctly from the very first commit",
       "Combining multiple stacks — e.g. a Python backend with a Node.js frontend — into one file",
       "Adding editor and OS ignores (VS Code, JetBrains, macOS, Windows) to an existing project that's missing them",
       "Quickly checking what a standard .gitignore for a given language typically excludes",
+      "Debugging why git status still shows a file you expected .gitignore to hide",
     ],
     tips: [
       "Combine categories freely — most real projects need at least a language template, an editor template, and an OS template together.",
       "If you're already tracking a file that a new .gitignore excludes, adding it to .gitignore alone won't stop tracking it — run git rm --cached <file> first.",
       "Re-generate and diff against your existing .gitignore periodically — new tooling (a new editor, a new framework) often needs its own ignore rules added later.",
+      "Use the path tester when a file you expected to be ignored still shows up in git status — it tells you exactly which rule matched (or that none did), instead of guessing.",
     ],
     faq: [
       {
@@ -1718,18 +1727,20 @@ export const toolContent: Record<string, ToolContent> = {
 
   "env-file-tool": {
     about:
-      "The Env File Tool parses a .env file, flags duplicate keys before they cause a confusing bug, converts it to JSON, and generates a safe-to-commit .env.example with every value stripped but every key preserved.\n\nA missing or outdated .env.example is one of the most common onboarding friction points on a team — a new developer clones the repo, runs the app, and it fails with no clear indication of which environment variables were actually required. This tool keeps that file trivially easy to regenerate from the real .env.",
+      "The Env File Tool parses a .env file, flags duplicate keys before they cause a confusing bug, converts it to JSON, and generates a safe-to-commit .env.example with every value stripped but every key preserved.\n\nA missing or outdated .env.example is one of the most common onboarding friction points on a team — a new developer clones the repo, runs the app, and it fails with no clear indication of which environment variables were actually required. This tool keeps that file trivially easy to regenerate from the real .env.\n\nTwo deployment-target exports round out the conversions: docker run -e flags (ready to paste straight into a docker run command) and a Kubernetes ConfigMap + Secret pair, with keys automatically split between the two based on common naming patterns (anything matching PASSWORD, TOKEN, SECRET, KEY, and similar goes into the Secret; everything else goes into the ConfigMap).",
     useCases: [
       "Generating an up-to-date .env.example whenever new environment variables are added, so onboarding a new teammate doesn't require guessing",
       "Catching duplicate keys in a .env file — the last one silently wins, which is a common source of 'why isn't my config taking effect' bugs",
       "Converting a .env file to JSON for tooling that expects configuration as JSON rather than KEY=value pairs",
       "Auditing exactly which keys a .env file defines before sharing a sanitized version with a teammate or in documentation",
+      "Turning a local .env into docker run -e flags or a Kubernetes ConfigMap/Secret pair without hand-copying every variable",
     ],
     tips: [
       "Regenerate .env.example every time you add a new environment variable — a stale one is worse than none, since it silently omits a variable someone actually needs to set.",
       "The duplicate-key check exists because .env parsers universally let the last occurrence of a key win with no warning — this is one of the most common invisible config bugs.",
       "Quoted values ('...' or \"...\") have their quotes stripped automatically when converting to JSON, matching how most .env parser libraries (dotenv, python-dotenv) behave.",
       "Never paste a production .env with real secrets into a tool you haven't verified is client-side only — this one is, but make that check a habit.",
+      "Always review the Kubernetes tab's ConfigMap/Secret split before applying it — the PASSWORD/TOKEN/SECRET-style key matching is a helpful default, not a substitute for checking which values are actually sensitive.",
     ],
     faq: [
       {
@@ -1747,6 +1758,10 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Does this tool support export KEY=value syntax?",
         a: "Yes — the export prefix (used so a .env file can also be sourced directly in a shell with source .env) is stripped automatically during parsing, so both export DATABASE_URL=... and DATABASE_URL=... parse identically.",
+      },
+      {
+        q: "How does the tool decide which keys go into the Kubernetes Secret vs. the ConfigMap?",
+        a: "It checks each key name against a pattern matching common sensitive-value naming conventions — anything containing SECRET, PASSWORD, TOKEN, KEY, PRIVATE, CREDENTIAL, or AUTH goes into the Secret; everything else goes into the ConfigMap. This is a naming-based heuristic, not a security scan — always review the split yourself before applying it, since a value can be sensitive without its key matching any of those patterns.",
       },
     ],
   },
@@ -1788,17 +1803,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "word-counter": {
     about:
-      "The Word Counter gives you live word, character, sentence, and paragraph counts as you type or paste text, plus reading time and speaking time estimates. It also surfaces the most frequently used words in your text, excluding common stop words — a quick way to spot repetition before publishing.",
+      "The Word Counter gives you live word, character, sentence, and paragraph counts as you type or paste text, plus reading time and speaking time estimates. It also surfaces the most frequently used words in your text, excluding common stop words — a quick way to spot repetition before publishing.\n\nA Readability panel scores your text using the Flesch Reading Ease and Flesch-Kincaid Grade Level formulas — the same two readability metrics built into Microsoft Word and used across publishing, education, and plain-language writing guidelines. Both are computed from sentence length and an estimated syllable count, entirely client-side.",
     useCases: [
       "Checking a blog post or article against a publication's word count requirement",
       "Verifying a meta description or title fits within a character limit before publishing",
       "Estimating how long a presentation script will take to deliver out loud",
       "Spotting overused words in a draft before final edits",
+      "Checking whether a piece of writing matches its intended audience's reading level",
     ],
     tips: [
       "Reading time is estimated at 200 words per minute, the commonly cited average adult silent-reading speed.",
       "Speaking time is estimated at 130 words per minute, closer to a natural spoken pace than reading pace.",
       "The frequent-words list filters out common stop words (the, and, is, etc.) so it surfaces words that actually reflect your content's topic.",
+      "A Flesch Reading Ease score above 60 is generally considered accessible to a broad general audience — most professional and consumer-facing writing guidelines target 60-70.",
     ],
     faq: [
       {
@@ -1816,6 +1833,10 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Is my text uploaded anywhere?",
         a: "No. All counting happens in JavaScript in your browser. Nothing is sent to a server, which makes it safe to paste unpublished drafts or confidential text.",
+      },
+      {
+        q: "What's the difference between Flesch Reading Ease and Flesch-Kincaid Grade Level?",
+        a: "They're computed from the same underlying inputs (words per sentence, syllables per word) but scaled differently. Flesch Reading Ease runs roughly 0-100, where higher means easier to read. Flesch-Kincaid Grade Level converts that into an approximate US school grade level — a score of 8 suggests the text is readable by someone with an 8th-grade reading level. Both are estimates based on sentence and word length, not a measure of whether the content itself is well-organized or clearly explained.",
       },
     ],
   },
@@ -2411,6 +2432,156 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Can I use any color name, or only the presets shown?",
         a: "The color presets cover the common shields.io named colors, but you can type any valid CSS color name or hex code (without the #) into the color field directly — the presets are just a shortcut for the most commonly used ones.",
+      },
+    ],
+  },
+
+  "base58": {
+    about:
+      "The Base58 Encoder / Decoder converts text or raw hex bytes to and from Base58 — the alphabet Bitcoin and many other systems use instead of Base64 specifically because it excludes visually ambiguous characters (0, O, I, and l), avoiding the transcription errors those cause in identifiers people read and type by hand.\n\nBase58 also skips punctuation characters like + and / that Base64 uses, which means a Base58 string never needs escaping to be safely embedded in a URL or double-clicked to select as one token — another reason it's the standard choice for Bitcoin addresses, IPFS content hashes, and short public identifiers.\n\nBoth text and hex input modes are supported, since Base58 is as often applied to raw binary data (a hash, a public key) as it is to plain strings. Everything runs client-side using BigInt arithmetic for exact precision on inputs of any length.",
+    useCases: [
+      "Decoding a Bitcoin address or other Base58Check-adjacent identifier to inspect its raw bytes",
+      "Encoding a hash or binary identifier into a compact, URL-safe, hand-typeable string",
+      "Understanding why Base58 is used instead of Base64 for certain identifier formats",
+      "Converting between hex and Base58 representations of the same underlying bytes",
+    ],
+    tips: [
+      "Base58 has no padding character and no +, /, or = — this is precisely why it's preferred for identifiers a human might need to read aloud or type manually.",
+      "A leading zero byte in the input becomes a leading '1' in the Base58 output — this is the standard convention, not a bug, and the decoder correctly reverses it.",
+      "This tool implements plain Base58, not Base58Check (which adds a version byte and a checksum on top) — a real Bitcoin address additionally has that checksum layer.",
+    ],
+    faq: [
+      {
+        q: "Why does Base58 exclude 0, O, I, and l specifically?",
+        a: "Those four characters are the most commonly confused pairs across common fonts — the digit zero and capital O, and capital I and lowercase l, often look identical or nearly identical depending on the typeface. Base58 was designed for identifiers people sometimes need to read off a screen and type by hand, so removing the ambiguous characters entirely eliminates that entire class of transcription error.",
+      },
+      {
+        q: "Is this the same as what a Bitcoin address uses?",
+        a: "A Bitcoin address uses Base58Check, which is plain Base58 encoding applied to a payload that already includes a version byte prefix and a 4-byte checksum suffix (derived from double-SHA256 of the payload). This tool implements plain Base58 — the encoding step itself — without adding that specific version/checksum wrapper.",
+      },
+      {
+        q: "Why would I encode hex bytes instead of text?",
+        a: "Base58 is very often applied to raw binary data — a public key, a content hash, a random identifier — rather than human-readable text. Hex is the standard way to represent arbitrary bytes as typeable text, so the hex mode lets you Base58-encode the same binary data a real system would, rather than only ASCII strings.",
+      },
+    ],
+  },
+
+  "patch-generator": {
+    about:
+      "The Unified Diff / Patch Generator produces a real, standards-format .patch file from two pasted texts — the same unified diff format `git diff` and `diff -u` produce, and the same format `git apply` and the `patch` command consume. Paste an original and a modified version, and get back a downloadable patch with proper @@ hunk headers and configurable context lines, rather than just a visual highlight of what changed.\n\nThe diff itself is computed with a classic LCS (longest common subsequence) line-diff algorithm — the same category of algorithm underlying most real diff tools — then grouped into hunks with surrounding context lines, exactly like a real diff utility would produce.\n\nThis is a genuinely different tool from a visual diff checker: the output here is meant to be applied, not just read.",
+    useCases: [
+      "Generating a .patch file to share a small fix without opening a pull request",
+      "Producing a reviewable patch from a config file change made outside version control",
+      "Understanding exactly what a unified diff's @@ hunk header numbers mean",
+      "Creating a patch to apply the same textual change across multiple environments",
+    ],
+    tips: [
+      "Increase context lines if you plan to git apply this patch against a slightly different version of the file — more surrounding context makes the patch more likely to apply cleanly.",
+      "The file name fields (a/file.txt, b/file.txt) become the --- and +++ lines in the patch — set them to match your real file paths if you intend to actually apply this patch.",
+      "A patch this tool generates against text extracted from a real file should apply cleanly with git apply patchfile.patch or patch -p1 < patchfile.patch, provided the original text truly matches.",
+    ],
+    faq: [
+      {
+        q: "What do the numbers in the @@ -3,7 +3,9 @@ hunk header mean?",
+        a: "They're (starting line, line count) pairs for the old and new file respectively. @@ -3,7 +3,9 @@ means this hunk starts at line 3 in the original file and spans 7 lines there, while in the new file it also starts at line 3 but spans 9 lines (because the hunk added 2 net lines). Every real diff tool uses this exact same header format.",
+      },
+      {
+        q: "Can I actually apply this patch with git or the patch command?",
+        a: "Yes — the output is standard unified diff format, the same format git apply and patch -p1 (or patch -p0, depending on how the file paths are set) both consume. As long as the target file's content genuinely matches what you pasted as the 'original' text, the patch should apply cleanly.",
+      },
+      {
+        q: "Why would I use this instead of just running git diff?",
+        a: "git diff requires the text to actually be in a git repository already. This tool is for the case where you have two versions of some text — copied from a doc, a config file that isn't in version control, output from two different runs — and want a real, applyable patch between them without setting up a repo just to generate one.",
+      },
+    ],
+  },
+
+  "security-headers-checker": {
+    about:
+      "The HTTP Security Headers Checker analyzes a pasted block of raw HTTP response headers against the standard set of browser-enforced security headers — HSTS, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, and a few others — and produces a scored report explaining what each one does, whether it's present, and whether its value looks correctly configured.\n\nUnlike tools that require pointing at a live URL (which raises its own CORS and privacy considerations for a browser-only tool), this one works entirely from headers you paste in directly — copied from curl -I, from your browser's DevTools Network tab, or from your own server's config as a pre-deployment check.\n\nEach check explains not just whether a header is present, but why its absence or misconfiguration actually matters — the goal is understanding the risk, not just a pass/fail checklist.",
+    useCases: [
+      "Auditing your own site's security headers before or after a deployment",
+      "Understanding what a specific security header actually protects against",
+      "Reviewing headers copied from a security scan report or a colleague's curl -I output",
+      "Checking a CSP or HSTS configuration for the specific misconfigurations most commonly missed",
+    ],
+    tips: [
+      "Get real headers with curl -I https://example.com, or from your browser's Network tab (click a request → Headers → Response Headers) — paste them exactly as shown.",
+      "A header being 'present' isn't the same as being correctly configured — check the specific note under each header, since a few (like CSP with unsafe-inline, or HSTS with a short max-age) are flagged even when technically present.",
+      "The critical-severity headers (HSTS, CSP) matter most — a page missing those has meaningfully weaker protection than one missing only the info-severity headers.",
+    ],
+    faq: [
+      {
+        q: "Why can't I just paste a URL instead of headers?",
+        a: "Fetching a live URL's headers from browser JavaScript runs into CORS restrictions for cross-origin requests, and would mean this tool making a network request on your behalf — which doesn't fit a 100% client-side, no-server-calls tool. Pasting headers you've already retrieved (via curl, DevTools, or your own server logs) sidesteps both issues entirely.",
+      },
+      {
+        q: "Is a 100 score the same as 'fully secure'?",
+        a: "No — this checks a specific, well-known set of security-relevant response headers, which is one meaningful but partial slice of a site's overall security posture. A perfect score here says nothing about the application's own code, authentication, or server configuration beyond these particular headers.",
+      },
+      {
+        q: "Why is Content-Security-Policy marked critical when my site works fine without it?",
+        a: "A site can function completely normally without CSP — the header doesn't change what the site does for legitimate users. What it does is restrict what an attacker's injected script could do if an XSS vulnerability were ever found elsewhere in the application. Its absence isn't visible in normal use precisely because its entire purpose only matters in an attack scenario.",
+      },
+    ],
+  },
+
+  "json-to-markdown-table": {
+    about:
+      "The JSON to Markdown Table converter takes a JSON array of objects — the shape of nearly every API response and database query result — and turns it directly into a GitHub-Flavored Markdown table, ready to paste into a README, pull request description, or documentation page.\n\nThe column set is automatically derived as the union of keys across every object in the array, in first-seen order, so rows with occasional missing fields just render an empty cell instead of breaking the conversion. Values containing a literal pipe character or newline are automatically escaped so they can't break the table's structure.\n\nA live HTML preview renders alongside the generated Markdown, so you can confirm the table looks right before pasting it anywhere.",
+    useCases: [
+      "Turning an API response into a table for documentation without manually building it in Markdown",
+      "Converting database query results (exported as JSON) into a table for a report or PR description",
+      "Quickly visualizing the shape of a JSON array of objects as a table",
+      "Documenting a config or options object's fields as a reference table",
+    ],
+    tips: [
+      "A single JSON object (not wrapped in an array) also works — it's treated as a one-row table, useful for documenting a single config or settings object.",
+      "If your objects have different sets of fields, the table still works — missing fields just render as empty cells rather than causing an error.",
+      "Nested objects and arrays inside a cell get stringified as compact JSON rather than causing an error — flatten your data first if you want more readable output for deeply nested values.",
+    ],
+    faq: [
+      {
+        q: "What happens if different objects in the array have different keys?",
+        a: "The column set is the union of every key seen across all objects, in the order each key first appears. Any object missing a given key just gets an empty cell in that column — the conversion doesn't fail or skip rows because of inconsistent shapes.",
+      },
+      {
+        q: "What if a value contains a pipe character or a newline?",
+        a: "Both are handled automatically: a literal | is escaped to \\| so it doesn't get misread as a column separator, and newlines are collapsed to spaces so a single value can't break a row across multiple lines. The generated Markdown stays valid either way.",
+      },
+      {
+        q: "Does this work with a single JSON object instead of an array?",
+        a: "Yes — a single object (not wrapped in []) is treated as one row, producing a table with your keys as columns and that one object's values as the single data row. This is useful for documenting the shape of a single config object.",
+      },
+    ],
+  },
+
+  "box-shadow-generator": {
+    about:
+      "The CSS Box Shadow Generator builds single or multi-layer box-shadow declarations visually — adjust horizontal/vertical offset, blur radius, spread, color, opacity, and inset per layer, with a live preview showing exactly how it renders. Stack up to six layers to build the soft, multi-layer shadows real design systems use, rather than the flat single shadow a naive box-shadow produces.\n\nEach layer's color and opacity are set independently and combined into the final rgba() value automatically, so building something like a soft ambient shadow plus a tighter contact shadow — a common technique for a more realistic, less harsh drop shadow — is just a matter of adding a second layer rather than hand-computing the combined CSS syntax.",
+    useCases: [
+      "Building a soft, realistic multi-layer shadow instead of a single flat box-shadow",
+      "Creating a neumorphism-style inset/outset shadow pair",
+      "Prototyping a card or button's elevation shadow with live visual feedback",
+      "Getting the exact box-shadow CSS syntax right without memorizing the property's argument order",
+    ],
+    tips: [
+      "Real-world soft shadows are usually 2-3 layers: a small, sharp shadow close to the element plus a larger, softer, more transparent one further out — try starting with a tight first layer and an oversized, low-opacity second layer.",
+      "Inset shadows render inside the element's border box instead of outside it — combine an inset and a regular shadow on the same element for a pressed or embossed effect.",
+      "Keep total opacity modest (under ~30-40% per layer) for shadows meant to look subtle rather than like a hard drop shadow.",
+    ],
+    faq: [
+      {
+        q: "What's the difference between blur and spread?",
+        a: "Blur controls how soft/feathered the shadow's edge is — higher blur means a more gradual fade. Spread expands or contracts the shadow's size uniformly before blurring is applied — a positive spread makes the shadow larger than the element itself, a negative spread makes it smaller. Most everyday shadows use blur alone with spread at 0; spread becomes useful for effects like a glow or an inset highlight.",
+      },
+      {
+        q: "How do I create a neumorphism-style shadow?",
+        a: "Neumorphism typically uses two shadows on the same element: a light-colored shadow offset up-and-left, and a dark-colored shadow offset down-and-right, both with a soft blur and no spread, on a background close in color to the element itself. Add two layers here with opposite X/Y offsets and contrasting light/dark colors to approximate it.",
+      },
+      {
+        q: "Why use multiple shadow layers instead of one?",
+        a: "A single box-shadow with a large blur tends to look flat and unrealistic — real-world shadows from ambient and direct light sources overlap at different intensities and spreads. Layering a tight, higher-opacity shadow with a larger, lower-opacity one much more closely approximates how shadows actually look, which is why most modern design systems specify shadows as 2-4 stacked layers rather than one.",
       },
     ],
   },

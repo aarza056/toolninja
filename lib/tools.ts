@@ -214,6 +214,19 @@ export const tools: Tool[] = [
       "data uri generator", "image data uri", "base64 encode image online",
     ],
   },
+  {
+    slug: "base58",
+    name: "Base58 Encoder / Decoder",
+    description: "Encode or decode Base58 strings — the Bitcoin-style alphabet that skips ambiguous characters",
+    icon: "Coins",
+    category: "Encode",
+    keywords: [
+      "base58 encoder", "base58 decoder", "base58 encode online",
+      "base58 decode online", "bitcoin base58", "base58 converter",
+      "base58 to hex", "hex to base58", "base58 alphabet",
+      "base58 online tool",
+    ],
+  },
 
   // ─── Generate ─────────────────────────────────────────────────────────────
   {
@@ -626,6 +639,18 @@ export const tools: Tool[] = [
       "best meeting time calculator",
     ],
   },
+  {
+    slug: "json-to-markdown-table",
+    name: "JSON to Markdown Table",
+    description: "Convert a JSON array of objects into a ready-to-paste Markdown table",
+    icon: "Table2",
+    category: "Convert",
+    keywords: [
+      "json to markdown table", "json to markdown table converter", "convert json to markdown",
+      "json array to table", "markdown table from json", "json to md table",
+      "api response to markdown table", "json to github table",
+    ],
+  },
 
   // ─── Test ─────────────────────────────────────────────────────────────────
   {
@@ -750,6 +775,18 @@ export const tools: Tool[] = [
       "fake iban generator for testing",
     ],
   },
+  {
+    slug: "patch-generator",
+    name: "Unified Diff / Patch Generator",
+    description: "Generate a real, downloadable .patch file from two texts — usable with git apply or patch",
+    icon: "GitCompareArrows",
+    category: "Test",
+    keywords: [
+      "unified diff generator", "patch file generator", "generate patch file online",
+      "diff to patch", "git apply patch generator", "create patch file",
+      "unified diff format online", "text to patch file", "diff patch tool",
+    ],
+  },
 
   // ─── Design ───────────────────────────────────────────────────────────────
   {
@@ -821,6 +858,18 @@ export const tools: Tool[] = [
       "dominant color extractor", "color palette from image", "image to color palette",
       "photo color picker online", "get colors from picture", "color palette extractor free",
       "image color scheme generator", "picture color extractor",
+    ],
+  },
+  {
+    slug: "box-shadow-generator",
+    name: "CSS Box Shadow Generator",
+    description: "Build single or multi-layer CSS box shadows visually, with live preview",
+    icon: "Squircle",
+    category: "Design",
+    keywords: [
+      "css box shadow generator", "box shadow generator online", "css shadow generator",
+      "multiple box shadow generator", "box-shadow css generator", "neumorphism shadow generator",
+      "css shadow maker", "drop shadow css generator", "box shadow code generator",
     ],
   },
 
@@ -905,6 +954,18 @@ export const tools: Tool[] = [
       "check package.json for malware", "npm supply chain security tool", "preinstall script checker",
       "package.json security audit", "npm dependency pinning checker", "inspect package.json online",
       "npm script security scanner",
+    ],
+  },
+  {
+    slug: "security-headers-checker",
+    name: "HTTP Security Headers Checker",
+    description: "Paste raw response headers and check them against HSTS, CSP, X-Frame-Options, and more",
+    icon: "ListChecks",
+    category: "Security",
+    keywords: [
+      "http security headers checker", "security headers checker online", "hsts checker",
+      "check security headers", "x-frame-options checker", "csp header checker",
+      "http response headers analyzer", "security headers scanner", "web security headers test",
     ],
   },
 
@@ -993,9 +1054,9 @@ export type Category = (typeof categories)[number];
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 export const LATEST_TOOL_SLUGS = [
-  "iban-validator",
-  "xml-formatter",
-  "meeting-planner",
-  "package-json-inspector",
-  "readme-badge-generator",
+  "base58",
+  "patch-generator",
+  "security-headers-checker",
+  "json-to-markdown-table",
+  "box-shadow-generator",
 ];

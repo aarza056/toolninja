@@ -63,9 +63,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online URL encoder and decoder. Encode special characters for safe URL usage or decode percent-encoded URLs instantly. Supports full URI encoding and query string encoding. No login, browser-only.",
   },
   "jwt-decoder": {
-    title: "JWT Decoder Online — Decode & Inspect JSON Web Tokens | ToolNinja",
+    title: "JWT Decoder Online — Decode, Inspect & Verify JSON Web Tokens | ToolNinja",
     description:
-      "Free online JWT decoder. Decode and inspect JSON Web Token header, payload and signature instantly. Check JWT expiry, view claims and debug authentication tokens. Your token never leaves the browser.",
+      "Free online JWT decoder. Decode and inspect JSON Web Token header, payload and signature instantly, and verify the signature against a secret or public key (HS/RS/PS/ES). Check JWT expiry and view claims. Your token never leaves the browser.",
   },
   "hash-generator": {
     title: "Hash Generator Online — MD5, SHA256, SHA512 Hash Calculator | ToolNinja",
@@ -81,6 +81,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "Image to Base64 Converter Online — Encode Images as Base64 | ToolNinja",
     description:
       "Free online image to Base64 converter. Convert PNG, JPG, GIF, SVG and WebP images to Base64 strings instantly. Generate data URIs for embedding images in CSS or HTML. No upload to server — 100% browser-based.",
+  },
+  "base58": {
+    title: "Base58 Encoder & Decoder Online — Bitcoin-Style Encoding | ToolNinja",
+    description:
+      "Free online Base58 encoder and decoder. Encode text or hex bytes into Base58 (the Bitcoin-style alphabet that skips 0, O, I and l) or decode Base58 back to text/hex. No login, 100% browser-based.",
   },
 
   // ── Generate ─────────────────────────────────────────────────────────────
@@ -237,6 +242,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online meeting planner and time zone converter. Compare working hours across multiple cities on one grid and find a meeting time that overlaps for everyone, DST-aware. No login, 100% browser-based.",
   },
+  "json-to-markdown-table": {
+    title: "JSON to Markdown Table Converter Online | ToolNinja",
+    description:
+      "Free online JSON to Markdown table converter. Paste a JSON array of objects and instantly get a ready-to-paste GitHub-Flavored Markdown table, with a live HTML preview. No login, 100% browser-based.",
+  },
 
   // ── Test ─────────────────────────────────────────────────────────────────
   "regex-tester": {
@@ -284,6 +294,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online IBAN validator and test IBAN generator. Validate an IBAN's MOD-97 checksum and country structure, or generate a valid test IBAN for 35+ countries. No login, 100% browser-based.",
   },
+  "patch-generator": {
+    title: "Unified Diff / Patch Generator Online — Create .patch Files | ToolNinja",
+    description:
+      "Free online unified diff and patch generator. Paste an original and modified text and get a real, downloadable .patch file usable with git apply or the patch command. No login, 100% browser-based.",
+  },
 
   // ── Design ───────────────────────────────────────────────────────────────
   "css-animations": {
@@ -310,6 +325,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "Image Color Palette Extractor — Get Colors From an Image | ToolNinja",
     description:
       "Free online image color palette extractor. Upload any image and instantly extract its dominant colors as HEX and RGB values, ready to copy as CSS variables. No login, 100% browser-based — images never leave your device.",
+  },
+  "box-shadow-generator": {
+    title: "CSS Box Shadow Generator Online — Multi-Layer Shadows | ToolNinja",
+    description:
+      "Free online CSS box shadow generator. Build single or multi-layer box shadows visually with live preview — adjust offset, blur, spread, color, and opacity per layer. No login, 100% browser-based.",
   },
 
   // ── Security ─────────────────────────────────────────────────────────────
@@ -342,6 +362,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "package.json Script Inspector — Check for Risky Install Scripts | ToolNinja",
     description:
       "Free online package.json inspector. See exactly which scripts run automatically on npm install (preinstall, postinstall, prepare) and which dependencies aren't version-pinned. No login, 100% browser-based.",
+  },
+  "security-headers-checker": {
+    title: "HTTP Security Headers Checker Online — HSTS, CSP & More | ToolNinja",
+    description:
+      "Free online HTTP security headers checker. Paste raw response headers and get a scored analysis against HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy and more. No login, 100% browser-based.",
   },
 
   // ── Accessibility ────────────────────────────────────────────────────────

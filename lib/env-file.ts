@@ -76,3 +76,35 @@ export function generateExample(text: string): string {
   const { entries } = parseEnv(text);
   return entries.map((e) => `${e.key}=`).join("\n") + (entries.length ? "\n" : "");
 }
+
+export function envToDockerRunFlags(text: string): string {
+  const { entries } = parseEnv(text);
+  if (entries.length === 0) return "";
+  return entries.map((e) => `-e ${e.key}="${e.value.replace(/"/g, '\\"')}"`).join(" \\\n  ");
+}
+
+// Keys matching this pattern are routed to a Kubernetes Secret instead of a ConfigMap — a
+// simple, common heuristic (not a security scan) so obviously sensitive values don't land in
+// plain-text ConfigMap YAML by default.
+const SECRET_KEY_PATTERN = /(SECRET|PASSWORD|PASSWD|TOKEN|_KEY$|^KEY|PRIVATE|CREDENTIAL|AUTH)/i;
+
+export function envToKubernetesYaml(text: string, name = "app"): string {
+  const { entries } = parseEnv(text);
+  if (entries.length === 0) return "";
+
+  const secrets = entries.filter((e) => SECRET_KEY_PATTERN.test(e.key));
+  const configs = entries.filter((e) => !SECRET_KEY_PATTERN.test(e.key));
+  const parts: string[] = [];
+
+  if (configs.length > 0) {
+    const lines = configs.map((e) => `  ${e.key}: "${e.value.replace(/"/g, '\\"')}"`).join("\n");
+    parts.push(`apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: ${name}-config\ndata:\n${lines}`);
+  }
+
+  if (secrets.length > 0) {
+    const lines = secrets.map((e) => `  ${e.key}: "${e.value.replace(/"/g, '\\"')}"`).join("\n");
+    parts.push(`apiVersion: v1\nkind: Secret\nmetadata:\n  name: ${name}-secret\ntype: Opaque\nstringData:\n${lines}`);
+  }
+
+  return parts.join("\n---\n") + "\n";
+}

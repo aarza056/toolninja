@@ -3,8 +3,9 @@
 import { useState, useEffect, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Download, Search } from "lucide-react";
+import { Download, Search, CheckCircle2, XCircle } from "lucide-react";
 import { gitignoreTemplates, buildGitignore, type GitignoreTemplate } from "@/lib/gitignore-templates";
+import { testPathAgainstGitignore } from "@/lib/gitignore-tester";
 
 const STORAGE_KEY = "toolninja:gitignore-generator";
 const CATEGORIES: GitignoreTemplate["category"][] = ["Language", "Framework", "Tool", "Editor", "OS"];
@@ -38,6 +39,11 @@ export default function GitignoreGeneratorClient() {
   };
 
   const output = useMemo(() => buildGitignore(selected), [selected]);
+  const [testPath, setTestPath] = useState("");
+  const pathTestResult = useMemo(
+    () => (testPath.trim() && output ? testPathAgainstGitignore(testPath, output) : null),
+    [testPath, output]
+  );
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -109,9 +115,42 @@ export default function GitignoreGeneratorClient() {
             </div>
           </div>
           {output ? (
-            <pre className="p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] overflow-auto h-[calc(100vh-320px)] min-h-[300px]">
-              {output}
-            </pre>
+            <>
+              <pre className="p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] overflow-auto h-[calc(100vh-420px)] min-h-[220px]">
+                {output}
+              </pre>
+
+              <div className="mt-4">
+                <label className="text-xs text-[#888888] font-medium block mb-1">Test a path against these rules</label>
+                <input
+                  type="text"
+                  value={testPath}
+                  onChange={(e) => setTestPath(e.target.value)}
+                  placeholder="e.g. node_modules/react/index.js or src/build/output.js"
+                  spellCheck={false}
+                  className="w-full px-3 py-2 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+                />
+                {pathTestResult && (
+                  <div className={`flex items-start gap-2 mt-2 p-2.5 rounded-[6px] text-xs ${
+                    pathTestResult.ignored
+                      ? "bg-[#ef4444]/10 border border-[#ef4444]/30 text-[#ef4444]"
+                      : "bg-[#22c55e]/10 border border-[#22c55e]/30 text-[#22c55e]"
+                  }`}>
+                    {pathTestResult.ignored ? (
+                      <XCircle size={14} className="shrink-0 mt-0.5" />
+                    ) : (
+                      <CheckCircle2 size={14} className="shrink-0 mt-0.5" />
+                    )}
+                    <span>
+                      {pathTestResult.ignored ? "Ignored" : "Not ignored"}
+                      {pathTestResult.matchedRule && (
+                        <> — matched rule <code className="font-mono">{pathTestResult.matchedRule}</code></>
+                      )}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </>
           ) : (
             <div className="p-8 text-center text-[#444444] border border-dashed border-[#222222] rounded-[8px]">
               Select at least one stack, editor, or OS to generate a .gitignore

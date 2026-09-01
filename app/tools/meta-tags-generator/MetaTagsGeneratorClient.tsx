@@ -39,6 +39,42 @@ interface MetaForm {
 const TITLE_MAX = 60;
 const DESC_MAX = 160;
 
+type JsonLdType = "WebSite" | "Article" | "Person" | "Product" | "FAQPage" | "HowTo" | "LocalBusiness";
+const JSON_LD_TYPES: { id: JsonLdType; label: string }[] = [
+  { id: "WebSite", label: "Website" },
+  { id: "Article", label: "Article" },
+  { id: "Person", label: "Person" },
+  { id: "Product", label: "Product" },
+  { id: "FAQPage", label: "FAQ Page" },
+  { id: "HowTo", label: "How-To" },
+  { id: "LocalBusiness", label: "Local Business" },
+];
+
+/** Parses "Q: ...\nA: ...\n\nQ: ...\nA: ..." blocks into FAQPage mainEntity items. Tolerant of
+ * blank lines between pairs; a Q with no matching A is skipped rather than emitting bad JSON-LD. */
+function parseFaqItems(raw: string): { "@type": "Question"; name: string; acceptedAnswer: { "@type": "Answer"; text: string } }[] {
+  const lines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
+  const items: { "@type": "Question"; name: string; acceptedAnswer: { "@type": "Answer"; text: string } }[] = [];
+  let pendingQ: string | null = null;
+  for (const line of lines) {
+    if (/^Q:/i.test(line)) {
+      pendingQ = line.replace(/^Q:\s*/i, "");
+    } else if (/^A:/i.test(line) && pendingQ) {
+      items.push({ "@type": "Question", name: pendingQ, acceptedAnswer: { "@type": "Answer", text: line.replace(/^A:\s*/i, "") } });
+      pendingQ = null;
+    }
+  }
+  return items;
+}
+
+function parseHowToSteps(raw: string): { "@type": "HowToStep"; text: string }[] {
+  return raw
+    .split("\n")
+    .map((l) => l.replace(/^\d+[.)]\s*/, "").trim())
+    .filter(Boolean)
+    .map((text) => ({ "@type": "HowToStep" as const, text }));
+}
+
 function CharCounter({ value, max }: { value: string; max: number }) {
   const len = value.length;
   const over = len > max;
@@ -85,6 +121,16 @@ export default function MetaTagsGeneratorClient() {
     noFollow: false,
   });
   const [includeJsonLd, setIncludeJsonLd] = useState(true);
+  const [jsonLdType, setJsonLdType] = useState<JsonLdType>("WebSite");
+  const [jsonLdExtra, setJsonLdExtra] = useState({
+    price: "",
+    currency: "USD",
+    availability: "InStock" as "InStock" | "OutOfStock" | "PreOrder",
+    phone: "",
+    address: "",
+    faqItems: "",
+    howToSteps: "",
+  });
 
   const set = <K extends keyof MetaForm>(key: K, val: MetaForm[K]) =>
     setForm((f) => ({ ...f, [key]: val }));
@@ -167,35 +213,74 @@ export default function MetaTagsGeneratorClient() {
   const jsonLd = useMemo(() => {
     if (!includeJsonLd || !form.title) return "";
 
-    const schemaType = form.type === "article" ? "Article" : form.type === "profile" ? "Person" : "WebSite";
     const data: Record<string, unknown> = {
       "@context": "https://schema.org",
-      "@type": schemaType,
+      "@type": jsonLdType,
     };
 
-    if (schemaType === "Person") {
-      data.name = form.title;
-      if (form.description) data.description = form.description;
-      if (form.url) data.url = form.url;
-      if (form.image) data.image = form.image;
-    } else if (schemaType === "Article") {
-      data.headline = form.title;
-      if (form.description) data.description = form.description;
-      if (form.url) data.mainEntityOfPage = { "@type": "WebPage", "@id": form.url };
-      if (form.image) data.image = form.image;
-      if (form.author) data.author = { "@type": "Person", name: form.author };
-      if (form.siteName) {
-        data.publisher = { "@type": "Organization", name: form.siteName };
+    switch (jsonLdType) {
+      case "Person":
+        data.name = form.title;
+        if (form.description) data.description = form.description;
+        if (form.url) data.url = form.url;
+        if (form.image) data.image = form.image;
+        break;
+
+      case "Article":
+        data.headline = form.title;
+        if (form.description) data.description = form.description;
+        if (form.url) data.mainEntityOfPage = { "@type": "WebPage", "@id": form.url };
+        if (form.image) data.image = form.image;
+        if (form.author) data.author = { "@type": "Person", name: form.author };
+        if (form.siteName) data.publisher = { "@type": "Organization", name: form.siteName };
+        break;
+
+      case "Product":
+        data.name = form.title;
+        if (form.description) data.description = form.description;
+        if (form.image) data.image = form.image;
+        if (jsonLdExtra.price) {
+          data.offers = {
+            "@type": "Offer",
+            price: jsonLdExtra.price,
+            priceCurrency: jsonLdExtra.currency,
+            availability: `https://schema.org/${jsonLdExtra.availability}`,
+          };
+        }
+        break;
+
+      case "FAQPage": {
+        const items = parseFaqItems(jsonLdExtra.faqItems);
+        data.mainEntity = items;
+        break;
       }
-    } else {
-      data.name = form.title;
-      if (form.description) data.description = form.description;
-      if (form.url) data.url = form.url;
-      if (form.siteName) data.name = form.siteName || form.title;
+
+      case "HowTo": {
+        data.name = form.title;
+        if (form.description) data.description = form.description;
+        const steps = parseHowToSteps(jsonLdExtra.howToSteps);
+        if (steps.length > 0) data.step = steps;
+        break;
+      }
+
+      case "LocalBusiness":
+        data.name = form.siteName || form.title;
+        if (form.description) data.description = form.description;
+        if (form.url) data.url = form.url;
+        if (form.image) data.image = form.image;
+        if (jsonLdExtra.address) data.address = jsonLdExtra.address;
+        if (jsonLdExtra.phone) data.telephone = jsonLdExtra.phone;
+        break;
+
+      default: // WebSite
+        data.name = form.siteName || form.title;
+        if (form.description) data.description = form.description;
+        if (form.url) data.url = form.url;
+        break;
     }
 
     return `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n</script>`;
-  }, [includeJsonLd, form]);
+  }, [includeJsonLd, form, jsonLdType, jsonLdExtra]);
 
   return (
     <ToolLayout
@@ -479,7 +564,7 @@ export default function MetaTagsGeneratorClient() {
 
       {/* JSON-LD structured data */}
       <div className="mt-4 border border-[#222222] rounded-[8px] overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#222222] bg-[#0d0d0d]">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 border-b border-[#222222] bg-[#0d0d0d]">
           <label className="flex items-center gap-2 text-xs text-[#888888] font-medium cursor-pointer">
             <input
               type="checkbox"
@@ -487,18 +572,103 @@ export default function MetaTagsGeneratorClient() {
               onChange={(e) => setIncludeJsonLd(e.target.checked)}
               className="accent-[#a855f7]"
             />
-            JSON-LD Structured Data ({form.type === "article" ? "Article" : form.type === "profile" ? "Person" : "WebSite"})
+            JSON-LD Structured Data
           </label>
-          {jsonLd && <CopyButton text={jsonLd} size="sm" label="Copy" />}
+          <div className="flex items-center gap-2">
+            <select
+              value={jsonLdType}
+              onChange={(e) => setJsonLdType(e.target.value as JsonLdType)}
+              className="px-2 py-1 text-xs bg-[#111111] border border-[#222222] rounded-[4px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+            >
+              {JSON_LD_TYPES.map((t) => (
+                <option key={t.id} value={t.id}>{t.label}</option>
+              ))}
+            </select>
+            {jsonLd && <CopyButton text={jsonLd} size="sm" label="Copy" />}
+          </div>
         </div>
+
         {includeJsonLd && (
-          <pre className="p-4 text-xs text-[#a855f7] font-mono overflow-x-auto whitespace-pre leading-relaxed bg-[#111111]">
-            {jsonLd || (
-              <span className="text-[#444444] italic not-italic">
-                Fill in the title field above to generate schema.org markup…
-              </span>
+          <>
+            {jsonLdType === "Product" && (
+              <div className="grid grid-cols-3 gap-2 px-4 py-3 border-b border-[#222222] bg-[#0d0d0d]">
+                <input
+                  type="text"
+                  value={jsonLdExtra.price}
+                  onChange={(e) => setJsonLdExtra((p) => ({ ...p, price: e.target.value }))}
+                  placeholder="Price, e.g. 29.99"
+                  className={inputCls}
+                />
+                <input
+                  type="text"
+                  value={jsonLdExtra.currency}
+                  onChange={(e) => setJsonLdExtra((p) => ({ ...p, currency: e.target.value }))}
+                  placeholder="Currency, e.g. USD"
+                  className={inputCls}
+                />
+                <select
+                  value={jsonLdExtra.availability}
+                  onChange={(e) => setJsonLdExtra((p) => ({ ...p, availability: e.target.value as typeof p.availability }))}
+                  className={inputCls}
+                >
+                  <option value="InStock">In stock</option>
+                  <option value="OutOfStock">Out of stock</option>
+                  <option value="PreOrder">Pre-order</option>
+                </select>
+              </div>
             )}
-          </pre>
+
+            {jsonLdType === "FAQPage" && (
+              <div className="px-4 py-3 border-b border-[#222222] bg-[#0d0d0d]">
+                <textarea
+                  value={jsonLdExtra.faqItems}
+                  onChange={(e) => setJsonLdExtra((p) => ({ ...p, faqItems: e.target.value }))}
+                  placeholder={"Q: Is this tool free?\nA: Yes, entirely free.\n\nQ: Do I need an account?\nA: No login required."}
+                  rows={5}
+                  className={`${inputCls} font-mono resize-none`}
+                />
+              </div>
+            )}
+
+            {jsonLdType === "HowTo" && (
+              <div className="px-4 py-3 border-b border-[#222222] bg-[#0d0d0d]">
+                <textarea
+                  value={jsonLdExtra.howToSteps}
+                  onChange={(e) => setJsonLdExtra((p) => ({ ...p, howToSteps: e.target.value }))}
+                  placeholder={"1. Paste your JSON\n2. Choose a schema type\n3. Copy the generated tags"}
+                  rows={5}
+                  className={`${inputCls} font-mono resize-none`}
+                />
+              </div>
+            )}
+
+            {jsonLdType === "LocalBusiness" && (
+              <div className="grid grid-cols-2 gap-2 px-4 py-3 border-b border-[#222222] bg-[#0d0d0d]">
+                <input
+                  type="text"
+                  value={jsonLdExtra.address}
+                  onChange={(e) => setJsonLdExtra((p) => ({ ...p, address: e.target.value }))}
+                  placeholder="Street address, city, region"
+                  className={inputCls}
+                />
+                <input
+                  type="text"
+                  value={jsonLdExtra.phone}
+                  onChange={(e) => setJsonLdExtra((p) => ({ ...p, phone: e.target.value }))}
+                  placeholder="Phone number"
+                  className={inputCls}
+                />
+              </div>
+            )}
+
+            <pre className="p-4 text-xs text-[#a855f7] font-mono overflow-x-auto whitespace-pre leading-relaxed bg-[#111111]">
+              {jsonLd || (
+                <span className="text-[#444444] italic not-italic">
+                  Fill in the title field above to generate schema.org markup…
+                </span>
+              )}
+            </pre>
+          </>
         )}
       </div>
     </ToolLayout>

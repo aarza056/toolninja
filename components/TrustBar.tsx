@@ -1,6 +1,6 @@
 const stats = [
   { value: "1,000+", label: "developers" },
-  { value: "70+",    label: "free tools" },
+  { value: "75+",    label: "free tools" },
   { value: "0",      label: "server calls" },
   { value: "100%",   label: "browser only" },
 ];
