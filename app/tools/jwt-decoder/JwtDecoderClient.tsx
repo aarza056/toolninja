@@ -67,7 +67,7 @@ async function verifyJwtSignature(token: string, alg: string, keyMaterial: strin
         false,
         ["verify"]
       );
-      const ok = await crypto.subtle.verify("HMAC", key, signature, signingInput);
+      const ok = await crypto.subtle.verify("HMAC", key, signature as BufferSource, signingInput);
       return ok
         ? { status: "valid", message: "Signature is valid — computed with this secret, it matches the token's signature exactly." }
         : { status: "invalid", message: "Signature does not match. Either the secret is wrong, or the token (header/payload) was altered after signing." };
@@ -78,13 +78,13 @@ async function verifyJwtSignature(token: string, alg: string, keyMaterial: strin
       const keyData = pemToArrayBuffer(keyMaterial);
       if (alg.startsWith("PS")) {
         const key = await crypto.subtle.importKey("spki", keyData, { name: "RSA-PSS", hash }, false, ["verify"]);
-        const ok = await crypto.subtle.verify({ name: "RSA-PSS", saltLength: parseInt(alg.slice(2), 10) / 8 }, key, signature, signingInput);
+        const ok = await crypto.subtle.verify({ name: "RSA-PSS", saltLength: parseInt(alg.slice(2), 10) / 8 }, key, signature as BufferSource, signingInput);
         return ok
           ? { status: "valid", message: "Signature is valid for this public key." }
           : { status: "invalid", message: "Signature does not match this public key. Either the key is wrong, or the token was altered after signing." };
       }
       const key = await crypto.subtle.importKey("spki", keyData, { name: "RSASSA-PKCS1-v1_5", hash }, false, ["verify"]);
-      const ok = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, signature, signingInput);
+      const ok = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, signature as BufferSource, signingInput);
       return ok
         ? { status: "valid", message: "Signature is valid for this public key." }
         : { status: "invalid", message: "Signature does not match this public key. Either the key is wrong, or the token was altered after signing." };
@@ -96,7 +96,7 @@ async function verifyJwtSignature(token: string, alg: string, keyMaterial: strin
       if (!curve) return { status: "error", message: `Unsupported curve for ${alg}.` };
       const keyData = pemToArrayBuffer(keyMaterial);
       const key = await crypto.subtle.importKey("spki", keyData, { name: "ECDSA", namedCurve: curve }, false, ["verify"]);
-      const ok = await crypto.subtle.verify({ name: "ECDSA", hash: `SHA-${alg.slice(2) === "512" ? "512" : alg.slice(2)}` }, key, signature, signingInput);
+      const ok = await crypto.subtle.verify({ name: "ECDSA", hash: `SHA-${alg.slice(2) === "512" ? "512" : alg.slice(2)}` }, key, signature as BufferSource, signingInput);
       return ok
         ? { status: "valid", message: "Signature is valid for this public key." }
         : { status: "invalid", message: "Signature does not match this public key. Either the key is wrong, or the token was altered after signing." };
