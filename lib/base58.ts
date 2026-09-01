@@ -5,8 +5,8 @@ export function base58Encode(bytes: Uint8Array): string {
   if (bytes.length === 0) return "";
 
   let value = BigInt(0);
-  for (const byte of bytes) {
-    value = value * BigInt(256) + BigInt(byte);
+  for (let i = 0; i < bytes.length; i++) {
+    value = value * BigInt(256) + BigInt(bytes[i]);
   }
 
   let out = "";
@@ -20,8 +20,8 @@ export function base58Encode(bytes: Uint8Array): string {
   // Base58 convention, since a leading zero byte would otherwise vanish (it contributes
   // nothing to the big-integer value) and the encoding needs to stay reversible.
   let leadingZeros = 0;
-  for (const byte of bytes) {
-    if (byte === 0) leadingZeros++;
+  for (let i = 0; i < bytes.length; i++) {
+    if (bytes[i] === 0) leadingZeros++;
     else break;
   }
 
@@ -52,7 +52,7 @@ export function base58Decode(input: string): Uint8Array {
     else break;
   }
 
-  return new Uint8Array([...new Array(leadingOnes).fill(0), ...bytes]);
+  return new Uint8Array([...new Array(leadingOnes).fill(0), ...Array.from(bytes)]);
 }
 
 export function base58EncodeText(text: string): string {
