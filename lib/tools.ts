@@ -129,6 +129,19 @@ export const tools: Tool[] = [
       "xml syntax checker", "xml validator online free",
     ],
   },
+  {
+    slug: "list-sorter",
+    name: "List Sorter & Deduplicator",
+    description: "Sort, dedupe, shuffle, and clean up lists of text lines",
+    icon: "ListOrdered",
+    category: "Format",
+    keywords: [
+      "list sorter online", "sort lines online", "remove duplicate lines",
+      "deduplicate list online", "alphabetize list online", "text list sorter",
+      "sort list alphabetically", "remove blank lines online", "shuffle list online",
+      "dedupe list tool", "sort lines a-z",
+    ],
+  },
 
   // ─── Encode ───────────────────────────────────────────────────────────────
   {
@@ -787,6 +800,18 @@ export const tools: Tool[] = [
       "unified diff format online", "text to patch file", "diff patch tool",
     ],
   },
+  {
+    slug: "uuid-parser",
+    name: "UUID Parser",
+    description: "Decode any UUID or ULID into its version, variant, and embedded timestamp",
+    icon: "ScanSearch",
+    category: "Test",
+    keywords: [
+      "uuid parser", "uuid decoder online", "ulid parser", "uuid version checker",
+      "uuid timestamp extractor", "decode uuid online", "uuid v7 timestamp decoder",
+      "ulid timestamp decoder", "uuid inspector", "what version is this uuid",
+    ],
+  },
 
   // ─── Design ───────────────────────────────────────────────────────────────
   {
@@ -870,6 +895,30 @@ export const tools: Tool[] = [
       "css box shadow generator", "box shadow generator online", "css shadow generator",
       "multiple box shadow generator", "box-shadow css generator", "neumorphism shadow generator",
       "css shadow maker", "drop shadow css generator", "box shadow code generator",
+    ],
+  },
+  {
+    slug: "css-specificity-calculator",
+    name: "CSS Specificity Calculator",
+    description: "Calculate and compare the specificity of CSS selectors",
+    icon: "Gauge",
+    category: "Design",
+    keywords: [
+      "css specificity calculator", "css specificity checker online", "selector specificity calculator",
+      "css specificity explained", "compare css selectors", "which css selector wins",
+      "css specificity score", "calculate selector specificity", "css cascade calculator",
+    ],
+  },
+  {
+    slug: "placeholder-image-generator",
+    name: "Placeholder Image Generator",
+    description: "Generate placeholder images with custom size, color, and text",
+    icon: "Images",
+    category: "Design",
+    keywords: [
+      "placeholder image generator", "placeholder image online", "dummy image generator",
+      "generate placeholder image", "custom placeholder image", "image placeholder maker",
+      "lorem picsum alternative", "fake image generator online", "placeholder png generator",
     ],
   },
 
@@ -968,6 +1017,18 @@ export const tools: Tool[] = [
       "http response headers analyzer", "security headers scanner", "web security headers test",
     ],
   },
+  {
+    slug: "jwk-pem-converter",
+    name: "JWK ↔ PEM Converter",
+    description: "Convert cryptographic keys between JWK and PEM formats",
+    icon: "FileKey",
+    category: "Security",
+    keywords: [
+      "jwk to pem converter", "pem to jwk converter", "jwk pem online",
+      "json web key converter", "convert jwk to pem online", "rsa jwk to pem",
+      "ec jwk to pem", "jwk converter free", "public key jwk pem converter",
+    ],
+  },
 
   // ─── Accessibility ────────────────────────────────────────────────────────
   {
@@ -1054,9 +1115,9 @@ export type Category = (typeof categories)[number];
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 export const LATEST_TOOL_SLUGS = [
-  "base58",
-  "patch-generator",
-  "security-headers-checker",
-  "json-to-markdown-table",
-  "box-shadow-generator",
+  "uuid-parser",
+  "list-sorter",
+  "css-specificity-calculator",
+  "placeholder-image-generator",
+  "jwk-pem-converter",
 ];

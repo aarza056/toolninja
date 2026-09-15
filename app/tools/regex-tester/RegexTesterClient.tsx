@@ -2,9 +2,36 @@
 
 import { useState, useEffect, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
-import { AlertCircle, Table2, Repeat2, Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
+import CopyButton from "@/components/CopyButton";
+import { AlertCircle, Table2, Repeat2, Lightbulb, ChevronDown, ChevronUp, Code2 } from "lucide-react";
 import { regexPatterns, patternCategories, type RegexPattern } from "@/lib/regex-patterns";
 import { explainRegex } from "@/lib/regex-explainer";
+
+type CodeLang = "JavaScript" | "Python" | "Java";
+
+function buildCodeSnippet(pattern: string, flagStr: string, lang: CodeLang): string {
+  if (lang === "JavaScript") {
+    const escaped = pattern.replace(/\//g, "\\/");
+    return `const regex = /${escaped}/${flagStr};\nconst matches = "your string".match(regex);`;
+  }
+  if (lang === "Python") {
+    const flagParts: string[] = [];
+    if (flagStr.includes("i")) flagParts.push("re.IGNORECASE");
+    if (flagStr.includes("m")) flagParts.push("re.MULTILINE");
+    if (flagStr.includes("s")) flagParts.push("re.DOTALL");
+    const flagsArg = flagParts.length ? `, ${flagParts.join(" | ")}` : "";
+    const escaped = pattern.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    return `import re\n\npattern = re.compile(r'${escaped}'${flagsArg})\nmatches = pattern.findall("your string")`;
+  }
+  // Java
+  const flagParts: string[] = [];
+  if (flagStr.includes("i")) flagParts.push("Pattern.CASE_INSENSITIVE");
+  if (flagStr.includes("m")) flagParts.push("Pattern.MULTILINE");
+  if (flagStr.includes("s")) flagParts.push("Pattern.DOTALL");
+  const flagsArg = flagParts.length ? `, ${flagParts.join(" | ")}` : "";
+  const escaped = pattern.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  return `Pattern pattern = Pattern.compile("${escaped}"${flagsArg});\nMatcher matcher = pattern.matcher("your string");`;
+}
 
 const STORAGE_KEY = "toolninja:regex-tester";
 
@@ -22,6 +49,8 @@ export default function RegexTesterClient() {
   const [mode, setMode] = useState<Mode>("match");
   const [showLibrary, setShowLibrary] = useState(false);
   const [showExplain, setShowExplain] = useState(false);
+  const [showCode, setShowCode] = useState(false);
+  const [codeLang, setCodeLang] = useState<CodeLang>("JavaScript");
   const [patternSearch, setPatternSearch] = useState("");
   const [patternCategory, setPatternCategory] = useState<string>("All");
 
@@ -166,6 +195,41 @@ export default function RegexTesterClient() {
                 <span className="text-[#888888] leading-relaxed pt-0.5">{t.explanation}</span>
               </div>
             ))}
+          </div>
+        )}
+        {pattern && !error && (
+          <button
+            onClick={() => setShowCode((v) => !v)}
+            className="flex items-center gap-1.5 text-xs text-[#a855f7] hover:text-[#c084fc] transition-colors w-fit"
+          >
+            <Code2 size={12} />
+            Use in code
+            {showCode ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+        )}
+        {showCode && pattern && !error && (
+          <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px] space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex">
+                {(["JavaScript", "Python", "Java"] as CodeLang[]).map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => setCodeLang(lang)}
+                    className={`px-2.5 py-1 text-xs border first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+                      codeLang === lang
+                        ? "bg-[#a855f7] border-[#a855f7] text-white"
+                        : "bg-[#0d0d0d] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+                    }`}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+              <CopyButton text={buildCodeSnippet(pattern, flagStr, codeLang)} size="sm" />
+            </div>
+            <pre className="p-3 font-mono text-xs bg-[#0d0d0d] border border-[#222222] rounded-[6px] text-[#f5f5f5] overflow-auto whitespace-pre-wrap">
+              {buildCodeSnippet(pattern, flagStr, codeLang)}
+            </pre>
           </div>
         )}
       </div>

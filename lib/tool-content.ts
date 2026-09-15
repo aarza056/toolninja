@@ -135,6 +135,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Named capture groups (?<name>pattern) make extraction code far more readable than numbered groups.",
       "Use ^ and $ anchors to match the full string — without them the pattern can match anywhere.",
       "Click 'Explain this regex' to get a token-by-token plain-English breakdown of any pattern, including quantifiers, groups, and character classes.",
+      "Click 'Use in code' to get a ready-to-paste JavaScript, Python, or Java snippet using your exact pattern and flags — flags are automatically translated (JS's i/m/s flags become re.IGNORECASE/MULTILINE/DOTALL in Python, for example).",
     ],
     faq: [
       {
@@ -153,27 +154,43 @@ export const toolContent: Record<string, ToolContent> = {
         q: "Why does my regex cause the page to freeze?",
         a: "Catastrophic backtracking — a regex engine can get stuck in exponential time on certain pattern and input combinations. Patterns like (a+)+ on a string like 'aaaaaab' are classic examples. Simplify nested quantifiers to fix it.",
       },
+      {
+        q: "Does the JavaScript code snippet include the g flag when I convert to Python or Java?",
+        a: "No — Python and Java don't have a direct equivalent of JavaScript's g (global) flag, since re.findall() and Matcher are global-by-default in those languages. The i, m, and s flags are translated to their language-specific equivalents (re.IGNORECASE, Pattern.MULTILINE, etc.); g is simply dropped since it doesn't need a counterpart.",
+      },
     ],
   },
 
   "color-converter": {
     about:
-      "The Color Converter translates colors between HEX (#a855f7), RGB (rgb(168, 85, 247)), and HSL (hsl(280, 89%, 65%)) formats with a live color preview swatch. All three formats are valid CSS — the choice between them depends on context and readability preference.",
+      "The Color Converter translates colors between HEX (#a855f7), RGB (rgb(168, 85, 247)), HSL (hsl(280, 89%, 65%)), CMYK (for print workflows), and OKLCH (a newer, perceptually-uniform format gaining CSS support) with a live color preview swatch.\n\nOKLCH is worth knowing about if you haven't used it yet: unlike HSL, equal steps in OKLCH's lightness or chroma values look like genuinely equal visual steps to the human eye, which is why it's increasingly used for generating color scales and palettes that don't have HSL's well-known problem of some hues looking much brighter or darker than others at the 'same' lightness value.",
     useCases: [
       "Converting brand color hex codes from design tools into CSS variables",
       "Generating lighter or darker color variants by adjusting HSL lightness",
       "Matching colors between Figma (hex), Tailwind (HSL), and raw CSS",
       "Translating colors from color pickers that output RGB to the format your codebase uses",
+      "Converting a screen color (RGB/HEX) to CMYK for a print design handoff",
+      "Getting an OKLCH value for a modern CSS color scale that needs perceptually-even lightness steps",
     ],
     tips: [
       "HSL is the most intuitive format for programmatically generating color palettes — adjusting only the L value gives you tints and shades.",
       "HEX shorthand (#fff) is 3-digit when each pair of hex digits is the same — #aabbcc = #abc.",
       "CSS accepts all three formats interchangeably — use whichever is most readable in context.",
+      "CMYK is for print, not screens — a screen displays color as emitted RGB light, while a printer builds color from CMYK ink, so this conversion is a mathematical approximation, not what a printer will produce exactly (get a real proof for critical print work).",
+      "OKLCH's L (lightness) and C (chroma) values behave more predictably than HSL's when you're building a color scale — a 10% jump in OKLCH lightness looks like a 10% jump everywhere on the color wheel, which isn't true of HSL.",
     ],
     faq: [
       {
         q: "When should I use HEX vs RGB vs HSL in CSS?",
         a: "HEX is the most compact and widely used in design tokens and design tools. RGB is useful when you need to programmatically manipulate color channels or add alpha transparency (rgba). HSL is the most human-readable for adjusting hue, saturation, and lightness — ideal for design systems and dynamic theming.",
+      },
+      {
+        q: "Why does the CMYK conversion look slightly different from what my printer produces?",
+        a: "RGB-to-CMYK is a mathematical approximation — real print production uses ICC color profiles specific to the printer, paper, and ink, which this tool has no way to know. Treat the CMYK values here as a reasonable starting point, not a substitute for an actual print proof.",
+      },
+      {
+        q: "What is OKLCH and why would I use it over HSL?",
+        a: "OKLCH is a color format built on the OKLab color space, designed so that equal numeric changes in lightness or chroma correspond to equal *perceived* changes — a problem HSL has never solved (a 'lightness 50%' blue and a 'lightness 50%' yellow in HSL don't look equally bright to the eye; in OKLCH they do). It's increasingly supported directly in CSS (oklch()) for exactly this reason.",
       },
       {
         q: "What is the difference between RGB and RGBA?",
@@ -411,25 +428,28 @@ export const toolContent: Record<string, ToolContent> = {
 
   "diff-checker": {
     about:
-      "The Diff Checker compares two blocks of text line-by-line and highlights additions in green and removals in red, matching the familiar format of git diff output. It handles any plain text — code, config files, JSON, prose, or data — and shows the count of added and removed lines.",
+      "The Diff Checker compares two blocks of text line-by-line, with both a side-by-side Split view and a git-style Unified view, plus character-level highlighting inside changed lines so you can see exactly which characters differ, not just which lines. It handles any plain text — code, config files, JSON, prose, or data.\n\nTwo toggles handle the noisy differences that usually aren't the ones you actually care about: Ignore whitespace treats lines that differ only in spacing as unchanged, and Ignore case does the same for lines that differ only in letter casing — both let the real content changes stand out instead of getting buried under formatting noise.",
     useCases: [
       "Comparing two versions of a config file to spot unintended changes",
       "Reviewing API response changes between environments (staging vs production)",
       "Checking what changed between two drafts of a document",
       "Validating data migrations by comparing before and after snapshots",
+      "Comparing re-formatted code (different indentation/casing) to confirm the actual logic didn't change",
     ],
     tips: [
       "Paste minified JSON into the JSON Formatter first to make the diff more readable.",
-      "Lines that changed will appear as a removal (red) followed by an addition (green) — there's no in-line word diff.",
+      "Switch to Split view to compare side-by-side, or Unified view for a compact git-diff-style stream with +/- prefixes.",
+      "Turn on Ignore whitespace when comparing code that's been reformatted or re-indented but you only care about logic changes.",
+      "Turn on Ignore case when comparing content where capitalization is inconsistent but not meaningful, like casually-typed config values.",
     ],
     faq: [
       {
-        q: "What is the difference between unified diff and inline diff formats?",
-        a: "Unified diff (the git diff format) shows deletions and additions with - and + prefixes in a single stream with context lines. Inline diff shows both old and new text side by side, color-coding changes within each line. This tool uses the inline format for easy visual comparison.",
+        q: "What's the difference between Split and Unified view?",
+        a: "Split view shows the original and modified text in two side-by-side columns, aligned line by line — good for visually scanning a document. Unified view shows a single git-diff-style stream with - and + prefixes and no separate columns — good for compact, copy-pasteable output.",
       },
       {
-        q: "How does this differ from git diff?",
-        a: "git diff compares file versions tracked by Git, with context about commits and branches. This tool compares any two plain text inputs directly — no Git repository or history required. It's useful for one-off comparisons where you have the two versions in clipboard or text form.",
+        q: "Does 'Ignore whitespace' also ignore blank lines?",
+        a: "It ignores whitespace differences within and around a line's content (extra spaces, tabs, trailing spaces) — a completely blank line is still compared as a blank line. It won't hide the fact that a blank line was added or removed entirely.",
       },
       {
         q: "Why do I see false differences caused by line endings?",
@@ -478,7 +498,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "hash-generator": {
     about:
-      "The ToolNinja Hash Generator is a free online hash calculator supporting MD5, SHA-1, SHA-256, SHA-512 and other cryptographic hash algorithms. Enter any text and instantly generate its hash value — useful for checksums, data integrity verification, and security research.\n\nUse the MD5 generator for file checksums and non-security fingerprinting, the SHA-256 generator for data integrity verification and digital signatures, or SHA-512 when you need maximum hash length. All hashing runs using the Web Crypto API built into your browser for accurate, standard-compliant results.\n\nCommon use cases include verifying downloaded file integrity by comparing checksums, generating content hashes for cache busting in web development, creating hash-based identifiers, and understanding how different algorithms compare in output length and security properties.\n\nA File mode hashes an uploaded file directly — drag it in and get its checksum without needing a command-line tool, useful for verifying a download against a publisher's published SHA-256 sum. The file itself is read and hashed entirely in your browser and never uploaded anywhere.\n\nEverything runs 100% in your browser. Your input data — no matter how sensitive — never leaves your machine. No login required.",
+      "The ToolNinja Hash Generator is a free online hash calculator supporting SHA-1, SHA-256, SHA-384, SHA-512, and HMAC signatures. Enter any text and instantly generate its hash value — useful for checksums, data integrity verification, and webhook signature verification.\n\nUse the SHA-256 generator for data integrity verification and digital signatures, or SHA-512 when you need maximum hash length. All hashing runs using the Web Crypto API built into your browser for accurate, standard-compliant results.\n\nCommon use cases include verifying downloaded file integrity by comparing checksums, generating content hashes for cache busting in web development, creating hash-based identifiers, and understanding how different algorithms compare in output length and security properties.\n\nA File mode hashes an uploaded file directly — drag it in and get its checksum without needing a command-line tool, useful for verifying a download against a publisher's published SHA-256 sum. The file itself is read and hashed entirely in your browser and never uploaded anywhere.\n\nOnce a hash or HMAC is computed, a Verify field lets you paste the value you're checking against — a webhook's signature header, a publisher's published checksum — and get an immediate match/mismatch result using a constant-time comparison, the same property real signature-verification code needs to avoid leaking timing information.\n\nEverything runs 100% in your browser. Your input data — no matter how sensitive — never leaves your machine. No login required.",
     useCases: [
       "Verifying file integrity by comparing checksums before and after transfer",
       "Generating content-based cache keys for assets or API responses",
@@ -493,6 +513,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Hashing is not encryption — you cannot recover the original input. Use it for integrity, not confidentiality.",
       "Switch to HMAC mode and paste the raw request body plus your webhook secret to verify a Stripe/GitHub signature header matches — compare the result byte-for-byte, not just visually.",
       "Use File mode to verify a download's checksum directly — no need to open a terminal for a one-off sha256sum check.",
+      "Use the Verify field instead of eyeballing two hex strings — a constant-time comparison catches a mismatch reliably, and it automatically strips a leading sha256= prefix some providers (like GitHub) include in their signature header.",
     ],
     faq: [
       {
@@ -510,6 +531,10 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Why is MD5 not included?",
         a: "MD5 is cryptographically broken — practical collision attacks exist, meaning two different inputs can be crafted to produce the same hash. It should not be used for security purposes. SHA-256 is the correct replacement. MD5 persists in legacy file checksums, but for any new use case choose SHA-256 or better.",
+      },
+      {
+        q: "Why does the Verify field use a 'constant-time comparison' instead of just checking if the strings are equal?",
+        a: "A plain string comparison (like ===) typically stops at the first character that doesn't match, so it takes slightly less time to reject a hash that's wrong in the first character than one that's wrong in the last. In theory, an attacker who can measure that timing precisely enough could exploit it to guess a valid signature one byte at a time. A constant-time comparison always checks every character regardless of where a mismatch occurs, so the comparison time doesn't leak any information about how close a guess was.",
       },
     ],
   },
@@ -1227,7 +1252,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "cidr-calculator": {
     about:
-      "The ToolNinja CIDR Calculator is a free online subnet calculator and IP range calculator. Enter any CIDR notation (e.g. 192.168.1.0/24) to instantly calculate the subnet mask, network address, broadcast address, first and last usable host, and total number of hosts — all displayed with a full binary breakdown.\n\nWhether you need to calculate CIDR from an IP address, convert IP to CIDR notation, find CIDR ranges for a network, or use it as a subnetting CIDR calculator — ToolNinja handles every scenario directly in your browser. The CIDR to IP range calculator shows the complete host range so you can immediately see which addresses fall within your subnet.\n\nUse it as an ip to cidr calculator when configuring cloud VPCs in AWS, GCP or Azure, as a subnet CIDR calculator for firewall rules, or as a subnetting calculator for network planning. The binary display makes it ideal for learning how CIDR notation and subnet masks work at the bit level.\n\nEverything runs 100% in your browser — no login, no server calls, no data ever leaves your machine.\n\nA Split into Subnets tool takes your calculated network and divides it into equal-sized smaller subnets in one step, showing the CIDR, broadcast address, and usable range for each — handy when you've settled on a parent block and need to carve it up across multiple availability zones or network segments.",
+      "The ToolNinja CIDR Calculator is a free online subnet calculator and IP range calculator. Enter any CIDR notation (e.g. 192.168.1.0/24) to instantly calculate the subnet mask, network address, broadcast address, first and last usable host, and total number of hosts — all displayed with a full binary breakdown.\n\nWhether you need to calculate CIDR from an IP address, convert IP to CIDR notation, find CIDR ranges for a network, or use it as a subnetting CIDR calculator — ToolNinja handles every scenario directly in your browser. The CIDR to IP range calculator shows the complete host range so you can immediately see which addresses fall within your subnet.\n\nUse it as an ip to cidr calculator when configuring cloud VPCs in AWS, GCP or Azure, as a subnet CIDR calculator for firewall rules, or as a subnetting calculator for network planning. The binary display makes it ideal for learning how CIDR notation and subnet masks work at the bit level.\n\nEverything runs 100% in your browser — no login, no server calls, no data ever leaves your machine.\n\nA Split into Subnets tool takes your calculated network and divides it into equal-sized smaller subnets in one step, showing the CIDR, broadcast address, and usable range for each — handy when you've settled on a parent block and need to carve it up across multiple availability zones or network segments.\n\nIPv6 CIDR ranges (e.g. 2001:db8::/32) are supported too — paste any IPv6 address with a /prefix and get the network address, last address in the range, and total address count, shown in both compressed (::  shorthand) and fully expanded form.",
     useCases: [
       "Calculating subnet ranges for AWS VPC, GCP VPC or Azure Virtual Network CIDR blocks",
       "Converting IP addresses to CIDR notation for firewall rules and security groups",
@@ -1236,12 +1261,15 @@ export const toolContent: Record<string, ToolContent> = {
       "Learning how CIDR notation and subnet masks work with the binary display",
       "Calculating how many hosts fit in a given subnet for capacity planning",
       "Splitting a parent CIDR block into equal subnets for multi-AZ VPC layouts",
+      "Finding the network and last address of an IPv6 allocation, or expanding a compressed IPv6 address to its full form",
     ],
     tips: [
       "A /24 gives 254 usable hosts (256 minus network and broadcast). A /25 splits that into two subnets of 126 usable hosts each.",
       "AWS VPCs reserve 5 addresses per subnet (network, broadcast, and 3 AWS-reserved). Factor this in when choosing your CIDR block.",
       "Use /32 to represent a single host route and /0 to represent the default route (all traffic).",
       "Use Split into Subnets when planning a multi-AZ VPC — dividing a /22 into four /24s gives one clean subnet per zone.",
+      "For IPv6, just include a colon in the input (e.g. 2001:db8::/32) and the tool automatically switches to IPv6 mode — no separate toggle needed.",
+      "IPv6 doesn't have a broadcast address the way IPv4 does — this tool shows the 'last address' in the range instead, since IPv6 uses multicast for broadcast-like behavior.",
     ],
     faq: [
       {
@@ -1259,6 +1287,10 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "What are the private IP address ranges and when do I use them?",
         a: "RFC 1918 defines three private ranges: 10.0.0.0/8 (16.7M addresses), 172.16.0.0/12 (1M addresses), and 192.168.0.0/16 (65K addresses). These are non-routable on the public internet — use them for internal networks, VPCs, and home LANs. Traffic to/from these ranges must go through NAT to reach the internet. 169.254.0.0/16 is link-local (APIPA), used when DHCP fails.",
+      },
+      {
+        q: "Why doesn't the IPv6 result show a broadcast address or usable host count like IPv4 does?",
+        a: "IPv6 doesn't use broadcast at all — it was deliberately removed from the protocol in favor of multicast, so there's no equivalent of IPv4's broadcast address to calculate. And because IPv6 subnets are almost always /64 or larger (18.4 quintillion addresses at /64 alone), 'usable hosts' isn't a meaningful planning number the way it is in IPv4 — allocation is normally done at the subnet-count level (how many /64s you need), not the host-count level.",
       },
     ],
   },
@@ -2582,6 +2614,157 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Why use multiple shadow layers instead of one?",
         a: "A single box-shadow with a large blur tends to look flat and unrealistic — real-world shadows from ambient and direct light sources overlap at different intensities and spreads. Layering a tight, higher-opacity shadow with a larger, lower-opacity one much more closely approximates how shadows actually look, which is why most modern design systems specify shadows as 2-4 stacked layers rather than one.",
+      },
+    ],
+  },
+
+  "uuid-parser": {
+    about:
+      "The UUID Parser decodes any UUID (v1 through v8) or ULID and tells you exactly what's encoded inside it — the version, the variant, and, for the versions that carry one, the embedded timestamp.\n\nMost UUID tools only generate identifiers; this one goes the other direction — paste an ID you already have (from a database row, a log line, an API response) and see what it actually means. Version 1 and version 6 UUIDs encode a 60-bit timestamp counted in 100-nanosecond intervals since October 15, 1582 (the Gregorian calendar's adoption date, chosen by the original UUID spec authors); version 7 UUIDs and ULIDs encode a much simpler 48-bit Unix millisecond timestamp, which is exactly why they've become the preferred choice for sortable database primary keys since 2023 or so.\n\nEverything is decoded locally with plain bit arithmetic — no ID, timestamp, or any other data is ever sent anywhere.",
+    useCases: [
+      "Figuring out roughly when a database row was created from its v7 UUID or ULID primary key, without a separate created_at column",
+      "Identifying which UUID version a third-party API or library is actually generating",
+      "Debugging why IDs aren't sorting chronologically (likely v4 — random — instead of v7 or a ULID)",
+      "Confirming an ID's variant bits look correct before writing a strict validation regex",
+    ],
+    tips: [
+      "Only v1, v6, and v7 UUIDs (and ULIDs) encode a timestamp — v3, v4, v5, and v8 don't, since they're built from random bytes or a content hash instead.",
+      "v7 UUIDs and ULIDs are both time-ordered and both encode the same kind of Unix-millisecond timestamp — the practical difference is just encoding (hex-with-hyphens vs. Crockford Base32) and that ULIDs are case-insensitive on input.",
+      "A v1 UUID's timestamp reflects the generating system's clock at creation time — if that clock was wrong, the decoded date will be too.",
+    ],
+    faq: [
+      {
+        q: "Why do v1 and v6 UUIDs decode to a different-looking timestamp than v7?",
+        a: "v1 and v6 use the original 1980s DCE UUID design: a 60-bit count of 100-nanosecond intervals since October 15, 1582. v7 (and ULID) use a much simpler 48-bit Unix millisecond timestamp, the same format used everywhere else in modern software — which is a big part of why v7 was standardized in 2024 as the preferred time-ordered UUID version.",
+      },
+      {
+        q: "What's the difference between a UUID variant and a UUID version?",
+        a: "The version (a single hex digit) says how the UUID was constructed — random, time-based, name-hash-based, etc. The variant (encoded in the first 1-3 bits of a different field) says which layout specification the UUID follows — almost everything you'll encounter is the standard RFC 4122 / RFC 9562 variant; the others (NCS, Microsoft) are legacy and rare today.",
+      },
+      {
+        q: "Can I trust the timestamp decoded from a random-looking UUID?",
+        a: "Only if it's actually a v1, v6, or v7 UUID (check the version this tool reports first). Running this decoder against a v4 (random) UUID will either fail validation or, worse, produce a meaningless date computed from what are actually random bits — always confirm the version before trusting a decoded timestamp.",
+      },
+    ],
+  },
+
+  "list-sorter": {
+    about:
+      "The List Sorter & Deduplicator takes a block of text lines and cleans it up — sort alphabetically, numerically, or by length; remove exact or case-insensitive duplicates; strip blank lines and leading/trailing whitespace; shuffle into random order; reverse; or number every line — all live as you type or toggle options, with no button clicks required for the core cleanup.\n\nIt's the kind of small, repetitive text-wrangling task that's easy to do wrong by hand — missing one duplicate because of a trailing space, or losing track of which lines you'd already sorted. This tool applies every enabled operation as one consistent pipeline (trim → remove empty → dedupe → sort → number) so the result is deterministic and easy to reason about.",
+    useCases: [
+      "Deduplicating a list of email addresses, domains, or IDs pasted from a spreadsheet",
+      "Alphabetizing an environment variable list, a CSS class list, or an import list before committing",
+      "Cleaning up a scraped or copy-pasted list that has inconsistent spacing and blank lines",
+      "Numbering a plain list for use as a checklist or a step-by-step doc",
+      "Shuffling a list of names or items for a randomized draw or a randomized test dataset",
+    ],
+    tips: [
+      "Case-sensitive dedupe (the default) treats \"Apple\" and \"apple\" as different lines — turn it off if you want them merged.",
+      "Numeric sort falls back to alphabetical for any line that isn't a plain number, so a mixed list still sorts predictably instead of erroring.",
+      "Shuffle and Reverse apply immediately to the input itself (not just the output), so you can keep stacking other operations — like sort — on top of a shuffled result.",
+    ],
+    faq: [
+      {
+        q: "Does the numeric sort handle decimals and negative numbers?",
+        a: "Yes — it parses each line as a floating-point number (so \"-3.5\" and \"12\" both sort correctly) and falls back to comparing the raw text for any line that isn't a valid number, so those always land in a consistent, predictable position rather than causing an error.",
+      },
+      {
+        q: "What counts as a duplicate when case-sensitive dedupe is off?",
+        a: "Two lines are considered duplicates if they're identical after lowercasing — so \"Apple\", \"apple\", and \"APPLE\" would all collapse into whichever one appeared first in the list. Turn case-sensitive dedupe on if you need those treated as distinct.",
+      },
+      {
+        q: "Is my list sent anywhere when I use this tool?",
+        a: "No — all sorting, deduplication, and shuffling happens with plain JavaScript in your browser. Nothing you paste here is ever sent to a server.",
+      },
+    ],
+  },
+
+  "css-specificity-calculator": {
+    about:
+      "The CSS Specificity Calculator computes the specificity of any CSS selector — how strongly it overrides other rules targeting the same element — and shows it as the standard (IDs, classes/attributes/pseudo-classes, elements/pseudo-elements) triple. Enter two or more selectors, one per line, and it highlights which one wins when both target the same element.\n\nSpecificity is the single most common source of \"why isn't my CSS applying\" confusion — a rule can be correct and still lose to another rule that's simply more specific, regardless of source order. This tool also correctly handles the selectors people usually get wrong by hand: `:where()` always contributes zero to specificity (that's its entire purpose — grouping selectors without affecting the cascade), while `:not()`, `:is()`, and `:has()` contribute the specificity of whichever argument inside them is most specific, not the specificity of the pseudo-class itself.",
+    useCases: [
+      "Debugging why a CSS rule isn't applying even though it appears later in the stylesheet",
+      "Deciding between adding a class vs. relying on element/descendant selectors when writing new CSS",
+      "Understanding the specificity cost of using :not(), :is(), or :where() in a selector before shipping it",
+      "Reviewing a CSS-in-JS or utility-class refactor to confirm specificity didn't quietly change",
+    ],
+    tips: [
+      "Specificity is compared left to right as separate counts, not added into one number — a single ID (1,0,0) always beats any number of classes (0,99,0), no matter how many classes are stacked.",
+      "Inline style=\"\" attributes and !important declarations override specificity entirely and aren't part of this comparison — they win (or lose, for !important vs !important) by a separate set of rules.",
+      "Use :where() specifically when you want to group selectors for convenience without adding any specificity weight — it's the one selector in CSS designed to be \"invisible\" to the cascade.",
+    ],
+    faq: [
+      {
+        q: "Why does :not(.foo) count as one class of specificity but :where(.foo) counts as zero?",
+        a: ":not() takes on the specificity of its argument (here, one class) — it's a normal pseudo-class that just negates a condition. :where() is specifically defined by the CSS spec to always contribute zero specificity regardless of what's inside it, which is exactly why it exists: to let you group or reset selectors without accidentally out-specifying other rules.",
+      },
+      {
+        q: "What happens with :is(#foo, .bar) — does it count both the ID and the class?",
+        a: "No — :is() (and :has()) take on only the specificity of their single most specific argument, not the sum of all arguments. :is(#foo, .bar) has the specificity of #foo alone (one ID), because #foo is more specific than .bar; .bar's specificity is simply discarded for this calculation.",
+      },
+      {
+        q: "Does source order matter if two selectors have identical specificity?",
+        a: "Yes — when two rules have exactly equal specificity, the one that appears later in the stylesheet (or later in a later-loaded stylesheet) wins. Specificity only decides the winner when the values actually differ; a tie is broken by cascade order.",
+      },
+    ],
+  },
+
+  "placeholder-image-generator": {
+    about:
+      "The Placeholder Image Generator creates a placeholder PNG at any size you choose, with a custom background color, text color, and label — rendered entirely with the browser's <canvas> API, downloadable instantly or copyable as a data URI to embed directly in HTML or CSS.\n\nIt's a drop-in replacement for services like placeholder.com or Lorem Picsum for the common case where you just need a correctly-sized, on-brand-colored rectangle to stand in for a real image during layout work — without a network request to a third party, without that third party's uptime becoming your build's problem, and without your placeholder images living on someone else's server.",
+    useCases: [
+      "Filling image slots in a mockup or prototype before real assets are ready",
+      "Generating correctly-sized test images for responsive image / srcset testing",
+      "Creating a quick branded placeholder that matches your design system's colors, instead of a generic gray box",
+      "Getting a data URI to hardcode directly into a component's default/fallback image prop",
+    ],
+    tips: [
+      "Leave the custom text field blank to get an automatic \"width × height\" label — handy for quickly checking which breakpoint or image slot you're looking at.",
+      "Font size defaults to a size proportional to the smaller of width/height (about 1/8th) so text stays readable at both small avatar sizes and large banner sizes — override it manually if you need an exact size.",
+      "The data URI copy button gives you a string you can paste directly as a CSS background-image or an <img src> without hosting a file at all.",
+    ],
+    faq: [
+      {
+        q: "Does this upload anything or make a network request?",
+        a: "No — the image is drawn and encoded entirely in your browser using the Canvas API. Nothing is sent to a server, and the download and \"copy as data URI\" options both work from the canvas already in your browser.",
+      },
+      {
+        q: "What image format does the download use?",
+        a: "PNG. It's lossless, universally supported, and appropriate for the flat-color, text-on-background placeholder images this tool generates — there's no photographic detail here that would benefit from JPEG's lossy compression.",
+      },
+      {
+        q: "Can I generate a very large placeholder image, like for a hero banner?",
+        a: "Yes, up to 4000×4000 pixels. Very large canvases take a moment longer to render and download, but there's no server-side size limit to worry about since everything happens locally.",
+      },
+    ],
+  },
+
+  "jwk-pem-converter": {
+    about:
+      "The JWK ↔ PEM Converter converts cryptographic keys between the two formats you'll run into most often when working with JWTs, OAuth, and TLS: JWK (JSON Web Key — the JSON format used in JWKS endpoints and most JS/Node crypto libraries) and PEM (the base64-wrapped text format used by OpenSSL, most CLI tools, and most server configs).\n\nPaste either format and the direction is detected automatically — a PEM's `-----BEGIN...-----` header, or a JWK's JSON structure. The actual conversion is done entirely with the browser's native Web Crypto API (`importKey`/`exportKey`), not a hand-rolled ASN.1 encoder, so the DER encoding underneath the PEM output is exactly what a real crypto library would produce. Supports RSA and EC (P-256, P-384, P-521) keys, both public and private.",
+    useCases: [
+      "Converting a public key from a JWKS endpoint (JWK format) into PEM to use with a CLI tool or OpenSSL command",
+      "Converting a PEM key pair generated with openssl or ssh-keygen-style tooling into JWK format for a Node.js or browser JS library",
+      "Inspecting what's actually inside a JWK without writing a script",
+      "Bridging between a service that only accepts PEM and one that only accepts JWK",
+    ],
+    tips: [
+      "The key class (public vs. private) is auto-detected — from the PEM header for PEM input, or from the presence of a private-exponent `d` field for JWK input.",
+      "For EC keys, the curve (P-256/P-384/P-521) is read directly from the JWK's `crv` field, or auto-detected by trying each curve in turn when converting from PEM, since PEM alone doesn't state the curve as plainly.",
+      "The hash algorithm used internally during conversion (SHA-256) has no effect on the exported key bytes — RSA and EC key encodings are purely mathematical and don't depend on which hash you'd eventually sign or verify with.",
+    ],
+    faq: [
+      {
+        q: "Does this tool support both public and private keys?",
+        a: "Yes, for both directions. Converting a private key (PEM PKCS8 or a JWK with a d field) never leaves your browser — the conversion happens entirely client-side via the Web Crypto API, the same way the rest of ToolNinja's key and signature tools work.",
+      },
+      {
+        q: "Why does it need a hash algorithm if I'm just converting formats, not signing anything?",
+        a: "The Web Crypto API's importKey/exportKey functions require a full algorithm descriptor to import a key, even for a pure format conversion — but the hash parameter only affects sign/verify operations, not the key's actual encoded bytes. Any hash choice produces an identical PEM/JWK output for the same key.",
+      },
+      {
+        q: "What key types are NOT supported?",
+        a: "Only RSA and EC (P-256/P-384/P-521) keys are supported — these cover the vast majority of JWT and TLS use cases. Ed25519/X25519 keys, and any key type not exposed through the standard Web Crypto API, aren't supported here.",
       },
     ],
   },

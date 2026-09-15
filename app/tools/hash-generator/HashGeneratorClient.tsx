@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Hash, Trash2, AlertCircle, Upload, FileIcon } from "lucide-react";
+import { Hash, Trash2, AlertCircle, Upload, FileIcon, ShieldCheck, ShieldAlert } from "lucide-react";
 
 const STORAGE_KEY = "toolninja:hash-generator";
 
@@ -55,6 +55,24 @@ function bufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
+/** Constant-time string comparison — always walks the full length of the longer string
+ * regardless of where a mismatch occurs, so comparison time doesn't leak how many
+ * leading characters matched (the property a plain === comparison doesn't have). */
+function timingSafeEqual(a: string, b: string): boolean {
+  const maxLen = Math.max(a.length, b.length);
+  let diff = a.length === b.length ? 0 : 1;
+  for (let i = 0; i < maxLen; i++) {
+    const ca = i < a.length ? a.charCodeAt(i) : 0;
+    const cb = i < b.length ? b.charCodeAt(i) : 0;
+    diff |= ca ^ cb;
+  }
+  return diff === 0;
+}
+
+function normalizeForCompare(value: string): string {
+  return value.trim().replace(/^sha256=/i, "").toLowerCase();
+}
+
 export default function HashGeneratorClient() {
   const [mode, setMode] = useState<Mode>("hash");
   const [input, setInput] = useState("");
@@ -67,6 +85,7 @@ export default function HashGeneratorClient() {
   const [computing, setComputing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [expected, setExpected] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -154,6 +173,7 @@ export default function HashGeneratorClient() {
     setFile(null);
     setHash("");
     setError("");
+    setExpected("");
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -375,6 +395,42 @@ export default function HashGeneratorClient() {
             </div>
           )}
         </div>
+
+        {/* Verify against an expected value */}
+        {hash && !error && (
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs text-[#888888] font-medium">
+              Verify against expected value <span className="text-[#555555] font-normal">(e.g. a webhook signature header)</span>
+            </label>
+            <input
+              type="text"
+              value={expected}
+              onChange={(e) => setExpected(e.target.value)}
+              placeholder="Paste the received hash/signature to compare…"
+              spellCheck={false}
+              className="w-full p-3 font-mono text-sm bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
+            />
+            {expected.trim() && (
+              <div
+                className={`flex items-center gap-2 p-2.5 rounded-[6px] text-xs ${
+                  timingSafeEqual(normalizeForCompare(hash), normalizeForCompare(expected))
+                    ? "bg-[#22c55e]/10 border border-[#22c55e]/30 text-[#22c55e]"
+                    : "bg-[#ef4444]/10 border border-[#ef4444]/30 text-[#ef4444]"
+                }`}
+              >
+                {timingSafeEqual(normalizeForCompare(hash), normalizeForCompare(expected)) ? (
+                  <>
+                    <ShieldCheck size={14} className="shrink-0" /> Match — computed using a constant-time comparison, so it can&apos;t leak timing info about where a mismatch occurred.
+                  </>
+                ) : (
+                  <>
+                    <ShieldAlert size={14} className="shrink-0" /> Mismatch — the computed value doesn&apos;t match what you pasted.
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </ToolLayout>
   );

@@ -41,8 +41,13 @@ interface SplitRow {
   rowType: "ctx" | "del" | "add" | "chg";
 }
 
-function buildSplit(original: string, modified: string): SplitRow[] {
-  const diff = diffLines(original, modified);
+interface DiffOptions {
+  ignoreWhitespace: boolean;
+  ignoreCase: boolean;
+}
+
+function buildSplit(original: string, modified: string, opts: DiffOptions): SplitRow[] {
+  const diff = diffLines(original, modified, opts);
   const rows: SplitRow[] = [];
   let ln = 1,
     rn = 1,
@@ -90,8 +95,8 @@ interface UnifiedLine {
   type: "add" | "del" | "ctx";
 }
 
-function buildUnified(original: string, modified: string): UnifiedLine[] {
-  const diff = diffLines(original, modified);
+function buildUnified(original: string, modified: string, opts: DiffOptions): UnifiedLine[] {
+  const diff = diffLines(original, modified, opts);
   const lines: UnifiedLine[] = [];
   let i = 0;
 
@@ -132,6 +137,8 @@ export default function DiffCheckerClient() {
   const [original, setOriginal] = useState("");
   const [modified, setModified] = useState("");
   const [view, setView] = useState<ViewMode>("split");
+  const [ignoreWhitespace, setIgnoreWhitespace] = useState(false);
+  const [ignoreCase, setIgnoreCase] = useState(false);
   const leftRef = useRef<HTMLInputElement>(null);
   const rightRef = useRef<HTMLInputElement>(null);
 
@@ -154,13 +161,13 @@ export default function DiffCheckerClient() {
   const hasBoth = original.length > 0 && modified.length > 0;
 
   const splitRows = useMemo(
-    () => (hasBoth ? buildSplit(original, modified) : []),
-    [original, modified, hasBoth]
+    () => (hasBoth ? buildSplit(original, modified, { ignoreWhitespace, ignoreCase }) : []),
+    [original, modified, hasBoth, ignoreWhitespace, ignoreCase]
   );
 
   const unifiedLines = useMemo(
-    () => (hasBoth ? buildUnified(original, modified) : []),
-    [original, modified, hasBoth]
+    () => (hasBoth ? buildUnified(original, modified, { ignoreWhitespace, ignoreCase }) : []),
+    [original, modified, hasBoth, ignoreWhitespace, ignoreCase]
   );
 
   const addedLines = splitRows.filter((r) => r.rowType === "add" || r.rowType === "chg").length;
@@ -195,6 +202,25 @@ export default function DiffCheckerClient() {
         >
           <Trash2 size={13} /> Clear
         </button>
+
+        <label className="flex items-center gap-1.5 text-sm text-[#888888] cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={ignoreWhitespace}
+            onChange={(e) => setIgnoreWhitespace(e.target.checked)}
+            className="accent-[#a855f7]"
+          />
+          Ignore whitespace
+        </label>
+        <label className="flex items-center gap-1.5 text-sm text-[#888888] cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={ignoreCase}
+            onChange={(e) => setIgnoreCase(e.target.checked)}
+            className="accent-[#a855f7]"
+          />
+          Ignore case
+        </label>
 
         {hasBoth && !identical && (
           <div className="flex items-center gap-3 ml-auto text-sm">

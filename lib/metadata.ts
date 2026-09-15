@@ -68,9 +68,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online JWT decoder. Decode and inspect JSON Web Token header, payload and signature instantly, and verify the signature against a secret or public key (HS/RS/PS/ES). Check JWT expiry and view claims. Your token never leaves the browser.",
   },
   "hash-generator": {
-    title: "Hash Generator Online — MD5, SHA256, SHA512 Hash Calculator | ToolNinja",
+    title: "Hash Generator & Verifier Online — SHA256, SHA512, HMAC | ToolNinja",
     description:
-      "Free online hash generator. Generate MD5, SHA1, SHA256, SHA512 and other cryptographic hashes instantly. Perfect for checksums, data integrity verification and password hashing comparison. No login required.",
+      "Free online hash generator. Generate SHA1, SHA256, SHA384, SHA512, or HMAC signatures instantly, and verify a hash against an expected value with a constant-time comparison. Perfect for checksums and webhook signature verification. No login required.",
   },
   "html-entity": {
     title: "HTML Entity Encoder & Decoder — Escape & Unescape HTML | ToolNinja",
@@ -177,9 +177,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
 
   // ── Convert ──────────────────────────────────────────────────────────────
   "color-converter": {
-    title: "Color Converter Online — HEX to RGB, HSL Color Code Converter | ToolNinja",
+    title: "Color Converter Online — HEX, RGB, HSL, CMYK, OKLCH | ToolNinja",
     description:
-      "Free online color converter. Convert HEX to RGB, RGB to HSL, HSL to HEX and all color formats instantly. Includes live color picker and copy buttons for each format. No login, 100% browser-based.",
+      "Free online color converter. Convert between HEX, RGB, HSL, CMYK, and OKLCH color formats instantly. Includes live color picker and copy buttons for each format. No login, 100% browser-based.",
   },
   "timestamp-converter": {
     title: "Unix Timestamp Converter — Epoch Time to Date Converter | ToolNinja",
@@ -202,9 +202,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online JSON to YAML and YAML to JSON converter. Convert between JSON and YAML formats instantly with syntax validation. Perfect for config file conversion. No login, browser-only.",
   },
   "cidr-calculator": {
-    title: "CIDR Calculator — Subnet Calculator & IP Range Tool | ToolNinja",
+    title: "CIDR Calculator — IPv4 & IPv6 Subnet Calculator | ToolNinja",
     description:
-      "Free online CIDR calculator and subnet calculator. Calculate IP ranges, subnet masks, network and broadcast addresses instantly. Supports ip to cidr conversion, cidr ranges calculator and subnetting. 100% browser-based, no login.",
+      "Free online CIDR calculator and subnet calculator. Calculate IPv4 and IPv6 network ranges, subnet masks, host counts, and broadcast addresses instantly, with a subnet splitter. 100% browser-based, no login.",
   },
 
   "docker-run-to-compose": {
@@ -247,17 +247,22 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online JSON to Markdown table converter. Paste a JSON array of objects and instantly get a ready-to-paste GitHub-Flavored Markdown table, with a live HTML preview. No login, 100% browser-based.",
   },
+  "list-sorter": {
+    title: "List Sorter & Deduplicator Online — Sort & Clean Text Lists | ToolNinja",
+    description:
+      "Free online list sorter and deduplicator. Sort lines alphabetically or numerically, remove duplicates and blank lines, shuffle, reverse, and number a list of text lines. No login, 100% browser-based.",
+  },
 
   // ── Test ─────────────────────────────────────────────────────────────────
   "regex-tester": {
     title: "Regex Tester Online — Live Highlighting, Patterns Library | ToolNinja",
     description:
-      "Test regular expressions with live match highlighting and capture groups table. 40+ ready-to-use regex patterns for email, URL, date, IP, password validation and more. No login, 100% browser-based.",
+      "Test regular expressions with live match highlighting and capture groups table. 40+ ready-to-use regex patterns, plus a code snippet panel to use your regex in JavaScript, Python, or Java. No login, 100% browser-based.",
   },
   "diff-checker": {
     title: "Diff Checker Online — Compare Two Texts & Find Differences | ToolNinja",
     description:
-      "Free online diff checker. Compare two texts side by side and see differences highlighted instantly. Line-by-line git-style diff with addition and deletion counts. No login, 100% browser-based.",
+      "Free online diff checker. Compare two texts side by side with split or unified views, addition/deletion counts, and options to ignore whitespace or case. Character-level highlighting. No login, 100% browser-based.",
   },
   "cron-tester": {
     title: "CRON Expression Tester — Validate & Parse Cron Jobs Online | ToolNinja",
@@ -299,6 +304,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online unified diff and patch generator. Paste an original and modified text and get a real, downloadable .patch file usable with git apply or the patch command. No login, 100% browser-based.",
   },
+  "uuid-parser": {
+    title: "UUID Parser Online — Decode UUID & ULID Timestamps | ToolNinja",
+    description:
+      "Free online UUID and ULID parser. Decode any UUID's version, variant, and embedded timestamp (v1, v6, v7), or a ULID's timestamp and randomness. No login, 100% browser-based.",
+  },
 
   // ── Design ───────────────────────────────────────────────────────────────
   "css-animations": {
@@ -330,6 +340,16 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "CSS Box Shadow Generator Online — Multi-Layer Shadows | ToolNinja",
     description:
       "Free online CSS box shadow generator. Build single or multi-layer box shadows visually with live preview — adjust offset, blur, spread, color, and opacity per layer. No login, 100% browser-based.",
+  },
+  "css-specificity-calculator": {
+    title: "CSS Specificity Calculator Online — Compare Selectors | ToolNinja",
+    description:
+      "Free online CSS specificity calculator. Calculate the (ids, classes, elements) specificity of any CSS selector and compare multiple selectors to see which one wins. Supports :is(), :not(), :where(). No login required.",
+  },
+  "placeholder-image-generator": {
+    title: "Placeholder Image Generator Online — Custom Size & Color | ToolNinja",
+    description:
+      "Free online placeholder image generator. Create placeholder images with a custom width, height, background color, text color, and label, and download as PNG. No login, 100% browser-based.",
   },
 
   // ── Security ─────────────────────────────────────────────────────────────
@@ -367,6 +387,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "HTTP Security Headers Checker Online — HSTS, CSP & More | ToolNinja",
     description:
       "Free online HTTP security headers checker. Paste raw response headers and get a scored analysis against HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy and more. No login, 100% browser-based.",
+  },
+  "jwk-pem-converter": {
+    title: "JWK to PEM Converter Online — Convert RSA & EC Keys | ToolNinja",
+    description:
+      "Free online JWK to PEM and PEM to JWK converter. Convert RSA and EC (P-256/P-384/P-521) public and private keys between formats using the Web Crypto API. Nothing you paste ever leaves your browser. No login.",
   },
 
   // ── Accessibility ────────────────────────────────────────────────────────

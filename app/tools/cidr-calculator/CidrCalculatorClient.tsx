@@ -126,6 +126,106 @@ function splitIntoSubnets(networkNum: number, newPrefix: number, count: number):
   return subnets;
 }
 
+// ─── IPv6 math ────────────────────────────────────────────────────────────────
+
+function expandIpv6(ip: string): string[] | null {
+  let parts: string[];
+  if (ip.includes("::")) {
+    if ((ip.match(/::/g) || []).length > 1) return null;
+    const [head, tail] = ip.split("::");
+    const headParts = head ? head.split(":") : [];
+    const tailParts = tail ? tail.split(":") : [];
+    const missing = 8 - headParts.length - tailParts.length;
+    if (missing < 0) return null;
+    parts = [...headParts, ...Array(missing).fill("0"), ...tailParts];
+  } else {
+    parts = ip.split(":");
+  }
+  if (parts.length !== 8) return null;
+  if (!parts.every((p) => /^[0-9a-fA-F]{1,4}$/.test(p))) return null;
+  return parts.map((p) => p.padStart(4, "0").toLowerCase());
+}
+
+function ipv6ToBigInt(expandedParts: string[]): bigint {
+  return expandedParts.reduce((acc, group) => (acc << BigInt(16)) | BigInt("0x" + group), BigInt(0));
+}
+
+function bigIntToIpv6Groups(n: bigint): string[] {
+  const groups: string[] = [];
+  for (let i = 7; i >= 0; i--) {
+    groups.push(((n >> BigInt(i * 16)) & BigInt(0xffff)).toString(16));
+  }
+  return groups;
+}
+
+function compressIpv6(groups: string[]): string {
+  let bestStart = -1, bestLen = 0, curStart = -1, curLen = 0;
+  for (let i = 0; i < 8; i++) {
+    if (groups[i] === "0") {
+      if (curStart === -1) curStart = i;
+      curLen++;
+      if (curLen > bestLen) { bestLen = curLen; bestStart = curStart; }
+    } else {
+      curStart = -1; curLen = 0;
+    }
+  }
+  if (bestLen < 2) return groups.join(":");
+  const before = groups.slice(0, bestStart).join(":");
+  const after = groups.slice(bestStart + bestLen).join(":");
+  return `${before}::${after}`;
+}
+
+function ipv6MaskFromPrefix(prefix: number): bigint {
+  if (prefix === 0) return BigInt(0);
+  return ((BigInt(1) << BigInt(128)) - BigInt(1)) ^ ((BigInt(1) << BigInt(128 - prefix)) - BigInt(1));
+}
+
+interface Ipv6Result {
+  prefix: number;
+  compressedNetwork: string;
+  expandedNetwork: string;
+  compressedLast: string;
+  expandedLast: string;
+  totalAddresses: string;
+}
+
+function calculateCidrV6(cidr: string): Ipv6Result | null {
+  const trimmed = cidr.trim();
+  const slashIdx = trimmed.indexOf("/");
+  if (slashIdx === -1) return null;
+
+  const ipPart = trimmed.slice(0, slashIdx);
+  const prefix = parseInt(trimmed.slice(slashIdx + 1), 10);
+  if (isNaN(prefix) || prefix < 0 || prefix > 128) return null;
+
+  const expanded = expandIpv6(ipPart);
+  if (!expanded) return null;
+
+  const addrBig = ipv6ToBigInt(expanded);
+  const mask = ipv6MaskFromPrefix(prefix);
+  const wildcard = ((BigInt(1) << BigInt(128)) - BigInt(1)) ^ mask;
+  const network = addrBig & mask;
+  const last = network | wildcard;
+
+  return {
+    prefix,
+    compressedNetwork: compressIpv6(bigIntToIpv6Groups(network)),
+    expandedNetwork: bigIntToIpv6Groups(network).join(":"),
+    compressedLast: compressIpv6(bigIntToIpv6Groups(last)),
+    expandedLast: bigIntToIpv6Groups(last).join(":"),
+    totalAddresses: (BigInt(1) << BigInt(128 - prefix)).toString(),
+  };
+}
+
+function formatBigAddressCount(n: string): string {
+  const num = BigInt(n);
+  if (num < BigInt(1_000_000)) return num.toLocaleString();
+  // Scientific-ish notation for huge IPv6 ranges (can exceed 10^30)
+  const digits = n.length;
+  const mantissa = n.slice(0, 3).replace(/^(\d)(\d+)/, "$1.$2");
+  return `${mantissa} × 10^${digits - 1}  (${n})`;
+}
+
 function getIpClass(ip: string): string {
   const first = parseInt(ip.split(".")[0], 10);
   if (first >= 1 && first <= 126) return "A";
@@ -204,6 +304,7 @@ function ResultCard({
 export default function CidrCalculatorClient() {
   const [input, setInput] = useState("192.168.1.0/24");
   const [result, setResult] = useState<CidrResult | null>(null);
+  const [v6Result, setV6Result] = useState<Ipv6Result | null>(null);
   const [error, setError] = useState("");
   const [splitCount, setSplitCount] = useState(4);
 
@@ -211,16 +312,34 @@ export default function CidrCalculatorClient() {
     const trimmed = value.trim();
     if (!trimmed) {
       setResult(null);
+      setV6Result(null);
       setError("");
       return;
     }
+
+    if (trimmed.includes(":")) {
+      const res6 = calculateCidrV6(trimmed);
+      if (res6) {
+        setV6Result(res6);
+        setResult(null);
+        setError("");
+      } else {
+        setV6Result(null);
+        setResult(null);
+        setError("Invalid IPv6 CIDR notation. Example: 2001:db8::/32");
+      }
+      return;
+    }
+
     const res = calculateCidr(trimmed);
     if (res) {
       setResult(res);
+      setV6Result(null);
       setError("");
     } else {
       setResult(null);
-      setError("Invalid CIDR notation. Example: 192.168.1.0/24");
+      setV6Result(null);
+      setError("Invalid CIDR notation. Example: 192.168.1.0/24 or 2001:db8::/32");
     }
   }, []);
 
@@ -237,17 +356,17 @@ export default function CidrCalculatorClient() {
   return (
     <ToolLayout
       title="CIDR Calculator"
-      description="Calculate network address, broadcast, subnet mask, host range, and binary representation from any CIDR notation."
+      description="Calculate network address, broadcast, subnet mask, host range, and binary representation from any IPv4 or IPv6 CIDR notation."
     >
       <div className="space-y-6">
         {/* Input */}
         <div className="space-y-2">
-          <label className="text-xs text-[#888888] font-medium block">CIDR Notation</label>
+          <label className="text-xs text-[#888888] font-medium block">CIDR Notation (IPv4 or IPv6)</label>
           <input
             type="text"
             value={input}
             onChange={(e) => handleChange(e.target.value)}
-            placeholder="e.g. 192.168.1.0/24 or 10.0.0.0/8"
+            placeholder="e.g. 192.168.1.0/24 or 2001:db8::/32"
             spellCheck={false}
             className={`w-full max-w-lg px-4 py-3 text-base font-mono bg-[#111111] border rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444] transition-colors ${
               error ? "border-[#ef4444]" : "border-[#222222]"
@@ -260,6 +379,37 @@ export default function CidrCalculatorClient() {
             </div>
           )}
         </div>
+
+        {/* IPv6 results */}
+        {v6Result && (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <ResultCard label="Network Address" value={v6Result.compressedNetwork} accent />
+              <ResultCard label="Last Address" value={v6Result.compressedLast} />
+              <ResultCard label="CIDR Prefix" value={`/${v6Result.prefix}`} accent />
+              <ResultCard label="Total Addresses" value={formatBigAddressCount(v6Result.totalAddresses)} mono={false} />
+            </div>
+            <div className="p-4 bg-[#111111] border border-[#222222] rounded-[8px] space-y-2">
+              <h3 className="text-xs text-[#888888] font-medium uppercase tracking-wide">Expanded Form</h3>
+              <p className="font-mono text-xs text-[#888888] break-all">Network: <span className="text-[#f5f5f5]">{v6Result.expandedNetwork}</span></p>
+              <p className="font-mono text-xs text-[#888888] break-all">Last: <span className="text-[#f5f5f5]">{v6Result.expandedLast}</span></p>
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs text-[#888888] font-medium">Summary</label>
+                <CopyButton
+                  text={[
+                    `CIDR: ${input.trim()}`,
+                    `Network: ${v6Result.compressedNetwork}/${v6Result.prefix}`,
+                    `Last Address: ${v6Result.compressedLast}`,
+                    `Total Addresses: ${v6Result.totalAddresses}`,
+                  ].join("\n")}
+                  size="sm"
+                />
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Results */}
         {result && (
@@ -404,7 +554,7 @@ export default function CidrCalculatorClient() {
         )}
 
         {/* Empty state */}
-        {!result && !error && (
+        {!result && !v6Result && !error && (
           <div className="flex items-center justify-center h-40 text-[#444444] text-sm">
             Enter a CIDR range above to calculate
           </div>
