@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import ToolLayout from "@/components/ToolLayout";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Download } from "lucide-react";
 import {
   MEETING_CITIES,
   buildHourGrid,
@@ -10,6 +10,7 @@ import {
   getOffsetLabel,
   formatHour12,
   classifyHour,
+  buildIcsFile,
   type HourKind,
 } from "@/lib/meeting-planner";
 
@@ -32,6 +33,8 @@ export default function MeetingPlannerClient() {
   const [cities, setCities] = useState<string[]>([]);
   const [selectedHour, setSelectedHour] = useState<number | null>(null);
   const [addCity, setAddCity] = useState("");
+  const [meetingTitle, setMeetingTitle] = useState("Team meeting");
+  const [durationMinutes, setDurationMinutes] = useState(30);
 
   useEffect(() => {
     try {
@@ -79,6 +82,25 @@ export default function MeetingPlannerClient() {
       setCities((prev) => [...prev, addCity]);
       setAddCity("");
     }
+  };
+
+  const downloadIcs = () => {
+    if (selectedHour === null) return;
+    const startUtcMs = referenceUtcMidnight + selectedHour * 3600_000;
+    const description = rows
+      .map((row) => {
+        const cell = row.cells.find((c) => c.refHour === selectedHour);
+        return cell ? `${row.label}: ${formatHour12(cell.localHour)}` : null;
+      })
+      .filter(Boolean)
+      .join("\n");
+    const ics = buildIcsFile({ title: meetingTitle || "Meeting", startUtcMs, durationMinutes, description });
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `${(meetingTitle || "meeting").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.ics`;
+    a.click();
+    URL.revokeObjectURL(a.href);
   };
 
   return (
@@ -226,6 +248,40 @@ export default function MeetingPlannerClient() {
               );
             })}
           </div>
+
+          <div className="flex flex-wrap items-end gap-3 mt-4 pt-3 border-t border-[#1a1a1a]">
+            <div>
+              <label className="text-xs text-[#888888] font-medium block mb-1">Title</label>
+              <input
+                type="text"
+                value={meetingTitle}
+                onChange={(e) => setMeetingTitle(e.target.value)}
+                className="px-3 py-1.5 text-sm bg-[#0a0a0a] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] w-48"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-[#888888] font-medium block mb-1">Duration</label>
+              <select
+                value={durationMinutes}
+                onChange={(e) => setDurationMinutes(Number(e.target.value))}
+                className="px-3 py-1.5 text-sm bg-[#0a0a0a] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+              >
+                {[15, 30, 45, 60, 90, 120].map((m) => (
+                  <option key={m} value={m}>{m} min</option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={downloadIcs}
+              className="flex items-center gap-1.5 px-4 py-1.5 text-sm bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-[6px] transition-colors"
+            >
+              <Download size={14} /> Download .ics
+            </button>
+          </div>
+          <p className="text-[10px] text-[#555555] mt-1.5">
+            The event is saved as an absolute UTC time, so it opens correctly in every attendee&apos;s
+            calendar regardless of their own time zone setting.
+          </p>
         </div>
       )}
     </ToolLayout>

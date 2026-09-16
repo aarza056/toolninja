@@ -240,6 +240,19 @@ export const tools: Tool[] = [
       "base58 online tool",
     ],
   },
+  {
+    slug: "base32",
+    name: "Base32 Encoder / Decoder",
+    description: "Encode or decode RFC 4648 Base32 strings — the format behind TOTP secrets and DNSSEC",
+    icon: "SquareCode",
+    category: "Encode",
+    keywords: [
+      "base32 encoder", "base32 decoder", "base32 encode online",
+      "base32 decode online", "rfc 4648 base32", "base32 converter",
+      "base32 to hex", "hex to base32", "totp secret base32",
+      "base32 online tool",
+    ],
+  },
 
   // ─── Generate ─────────────────────────────────────────────────────────────
   {
@@ -812,6 +825,42 @@ export const tools: Tool[] = [
       "ulid timestamp decoder", "uuid inspector", "what version is this uuid",
     ],
   },
+  {
+    slug: "ts7-migration-checker",
+    name: "TypeScript 7 Migration Checker",
+    description: "Paste a tsconfig.json and see exactly which compiler options TypeScript 7 removes",
+    icon: "Wrench",
+    category: "Test",
+    keywords: [
+      "typescript 7 migration", "typescript 7 breaking changes", "tsgo migration checker",
+      "typescript 7 tsconfig checker", "tsconfig migration typescript 7", "typescript go compiler",
+      "typescript 7 removed options", "project corsa typescript", "tsc migration guide",
+    ],
+  },
+  {
+    slug: "node-type-stripping-checker",
+    name: "Node.js Type-Stripping Checker",
+    description: "Scan a TypeScript file for syntax Node's built-in type stripping can't run directly",
+    icon: "Eraser",
+    category: "Test",
+    keywords: [
+      "node type stripping checker", "node.js typescript support", "node --experimental-strip-types",
+      "run typescript node without compiler", "node ts file directly", "typescript type stripping node 24",
+      "amaro typescript node", "node typescript enums unsupported",
+    ],
+  },
+  {
+    slug: "http-header-inspector",
+    name: "HTTP Header Inspector",
+    description: "Paste raw response headers and get a plain-English explanation of every one",
+    icon: "ListTree",
+    category: "Test",
+    keywords: [
+      "http header inspector", "http headers explained", "response header checker",
+      "what does this http header mean", "http header meaning lookup", "cache-control explained",
+      "content-security-policy header explained", "http header reference online",
+    ],
+  },
 
   // ─── Design ───────────────────────────────────────────────────────────────
   {
@@ -919,6 +968,18 @@ export const tools: Tool[] = [
       "placeholder image generator", "placeholder image online", "dummy image generator",
       "generate placeholder image", "custom placeholder image", "image placeholder maker",
       "lorem picsum alternative", "fake image generator online", "placeholder png generator",
+    ],
+  },
+  {
+    slug: "scrollbar-generator",
+    name: "CSS Scrollbar Generator",
+    description: "Style scrollbars with scrollbar-color/width, plus a WebKit fallback",
+    icon: "ScrollText",
+    category: "Design",
+    keywords: [
+      "css scrollbar generator", "custom scrollbar css", "scrollbar-color generator",
+      "webkit scrollbar css", "style scrollbar css online", "scrollbar-width css",
+      "custom scrollbar css generator", "css scrollbar styling tool",
     ],
   },
 
@@ -1115,9 +1176,9 @@ export type Category = (typeof categories)[number];
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 export const LATEST_TOOL_SLUGS = [
-  "uuid-parser",
-  "list-sorter",
-  "css-specificity-calculator",
-  "placeholder-image-generator",
-  "jwk-pem-converter",
+  "ts7-migration-checker",
+  "node-type-stripping-checker",
+  "scrollbar-generator",
+  "base32",
+  "http-header-inspector",
 ];

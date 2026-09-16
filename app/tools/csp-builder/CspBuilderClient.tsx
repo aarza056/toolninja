@@ -9,6 +9,44 @@ import { CSP_DIRECTIVES, CSP_KEYWORDS, buildCsp, analyzeCsp, type CspWarning } f
 const STORAGE_KEY = "toolninja:csp-builder";
 type Mode = "build" | "analyze";
 
+const PRESETS: { label: string; directives: Record<string, string> }[] = [
+  {
+    label: "Next.js + Vercel + Analytics",
+    directives: {
+      "default-src": "'self'",
+      "script-src": "'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com",
+      "style-src": "'self' 'unsafe-inline'",
+      "img-src": "'self' data: blob: https:",
+      "font-src": "'self'",
+      "connect-src": "'self' https://www.google-analytics.com https://vitals.vercel-insights.com https://va.vercel-scripts.com",
+      "frame-ancestors": "'none'",
+    },
+  },
+  {
+    label: "Strict SPA (no inline, no eval)",
+    directives: {
+      "default-src": "'self'",
+      "script-src": "'self'",
+      "style-src": "'self'",
+      "img-src": "'self' data:",
+      "connect-src": "'self'",
+      "object-src": "'none'",
+      "base-uri": "'self'",
+      "frame-ancestors": "'none'",
+    },
+  },
+  {
+    label: "WordPress-style (permissive)",
+    directives: {
+      "default-src": "'self' https:",
+      "script-src": "'self' 'unsafe-inline' 'unsafe-eval' https:",
+      "style-src": "'self' 'unsafe-inline' https:",
+      "img-src": "'self' data: https:",
+      "font-src": "'self' data: https:",
+    },
+  },
+];
+
 const SEVERITY_META: Record<CspWarning["severity"], { color: string; bg: string; icon: typeof AlertCircle; label: string }> = {
   high: { color: "#ef4444", bg: "rgba(239,68,68,0.1)", icon: AlertCircle, label: "High" },
   medium: { color: "#f97316", bg: "rgba(249,115,22,0.1)", icon: AlertTriangle, label: "Medium" },
@@ -27,6 +65,7 @@ export default function CspBuilderClient() {
     "frame-ancestors": "'self'",
   });
   const [upgradeInsecure, setUpgradeInsecure] = useState(true);
+  const [reportOnly, setReportOnly] = useState(false);
   const [pastedCsp, setPastedCsp] = useState("");
 
   useEffect(() => {
@@ -36,14 +75,15 @@ export default function CspBuilderClient() {
         const parsed = JSON.parse(saved);
         if (parsed.directives) setDirectives(parsed.directives);
         if (parsed.upgradeInsecure !== undefined) setUpgradeInsecure(parsed.upgradeInsecure);
+        if (parsed.reportOnly !== undefined) setReportOnly(parsed.reportOnly);
         if (parsed.pastedCsp) setPastedCsp(parsed.pastedCsp);
       }
     } catch {}
   }, []);
 
   useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ directives, upgradeInsecure, pastedCsp })); } catch {}
-  }, [directives, upgradeInsecure, pastedCsp]);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ directives, upgradeInsecure, reportOnly, pastedCsp })); } catch {}
+  }, [directives, upgradeInsecure, reportOnly, pastedCsp]);
 
   const updateDirective = (key: string, value: string) => {
     setDirectives((prev) => ({ ...prev, [key]: value }));
@@ -58,8 +98,9 @@ export default function CspBuilderClient() {
   };
 
   const cspString = useMemo(() => buildCsp(directives, upgradeInsecure), [directives, upgradeInsecure]);
+  const headerName = reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
   const metaTag = `<meta http-equiv="Content-Security-Policy" content="${cspString}">`;
-  const headerLine = `Content-Security-Policy: ${cspString}`;
+  const headerLine = `${headerName}: ${cspString}`;
 
   const warnings = useMemo(() => analyzeCsp(pastedCsp), [pastedCsp]);
   const parsedForAnalysis = useMemo(() => {
@@ -92,6 +133,20 @@ export default function CspBuilderClient() {
       {mode === "build" ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="space-y-3">
+            <div>
+              <label className="text-xs text-[#888888] font-medium block mb-1.5">Start from a preset</label>
+              <div className="flex flex-wrap gap-1.5">
+                {PRESETS.map((p) => (
+                  <button
+                    key={p.label}
+                    onClick={() => setDirectives(p.directives)}
+                    className="px-2.5 py-1 text-[11px] bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] hover:text-[#f5f5f5] border border-[#222222] rounded-[6px] transition-colors"
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             {CSP_DIRECTIVES.map((d) => (
               <div key={d.key}>
                 <div className="flex items-baseline justify-between mb-1">
@@ -123,6 +178,16 @@ export default function CspBuilderClient() {
               <input type="checkbox" checked={upgradeInsecure} onChange={(e) => setUpgradeInsecure(e.target.checked)} className="accent-[#a855f7]" />
               upgrade-insecure-requests
             </label>
+            <label className="flex items-center gap-2 text-sm text-[#888888]">
+              <input type="checkbox" checked={reportOnly} onChange={(e) => setReportOnly(e.target.checked)} className="accent-[#a855f7]" />
+              Report-Only mode
+            </label>
+            {reportOnly && (
+              <p className="text-xs text-[#555555] leading-relaxed">
+                Report-Only logs violations (to a report-uri/report-to endpoint) without blocking anything —
+                use it to test a new policy against real traffic before switching to enforcing mode.
+              </p>
+            )}
           </div>
 
           <div className="space-y-4">
@@ -135,18 +200,25 @@ export default function CspBuilderClient() {
                 {headerLine}
               </pre>
             </div>
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs text-[#888888] font-medium">HTML &lt;meta&gt; tag</label>
-                <CopyButton text={metaTag} size="sm" />
+            {reportOnly ? (
+              <div className="p-3 bg-[#f59e0b]/10 border border-[#f59e0b]/30 rounded-[8px] text-xs text-[#f59e0b]">
+                Report-Only can&apos;t be set via an HTML &lt;meta&gt; tag — the spec only allows the enforcing
+                header that way. Use the HTTP header above instead.
               </div>
-              <pre className="p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] overflow-auto whitespace-pre-wrap break-all">
-                {metaTag}
-              </pre>
-              <p className="mt-1.5 text-xs text-[#555555]">
-                Note: frame-ancestors, report-uri, and sandbox are ignored when set via &lt;meta&gt; — use the HTTP header for those.
-              </p>
-            </div>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs text-[#888888] font-medium">HTML &lt;meta&gt; tag</label>
+                  <CopyButton text={metaTag} size="sm" />
+                </div>
+                <pre className="p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] overflow-auto whitespace-pre-wrap break-all">
+                  {metaTag}
+                </pre>
+                <p className="mt-1.5 text-xs text-[#555555]">
+                  Note: frame-ancestors, report-uri, and sandbox are ignored when set via &lt;meta&gt; — use the HTTP header for those.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       ) : (

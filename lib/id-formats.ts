@@ -45,6 +45,44 @@ export function generateUuidV7(): string {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
+// RFC 4122 well-known namespace UUIDs, for the "for some potentially interesting name spaces" table.
+export const UUID_NAMESPACES = {
+  DNS: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+  URL: "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+  OID: "6ba7b812-9dad-11d1-80b4-00c04fd430c8",
+  X500: "6ba7b814-9dad-11d1-80b4-00c04fd430c8",
+} as const;
+
+function hexToBytes(hex: string): Uint8Array {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) bytes[i / 2] = parseInt(hex.slice(i, i + 2), 16);
+  return bytes;
+}
+
+function bytesToUuidString(bytes: Uint8Array): string {
+  const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+/** RFC 4122 UUID v5 — deterministic: the same namespace + name always produces the same UUID,
+ * via SHA-1(namespace bytes + name bytes) with the version/variant nibbles overwritten. Useful
+ * for idempotency keys and stable test fixtures where you want the same input to reproduce
+ * the same ID every time, unlike v4's fully random output. */
+export async function generateUuidV5(namespace: string, name: string): Promise<string> {
+  const nsBytes = hexToBytes(namespace.replace(/-/g, ""));
+  const nameBytes = new TextEncoder().encode(name);
+  const combined = new Uint8Array(nsBytes.length + nameBytes.length);
+  combined.set(nsBytes, 0);
+  combined.set(nameBytes, nsBytes.length);
+
+  const hashBuffer = await crypto.subtle.digest("SHA-1", combined);
+  const hash = new Uint8Array(hashBuffer).slice(0, 16);
+  hash[6] = (hash[6] & 0x0f) | 0x50; // version 5
+  hash[8] = (hash[8] & 0x3f) | 0x80; // variant RFC 4122
+
+  return bytesToUuidString(hash);
+}
+
 const NANOID_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
 
 /** URL-safe, collision-resistant short ID — the standard choice for public-facing

@@ -388,7 +388,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "uuid-generator": {
     about:
-      "The ToolNinja UUID Generator generates UUID v4, UUID v7, and NanoID identifiers instantly — individually or in bulk up to 100 at a time.\n\nUUID v4 is fully random and the classic default. UUID v7 encodes a millisecond timestamp in its first 48 bits, making generated IDs sort chronologically — this has become the default recommendation for new database primary keys in 2026 because it avoids the random-insert performance penalty v4 causes on B-tree indexes. NanoID produces a much shorter, URL-safe random string — the better choice for public-facing identifiers like share links and invite codes, where a 36-character UUID is overkill.\n\nGenerate a single ID for quick use, or bulk generate up to 100 for seeding test databases or fixture data. 100% browser-based using the Web Crypto API for true cryptographic randomness. No login, no server calls required.",
+      "The ToolNinja UUID Generator generates UUID v4, UUID v5, UUID v7, and NanoID identifiers instantly — individually or in bulk up to 100 at a time.\n\nUUID v4 is fully random and the classic default. UUID v7 encodes a millisecond timestamp in its first 48 bits, making generated IDs sort chronologically — this has become the default recommendation for new database primary keys in 2026 because it avoids the random-insert performance penalty v4 causes on B-tree indexes. UUID v5 is deterministic — the same namespace and name always produce the exact same UUID, via SHA-1(namespace + name), making it useful for idempotency keys and stable test fixtures where you need reproducibility rather than randomness. NanoID produces a much shorter, URL-safe random string — the better choice for public-facing identifiers like share links and invite codes, where a 36-character UUID is overkill.\n\nGenerate a single ID for quick use, or bulk generate up to 100 for seeding test databases or fixture data. 100% browser-based using the Web Crypto API for true cryptographic randomness. No login, no server calls required.",
     useCases: [
       "Primary keys for database records in distributed or multi-writer systems",
       "Correlation IDs for tracing requests across microservices and logs",
@@ -401,6 +401,7 @@ export const toolContent: Record<string, ToolContent> = {
       "The format is 8-4-4-4-12 hex digits: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx. The 4 indicates version 4, and the y is one of 8, 9, a, or b.",
       "For database primary keys, UUIDs have higher storage overhead than auto-increment integers but work safely in distributed systems without a central coordinator.",
       "For a new project in 2026 with no legacy v4 data to stay consistent with, default to UUID v7 for primary keys and NanoID for anything user-facing.",
+      "UUID v5 always produces one ID per namespace+name — generating '100' of them would just repeat the same value, so the tool intentionally limits v5 to a single result per click.",
     ],
     faq: [
       {
@@ -408,8 +409,12 @@ export const toolContent: Record<string, ToolContent> = {
         a: "Theoretically yes, but practically no. The probability of a collision between two random v4 UUIDs is 1 in 2^122 (about 5x10^36). To have a 50% chance of a collision, you'd need to generate 2.7x10^18 UUIDs — far beyond any realistic system.",
       },
       {
-        q: "What's the difference between UUID v1, v4, and v7?",
-        a: "V1 is time-based and includes the machine's MAC address — deterministic but leaks information. V4 is fully random — historically the most widely used version. V7 encodes a millisecond timestamp in the first 48 bits, so generated IDs sort chronologically, which avoids the random-insert performance penalty v4 causes on database indexes — it's now the recommended default for new database primary keys.",
+        q: "What's the difference between UUID v1, v4, v5, and v7?",
+        a: "V1 is time-based and includes the machine's MAC address — deterministic but leaks information. V4 is fully random — historically the most widely used version. V5 is deterministic from a namespace + name (SHA-1-based) — same input always gives the same UUID, useful for idempotency keys. V7 encodes a millisecond timestamp in the first 48 bits, so generated IDs sort chronologically, which avoids the random-insert performance penalty v4 causes on database indexes — it's now the recommended default for new database primary keys.",
+      },
+      {
+        q: "What is UUID v5 actually useful for, if it's not random?",
+        a: "Anywhere you need the same logical input to always produce the same ID — deduplicating records imported from an external system by hashing a stable field (like an email or external ID) into a namespace UUID, generating a stable test fixture ID that doesn't change between test runs, or building an idempotency key from a request's own content so retrying the same request never creates a duplicate.",
       },
       {
         q: "When should I use NanoID instead of a UUID?",
@@ -854,6 +859,10 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "What is the setuid/setgid bit and when is it used?",
         a: "The setuid bit (4 in the leading digit, e.g. 4755) causes an executable to run with the owner's permissions rather than the caller's. The classic example is /usr/bin/passwd — ordinary users can change their passwords because passwd runs as root. setgid (2) does the same for group. These are powerful and should be used sparingly.",
+      },
+      {
+        q: "What does the sticky bit do, and why is /tmp the classic example?",
+        a: "The sticky bit (1 in the leading digit, e.g. 1777) is set on a shared, world-writable directory to restrict deletion — even though everyone can create files there, only a file's owner (or root) can delete or rename it. /tmp is the textbook case: it needs to be writable by every user on the system, but without the sticky bit, any user could delete any other user's temp files.",
       },
       {
         q: "Why do I get 'Permission denied' even as a sudo user?",
@@ -1694,17 +1703,20 @@ export const toolContent: Record<string, ToolContent> = {
 
   "json-schema-generator": {
     about:
-      "The JSON Schema Generator infers a JSON Schema (draft-07) directly from a sample JSON object — no manual schema authoring required. It detects types for every field, including nested objects and arrays, and marks fields present in your sample as required by default.\n\nJSON Schema is the standard way to formally describe the shape of JSON data — used for API request/response validation, form generation, and configuration file validation across the JavaScript, Python, and Java ecosystems alike. Generating one from a real example is far faster than hand-writing the schema from a specification document.",
+      "The JSON Schema Generator infers a JSON Schema (draft-07) directly from a sample JSON object — no manual schema authoring required. It detects types for every field, including nested objects and arrays, and marks fields present in your sample as required by default.\n\nJSON Schema is the standard way to formally describe the shape of JSON data — used for API request/response validation, form generation, and configuration file validation across the JavaScript, Python, and Java ecosystems alike. Generating one from a real example is far faster than hand-writing the schema from a specification document.\n\nA Validate mode goes the other direction: paste any JSON Schema (generated here or written by hand) alongside a JSON payload, and see exactly which fields fail and why — a wrong type, a missing required field, an out-of-range value, or a value outside an enum list — with the exact path to each problem field.",
     useCases: [
       "Generating a starting JSON Schema from a real API response to use with a validation library (Ajv, jsonschema, etc.)",
       "Documenting the expected shape of a request or response body for API documentation",
       "Creating a schema to validate configuration files against before your application loads them",
       "Producing a schema other tools (form generators, mock servers) can consume from real example data",
+      "Checking a sample payload against a schema before writing it into automated tests",
+      "Debugging why a real API response doesn't validate against its documented schema",
     ],
     tips: [
       "Generated schemas mark every field present in your sample as required — uncheck 'Mark all present fields as required' if your sample happens to have every optional field filled in.",
       "Arrays with mixed-type elements produce a schema based on the first element's shape — review array schemas manually if your data has genuinely heterogeneous array contents.",
       "A generated schema is a draft, not a final spec — add format validators (email, date-time, uri) and value constraints (minimum, maxLength, pattern) by hand for fields that need them.",
+      "In Validate mode, a type mismatch on a field stops that field's checks there — a wrong-type value can't meaningfully be checked for a missing nested property, for example, so the tool reports the type error and moves on rather than cascading confusing follow-up errors.",
     ],
     faq: [
       {
@@ -1718,6 +1730,10 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Why does the schema say type: 'integer' for some numbers and 'number' for others?",
         a: "JSON Schema draft-07 distinguishes whole numbers (integer) from numbers with a fractional component (number). The generator checks each numeric value in your sample: 30 produces integer, 30.5 produces number. If a field is sometimes a whole number and sometimes has decimals across different real responses, use number in the schema since it's the broader type that also accepts integers.",
+      },
+      {
+        q: "Does the Validate mode support the full JSON Schema specification?",
+        a: "It covers the subset most real-world schemas actually use — type, properties, required, items, enum, and the min/max numeric and string-length keywords. It doesn't implement $ref references, allOf/oneOf/anyOf composition, pattern (regex), or format validators — for those, use a full validation library like Ajv in your actual codebase; this tool is for a quick manual check, not a drop-in replacement for one.",
       },
     ],
   },
@@ -1977,19 +1993,25 @@ export const toolContent: Record<string, ToolContent> = {
 
   "csp-builder": {
     about:
-      "The CSP Header Builder & Analyzer helps with both directions of Content-Security-Policy work: build a policy visually by setting allowed sources per directive (script-src, style-src, img-src, and more), or paste an existing policy to check it for common misconfigurations like 'unsafe-inline', 'unsafe-eval', and wildcard sources that undermine CSP's core protection.\n\nCSP is one of the most effective browser-level defenses against XSS, but it's also one of the most commonly misconfigured security headers — a policy with 'unsafe-inline' in script-src provides close to zero XSS protection while looking like a real security control.",
+      "The CSP Header Builder & Analyzer helps with both directions of Content-Security-Policy work: build a policy visually by setting allowed sources per directive (script-src, style-src, img-src, and more), starting from a preset or from scratch, or paste an existing policy to check it for common misconfigurations like 'unsafe-inline', 'unsafe-eval', and wildcard sources that undermine CSP's core protection.\n\nCSP is one of the most effective browser-level defenses against XSS, but it's also one of the most commonly misconfigured security headers — a policy with 'unsafe-inline' in script-src provides close to zero XSS protection while looking like a real security control.\n\nA Report-Only toggle switches the output to Content-Security-Policy-Report-Only, which logs would-be violations without actually blocking anything — the standard way to test a new or tightened policy against real production traffic before switching it to enforcing mode and risking breaking something you didn't anticipate.",
     useCases: [
-      "Building a starting CSP for a new project's security headers, directive by directive",
+      "Building a starting CSP for a new project's security headers, directive by directive or from a preset",
       "Auditing an existing CSP (your own, or a security scan's report) for directives that silently undermine XSS protection",
       "Generating both the HTTP header and equivalent <meta> tag versions of the same policy",
       "Understanding what a specific CSP directive actually restricts before adding it to production",
+      "Testing a new policy in Report-Only mode before switching it to enforcing and risking breakage",
     ],
     tips: [
       "Set CSP via the HTTP header, not the <meta> tag, whenever possible — frame-ancestors, report-uri, and sandbox are silently ignored in the <meta> tag form.",
       "'unsafe-inline' in script-src is the single most common CSP mistake — it defeats most of CSP's XSS protection while still looking like a real policy. Use nonces or hashes for inline scripts you can't externalize.",
       "Start restrictive (default-src 'self') and add specific sources as you find real violations in the browser console, rather than starting permissive and trying to tighten later.",
+      "Always test a meaningfully different policy in Report-Only mode first, especially on an existing production site — a too-restrictive enforcing policy fails silently from a user's perspective (broken images, scripts that just don't run) with no error page to alert you.",
     ],
     faq: [
+      {
+        q: "What does Report-Only mode actually do, and how do I see what it caught?",
+        a: "A Content-Security-Policy-Report-Only header behaves exactly like a normal CSP for evaluation purposes, but never blocks anything — it only logs a violation report (to a report-uri/report-to endpoint you configure separately) every time something would have been blocked under an enforcing policy. It's the standard way to test a policy's real-world impact before switching to enforcing mode.",
+      },
       {
         q: "What does Content-Security-Policy actually protect against?",
         a: "CSP's primary purpose is mitigating Cross-Site Scripting (XSS) — even if an attacker manages to inject a <script> tag into your page (via a stored XSS bug, for example), a correctly configured CSP prevents that script from executing because it didn't come from an allowed source. It also restricts other risky behaviors: framing (clickjacking), form submission targets, and base URI manipulation.",
@@ -2380,17 +2402,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "meeting-planner": {
     about:
-      "The Meeting Planner lays out working hours across multiple time zones on a single grid, so you can see at a glance when a meeting time actually overlaps with everyone's reasonable working hours instead of mentally converting each person's local time one at a time. Pick a reference time zone and date, add the cities you're scheduling across, and each row shows that city's local hour for every hour of the reference day — color-coded as working hours, awake-but-off-hours, or likely asleep.\n\nEvery time lookup goes through the browser's Intl API rather than manual UTC-offset math, so daylight saving time transitions are handled correctly automatically — including the case where two zones are on opposite sides of a DST transition on the day you're planning around, which is exactly the scenario naive offset arithmetic gets wrong.\n\nClick any hour column to see the exact local time it represents for every added city at once, including whether it falls on the previous or next calendar day for a given time zone.",
+      "The Meeting Planner lays out working hours across multiple time zones on a single grid, so you can see at a glance when a meeting time actually overlaps with everyone's reasonable working hours instead of mentally converting each person's local time one at a time. Pick a reference time zone and date, add the cities you're scheduling across, and each row shows that city's local hour for every hour of the reference day — color-coded as working hours, awake-but-off-hours, or likely asleep.\n\nEvery time lookup goes through the browser's Intl API rather than manual UTC-offset math, so daylight saving time transitions are handled correctly automatically — including the case where two zones are on opposite sides of a DST transition on the day you're planning around, which is exactly the scenario naive offset arithmetic gets wrong.\n\nClick any hour column to see the exact local time it represents for every added city at once, including whether it falls on the previous or next calendar day for a given time zone — and from there, download it directly as a .ics calendar file with a title and duration, saved as an absolute UTC instant so it lands correctly on every attendee's calendar regardless of their own device's time zone setting.",
     useCases: [
       "Finding a meeting time that falls in working hours for a distributed team across 3+ time zones",
       "Checking whether a proposed call time would wake someone up in another region",
       "Planning an on-call handoff or deployment window across time zones",
       "Scheduling around a specific city's business hours without doing manual offset arithmetic",
+      "Downloading the agreed-on time as a .ics file to send in an email or import directly into a calendar app",
     ],
     tips: [
       "The working-hours coloring (9am–6pm) is a fixed, general default, not a per-person customizable schedule — treat it as a starting point for the conversation, not a hard rule for everyone's actual calendar.",
       "A city showing a +1 or -1 marker on an hour cell means that hour falls on the next or previous calendar day in that time zone relative to your reference date — worth calling out explicitly when proposing a time.",
       "Because every conversion goes through the browser's own timezone database, results stay correct across DST transitions without needing a manual update.",
+      "Click an hour cell first, then set a title and duration below the summary panel, and Download .ics — no need to separately create the event in your own calendar app after agreeing on a time.",
     ],
     faq: [
       {
@@ -2404,6 +2428,10 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "What does clicking an hour column actually show?",
         a: "It highlights that hour in the reference time zone and shows a summary of exactly what local time it corresponds to in every city you've added, including a note when that hour falls on the previous or next day in a given time zone — useful for double-checking before you send a calendar invite.",
+      },
+      {
+        q: "Why is the downloaded .ics file set to a UTC time instead of my local time?",
+        a: "A calendar event saved with an absolute UTC instant displays correctly converted to each recipient's own device time zone automatically — that's the entire point of a cross-timezone meeting invite. A file saved with a 'floating' local time instead is the classic source of calendar-invite bugs, where the event shows the wrong time for anyone not in the organizer's own time zone.",
       },
     ],
   },
@@ -2765,6 +2793,144 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "What key types are NOT supported?",
         a: "Only RSA and EC (P-256/P-384/P-521) keys are supported — these cover the vast majority of JWT and TLS use cases. Ed25519/X25519 keys, and any key type not exposed through the standard Web Crypto API, aren't supported here.",
+      },
+    ],
+  },
+
+  "ts7-migration-checker": {
+    about:
+      "TypeScript 7's Go-based compiler (Project Corsa, the typescript-go/tsgo rewrite) turns a long list of options that were merely deprecated with a warning in TypeScript 6.0 into hard build errors — no output, just a failed build. Paste a tsconfig.json and this tool checks it against the exact known removal list instantly: es3/es5 targets (ES2015 is now the floor), the amd/umd/systemjs/none module formats, and six flag options (keyofStringsOnly, importsNotUsedAsValues, out, prepend, charset, noStrictGenericChecks) that now hard-error instead of warn.\n\nThis is a config-shape check, not a substitute for actually running the compiler — it can't catch the compiler-API breakage that hits tools like ts-morph or older typescript-eslint versions, which isn't a tsconfig.json problem at all. But it catches the specific, common, entirely avoidable failure mode of upgrading a build pipeline and immediately hitting a config error with no idea which line caused it.",
+    useCases: [
+      "Checking an inherited tsconfig.json for TypeScript 7 blockers before attempting an upgrade",
+      "Auditing a monorepo's multiple tsconfig.json files in one pass, tool by tool",
+      "Understanding exactly what changed about a specific compiler option without reading the full TypeScript 7 changelog",
+      "Confirming a config is already clean after doing the recommended TypeScript 6.0 migration step first",
+    ],
+    tips: [
+      "The official migration advice is to upgrade to TypeScript 6.0 first and fix every deprecation warning it shows — that surfaces this exact same list as warnings instead of TypeScript 7's hard errors, with your existing compiler still working the whole time.",
+      "target: \"es5\" is probably the single most common hit — ES2015 is now the floor, so if you need pre-ES2015 output, that step has to move to a separate tool (Babel) after tsc compiles, not inside tsc itself.",
+      "module: \"amd\"/\"umd\" projects usually predate modern bundlers — if you're still on one of these, your bundler (webpack, Rollup, esbuild) needs to take over that responsibility, tsc no longer will.",
+    ],
+    faq: [
+      {
+        q: "Does a clean result from this tool guarantee my project builds on TypeScript 7?",
+        a: "No — it only checks the specific tsconfig.json compiler-option removals. It can't detect the separate, and arguably bigger, migration risk: tools that programmatically use the TypeScript compiler API (ts-morph, some typescript-eslint versions) breaking because tsgo doesn't yet expose a compatible API. Check your dependencies for those separately.",
+      },
+      {
+        q: "Why does TypeScript 7 remove options that used to just warn?",
+        a: "The Go rewrite (Project Corsa) was a natural break point to finish cleanups that had been sitting as deprecation warnings for one or more releases — rather than carry legacy option-handling code into the new compiler indefinitely, the TypeScript team used the major version bump to finally hard-error on things 6.0 had already flagged as going away.",
+      },
+      {
+        q: "Is tsgo a different command I need to learn?",
+        a: "No — as of the TypeScript 7.0 release candidate, the command name reverted to the familiar tsc. tsgo/Project Corsa is the internal codename for the Go rewrite powering it, not a new CLI you need to switch your scripts to.",
+      },
+    ],
+  },
+
+  "node-type-stripping-checker": {
+    about:
+      "Since Node 24 (the 2026 LTS), running node file.ts works out of the box via type stripping — a transform (the amaro module, built on SWC) that erases TypeScript-only syntax and runs the resulting JavaScript directly, with zero type checking performed at runtime.\n\nThe catch: type stripping can only erase syntax, it can't generate runtime code. A handful of TypeScript features compile to real runtime behavior, not just type annotations — enums (a runtime object), parameter properties (a runtime field assignment hidden in a constructor parameter), namespaces containing actual values (a runtime IIFE), and decorators (runtime metadata/wrapping) — and none of those can be handled by erasure alone. This tool scans a TypeScript file for exactly those four patterns using bracket-aware pattern matching (not a full TypeScript parser — it can misread unusual formatting), so you know before you try node file.ts whether it'll actually run.",
+    useCases: [
+      "Checking whether an existing TypeScript file can run directly with node file.ts before trying it",
+      "Understanding why a specific file fails under Node's native TypeScript support with a cryptic runtime error",
+      "Auditing a codebase before switching local dev scripts from ts-node/tsx to Node's built-in support",
+      "Learning which TypeScript features compile to real runtime code vs. which are purely type-level and erasable",
+    ],
+    tips: [
+      "Enums are the most common blocker in real code — switch to a union type plus a plain object (optionally with `as const`) to get similar ergonomics without the runtime enum object.",
+      "Parameter properties (constructor(private x: number) {}) are convenient but not strippable — declare the field explicitly and assign it in the constructor body instead.",
+      "Type stripping performs zero type checking — a file with no findings from this tool can still have real type errors. Keep running tsc --noEmit in CI regardless of whether you use native execution locally.",
+    ],
+    faq: [
+      {
+        q: "Is this the same thing as TypeScript 7's new Go compiler?",
+        a: "No, they're unrelated efforts that both matured in 2026. Node's type stripping is a lightweight syntax-erasure transform with no type checking, built into the Node runtime itself. TypeScript 7's Go-based compiler is a real, full type-checking compiler. Many teams use type stripping for fast local scripts and dev iteration, and still run the real TypeScript compiler in CI for actual type safety.",
+      },
+      {
+        q: "Can I fix a namespace so it works with type stripping?",
+        a: "Yes, if the namespace only declares types and interfaces (no const, function, or class with actual runtime values inside it) — a type-only namespace has nothing to erase incorrectly and works fine. This tool flags any namespace block for manual review since telling the two apart perfectly requires a real parser, not just pattern matching.",
+      },
+      {
+        q: "Why doesn't Node just support decorators too?",
+        a: "Decorators require actual code generation — wrapping a method, attaching metadata — not just removing type syntax, which is a fundamentally different (and more involved) job than what type stripping is designed to do. Node has separate, opt-in experimental decorator support outside of type stripping if you need them.",
+      },
+    ],
+  },
+
+  "scrollbar-generator": {
+    about:
+      "The CSS Scrollbar Generator builds custom scrollbar styling using the modern, standards-based scrollbar-width and scrollbar-color properties — both reached Baseline widely available status in 2025/2026, meaning they're now safe to use in production without a vendor-prefixed workaround being the only option.\n\nSince browser support still varies in exactly how each renders, the tool also generates a ::-webkit-scrollbar fallback (track, thumb, and radius) alongside the standard properties, so the same visual result degrades gracefully rather than depending on one code path alone. Live preview lets you see the actual standard-properties result as you adjust colors, width, and thickness.",
+    useCases: [
+      "Matching a scrollable panel or sidebar's scrollbar to your app's accent color instead of the OS default",
+      "Building a thin, unobtrusive scrollbar for a chat panel or code editor UI",
+      "Hiding a scrollbar entirely (scrollbar-width: none) while keeping the element scrollable",
+      "Getting both the modern standard CSS and a WebKit fallback without hand-writing the vendor-prefixed rules",
+    ],
+    tips: [
+      "scrollbar-width: none hides the scrollbar visually but the element stays scrollable (via wheel, touch, or keyboard) — useful for horizontally-scrolling chip lists or tab bars where a visible scrollbar looks out of place.",
+      "The WebKit thumb radius only affects ::-webkit-scrollbar-thumb — the standard scrollbar-color property has no equivalent radius control, since its rendering is left to the browser/OS.",
+      "Apply scrollbar styles to the specific scrolling container (overflow-y: scroll/auto), not to html or body, unless you actually want to restyle the page's own outer scrollbar.",
+    ],
+    faq: [
+      {
+        q: "Do I still need the ::-webkit-scrollbar fallback in 2026?",
+        a: "scrollbar-width and scrollbar-color are Baseline widely available now, meaning current versions of every major browser support them. The WebKit fallback mainly matters for users on older browser versions still in the support window, or for finer visual control (like a custom thumb border-radius) that the standard properties don't expose.",
+      },
+      {
+        q: "Why doesn't the live preview exactly match what I'll see in every browser?",
+        a: "The preview renders using the standard scrollbar-width/scrollbar-color properties, which Firefox and current Chromium-based browsers both support but may render with slightly different visual details (exact thumb shape, minimum thickness). The generated ::-webkit-scrollbar CSS gives you more precise control specifically for WebKit/Blink rendering if that consistency matters.",
+      },
+    ],
+  },
+
+  "base32": {
+    about:
+      "The Base32 Encoder/Decoder converts text or hex bytes to and from RFC 4648 Base32 — the encoding you'll most often run into as the format behind TOTP/2FA secret keys (the string you type or scan as a QR code into Google Authenticator) and in DNSSEC records, where Base32's case-insensitivity and avoidance of visually similar characters (no 0/1/8/9, unlike Base64) make it a better fit than Base64 for values that sometimes get manually typed or read aloud.\n\nEncoding works in fixed 5-bit groups (32 = 2^5 symbols) padded to a multiple of 8 characters with =, verified here against the official RFC 4648 test vectors.",
+    useCases: [
+      "Decoding a TOTP/2FA secret key to inspect its raw bytes",
+      "Encoding a value that needs to be case-insensitive and safely spoken aloud or hand-typed",
+      "Understanding what a Base32-encoded DNSSEC or NSEC3 record actually contains",
+      "Converting between Base32 and hex when working with low-level cryptographic key material",
+    ],
+    tips: [
+      "Base32 is case-insensitive by convention — this decoder accepts either case, though the canonical RFC 4648 output is uppercase.",
+      "Unlike Base64, Base32's alphabet (A-Z, 2-7) deliberately excludes 0, 1, 8, and 9 to avoid confusion with O, I/L, B, and g — this is exactly why TOTP secrets use it instead of Base64.",
+      "Padding (=) brings the output to a multiple of 8 characters — most TOTP apps strip it, but it's part of the formal RFC 4648 spec and this tool includes it by default.",
+    ],
+    faq: [
+      {
+        q: "Why does my authenticator app's secret key look different from this tool's output?",
+        a: "Most authenticator apps display the secret without its trailing = padding, since padding is optional in practice for TOTP even though it's part of the formal spec. If you remove the padding characters from this tool's output, you should get the same string the app shows.",
+      },
+      {
+        q: "What's the difference between Base32 and Base58?",
+        a: "Base32 (RFC 4648) uses a 32-character alphabet and is the standard for TOTP secrets and DNSSEC — it's case-insensitive and includes padding. Base58 uses a differently-curated 58-character alphabet (no padding, also avoiding ambiguous characters) and is specifically associated with Bitcoin-style addresses and identifiers. They solve a similar problem — safe, unambiguous encoding — for different ecosystems.",
+      },
+    ],
+  },
+
+  "http-header-inspector": {
+    about:
+      "The HTTP Header Inspector takes a block of raw response headers — copy-pasted from curl -v, browser DevTools' Network tab, or a Response object's headers — and explains what each one actually does in plain English, covering caching (Cache-Control, ETag, Vary), CORS (Access-Control-Allow-*), security (CSP, HSTS, X-Frame-Options), and general HTTP mechanics (Content-Type, Transfer-Encoding, Connection).\n\nUnlike the Security Headers Checker, which scores a fixed checklist of security-relevant headers against best practices, this tool explains any header it recognizes — the goal here is understanding what you're looking at, not auditing for a specific set of best practices.",
+    useCases: [
+      "Understanding an unfamiliar header in a curl -v or DevTools output without searching for each one individually",
+      "Debugging a caching issue by understanding exactly what Cache-Control, ETag, and Vary are each doing",
+      "Reviewing a CORS configuration by seeing what each Access-Control-* header actually permits",
+      "Learning what a security header (CSP, HSTS, X-Frame-Options) does before deciding whether to add it",
+    ],
+    tips: [
+      "Paste the full raw header block, including an optional leading HTTP/1.1 200 OK status line — it's automatically skipped, not misread as a header.",
+      "Set-Cookie can legitimately appear multiple times (once per cookie) — paste every occurrence on its own line to see each one explained.",
+      "If a header shows no explanation, it's likely a custom or application-specific header (X-Request-Id, X-Correlation-Id) rather than one defined by an HTTP or web-platform spec.",
+    ],
+    faq: [
+      {
+        q: "How is this different from the Security Headers Checker?",
+        a: "The Security Headers Checker scores a fixed set of ~9 security-relevant headers (HSTS, CSP, X-Frame-Options, etc.) against best-practice recommendations, with a pass/fail-style result. This tool explains any header it recognizes, security-relevant or not — it's for understanding what a header does, not auditing whether your configuration follows best practices.",
+      },
+      {
+        q: "Does this tool distinguish between request and response headers?",
+        a: "No — it explains whatever header name it sees, and a few entries in its reference dictionary (like Authorization and Cookie) are actually request headers, included because raw header dumps from tools like curl -v often mix both directions together in one block.",
       },
     ],
   },

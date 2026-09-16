@@ -144,3 +144,43 @@ export function classifyHour(hour: number): HourKind {
   if ((hour >= 7 && hour < 9) || (hour >= 18 && hour < 22)) return "off";
   return "sleep";
 }
+
+function icsTimestamp(utcMs: number): string {
+  // RFC 5545's UTC form: YYYYMMDDTHHMMSSZ
+  return new Date(utcMs).toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+}
+
+function escapeIcsText(text: string): string {
+  return text.replace(/\\/g, "\\\\").replace(/,/g, "\\,").replace(/;/g, "\\;").replace(/\n/g, "\\n");
+}
+
+/** Builds a minimal, valid RFC 5545 .ics file for a single meeting — all times as an absolute
+ * UTC instant, so it opens correctly in any calendar app regardless of the recipient's own
+ * time zone (unlike specifying a floating local time, which is the usual source of ICS bugs). */
+export function buildIcsFile(opts: {
+  title: string;
+  startUtcMs: number;
+  durationMinutes: number;
+  description?: string;
+}): string {
+  const endUtcMs = opts.startUtcMs + opts.durationMinutes * 60_000;
+  const uid = `${opts.startUtcMs}-${Math.random().toString(36).slice(2)}@toolninja.io`;
+
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//ToolNinja//Meeting Planner//EN",
+    "CALSCALE:GREGORIAN",
+    "BEGIN:VEVENT",
+    `UID:${uid}`,
+    `DTSTAMP:${icsTimestamp(Date.now())}`,
+    `DTSTART:${icsTimestamp(opts.startUtcMs)}`,
+    `DTEND:${icsTimestamp(endUtcMs)}`,
+    `SUMMARY:${escapeIcsText(opts.title)}`,
+    ...(opts.description ? [`DESCRIPTION:${escapeIcsText(opts.description)}`] : []),
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ];
+
+  return lines.join("\r\n");
+}

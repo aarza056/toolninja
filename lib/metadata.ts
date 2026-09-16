@@ -87,6 +87,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online Base58 encoder and decoder. Encode text or hex bytes into Base58 (the Bitcoin-style alphabet that skips 0, O, I and l) or decode Base58 back to text/hex. No login, 100% browser-based.",
   },
+  "base32": {
+    title: "Base32 Encoder & Decoder Online — RFC 4648 Base32 | ToolNinja",
+    description:
+      "Free online Base32 encoder and decoder. Encode text or hex bytes into RFC 4648 Base32 — the format behind TOTP secrets and DNSSEC — or decode Base32 back to text/hex. No login, 100% browser-based.",
+  },
 
   // ── Generate ─────────────────────────────────────────────────────────────
   "lorem-ipsum": {
@@ -100,9 +105,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online strong password generator. Generate secure random passwords with custom length, uppercase, lowercase, numbers and symbols. Password strength indicator included. No login, runs entirely in your browser.",
   },
   "uuid-generator": {
-    title: "UUID Generator Online — Generate UUID v4 & GUID Online | ToolNinja",
+    title: "UUID Generator Online — UUID v4, v5, v7 & NanoID | ToolNinja",
     description:
-      "Free online UUID and GUID generator. Generate random UUID v4 identifiers instantly, in bulk up to 100 at a time. Copy individually or all at once. No login, 100% browser-based.",
+      "Free online UUID and GUID generator. Generate random UUID v4, time-ordered UUID v7, deterministic namespace-based UUID v5, or NanoID identifiers, in bulk up to 100 at a time. No login, 100% browser-based.",
   },
   "json-to-typescript": {
     title: "JSON to TypeScript Converter — Generate TypeScript Interfaces | ToolNinja",
@@ -150,9 +155,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online .gitignore generator. Pick your language, framework, editor and OS and get a combined, ready-to-use .gitignore file instantly. Node, Python, Java, Go, VS Code, JetBrains and more. No login required.",
   },
   "json-schema-generator": {
-    title: "JSON Schema Generator — Infer Schema From JSON Online | ToolNinja",
+    title: "JSON Schema Generator & Validator Online | ToolNinja",
     description:
-      "Free online JSON Schema generator. Paste a sample JSON object and instantly generate a JSON Schema (draft-07) with inferred types and required fields. No login, 100% browser-based.",
+      "Free online JSON Schema generator and validator. Infer a JSON Schema (draft-07) from a sample JSON object, or validate JSON against an existing schema and see exactly which fields fail and why. No login, 100% browser-based.",
   },
   "slug-generator": {
     title: "Slug Generator Online — Convert Titles to URL-Safe Slugs | ToolNinja",
@@ -238,9 +243,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online .htaccess to nginx converter. Convert RewriteRule, RewriteCond, redirects, ErrorDocument, and the standard WordPress rewrite block to nginx server block syntax. No login, 100% browser-based.",
   },
   "meeting-planner": {
-    title: "Meeting Planner Online — Compare Time Zones & Working Hours | ToolNinja",
+    title: "Meeting Planner Online — Compare Time Zones & Export to Calendar | ToolNinja",
     description:
-      "Free online meeting planner and time zone converter. Compare working hours across multiple cities on one grid and find a meeting time that overlaps for everyone, DST-aware. No login, 100% browser-based.",
+      "Free online meeting planner and time zone converter. Compare working hours across multiple cities on one grid, find a meeting time that overlaps for everyone, and download it as a .ics calendar invite. No login, 100% browser-based.",
   },
   "json-to-markdown-table": {
     title: "JSON to Markdown Table Converter Online | ToolNinja",
@@ -309,6 +314,21 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online UUID and ULID parser. Decode any UUID's version, variant, and embedded timestamp (v1, v6, v7), or a ULID's timestamp and randomness. No login, 100% browser-based.",
   },
+  "ts7-migration-checker": {
+    title: "TypeScript 7 Migration Checker — tsconfig.json Breaking Changes | ToolNinja",
+    description:
+      "Free online TypeScript 7 migration checker. Paste a tsconfig.json and instantly see which compiler options the Go-based TypeScript 7 compiler removes — es5/es3 targets, amd/umd/systemjs modules, and more. No login, 100% browser-based.",
+  },
+  "node-type-stripping-checker": {
+    title: "Node.js Type-Stripping Checker — TypeScript Compatibility Scan | ToolNinja",
+    description:
+      "Free online Node.js type-stripping compatibility checker. Scan a TypeScript file for enums, parameter properties, runtime namespaces, and decorators — syntax Node's built-in --experimental-strip-types can't run. No login, 100% browser-based.",
+  },
+  "http-header-inspector": {
+    title: "HTTP Header Inspector Online — Explain Any Response Header | ToolNinja",
+    description:
+      "Free online HTTP header inspector. Paste raw response headers and get a plain-English explanation of every one — Cache-Control, ETag, CSP, CORS headers, and more. No login, 100% browser-based.",
+  },
 
   // ── Design ───────────────────────────────────────────────────────────────
   "css-animations": {
@@ -351,6 +371,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online placeholder image generator. Create placeholder images with a custom width, height, background color, text color, and label, and download as PNG. No login, 100% browser-based.",
   },
+  "scrollbar-generator": {
+    title: "CSS Scrollbar Generator Online — Custom Scrollbar Styling | ToolNinja",
+    description:
+      "Free online CSS scrollbar generator. Style scrollbars visually with the modern scrollbar-color/scrollbar-width properties, plus a ::-webkit-scrollbar fallback for broader browser support. No login, 100% browser-based.",
+  },
 
   // ── Security ─────────────────────────────────────────────────────────────
   "crypto-tools": {
@@ -361,7 +386,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "csp-builder": {
     title: "CSP Header Builder & Analyzer — Content-Security-Policy Tool | ToolNinja",
     description:
-      "Free online Content-Security-Policy builder and analyzer. Build a CSP header visually with per-directive source lists, or paste an existing policy to check for unsafe-inline, unsafe-eval, and other risky directives. No login required.",
+      "Free online Content-Security-Policy builder and analyzer. Build a CSP header visually from a preset or from scratch, toggle Report-Only mode, or paste an existing policy to check for unsafe-inline, unsafe-eval, and other risky directives. No login required.",
   },
   "jwt-keypair-generator": {
     title: "JWT Key Pair Generator — RS256, ES256, PS256 Key Generator | ToolNinja",
@@ -413,9 +438,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Complete HTTP status codes reference. Look up every HTTP response code including 200, 301, 404, 500 and more with descriptions and use cases. Developer-friendly HTTP codes cheat sheet. No login required.",
   },
   "chmod-calculator": {
-    title: "Chmod Calculator — Linux File Permission Calculator | ToolNinja",
+    title: "Chmod Calculator — Linux File Permissions & Special Bits | ToolNinja",
     description:
-      "Free online chmod calculator and Linux file permission calculator. Convert between symbolic (rwxr-xr-x) and octal (755, 644, 777) permissions visually. Calculate chmod values for any Unix/Linux permission. No login, browser-only.",
+      "Free online chmod calculator and Linux file permission calculator. Convert between symbolic (rwxr-xr-x) and octal (755, 644, 4755) permissions visually, including setuid, setgid, and the sticky bit. No login, browser-only.",
   },
   "unicode-explorer": {
     title: "Unicode Explorer — Search Unicode Characters & Code Points | ToolNinja",
