@@ -6,7 +6,7 @@ const websiteJsonLd = {
   name: "ToolNinja",
   url: "https://toolninja.io",
   description:
-    "Free online developer tools that run 100% in your browser. No login, no tracking.",
+    "Free online developer tools that run 100% in your browser. No login. Your data stays in your browser.",
   potentialAction: {
     "@type": "SearchAction",
     target: {

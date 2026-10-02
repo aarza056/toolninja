@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   const title = searchParams.get("title") ?? "ToolNinja";
   const desc =
     searchParams.get("desc") ??
-    "Fast, free developer tools. No login, no tracking.";
+    "Fast, free developer tools. No login. Your data stays in your browser.";
 
   const shortDesc = desc.length > 90 ? desc.slice(0, 90) + "…" : desc;
 
@@ -130,7 +130,7 @@ export async function GET(req: NextRequest) {
 
           {/* Pills */}
           <div style={{ display: "flex", gap: "12px" }}>
-            {["Free", "No Login", "No Tracking", "Browser-First"].map(
+            {["Free", "No Login", "Private by Design", "Browser-First"].map(
               (tag) => (
                 <div
                   key={tag}

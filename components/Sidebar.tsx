@@ -150,17 +150,14 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Mobile sidebar */}
+      {/* Single sidebar, shared between mobile drawer and desktop rail — rendered once so the
+          full tool nav doesn't appear twice in the DOM. On mobile it slides on/off screen with
+          mobileOpen; md:translate-x-0 pins it on-screen unconditionally at the desktop breakpoint. */}
       <aside
-        className={`md:hidden fixed top-0 left-0 z-50 h-full w-[240px] bg-[#111111] border-r border-[#222222] transform transition-transform duration-200 ${
+        className={`flex flex-col fixed top-0 left-0 z-50 md:z-30 w-[240px] h-screen bg-[#111111] border-r border-[#222222] transform transition-transform duration-200 md:translate-x-0 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {sidebarContent}
-      </aside>
-
-      {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-[240px] h-screen bg-[#111111] border-r border-[#222222] fixed top-0 left-0 z-30">
         {sidebarContent}
       </aside>
     </>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { tools } from "@/lib/tools";
 import Sidebar from "@/components/Sidebar";
 import ParticleBackground from "@/components/ParticleBackground";
 import CommandPalette from "@/components/CommandPalette";
@@ -20,6 +21,10 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+// Rounded down to the nearest 10 so the displayed count doesn't need updating every time a
+// single tool is added — matches the "NN+" convention already used in TrustBar.
+const TOOL_COUNT_LABEL = `${Math.floor(tools.length / 10) * 10}+`;
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://toolninja.io"),
   title: {
@@ -27,7 +32,7 @@ export const metadata: Metadata = {
     template: "%s | ToolNinja",
   },
   description:
-    "Free online developer tools that run 100% in your browser. JSON formatter, Base64 encoder, JWT decoder, Regex tester, UUID generator, password generator, QR code generator, and 20+ more. No login, no tracking.",
+    `Free online developer tools that run 100% in your browser. JSON formatter, Base64 encoder, JWT decoder, Regex tester, UUID generator, password generator, QR code generator, and ${TOOL_COUNT_LABEL} more. No login. Your data stays in your browser.`,
   keywords: [
     "developer tools", "json formatter", "base64 encoder", "jwt decoder",
     "regex tester", "url encoder", "uuid generator", "password generator",
@@ -42,7 +47,7 @@ export const metadata: Metadata = {
     siteName: "ToolNinja",
     title: "ToolNinja — Fast, Free Developer Tools",
     description:
-      "Free online developer tools that run 100% in your browser. No login, no tracking, no nonsense.",
+      "Free online developer tools that run 100% in your browser. No login. Your data stays in your browser.",
     url: "https://toolninja.io",
     images: [
       {
@@ -57,7 +62,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ToolNinja — Fast, Free Developer Tools",
     description:
-      "Free online developer tools that run 100% in your browser. No login, no tracking.",
+      "Free online developer tools that run 100% in your browser. No login. Your data stays in your browser.",
     images: ["/api/og"],
   },
   robots: {
@@ -95,7 +100,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <head>
         <meta name="keywords" content="developer tools, json formatter, base64 decoder, jwt decoder, regex tester, uuid generator, hash generator, chmod calculator, cidr calculator, css gradient generator, online developer tools, free developer tools, browser tools no login" />
-        <meta name="description" content="40 free browser-only developer tools. JSON formatter, Base64 encoder, JWT decoder, Regex tester, UUID generator, Chmod calculator, CIDR calculator, CSS animations and more. No login, no tracking, 100% private." />
+        <meta name="description" content={`${TOOL_COUNT_LABEL} free browser-only developer tools. JSON formatter, Base64 encoder, JWT decoder, Regex tester, UUID generator, Chmod calculator, CIDR calculator, CSS animations and more. No login. Your data stays in your browser.`} />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png" />
         <link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png" />

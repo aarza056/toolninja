@@ -81,7 +81,7 @@ const WHY_ITEMS = [
   {
     icon: "Lock",
     title: "Private by default",
-    desc: "Your code and data never leave the browser. No server calls, no logs, no telemetry of any kind.",
+    desc: "Your code and data are processed locally and never sent to our servers — no matter what tool you're using.",
   },
   {
     icon: "Zap",
@@ -183,7 +183,7 @@ export default function HomeClient() {
 
         <p className="text-[#666666] text-base max-w-md mx-auto mb-8 leading-relaxed">
           Fast, free, private. Every tool runs entirely in your browser —
-          no login, no tracking, no server calls.
+          no login, and your data stays there.
         </p>
 
         {/* Search */}

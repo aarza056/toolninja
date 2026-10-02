@@ -1,6 +1,6 @@
 # 🥷 ToolNinja — Fast, Free Developer Tools
 
-> 40 free browser-only developer tools. No login. No tracking. No nonsense.
+> 90+ free browser-only developer tools. No login. Your data stays in your browser.
 
 **Live at: [toolninja.io](https://toolninja.io)**
 
@@ -8,9 +8,11 @@
 
 ## What is ToolNinja?
 
-ToolNinja is a free, browser-based developer toolbox. Every tool runs 100%
-client-side — your data never leaves your machine. No accounts, no server
-calls, no telemetry.
+ToolNinja is a free, browser-based developer toolbox. Every tool processes
+your input locally — your data is never sent to our servers. No accounts
+required. (A couple of tools, like the HTTP Request Builder and the README
+Badge Generator's live stats, make requests to the APIs you point them at —
+that's inherent to what those tools do, not data leaving to us.)
 
 ---
 

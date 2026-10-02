@@ -12,7 +12,7 @@ export async function GET() {
   const content = `# ToolNinja
 
 > ToolNinja is a free, browser-only developer toolbox at toolninja.io.
-> ${tools.length} tools that run 100% client-side — no login, no server calls, no tracking.
+> ${tools.length} tools that run 100% client-side — no login, your data stays in your browser.
 
 ## Tools
 

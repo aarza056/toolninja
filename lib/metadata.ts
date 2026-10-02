@@ -177,7 +177,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "readme-badge-generator": {
     title: "README Badge Generator — Free shields.io Badge Maker | ToolNinja",
     description:
-      "Free online README badge generator. Build custom shields.io badges with any label, message, color and style, or generate live npm/GitHub/PyPI stat badges instantly. No login, 100% browser-based.",
+      "Free online README badge generator. Build custom shields.io badges with any label, message, color and style, or generate live npm/GitHub/PyPI stat badges instantly. No login required — custom badges are built entirely client-side; live badges fetch current data from npm, GitHub, or PyPI.",
   },
 
   // ── Convert ──────────────────────────────────────────────────────────────
