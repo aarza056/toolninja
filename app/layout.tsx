@@ -107,6 +107,7 @@ export default function RootLayout({
         <link rel="search" type="application/opensearchdescription+xml" title="ToolNinja" href="/opensearch.xml" />
         <link rel="alternate" hrefLang="en" href="https://toolninja.io" />
         <link rel="alternate" hrefLang="x-default" href="https://toolninja.io" />
+        <meta name="google-adsense-account" content="ca-pub-3459524040712269" />
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3459524040712269"
