@@ -3,7 +3,48 @@
 import { useState, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Search } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Scale } from "lucide-react";
+
+interface ConfusedGroup {
+  title: string;
+  codes: { code: number; name: string; whenToUse: string }[];
+}
+
+const CONFUSED_GROUPS: ConfusedGroup[] = [
+  {
+    title: "401 vs 403 — who failed, authentication or authorization?",
+    codes: [
+      { code: 401, name: "Unauthorized", whenToUse: "The request has no valid credentials at all (missing or invalid Authorization header) — the server doesn't know who you are yet. Should come with a WWW-Authenticate header." },
+      { code: 403, name: "Forbidden", whenToUse: "The server knows exactly who you are, and you're not allowed to do this. Re-authenticating won't help — it's a permissions problem, not an identity problem." },
+    ],
+  },
+  {
+    title: "409 vs 412 vs 423 — three different kinds of conflict",
+    codes: [
+      { code: 409, name: "Conflict", whenToUse: "The server detected a conflict on its own — no precondition header was involved. Classic case: creating a resource that already exists, or a concurrent update colliding." },
+      { code: 412, name: "Precondition Failed", whenToUse: "You attached a conditional header yourself (If-Match, If-Unmodified-Since) and the server checked it against the current resource state — it no longer holds. You asked \"only proceed if X\"; X was false." },
+      { code: 423, name: "Locked", whenToUse: "The resource is explicitly locked (WebDAV-style) and can't be modified until the lock is released — unrelated to versioning or concurrent edits." },
+    ],
+  },
+  {
+    title: "301 vs 302 vs 307 vs 308 — permanence and method preservation",
+    codes: [
+      { code: 301, name: "Moved Permanently", whenToUse: "Permanent redirect. Historically allowed clients to change POST to GET on redirect — avoid relying on that for anything but GET requests." },
+      { code: 302, name: "Found", whenToUse: "Temporary redirect, same long-standing method-change ambiguity as 301 — use 307 instead when you need the method guaranteed to stay the same." },
+      { code: 307, name: "Temporary Redirect", whenToUse: "Temporary, and guarantees the method and body are preserved exactly — the fix for 302's ambiguity." },
+      { code: 308, name: "Permanent Redirect", whenToUse: "Permanent, and guarantees the method and body are preserved exactly — the fix for 301's ambiguity." },
+    ],
+  },
+  {
+    title: "500 vs 502 vs 503 vs 504 — whose fault, and is it temporary?",
+    codes: [
+      { code: 500, name: "Internal Server Error", whenToUse: "A generic catch-all — something broke inside the server itself while handling the request, with no more specific code fitting." },
+      { code: 502, name: "Bad Gateway", whenToUse: "This server is a proxy/gateway, and the upstream server it forwarded the request to sent back an invalid response." },
+      { code: 503, name: "Service Unavailable", whenToUse: "The server is temporarily unable to handle the request — overloaded or down for maintenance. Should include a Retry-After header when possible." },
+      { code: 504, name: "Gateway Timeout", whenToUse: "This server is a proxy/gateway, and the upstream server it forwarded the request to didn't respond in time at all." },
+    ],
+  },
+];
 
 interface StatusCode {
   code: number;
@@ -131,6 +172,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 export default function HttpStatusCodesClient() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<Category>("all");
+  const [showConfused, setShowConfused] = useState(false);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -162,6 +204,36 @@ export default function HttpStatusCodesClient() {
       title="HTTP Status Codes"
       description="Complete reference for all standard HTTP status codes with descriptions."
     >
+      {/* Commonly confused codes */}
+      <button
+        onClick={() => setShowConfused((v) => !v)}
+        className="flex items-center gap-1.5 text-xs text-[#a855f7] hover:text-[#c084fc] transition-colors mb-4"
+      >
+        <Scale size={12} />
+        Commonly confused codes
+        {showConfused ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+      </button>
+
+      {showConfused && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-6">
+          {CONFUSED_GROUPS.map((group) => (
+            <div key={group.title} className="p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
+              <p className="text-xs font-medium text-[#f5f5f5] mb-2">{group.title}</p>
+              <div className="space-y-2">
+                {group.codes.map((c) => (
+                  <div key={c.code} className="flex gap-2">
+                    <span className={`font-mono text-xs font-bold shrink-0 ${getCategoryClass(c.code)}`}>{c.code}</span>
+                    <p className="text-xs text-[#888888] leading-relaxed">
+                      <span className="text-[#f5f5f5] font-medium">{c.name}</span> — {c.whenToUse}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Search + Filter bar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">

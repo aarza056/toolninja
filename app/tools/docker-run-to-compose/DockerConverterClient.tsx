@@ -124,6 +124,7 @@ export default function DockerConverterClient() {
       setMultiCommands(result.commands);
       setOutput(result.commands.map((c) => `# ${c.name}\n${c.command}`).join("\n\n"));
       setServiceCount(result.commands.length);
+      setWarnings(result.warnings);
     }
   }, [input, mode]);
 

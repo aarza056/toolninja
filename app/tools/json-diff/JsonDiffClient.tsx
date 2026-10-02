@@ -7,6 +7,7 @@ import { diffJson, formatValue, type DiffEntry } from "@/lib/json-diff";
 
 const STORAGE_KEY_A = "toolninja:json-diff:a";
 const STORAGE_KEY_B = "toolninja:json-diff:b";
+const STORAGE_KEY_IGNORE_ORDER = "toolninja:json-diff:ignore-order";
 
 const TYPE_META: Record<DiffEntry["type"], { label: string; color: string; bg: string; icon: typeof PlusCircle }> = {
   added: { label: "Added", color: "#22c55e", bg: "rgba(34,197,94,0.1)", icon: PlusCircle },
@@ -17,15 +18,22 @@ const TYPE_META: Record<DiffEntry["type"], { label: string; color: string; bg: s
 export default function JsonDiffClient() {
   const [a, setA] = useState("");
   const [b, setB] = useState("");
+  const [ignoreArrayOrder, setIgnoreArrayOrder] = useState(false);
 
   useEffect(() => {
     try {
       const savedA = localStorage.getItem(STORAGE_KEY_A);
       const savedB = localStorage.getItem(STORAGE_KEY_B);
+      const savedIgnore = localStorage.getItem(STORAGE_KEY_IGNORE_ORDER);
       if (savedA) setA(savedA);
       if (savedB) setB(savedB);
+      if (savedIgnore) setIgnoreArrayOrder(savedIgnore === "1");
     } catch {}
   }, []);
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY_IGNORE_ORDER, ignoreArrayOrder ? "1" : "0"); } catch {}
+  }, [ignoreArrayOrder]);
 
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY_A, a); } catch {}
@@ -50,8 +58,8 @@ export default function JsonDiffClient() {
     if (errorA || errorB || !a.trim() || !b.trim()) {
       return { entries: [] as DiffEntry[], errorA, errorB, parsedA, parsedB };
     }
-    return { entries: diffJson(parsedA, parsedB), errorA, errorB, parsedA, parsedB };
-  }, [a, b]);
+    return { entries: diffJson(parsedA, parsedB, "$", { ignoreArrayOrder }), errorA, errorB, parsedA, parsedB };
+  }, [a, b, ignoreArrayOrder]);
 
   const counts = useMemo(() => {
     const c = { added: 0, removed: 0, changed: 0 };
@@ -102,6 +110,16 @@ export default function JsonDiffClient() {
           )}
         </div>
       </div>
+
+      <label className="flex items-center gap-2 text-sm text-[#888888] cursor-pointer select-none mb-4">
+        <input
+          type="checkbox"
+          checked={ignoreArrayOrder}
+          onChange={(e) => setIgnoreArrayOrder(e.target.checked)}
+          className="accent-[#a855f7]"
+        />
+        Ignore array order (treat a re-sorted array as unchanged)
+      </label>
 
       {bothValid && (
         <>

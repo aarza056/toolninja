@@ -677,6 +677,18 @@ export const tools: Tool[] = [
       "api response to markdown table", "json to github table",
     ],
   },
+  {
+    slug: "svg-to-jsx",
+    name: "SVG to JSX / React Component",
+    description: "Paste raw SVG markup and get a ready-to-use React component",
+    icon: "Component",
+    category: "Convert",
+    keywords: [
+      "svg to jsx", "svg to jsx converter", "svg to react component",
+      "convert svg to react", "svg react component generator", "svg to tsx",
+      "svgr alternative online", "svg jsx attributes converter",
+    ],
+  },
 
   // ─── Test ─────────────────────────────────────────────────────────────────
   {
@@ -861,6 +873,18 @@ export const tools: Tool[] = [
       "content-security-policy header explained", "http header reference online",
     ],
   },
+  {
+    slug: "cors-debugger",
+    name: "CORS Error Debugger",
+    description: "Walk through exactly why a cross-origin request would be blocked — or confirm it wouldn't be",
+    icon: "Unplug",
+    category: "Test",
+    keywords: [
+      "cors error debugger", "cors error explained", "why is my cors request blocked",
+      "access-control-allow-origin checker", "cors preflight explained", "fix cors error",
+      "cors debugger online", "cors credentials wildcard error",
+    ],
+  },
 
   // ─── Design ───────────────────────────────────────────────────────────────
   {
@@ -982,6 +1006,18 @@ export const tools: Tool[] = [
       "custom scrollbar css generator", "css scrollbar styling tool",
     ],
   },
+  {
+    slug: "css-carousel-generator",
+    name: "CSS Scroll Carousel Generator",
+    description: "Build a zero-JavaScript carousel with dot navigation using ::scroll-marker and scroll-snap",
+    icon: "GalleryHorizontal",
+    category: "Design",
+    keywords: [
+      "css carousel generator", "css only carousel", "scroll-marker carousel",
+      "no javascript carousel css", "css scroll snap carousel", "scroll-marker-group example",
+      "css carousel dots generator", "pure css carousel 2026",
+    ],
+  },
 
   // ─── Security ─────────────────────────────────────────────────────────────
   {
@@ -1090,6 +1126,30 @@ export const tools: Tool[] = [
       "ec jwk to pem", "jwk converter free", "public key jwk pem converter",
     ],
   },
+  {
+    slug: "secret-scanner",
+    name: "Secret / API Key Scanner",
+    description: "Paste code or a config file and find hardcoded API keys, tokens, and credentials before they reach git",
+    icon: "Radar",
+    category: "Security",
+    keywords: [
+      "secret scanner online", "hardcoded secret detector", "api key leak scanner",
+      "find hardcoded secrets in code", "aws key scanner", "github token scanner",
+      "stripe key leak detector", "credential scanner online", "gitleaks alternative online",
+    ],
+  },
+  {
+    slug: "password-strength-checker",
+    name: "Password Strength Checker",
+    description: "Check how strong a password actually is — entropy, common-password matches, and predictable patterns",
+    icon: "LockKeyhole",
+    category: "Security",
+    keywords: [
+      "password strength checker", "how strong is my password", "check password strength online",
+      "password entropy calculator", "is my password secure", "common password checker",
+      "password strength test free", "password security checker online",
+    ],
+  },
 
   // ─── Accessibility ────────────────────────────────────────────────────────
   {
@@ -1176,9 +1236,9 @@ export type Category = (typeof categories)[number];
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 export const LATEST_TOOL_SLUGS = [
-  "ts7-migration-checker",
-  "node-type-stripping-checker",
-  "scrollbar-generator",
-  "base32",
-  "http-header-inspector",
+  "secret-scanner",
+  "css-carousel-generator",
+  "cors-debugger",
+  "password-strength-checker",
+  "svg-to-jsx",
 ];

@@ -469,22 +469,28 @@ export const toolContent: Record<string, ToolContent> = {
 
   "css-animations": {
     about:
-      "The CSS Animations library provides copy-paste ready HTML and CSS animation combinations with live previews. All animations use pure @keyframes with no JavaScript dependencies, no build tools, and no external libraries — paste the code and it works. Categories include buttons, loaders, text effects, cards, backgrounds, and micro-interactions.",
+      "The CSS Animations library provides copy-paste ready HTML and CSS animation combinations with live previews. All animations use pure @keyframes with no JavaScript dependencies, no build tools, and no external libraries — paste the code and it works. Categories include buttons, loaders, text effects, cards, backgrounds, micro-interactions, and scroll-driven animations.\n\nThe Scroll category uses animation-timeline: scroll() and animation-timeline: view() — a 2026-relevant addition that drives an animation purely from scroll position (a progress bar, a reveal-on-scroll card) with zero JavaScript and no scroll event listener at all.",
     useCases: [
       "Adding polished hover and loading animations without importing a library",
       "Building animated UI components for prototypes and demos quickly",
       "Learning CSS animation techniques by reading and modifying working examples",
       "Finding inspiration for motion design in web interfaces",
+      "Adding a scroll-progress indicator or a scroll-triggered reveal without a scroll event listener",
     ],
     tips: [
       "Add animation-play-state: paused with a :hover selector to pause animations on hover.",
       "Use @media (prefers-reduced-motion: reduce) to disable animations for users who have requested reduced motion in their OS settings.",
       "CSS animations are GPU-accelerated when using transform and opacity — avoid animating layout properties like width, height, or top.",
+      "animation-timeline: scroll() ties progress to the nearest scrollable ancestor; animation-timeline: view() ties it to the animated element's own position as it crosses the viewport — pick scroll() for a progress bar, view() for a reveal-on-scroll effect.",
     ],
     faq: [
       {
         q: "What is the difference between CSS transitions and CSS animations?",
         a: "CSS transitions animate a property from one state to another when a trigger occurs (like :hover). They go in one direction with a start and end state. CSS animations use @keyframes to define multiple intermediate steps, can loop, can play automatically without a trigger, and offer full control over timing and direction.",
+      },
+      {
+        q: "What's the difference between animation-timeline: scroll() and view()?",
+        a: "scroll() ties the animation's progress to how far its nearest scrollable ancestor has been scrolled — 0% at the top, 100% at the bottom — regardless of where the animated element itself sits. view() instead ties progress to the animated element's own position as it travels through the viewport, which is what you want for a 'fade in as this specific card enters view' effect rather than a page-wide progress bar.",
       },
       {
         q: "Why should I prefer animating transform and opacity instead of layout properties?",
@@ -799,17 +805,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "http-status-codes": {
     about:
-      "The HTTP Status Codes reference lists all standard HTTP response status codes with their official IANA-registered meanings. Status codes are grouped into five classes: 1xx informational, 2xx success, 3xx redirection, 4xx client error, and 5xx server error. Use the search to find any code instantly.",
+      "The HTTP Status Codes reference lists all standard HTTP response status codes with their official IANA-registered meanings. Status codes are grouped into five classes: 1xx informational, 2xx success, 3xx redirection, 4xx client error, and 5xx server error. Use the search to find any code instantly.\n\nA Commonly confused codes panel puts the pairs and trios developers mix up most often side by side — 401 vs 403, 409 vs 412 vs 423, 301/302 vs 307/308, and 500/502/503/504 — with a one-line rule for when each one actually applies, instead of just a definition in isolation.",
     useCases: [
       "Looking up what a specific error code means during API debugging",
       "Choosing the correct status code when designing an API endpoint",
       "Understanding redirect behavior differences (301 vs 302 vs 307 vs 308)",
       "Distinguishing client errors (4xx, the caller's fault) from server errors (5xx, your fault)",
+      "Deciding between 409, 412, and 423 when an API write conflicts with the current resource state",
     ],
     tips: [
       "301 is a permanent redirect (browsers and search engines cache it). 302 is temporary. Use 308 for permanent redirects where the method must be preserved.",
       "404 means the resource doesn't exist. 403 means it exists but you're not allowed. 401 means you need to authenticate first.",
       "429 Too Many Requests is the correct code for rate limiting — pair it with a Retry-After header.",
+      "409 is for a conflict the server detected on its own; 412 is specifically for when a conditional header you sent (If-Match, If-Unmodified-Since) no longer holds — check the Commonly confused codes panel if you're not sure which applies.",
     ],
     faq: [
       {
@@ -827,6 +835,14 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "What HTTP status code should I use for a rate limit response?",
         a: "429 Too Many Requests is the correct code for rate limiting per RFC 6585. Always include a Retry-After header indicating when the client can retry (either a number of seconds or an HTTP date). Some APIs historically used 503 Service Unavailable for rate limiting, but 429 is the standard.",
+      },
+      {
+        q: "What's the real difference between 409 Conflict and 412 Precondition Failed?",
+        a: "The difference is who checked. 412 fires when the client itself attached a conditional header (If-Match, If-Unmodified-Since) and the server verified it against the current resource — the client explicitly said 'only proceed if X holds' and X didn't. 409 fires when the server detects a conflict on its own, with no conditional header involved at all — a classic case is trying to create a resource that already exists, or two concurrent writes colliding.",
+      },
+      {
+        q: "When should an API return 502 vs 504?",
+        a: "Both only make sense when the responding server is itself a proxy or gateway forwarding to an upstream server. 502 Bad Gateway means the upstream responded, but with something invalid or malformed. 504 Gateway Timeout means the upstream never responded in time at all. Neither code is appropriate if there's no upstream server in the picture — that's just a 500.",
       },
     ],
   },
@@ -977,19 +993,21 @@ export const toolContent: Record<string, ToolContent> = {
 
   "color-palette": {
     about:
-      "The Color Palette Generator creates harmonious color schemes from any base color using color theory relationships. Choose from complementary, analogous, triadic, split-complementary, tetradic, and monochromatic harmonies. Each palette shows HEX, RGB, and HSL values ready to copy.\n\nEvery swatch also shows a WCAG AA contrast badge, comparing the color against both white and black text and picking whichever passes — so you can see at a glance which palette colors are safe to use as a background behind body text and which need to stay decorative-only.",
+      "The Color Palette Generator creates harmonious color schemes from any base color using color theory relationships. Choose from complementary, analogous, triadic, split-complementary, tetradic, and monochromatic harmonies. Each palette shows HEX, RGB, and HSL values ready to copy.\n\nEvery swatch also shows a WCAG AA contrast badge, comparing the color against both white and black text and picking whichever passes — so you can see at a glance which palette colors are safe to use as a background behind body text and which need to stay decorative-only.\n\nAn Export section turns the whole palette into CSS custom properties, a Tailwind config theme.extend.colors snippet, or SCSS variables — ready to paste directly into a project instead of copying each swatch's hex value by hand.",
     useCases: [
       "Picking a cohesive UI color scheme from a brand's primary color",
       "Generating accessible foreground/background color pairs",
       "Creating theme variables for design systems and CSS custom properties",
       "Exploring complementary accent colors for data visualizations",
       "Checking which palette colors pass WCAG AA before using them behind text",
+      "Exporting a generated palette straight into a Tailwind config or a CSS variables file",
     ],
     tips: [
       "Start with a mid-range saturation (40-60%) for the base — extreme saturation makes harmonics look garish.",
       "Monochromatic palettes (same hue, varied lightness) are the safest for UI backgrounds and text.",
       "Triadic palettes (3 colors 120 degrees apart) create vibrant contrast — use one as dominant, one as accent, one as neutral.",
       "The WCAG AA badge on each swatch shows the best of white-text or black-text contrast — a failing badge means avoid that color as a text background.",
+      "Export variable names are derived from each swatch's harmony label (e.g. --complement, --60deg) — rename them in your own codebase if you want more descriptive tokens like --brand-accent.",
     ],
     faq: [
       {
@@ -1007,6 +1025,10 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "What is the 60-30-10 rule for color usage?",
         a: "The 60-30-10 rule is a design guideline for distributing colors in a composition. 60% is the dominant color (usually neutral: white, gray, dark background). 30% is the secondary color (brand or complementary). 10% is the accent color (draws attention to CTAs and key UI elements). This ratio creates visual balance while giving highlights enough contrast to stand out.",
+      },
+      {
+        q: "Which export format should I use — CSS variables, Tailwind, or SCSS?",
+        a: "CSS variables (:root { --name: #hex; }) work in any project regardless of framework and support runtime theme switching. The Tailwind snippet is a ready-to-paste theme.extend.colors block for projects already using Tailwind's utility classes. SCSS variables ($name: #hex;) fit a Sass-based build but compile to a fixed value, with no runtime theme switching unless paired with CSS custom properties anyway.",
       },
     ],
   },
@@ -1306,7 +1328,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "docker-run-to-compose": {
     about:
-      "The Docker Run to Compose Converter is a free online tool that instantly converts docker run commands into production-ready docker-compose.yml files. Paste any docker run command — including complex ones with multiple flags — and get a complete Compose service definition with correct YAML structure, named volumes, networks, environment variables, healthchecks, resource limits, and all standard Docker options.\n\nIt also works in reverse: paste a docker-compose.yml and get the equivalent docker run commands for every service, useful for quick debugging or running individual services outside of Compose.\n\nThe built-in Best Practices Scorer analyzes your service configuration and scores it out of 100 across four categories: security (privileged mode, root user, hardcoded secrets), reliability (restart policy, healthchecks, pinned image tags), performance (memory limits), and maintainability (named volumes, custom networks). Each failed check explains the issue and the recommended fix.\n\nSupports multi-service input: paste multiple docker run commands separated by blank lines and the tool generates a complete multi-service docker-compose.yml with shared volumes and network declarations.\n\nWhen converting a single-service docker run command, you can also switch the output to Kubernetes mode to get an equivalent Deployment + Service YAML manifest — image, ports, environment variables, and resource limits map directly, with bind-mount volumes and restart policies called out as comments since they have no direct Kubernetes equivalent.\n\nEverything runs 100% in your browser. No login, no server, no data ever leaves your machine.",
+      "The Docker Run to Compose Converter is a free online tool that instantly converts docker run commands into production-ready docker-compose.yml files. Paste any docker run command — including complex ones with multiple flags — and get a complete Compose service definition with correct YAML structure, named volumes, networks, environment variables, healthchecks, resource limits, and all standard Docker options.\n\nIt also works in reverse: paste a docker-compose.yml and get the equivalent docker run commands for every service, useful for quick debugging or running individual services outside of Compose. Anything that doesn't have a docker run equivalent — depends_on ordering, or a service defined with build instead of image — is called out as an explicit warning rather than silently dropped.\n\nThe built-in Best Practices Scorer analyzes your service configuration and scores it out of 100 across four categories: security (privileged mode, root user, hardcoded secrets), reliability (restart policy, healthchecks, pinned image tags), performance (memory limits), and maintainability (named volumes, custom networks). Each failed check explains the issue and the recommended fix.\n\nSupports multi-service input: paste multiple docker run commands separated by blank lines and the tool generates a complete multi-service docker-compose.yml with shared volumes and network declarations.\n\nWhen converting a single-service docker run command, you can also switch the output to Kubernetes mode to get an equivalent Deployment + Service YAML manifest — image, ports, environment variables, and resource limits map directly, with bind-mount volumes and restart policies called out as comments since they have no direct Kubernetes equivalent.\n\nEverything runs 100% in your browser. No login, no server, no data ever leaves your machine.",
     useCases: [
       "Converting a working docker run command to a Compose file to commit to source control",
       "Generating docker-compose.yml for an existing containerized app from its run script",
@@ -1339,6 +1361,10 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Does the Compose file generated work with Docker Compose v1 (docker-compose) and v2 (docker compose)?",
         a: "Yes. The generated YAML does not include a version: field, which is the recommended practice as of Docker Compose v2. The spec-compliant format works with both docker compose (Compose v2, plugin) and docker-compose (Compose v1, standalone), though Compose v1 is deprecated.",
+      },
+      {
+        q: "What happens when I convert a service that uses depends_on or build back to docker run?",
+        a: "Both get flagged with an explicit warning rather than silently ignored. depends_on controls startup order in Compose, which has no docker run equivalent — you'd need to start the listed services manually, in order, yourself. A service defined with build instead of image has no runnable image tag to put in the command at all — the tool inserts a <image-from-build> placeholder and warns you to run docker build first and substitute the real tag.",
       },
     ],
   },
@@ -1491,17 +1517,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "json-diff": {
     about:
-      "The JSON Diff Checker compares two JSON objects structurally and shows exactly what was added, removed, or changed — path by path, using JSONPath-style notation like $.user.email or $.items[2].price. Unlike a line-by-line text diff, it understands JSON structure: keys in a different order are treated as identical, and only real content differences are reported.\n\nUse it to compare API responses before and after a change, verify a config file migration didn't silently alter values, or review what a deploy actually changed in a serialized data blob. Each difference is color-coded — green for additions, red for removals, yellow for changes — with the exact old and new values shown inline.\n\nEverything runs 100% in your browser. Your JSON never leaves your machine — no server calls, no logging.",
+      "The JSON Diff Checker compares two JSON objects structurally and shows exactly what was added, removed, or changed — path by path, using JSONPath-style notation like $.user.email or $.items[2].price. Unlike a line-by-line text diff, it understands JSON structure: keys in a different order are treated as identical, and only real content differences are reported.\n\nUse it to compare API responses before and after a change, verify a config file migration didn't silently alter values, or review what a deploy actually changed in a serialized data blob. Each difference is color-coded — green for additions, red for removals, yellow for changes — with the exact old and new values shown inline.\n\nAn Ignore array order option switches arrays from strict index-by-index comparison to an unordered multiset match — so re-sorting an array, or inserting an item in the middle, reports only the items that actually changed instead of cascading into every later index looking different.\n\nEverything runs 100% in your browser. Your JSON never leaves your machine — no server calls, no logging.",
     useCases: [
       "Comparing an API response before and after a backend change to catch unintended field changes",
       "Verifying a config file or feature flag migration didn't alter values it shouldn't have",
       "Reviewing what changed between two versions of a serialized state object during debugging",
       "Checking that a refactor produces byte-for-byte equivalent JSON output regardless of key order",
+      "Comparing a list-type field that got re-sorted without actually changing content, using Ignore array order",
     ],
     tips: [
       "Key order never affects the result — only real value differences are reported, unlike a plain text diff.",
-      "Arrays are compared index by index, so inserting an item in the middle of an array will show every later item as 'changed' — this is a known limitation of positional array diffing.",
+      "By default, arrays are compared index by index, so inserting an item in the middle of an array shows every later item as 'changed' — turn on Ignore array order to compare by content instead of position when that's not what you want.",
       "The path shown for each difference (e.g. $.user.roles[1]) can be pasted directly into a JSONPath-aware tool to locate the value.",
+      "Ignore array order treats duplicate values correctly as a multiset — [1,1,2] vs [1,2,2] reports one 1 removed and one 2 added, not a confusing full rewrite.",
     ],
     faq: [
       {
@@ -1510,7 +1538,11 @@ export const toolContent: Record<string, ToolContent> = {
       },
       {
         q: "Why does reordering array items show as many changes instead of one?",
-        a: "Arrays are compared by position (index 0 vs index 0, index 1 vs index 1, and so on), not by content matching. If you insert or remove an item in the middle of an array, every item after that position will appear as 'changed' even though most of them didn't really change — they just shifted position. This is standard behavior for positional diffing; a content-aware array diff would need to identify moved items, which this tool doesn't attempt.",
+        a: "By default, arrays are compared by position (index 0 vs index 0, index 1 vs index 1, and so on), not by content matching. If you insert or remove an item in the middle of an array, every item after that position appears as 'changed' even though most of them didn't really change — they just shifted position. Turn on Ignore array order to compare arrays as an unordered set of values instead, which reports only genuinely added or removed items regardless of position.",
+      },
+      {
+        q: "When should I use Ignore array order versus leaving it off?",
+        a: "Leave it off when array position is meaningful (an ordered list, a sequence of steps, a sorted result you want to confirm stayed sorted). Turn it on when an array represents an unordered collection (a set of tags, a list of IDs) where re-sorting or re-fetching in a different order shouldn't count as a real change.",
       },
       {
         q: "What does the path notation like $.user.address[0].city mean?",
@@ -2931,6 +2963,156 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Does this tool distinguish between request and response headers?",
         a: "No — it explains whatever header name it sees, and a few entries in its reference dictionary (like Authorization and Cookie) are actually request headers, included because raw header dumps from tools like curl -v often mix both directions together in one block.",
+      },
+    ],
+  },
+
+  "secret-scanner": {
+    about:
+      "The Secret / API Key Scanner checks pasted code or config for the patterns real secrets actually have — an AWS Access Key ID always starts with AKIA followed by 16 characters, a GitHub token starts with ghp_, a Stripe secret key starts with sk_live_ or sk_test_. This is the same core approach tools like Gitleaks and TruffleHog lead with: a curated list of format-based rules, not a guess.\n\nIt deliberately does NOT flag Stripe's pk_live_/pk_test_ publishable keys — those are designed to be public and embedded in client-side code, so treating them as a leak would be a false alarm. A lower-confidence rule also catches secret-sounding variable names (password, apiKey, token) assigned a literal string, for formats the specific rules don't cover.\n\nThis is a format-based scanner, not a full secrets-detection pipeline — it can't confirm a matched string is a currently valid credential (that would require a live API call), and it can't catch a format it has no rule for. Use it as a fast first pass before a commit, not a replacement for a real scanning tool wired into your CI pipeline.",
+    useCases: [
+      "Checking a file or diff for hardcoded credentials before committing",
+      "Reviewing a config file you're about to paste into a shared ticket or chat",
+      "Learning what real AWS keys, GitHub tokens, and Stripe keys actually look like",
+      "A quick sanity check before pushing a branch, without installing a CLI scanner",
+    ],
+    tips: [
+      "A clean scan here doesn't guarantee a file has no secrets — it only means none matched a known format or secret-sounding variable pattern. It can still miss an unusual or custom token format.",
+      "If this tool finds something real, the fix isn't just deleting the line — a secret committed to git exists in that commit's history forever. Rotate the credential at its provider first; that's the step that actually neutralizes the leak.",
+      "Stripe's pk_live_/pk_test_ keys are intentionally public-facing and are never flagged here — only sk_/rk_ (secret/restricted) keys are treated as real credentials.",
+    ],
+    faq: [
+      {
+        q: "Does this scanner send anything I paste to a server?",
+        a: "No — all pattern matching happens with plain JavaScript regular expressions in your browser. Nothing you paste is ever sent anywhere, which also means it never validates whether a matched key is actually still active.",
+      },
+      {
+        q: "Why does it flag some things as 'possible' secrets with lower confidence?",
+        a: "The generic rule (a secret-sounding variable name assigned a quoted literal string) can't distinguish a real credential from a placeholder, a test fixture, or a non-secret config value that happens to be named similarly — it's a best-effort catch-all for formats the specific, high-confidence rules don't cover.",
+      },
+      {
+        q: "What should I do if I find a real secret in old code?",
+        a: "Rotate or revoke the credential at its provider immediately — that's what actually stops the leak. Then remove it from your current code, moving it to an environment variable or a secrets manager. Deleting the line in a new commit alone leaves the secret fully recoverable from your git history.",
+      },
+    ],
+  },
+
+  "css-carousel-generator": {
+    about:
+      "The CSS Scroll Carousel Generator builds a fully functional, zero-JavaScript carousel using the CSS scroll-snap and scroll-marker APIs — scroll-snap-type/scroll-snap-align for the core scrolling-and-snapping behavior (broadly supported for years), plus ::scroll-marker, ::scroll-marker-group, and ::scroll-button() for auto-generated dot navigation and prev/next buttons (newer, reaching Chrome/Edge 135+ and Safari 19+ support through 2026).\n\nThe dots aren't manually positioned elements you'd have to keep in sync with the slide count — scroll-marker-group automatically generates one marker per scrollable child that declares a ::scroll-marker, and the :target-current pseudo-class lets you style whichever marker corresponds to the currently-snapped slide, entirely through CSS.",
+    useCases: [
+      "Building an image or testimonial carousel without shipping any carousel JavaScript library",
+      "Adding accessible dot navigation to a scroll-snap gallery without manually tracking the active slide in JS",
+      "Prototyping a product card carousel with prev/next buttons that degrade gracefully on unsupported browsers",
+      "Learning the ::scroll-marker / scroll-marker-group / ::scroll-button() syntax by example",
+    ],
+    tips: [
+      "The core scrolling and snapping (scroll-snap-type, scroll-snap-align) works in every modern browser regardless of ::scroll-marker support — the generated dots and buttons are progressive enhancement, not a hard requirement for the carousel to function.",
+      "Firefox has scroll-snap support but keeps ::scroll-marker/::scroll-button() behind a flag as of 2026 — test on your actual target browsers before relying on the generated dot navigation being visible everywhere.",
+      "scroll-marker-group: before vs. after only changes where the dot row sits in the DOM's visual and tab order, not which element it's attached to — the generated markers always correspond to the direct scrollable children.",
+    ],
+    faq: [
+      {
+        q: "Do I need any JavaScript at all for this carousel to work?",
+        a: "No — scrolling, snapping, dot navigation, and prev/next buttons are all pure CSS. The dots and buttons are clickable by nature (::scroll-marker and ::scroll-button() generate real interactive elements the browser handles), so there's genuinely no JavaScript carousel library needed.",
+      },
+      {
+        q: "What happens in a browser that doesn't support ::scroll-marker yet?",
+        a: "The carousel still scrolls and snaps normally via plain scroll-snap-type/scroll-snap-align — those have been well-supported for years. You simply won't see the generated dots or buttons; the content remains fully scrollable by swipe, wheel, or keyboard.",
+      },
+      {
+        q: "Can I style the 'current' dot differently from the others?",
+        a: "Yes — that's what the ::scroll-marker:target-current pseudo-class is for. It targets whichever generated marker corresponds to the slide currently snapped into view, letting you give it a different color or size without any scroll-position JavaScript.",
+      },
+    ],
+  },
+
+  "cors-debugger": {
+    about:
+      "CORS failures are enforced entirely by the browser, based only on what the server's response headers say — there is no client-side fix, ever. This tool walks the exact same decision the browser makes: is this a 'simple' request or does it need a preflight (OPTIONS) first, and do the response headers actually satisfy what's being asked of them?\n\nEnter the request's origin, method, custom headers, and whether credentials are included, plus the response headers you actually received, and it checks Access-Control-Allow-Origin (exact match vs. wildcard, and the wildcard-plus-credentials conflict that blocks even a seemingly-correct setup), Access-Control-Allow-Credentials when credentials are involved, and — for requests that need one — whether the preflight response's Access-Control-Allow-Methods and Access-Control-Allow-Headers actually cover what's being requested.",
+    useCases: [
+      "Figuring out exactly which Access-Control-* header is missing or wrong when a fetch() call fails with a CORS error",
+      "Understanding why a request that worked without credentials breaks once cookies or an Authorization header are added",
+      "Checking in advance whether a planned API design (custom headers, non-GET method) will need a CORS preflight",
+      "Explaining to a backend team precisely which header to add, instead of just forwarding a vague browser console error",
+    ],
+    tips: [
+      "A wildcard Access-Control-Allow-Origin: * is only valid when the request does NOT include credentials — the moment you add cookies or an Authorization header, the server must echo back your exact origin instead, with no exceptions.",
+      "If your request needs a preflight (any method besides GET/HEAD/POST, or a non-simple header, or a JSON Content-Type), make sure you're pasting the OPTIONS preflight response's headers, not the actual request's response — they can differ.",
+      "Every fix for a CORS failure happens on the server (adding or correcting an Access-Control-* header) — there is no request configuration, retry logic, or client library setting that works around a server that hasn't opted in.",
+    ],
+    faq: [
+      {
+        q: "Why does my request work fine in Postman but fail in the browser?",
+        a: "CORS is a browser-enforced restriction — tools like Postman, curl, and server-to-server requests aren't browsers and don't apply it at all. Working in Postman tells you the server itself responds fine; it tells you nothing about whether the server's CORS headers are configured correctly for a browser.",
+      },
+      {
+        q: "What counts as a 'simple' request that skips the preflight?",
+        a: "A GET, HEAD, or POST request, using only the CORS-safelisted headers (Accept, Accept-Language, Content-Language, Content-Type), where Content-Type (if set) is one of application/x-www-form-urlencoded, multipart/form-data, or text/plain. Anything else — a custom header, a PUT/DELETE/PATCH method, a JSON Content-Type — triggers a preflight first.",
+      },
+      {
+        q: "I added Access-Control-Allow-Origin and it still fails — why?",
+        a: "Usually one of: the origin value doesn't exactly match (including the protocol and port, not just the hostname), credentials are involved but Access-Control-Allow-Credentials is missing, or the request needed a preflight and the actual response headers you're checking aren't the preflight's. Run through this tool's checklist in order — it's built to catch exactly these cases.",
+      },
+    ],
+  },
+
+  "password-strength-checker": {
+    about:
+      "The Password Strength Checker estimates how hard a password actually is to guess — not just whether it satisfies a length-and-symbol-count rule. It computes a charset-size^length entropy estimate (the same basic approach most strength meters use), then applies penalties for the specific patterns that make a password far weaker than its raw entropy suggests: matching one of the most commonly leaked passwords, sequential runs (abcd, 1234), repeated characters (aaaa), and keyboard-adjacent walks (qwerty, asdf).\n\nThis matters because raw entropy alone would rate something like 'qwertyuiop1234' as reasonably strong — it's 14 characters mixing letters and numbers — when it's actually trivially guessable because every attacker's wordlist already contains exactly this kind of keyboard-walk pattern.",
+    useCases: [
+      "Checking whether a password you're about to set is actually strong, not just long",
+      "Understanding why a password that 'looks complex' might still be weak (keyboard patterns, sequences)",
+      "Teaching or demonstrating what makes one password meaningfully stronger than another",
+      "Spot-checking a generated or memorized passphrase before using it somewhere important",
+    ],
+    tips: [
+      "A password that scores well here but that you've used anywhere else before is still compromised if that other site ever leaked — this tool has no way to check real-world breach databases, it only evaluates the string itself.",
+      "Length matters more than complexity rules once you're past a reasonable floor — a 16-character lowercase phrase can out-entropy an 8-character password stuffed with symbols.",
+      "Treat the common-password list here as a small, illustrative sample, not an exhaustive breach database check — not matching the list doesn't mean a password has never been leaked elsewhere.",
+    ],
+    faq: [
+      {
+        q: "Does this check my password against real breach databases like Have I Been Pwned?",
+        a: "No — that would require sending your password (or a hash of it) to an external service, which this tool deliberately never does. It only checks against a small, illustrative list of extremely common passwords and a few structural weaknesses (sequences, repeats, keyboard patterns), entirely offline.",
+      },
+      {
+        q: "Why did a long, random-looking password still get flagged?",
+        a: "Check the warnings list — a password can be long and still contain a sequential run, a repeated block, or a keyboard-walk substring hiding inside otherwise-random-looking characters. Any of those meaningfully reduce how hard the password actually is to guess, even though the raw character count looks strong.",
+      },
+      {
+        q: "Is it safe to type a real password into this tool?",
+        a: "The check runs entirely in your browser with no network calls, so nothing is transmitted anywhere. That said, as a general safety habit, avoid typing a password you actually rely on into any web tool, including this one — test with a similar-but-different string if you want to gauge a pattern's strength without exposing the real thing.",
+      },
+    ],
+  },
+
+  "svg-to-jsx": {
+    about:
+      "The SVG to JSX converter parses raw SVG markup with the browser's native DOMParser and rebuilds it as a complete, ready-to-use React functional component — every attribute translated to its correct JSX form: kebab-case becomes camelCase (stroke-width → strokeWidth), namespaced attributes convert the same way (xlink:href → xlinkHref), and data-*/aria-* attributes are left exactly as written, since JSX specifically keeps those in their original hyphenated form rather than camelCasing them like everything else.\n\nThe root &lt;svg&gt; element spreads {...props} automatically, so the generated component's size, color, and event handlers stay fully overridable by whoever uses it — exactly how a hand-written icon component is normally structured.",
+    useCases: [
+      "Converting an exported SVG icon from Figma or Illustrator into a usable React component",
+      "Building out an icon component library from a folder of raw SVG files",
+      "Understanding exactly which SVG attributes need to change for JSX versus which stay the same",
+      "Quickly turning a one-off SVG (a logo, a custom shape) into a component without installing SVGR",
+    ],
+    tips: [
+      "data-* and aria-* attributes are deliberately left unconverted — writing them as camelCase (e.g. dataFoo) in real JSX would actually render as a non-standard attribute, not the data-foo the browser expects.",
+      "Numeric attribute values (cx=\"12\") are converted to JSX number expressions (cx={12}) rather than strings, matching how hand-written SVG React components are typically styled.",
+      "xmlns and xmlns:xlink declarations are dropped from the output — React's JSX runtime handles the SVG/XLink namespaces automatically, so keeping them is unnecessary noise.",
+    ],
+    faq: [
+      {
+        q: "Why does the output drop the xmlns attribute?",
+        a: "xmlns (and xmlns:xlink) declarations tell a raw XML parser which namespace an element belongs to — necessary when an .svg file stands alone, but redundant inside a React component, where the JSX runtime already knows it's rendering SVG elements and handles the relevant namespaces itself.",
+      },
+      {
+        q: "Will this work for SVGs with inline <style> or <script> tags?",
+        a: "The structural conversion (tags, attributes, nesting) works the same way, but note that a <script> tag inside SVG markup won't execute via React/JSX the way it might in a raw HTML context — and generally, hand-authored icon SVGs rarely include one. A <style> block converts structurally but its content is left as literal CSS text, not a JSX style object.",
+      },
+      {
+        q: "Does the generated component accept a className or style prop?",
+        a: "Yes — because the root <svg> spreads {...props}, any prop you pass when using the component (className, style, onClick, width, height, fill) gets applied to the root element exactly as it would on a plain <svg> tag.",
       },
     ],
   },

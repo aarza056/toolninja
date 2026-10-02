@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import ToolLayout from "@/components/ToolLayout";
+import CopyButton from "@/components/CopyButton";
 import { Copy, Check } from "lucide-react";
 import { contrastRatio } from "@/lib/contrast";
 
@@ -193,6 +194,28 @@ function SwatchCard({ color }: { color: SwatchColor }) {
   );
 }
 
+// ─── Export formats ───────────────────────────────────────────────────────────
+
+type ExportFormat = "css" | "tailwind" | "scss";
+
+function slugForLabel(label: string, index: number): string {
+  const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return slug || `color-${index + 1}`;
+}
+
+function buildExport(palette: SwatchColor[], format: ExportFormat): string {
+  if (format === "css") {
+    const lines = palette.map((c, i) => `  --${slugForLabel(c.label, i)}: ${c.hex};`);
+    return `:root {\n${lines.join("\n")}\n}`;
+  }
+  if (format === "scss") {
+    return palette.map((c, i) => `$${slugForLabel(c.label, i)}: ${c.hex};`).join("\n");
+  }
+  // tailwind
+  const lines = palette.map((c, i) => `        "${slugForLabel(c.label, i)}": "${c.hex}",`);
+  return `// tailwind.config.js\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n        palette: {\n${lines.join("\n")}\n        },\n      },\n    },\n  },\n};`;
+}
+
 // ─── Harmony button list ──────────────────────────────────────────────────────
 
 const HARMONY_OPTIONS: { value: HarmonyType; label: string }[] = [
@@ -210,6 +233,7 @@ export default function ColorPaletteClient() {
   const [baseColor, setBaseColor] = useState("#a855f7");
   const [harmony, setHarmony] = useState<HarmonyType>("complementary");
   const [copiedBase, setCopiedBase] = useState(false);
+  const [exportFormat, setExportFormat] = useState<ExportFormat>("css");
 
   const palette = generatePalette(baseColor, harmony);
   const [bh, bs, bl] = hexToHsl(baseColor);
@@ -355,6 +379,34 @@ export default function ColorPaletteClient() {
                 })}
               </tbody>
             </table>
+          </div>
+        </div>
+
+        {/* Export */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-xs text-[#888888] font-medium">Export</label>
+            <div className="flex rounded-[6px] border border-[#222222] overflow-hidden">
+              {(["css", "tailwind", "scss"] as ExportFormat[]).map((fmt) => (
+                <button
+                  key={fmt}
+                  onClick={() => setExportFormat(fmt)}
+                  className={`px-3 py-1 text-xs transition-colors ${
+                    exportFormat === fmt ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"
+                  }`}
+                >
+                  {fmt === "css" ? "CSS Variables" : fmt === "tailwind" ? "Tailwind Config" : "SCSS"}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="relative">
+            <pre className="p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] overflow-auto whitespace-pre-wrap">
+              {buildExport(palette, exportFormat)}
+            </pre>
+            <div className="absolute top-2 right-2">
+              <CopyButton text={buildExport(palette, exportFormat)} size="sm" />
+            </div>
           </div>
         </div>
       </div>

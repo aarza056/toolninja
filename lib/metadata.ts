@@ -215,7 +215,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "docker-run-to-compose": {
     title: "Docker Run to Compose Converter — Generate docker-compose.yml Online | ToolNinja",
     description:
-      "Free online Docker run to Compose converter. Paste any docker run command and instantly get a ready-to-use docker-compose.yml. Supports ports, volumes, environment variables, healthchecks, networks and 40+ flags. Includes best practices scorer and Compose to docker run conversion. No login, 100% browser-based.",
+      "Free online Docker run to Compose converter. Paste any docker run command and instantly get a ready-to-use docker-compose.yml, or convert a docker-compose.yml back to docker run commands with warnings for anything (depends_on, build) that doesn't translate directly. No login, 100% browser-based.",
   },
   "csv-json": {
     title: "CSV to JSON Converter Online — Convert CSV & JSON Both Ways | ToolNinja",
@@ -257,6 +257,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online list sorter and deduplicator. Sort lines alphabetically or numerically, remove duplicates and blank lines, shuffle, reverse, and number a list of text lines. No login, 100% browser-based.",
   },
+  "svg-to-jsx": {
+    title: "SVG to JSX Converter Online — SVG to React Component | ToolNinja",
+    description:
+      "Free online SVG to JSX converter. Paste raw SVG markup and get a ready-to-use React component — attributes converted to camelCase, props spread onto the root element. No login, 100% browser-based.",
+  },
 
   // ── Test ─────────────────────────────────────────────────────────────────
   "regex-tester": {
@@ -297,7 +302,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "json-diff": {
     title: "JSON Diff Checker Online — Compare Two JSON Objects | ToolNinja",
     description:
-      "Free online JSON diff checker. Compare two JSON objects structurally and see exactly what was added, removed, or changed, path by path — key order doesn't matter. No login, 100% browser-based.",
+      "Free online JSON diff checker. Compare two JSON objects structurally and see exactly what was added, removed, or changed, path by path — key order doesn't matter, and an ignore-array-order option treats re-sorted arrays as unchanged. No login, 100% browser-based.",
   },
   "iban-validator": {
     title: "IBAN Validator & Generator Online — MOD-97 Checksum Check | ToolNinja",
@@ -329,12 +334,17 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online HTTP header inspector. Paste raw response headers and get a plain-English explanation of every one — Cache-Control, ETag, CSP, CORS headers, and more. No login, 100% browser-based.",
   },
+  "cors-debugger": {
+    title: "CORS Error Debugger Online — Fix Access-Control-Allow-Origin Errors | ToolNinja",
+    description:
+      "Free online CORS error debugger. Enter your request details and the response headers you received, and get a step-by-step diagnosis of exactly why the browser blocked it. No login, 100% browser-based.",
+  },
 
   // ── Design ───────────────────────────────────────────────────────────────
   "css-animations": {
     title: "CSS Animations Library — Copy-Paste Animation Code | ToolNinja",
     description:
-      "Free CSS animations library with live previews. 27 ready-to-use CSS animation examples including buttons, loaders, text effects and card animations. One-click copy HTML and CSS code. No login required.",
+      "Free CSS animations library with live previews. Ready-to-use CSS animation examples including buttons, loaders, text effects, card animations, and zero-JS scroll-driven animations (animation-timeline: scroll()/view()). One-click copy HTML and CSS code. No login required.",
   },
   "css-gradient": {
     title: "CSS Gradient Generator — Linear, Radial & Mesh Gradients | ToolNinja",
@@ -342,9 +352,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online CSS gradient generator. Create linear, radial, conic and mesh gradients with a visual editor. Get clean CSS code instantly. Multi-stop gradient support included. No login, browser-only.",
   },
   "color-palette": {
-    title: "Color Palette Generator — Create Color Schemes Online | ToolNinja",
+    title: "Color Palette Generator — Create & Export Color Schemes Online | ToolNinja",
     description:
-      "Free online color palette generator. Create complementary, analogous, triadic, tetradic and monochromatic color schemes from any base color. Copy HEX, RGB and HSL values. No login required.",
+      "Free online color palette generator. Create complementary, analogous, triadic, tetradic and monochromatic color schemes from any base color, and export as CSS variables, a Tailwind config snippet, or SCSS. No login required.",
   },
   "mermaid-editor": {
     title: "Mermaid Diagram Editor Online — Live Flowchart & Sequence Diagrams | ToolNinja",
@@ -375,6 +385,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "CSS Scrollbar Generator Online — Custom Scrollbar Styling | ToolNinja",
     description:
       "Free online CSS scrollbar generator. Style scrollbars visually with the modern scrollbar-color/scrollbar-width properties, plus a ::-webkit-scrollbar fallback for broader browser support. No login, 100% browser-based.",
+  },
+  "css-carousel-generator": {
+    title: "CSS Carousel Generator Online — Zero-JavaScript Scroll Carousel | ToolNinja",
+    description:
+      "Free online CSS carousel generator. Build a scroll-snap carousel with auto-generated dot navigation using ::scroll-marker and ::scroll-marker-group — no JavaScript required. No login, 100% browser-based.",
   },
 
   // ── Security ─────────────────────────────────────────────────────────────
@@ -418,6 +433,16 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online JWK to PEM and PEM to JWK converter. Convert RSA and EC (P-256/P-384/P-521) public and private keys between formats using the Web Crypto API. Nothing you paste ever leaves your browser. No login.",
   },
+  "secret-scanner": {
+    title: "Secret Scanner Online — Find Hardcoded API Keys & Credentials | ToolNinja",
+    description:
+      "Free online secret scanner. Paste code or a config file and find hardcoded AWS keys, GitHub tokens, Stripe keys, Slack webhooks, and more before they reach git. No login, 100% browser-based.",
+  },
+  "password-strength-checker": {
+    title: "Password Strength Checker Online — Entropy & Pattern Analysis | ToolNinja",
+    description:
+      "Free online password strength checker. Check entropy, common-password matches, sequential and keyboard-pattern weaknesses for any password. No login, 100% browser-based — nothing is sent anywhere.",
+  },
 
   // ── Accessibility ────────────────────────────────────────────────────────
   "contrast-checker": {
@@ -433,9 +458,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
 
   // ── Reference ────────────────────────────────────────────────────────────
   "http-status-codes": {
-    title: "HTTP Status Codes Reference — Complete List of HTTP Codes | ToolNinja",
+    title: "HTTP Status Codes Reference — Complete List & Commonly Confused Codes | ToolNinja",
     description:
-      "Complete HTTP status codes reference. Look up every HTTP response code including 200, 301, 404, 500 and more with descriptions and use cases. Developer-friendly HTTP codes cheat sheet. No login required.",
+      "Complete HTTP status codes reference. Look up every HTTP response code including 200, 301, 404, 500 and more, plus a side-by-side comparison of commonly confused codes (401 vs 403, 409 vs 412 vs 423, and more). No login required.",
   },
   "chmod-calculator": {
     title: "Chmod Calculator — Linux File Permissions & Special Bits | ToolNinja",
