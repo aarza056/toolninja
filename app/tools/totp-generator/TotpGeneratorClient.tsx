@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import QRCode from "qrcode";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { RefreshCw, KeyRound } from "lucide-react";
@@ -28,6 +29,7 @@ export default function TotpGeneratorClient() {
   const [code, setCode] = useState("");
   const [remaining, setRemaining] = useState(30);
   const [error, setError] = useState("");
+  const [qrDataUrl, setQrDataUrl] = useState("");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -90,6 +92,24 @@ export default function TotpGeneratorClient() {
   };
 
   const otpauthUrl = secret.trim() ? buildOtpauthUrl(secret.trim(), label || "account", issuer, opts) : "";
+
+  useEffect(() => {
+    if (!otpauthUrl) {
+      setQrDataUrl("");
+      return;
+    }
+    let cancelled = false;
+    QRCode.toDataURL(otpauthUrl, { width: 180, margin: 1, color: { dark: "#f5f5f5", light: "#111111" } })
+      .then((url) => {
+        if (!cancelled) setQrDataUrl(url);
+      })
+      .catch(() => {
+        if (!cancelled) setQrDataUrl("");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [otpauthUrl]);
   const progress = ((opts.period - remaining) / opts.period) * 100;
 
   return (
@@ -215,12 +235,21 @@ export default function TotpGeneratorClient() {
               <p className="text-xs text-[#555555]">Refreshes in {remaining}s</p>
 
               {otpauthUrl && (
-                <div className="w-full pt-4 border-t border-[#222222]">
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs text-[#888888] font-medium">otpauth:// URL</label>
-                    <CopyButton text={otpauthUrl} size="sm" />
+                <div className="w-full pt-4 border-t border-[#222222] flex flex-col items-center gap-3">
+                  {qrDataUrl && (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={qrDataUrl} alt="Scannable QR code for this otpauth:// URL" width={140} height={140} className="rounded-[8px] border border-[#222222]" />
+                      <p className="text-[10px] text-[#555555] -mt-1">Scan with an authenticator app to load this account</p>
+                    </>
+                  )}
+                  <div className="w-full">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs text-[#888888] font-medium">otpauth:// URL</label>
+                      <CopyButton text={otpauthUrl} size="sm" />
+                    </div>
+                    <p className="text-[10px] font-mono text-[#555555] break-all">{otpauthUrl}</p>
                   </div>
-                  <p className="text-[10px] font-mono text-[#555555] break-all">{otpauthUrl}</p>
                 </div>
               )}
             </>

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
-import { Play, Copy, Check, AlertTriangle, RotateCcw } from "lucide-react";
+import { Play, Copy, Check, AlertTriangle, RotateCcw, Highlighter } from "lucide-react";
 
 type DocMode = "xml" | "html";
 
@@ -171,6 +171,41 @@ function evaluateXPath(
   }
 }
 
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+/** Finds each result's serialized value as a substring of the raw document and wraps it in
+ * <mark>, searching forward per-value so repeated identical text highlights distinct occurrences
+ * instead of re-highlighting the same span. Best-effort — results with no literal match (e.g. a
+ * computed count() or boolean) are simply skipped. */
+function buildHighlightedHtml(docContent: string, results: XPathResult[]): string {
+  const searchCursor = new Map<string, number>();
+  const ranges: { start: number; end: number }[] = [];
+
+  for (const r of results) {
+    if (!r.value) continue;
+    const from = searchCursor.get(r.value) ?? 0;
+    const idx = docContent.indexOf(r.value, from);
+    if (idx === -1) continue;
+    ranges.push({ start: idx, end: idx + r.value.length });
+    searchCursor.set(r.value, idx + r.value.length);
+  }
+
+  ranges.sort((a, b) => a.start - b.start);
+
+  let out = "";
+  let cursor = 0;
+  for (const range of ranges) {
+    if (range.start < cursor) continue; // skip overlaps with an already-highlighted range
+    out += escapeHtml(docContent.slice(cursor, range.start));
+    out += `<mark class="bg-[#a855f7]/25 text-[#e9d5ff] rounded-[2px]">${escapeHtml(docContent.slice(range.start, range.end))}</mark>`;
+    cursor = range.end;
+  }
+  out += escapeHtml(docContent.slice(cursor));
+  return out;
+}
+
 const TYPE_COLORS: Record<string, string> = {
   element: "bg-blue-500/10 text-blue-400 border-blue-500/20",
   attribute: "bg-orange-500/10 text-orange-400 border-orange-500/20",
@@ -190,6 +225,7 @@ export default function XPathTesterClient() {
   const [error, setError] = useState<string | null>(null);
   const [hasRun, setHasRun] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showHighlight, setShowHighlight] = useState(false);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -249,6 +285,11 @@ export default function XPathTesterClient() {
     setHasRun(false);
   };
 
+  const highlightedHtml = useMemo(
+    () => (showHighlight && hasRun && !error && results.length > 0 ? buildHighlightedHtml(docContent, results) : ""),
+    [showHighlight, hasRun, error, results, docContent]
+  );
+
   return (
     <ToolLayout
       title="XPath Tester"
@@ -279,24 +320,42 @@ export default function XPathTesterClient() {
             <label className="text-xs font-medium text-[#888888]">
               {mode === "xml" ? "XML" : "HTML"} Document
             </label>
-            <button
-              onClick={resetDoc}
-              className="flex items-center gap-1 text-xs text-[#555555] hover:text-[#888888] transition-colors"
-            >
-              <RotateCcw size={11} />
-              Reset
-            </button>
+            <div className="flex items-center gap-3">
+              {hasRun && !error && results.length > 0 && (
+                <button
+                  onClick={() => setShowHighlight((v) => !v)}
+                  className={`flex items-center gap-1 text-xs transition-colors ${showHighlight ? "text-[#a855f7]" : "text-[#555555] hover:text-[#888888]"}`}
+                >
+                  <Highlighter size={11} />
+                  {showHighlight ? "Editing off" : "Highlight matches"}
+                </button>
+              )}
+              <button
+                onClick={resetDoc}
+                className="flex items-center gap-1 text-xs text-[#555555] hover:text-[#888888] transition-colors"
+              >
+                <RotateCcw size={11} />
+                Reset
+              </button>
+            </div>
           </div>
-          <textarea
-            value={docContent}
-            onChange={(e) => {
-              setDocContent(e.target.value);
-              setHasRun(false);
-            }}
-            spellCheck={false}
-            className="w-full h-80 px-3 py-3 bg-[#0d0d0d] border border-[#222222] rounded-[8px] text-xs text-[#c9d1d9] font-mono focus:outline-none focus:border-[#a855f7] resize-none leading-relaxed"
-            placeholder={`Paste your ${mode.toUpperCase()} here…`}
-          />
+          {showHighlight && highlightedHtml ? (
+            <pre
+              className="w-full h-80 px-3 py-3 bg-[#0d0d0d] border border-[#a855f7]/40 rounded-[8px] text-xs text-[#c9d1d9] font-mono leading-relaxed overflow-auto whitespace-pre-wrap break-all m-0"
+              dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+            />
+          ) : (
+            <textarea
+              value={docContent}
+              onChange={(e) => {
+                setDocContent(e.target.value);
+                setHasRun(false);
+              }}
+              spellCheck={false}
+              className="w-full h-80 px-3 py-3 bg-[#0d0d0d] border border-[#222222] rounded-[8px] text-xs text-[#c9d1d9] font-mono focus:outline-none focus:border-[#a855f7] resize-none leading-relaxed"
+              placeholder={`Paste your ${mode.toUpperCase()} here…`}
+            />
+          )}
 
           {/* XPath Expression */}
           <div>

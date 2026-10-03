@@ -50,17 +50,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "base64": {
     about:
-      "The ToolNinja Base64 tool is a free online Base64 encoder and decoder. Encode any text or data to Base64 format, or decode Base64 strings back to plain text — instantly, with no page reload.\n\nUse the Base64 encoder when you need to embed binary data in JSON APIs, create data URIs for images in CSS or HTML, encode credentials for HTTP Basic Authentication headers, or prepare data for email transmission. Use the Base64 decoder to inspect encoded strings in API responses, JWT token segments, or any Base64 encoded content you encounter during development.\n\nSupports both standard Base64 and Base64URL encoding (used in JWT tokens and URLs). The tool automatically handles padding and correctly encodes all Unicode characters.\n\nRuns entirely in your browser — your data never leaves your machine. No login, no server, no tracking.",
+      "The ToolNinja Base64 tool is a free online Base64 encoder and decoder. Encode any text or data to Base64 format, or decode Base64 strings back to plain text — instantly, with no page reload.\n\nUse the Base64 encoder when you need to embed binary data in JSON APIs, create data URIs for images in CSS or HTML, encode credentials for HTTP Basic Authentication headers, or prepare data for email transmission. Use the Base64 decoder to inspect encoded strings in API responses, JWT token segments, or any Base64 encoded content you encounter during development.\n\nSupports both standard Base64 and Base64URL encoding (used in JWT tokens and URLs), toggled with the Alphabet switch. The File mode handles arbitrary binary data directly: drop in any file to get its Base64 encoding, or paste a Base64 string to decode and download it back as a file — no command-line certutil or base64 CLI call needed.\n\nRuns entirely in your browser — your data never leaves your machine. No login, no server, no tracking.",
     useCases: [
       "Encoding credentials for HTTP Basic Authentication headers",
       "Embedding small images as data URIs directly in HTML or CSS",
       "Storing binary data safely inside JSON or XML payloads",
       "Decoding Base64-encoded strings from API responses or JWT tokens",
+      "Converting an arbitrary file (not just text) to Base64, or decoding one back to a downloadable file",
     ],
     tips: [
-      "Standard Base64 uses + and / — URL-safe Base64 replaces them with - and _ for use in query strings and JWT tokens.",
-      "Every 3 bytes of input produce exactly 4 Base64 characters. = padding characters make the output length a multiple of 4.",
+      "Standard Base64 uses + and / — URL-safe Base64 replaces them with - and _ for use in query strings and JWT tokens. Switch alphabets with the toggle rather than hand-editing the output.",
+      "Every 3 bytes of input produce exactly 4 Base64 characters. = padding characters make the output length a multiple of 4 (URL-safe output omits the padding).",
       "Base64 increases data size by ~33%. Don't use it for large files.",
+      "Switch to File mode to encode any file type — images, PDFs, archives — not just text, or to decode a Base64 string straight into a downloadable file.",
     ],
     faq: [
       {
@@ -73,11 +75,11 @@ export const toolContent: Record<string, ToolContent> = {
       },
       {
         q: "Why does my decoded Base64 show garbled characters?",
-        a: "This usually means the original data was binary (an image, file, or compressed payload) rather than plain text. Binary data can't be displayed as readable text — you'd need to save it as a file to use it.",
+        a: "This usually means the original data was binary (an image, file, or compressed payload) rather than plain text. Switch to File mode and paste the same Base64 string into the decode field there to get it back as a proper downloadable file instead of garbled text.",
       },
       {
         q: "How do I Base64-encode a file, not just text?",
-        a: "Use the Image to Base64 tool for images. For arbitrary files, you can use the command line: on macOS/Linux run `base64 filename`, on Windows run `certutil -encode filename output.txt`.",
+        a: "Switch to File mode and drag the file in (or click to browse) — it encodes entirely in your browser and shows the Base64 output immediately, no upload involved.",
       },
     ],
   },
@@ -1035,7 +1037,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "jwt-generator": {
     about:
-      "The JWT Generator creates signed JSON Web Tokens directly in your browser using the WebCrypto API. Enter a secret key and custom claims (payload), and it generates a valid HS256-signed JWT with correct base64url encoding. Nothing is sent to any server.",
+      "The JWT Generator creates signed JSON Web Tokens directly in your browser using the WebCrypto API. Enter custom claims (payload) and sign with HS256 (a shared secret), or switch to RS256/ES256 and either paste an existing PKCS8 private key or generate a fresh RSA/EC key pair on the spot — the matching public key is shown alongside for verification. Nothing is sent to any server.",
     useCases: [
       "Generating test tokens for local API development without running auth servers",
       "Creating JWTs with specific expiry and claims for manual integration testing",
@@ -1046,11 +1048,12 @@ export const toolContent: Record<string, ToolContent> = {
       "Always include exp (expiry) and iat (issued-at) claims — most JWT libraries reject tokens without them.",
       "The secret key strength is critical: use at least 256 bits (32 bytes) of random data for HS256.",
       "Never use the same secret in production as in testing — rotate keys when moving between environments.",
+      "Switching to RS256 or ES256 but don't have a key handy? Click 'Generate key pair' — it creates a fresh RSA-2048 or P-256 key on the spot and shows the matching public key for verification.",
     ],
     faq: [
       {
-        q: "Is my secret key safe when using this tool?",
-        a: "Yes. The JWT is signed entirely in your browser using the WebCrypto API. Your secret key and payload never leave your device — there is no network request.",
+        q: "Is my secret key or private key safe when using this tool?",
+        a: "Yes. The JWT is signed entirely in your browser using the WebCrypto API. Your secret key or private key and payload never leave your device — there is no network request, whether you paste an existing key or generate one in-tool.",
       },
       {
         q: "What is the difference between HS256 and RS256?",
@@ -1260,6 +1263,7 @@ export const toolContent: Record<string, ToolContent> = {
       "The text() node test selects text content: //h1/text() returns just the text inside h1 tags, not the element itself.",
       "Use @attribute to select by attribute: //*[@id='main'] selects any element with id='main'. @* selects all attributes.",
       "contains() handles partial matches: //a[contains(@href, 'github')] finds links where the href includes 'github'.",
+      "After running a query, click 'Highlight matches' to see every matched node marked directly in the source document instead of only in the results list.",
     ],
     faq: [
       {
@@ -2226,6 +2230,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Prefer Ed25519 over RSA for any new key — it's shorter, faster to verify, and the current best-practice default across GitHub, GitLab, and OpenSSH itself.",
       "The private key never leaves your browser during generation, but once downloaded it's a real credential — store it like any other SSH private key (correct file permissions, never committed to a repo).",
       "Add a comment (typically an email or hostname) to make it easy to identify which key is which later, especially if you'll have several in your authorized_keys file.",
+      "The randomart image below the fingerprint is the exact same visual `ssh-keygen -lv` produces — a quick way to eyeball-compare two fingerprints without reading a long hex/base64 string character by character.",
     ],
     faq: [
       {
@@ -2260,6 +2265,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Most consumer apps (Google Authenticator, Authy) use SHA-1, 6 digits, and a 30-second period — only change these if you know your target system uses something different.",
       "Use the otpauth:// import field to quickly load a secret straight from a URL you've copied out of a QR code payload or a service's manual setup instructions.",
       "Treat any secret you paste in here as sensitive — anyone with the secret can generate valid 2FA codes for that account.",
+      "Once a secret is entered, a scannable QR code appears automatically — point any authenticator app's camera at it to load the account without typing the secret manually.",
     ],
     faq: [
       {
@@ -3113,6 +3119,156 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Does the generated component accept a className or style prop?",
         a: "Yes — because the root <svg> spreads {...props}, any prop you pass when using the component (className, style, onClick, width, height, fill) gets applied to the root element exactly as it would on a plain <svg> tag.",
+      },
+    ],
+  },
+
+  "base62-encoder": {
+    about:
+      "The ToolNinja Base62 tool encodes and decodes Base62 — an encoding scheme that uses only the 62 alphanumeric characters 0-9, A-Z, and a-z, with no symbols at all. That makes a Base62 string safe to drop directly into a URL path segment, a filename, or a CLI argument without any percent-encoding or escaping, which is why it's the usual choice behind short-link slugs and compact database IDs.\n\nBase62 trades some compactness for that safety: Base64 packs 6 bits per character (4 output characters per 3 input bytes) while Base62's non-power-of-two alphabet averages closer to 5.95 bits per character, so a Base62 string runs slightly longer than the equivalent Base64 string. In exchange, you never have to worry about +, /, or = showing up somewhere they'd break a URL or need escaping.\n\nEverything runs 100% in your browser using BigInt arithmetic — your data never leaves your machine.",
+    useCases: [
+      "Generating short, URL-safe slugs for shortened links or shareable IDs",
+      "Encoding database auto-increment IDs into a compact, alphanumeric-only public identifier",
+      "Converting a hex hash or UUID into a shorter string for display or storage",
+      "Producing filenames or CLI arguments that never need escaping",
+    ],
+    tips: [
+      "Base62 has no padding characters (unlike Base64's =) — the decoder can tell the encoded length is valid from the string alone.",
+      "Leading zero bytes are preserved as leading '0' characters in the output, so round-tripping arbitrary binary data stays lossless.",
+      "If you need maximum compactness and don't care about URL-safety, Base64 is still shorter — Base62 exists specifically for the symbol-free guarantee.",
+    ],
+    faq: [
+      {
+        q: "Is Base62 the same as Base64?",
+        a: "No. Base64 uses 64 symbols including + and / (or - and _ in the URL-safe variant) plus = padding. Base62 drops to exactly 62 symbols — just letters and digits — eliminating the need for any escaping or padding, at the cost of slightly longer output.",
+      },
+      {
+        q: "Why do URL shorteners use Base62 instead of Base64?",
+        a: "A Base62 string is guaranteed to contain only letters and digits, so it can be placed directly in a URL path (e.g. short.ly/aB3xQ9) with zero risk of a reserved character needing escaping. Base64's + and / are both meaningful in URLs and would need percent-encoding.",
+      },
+      {
+        q: "Can Base62 encode arbitrary binary data, not just text?",
+        a: "Yes — switch the input format to Hex and paste the hex representation of any byte sequence. The tool treats the input as raw bytes either way; the Text/Hex toggle only changes how you type the bytes in.",
+      },
+    ],
+  },
+
+  "jsonpath-tester": {
+    about:
+      "The ToolNinja JSONPath Tester lets you run JSONPath queries against any JSON document and see every match instantly, along with the exact resolved path to each one. It's the JSON equivalent of the XPath Tester — same live-results workflow, applied to JSON instead of XML/HTML.\n\nThe tester supports the core JSONPath syntax developers actually use day to day: the root $, dot and bracket child access, the .. recursive descent operator for finding a key at any depth, [*] wildcards, [start:end:step] array slicing, and [0,2,4] multi-index selection. Filter expressions like [?(@.price<10)] require evaluating arbitrary predicate code and aren't supported — for conditional filtering, pair a broader query here with your own application code.\n\nEverything runs 100% in your browser. Your JSON — including any sensitive API response data — never leaves your machine.",
+    useCases: [
+      "Figuring out the right JSONPath expression to extract a field from a deeply nested API response",
+      "Debugging why a JSONPath query in your application code isn't matching what you expect",
+      "Exploring an unfamiliar JSON structure by querying it interactively instead of reading it line by line",
+      "Writing JSONPath expressions for tools that use them as config (Elasticsearch, AWS CLI --query, JSONPath-based test assertions)",
+    ],
+    tips: [
+      "$..price finds a key named price anywhere in the document, no matter how deeply nested — useful for exploring unfamiliar JSON.",
+      "Negative indices count from the end: [-1] is the last array element, [-2:] is the last two.",
+      "Ctrl+Enter runs the query without leaving the expression field.",
+    ],
+    faq: [
+      {
+        q: "What's the difference between JSONPath and just writing JavaScript to walk the object?",
+        a: "JSONPath lets you express a query declaratively in one line instead of writing a loop, and it's portable — the same expression works the same way across languages and tools (CLI utilities, API gateways, test frameworks) that all implement the JSONPath spec, unlike a JS traversal function tied to one codebase.",
+      },
+      {
+        q: "Why doesn't my filter expression like [?(@.price<10)] work?",
+        a: "Filter expressions require a full predicate evaluator capable of running arbitrary comparison logic safely, which is a meaningfully larger (and riskier, if not sandboxed carefully) scope than query/path resolution. This tool supports the structural part of JSONPath — paths, wildcards, slices, recursive descent — but not conditional filtering.",
+      },
+      {
+        q: "Does JSONPath have one official standard, like XPath does for XML?",
+        a: "Mostly, though historically less formally — the original Stefan Goessner JSONPath proposal became a de facto standard, and RFC 9535 (2024) has since formalized it. Implementations still vary slightly in edge cases (especially around filter expressions), so always test against the actual library or tool you're targeting.",
+      },
+    ],
+  },
+
+  "user-agent-parser": {
+    about:
+      "The ToolNinja User-Agent Parser breaks down any User-Agent HTTP header string into its component parts: browser name and version, rendering engine, operating system, and device type — plus built-in detection for common bots and crawlers (Googlebot, Bingbot, GPTBot, ClaudeBot, PerplexityBot, and others).\n\nUser-Agent strings are famously inconsistent — nearly every browser includes tokens for other browsers' names for historical compatibility reasons (Chrome's UA string contains \"Safari\", Edge's contains both \"Chrome\" and \"Safari\"), so naive substring matching gets the wrong answer constantly. This tool checks the more specific tokens first (Edge, Opera, Brave, Samsung Internet) before falling back to the generic ones, the same ordering approach real User-Agent parsing libraries use.\n\nEverything runs 100% in your browser using pattern matching — no User-Agent string you paste here is ever sent anywhere, including your own, which the tool also offers to pre-fill for convenience.",
+    useCases: [
+      "Decoding a User-Agent string from server access logs to understand your traffic's browser/OS mix",
+      "Checking whether a request came from a known bot or crawler (and which one) before deciding how to handle it",
+      "Debugging a browser-specific bug by confirming exactly which browser version and engine a bug report's User-Agent represents",
+      "Sanity-checking a custom User-Agent string before shipping it in an API client or scraper",
+    ],
+    tips: [
+      "Device type (mobile/tablet/desktop) is inferred from UA tokens, not screen size — a desktop UA spoofed to claim 'Mobile' will still report as mobile.",
+      "Bot detection checks for known crawler signatures first, since bots often include a browser-like UA string alongside their actual identifier.",
+      "Click 'Load my own User-Agent' equivalent by just opening the tool — it pre-fills with navigator.userAgent automatically.",
+    ],
+    faq: [
+      {
+        q: "Why does Chrome's User-Agent string contain the word 'Safari'?",
+        a: "For historical compatibility — early websites checked for \"Safari\" or \"Gecko\" tokens to decide whether a browser supported certain features, so when newer browsers (Chrome, then Edge, Opera, Brave) were built on WebKit/Blink, they kept those legacy tokens in their UA string so they wouldn't get incorrectly blocked by old sniffing logic. The only reliable way to identify the actual browser is to check for its own distinguishing token (Chrome/, Edg/, OPR/) in the right priority order.",
+      },
+      {
+        q: "Can a User-Agent string be faked?",
+        a: "Yes, trivially — any HTTP client, browser extension, or a single line of fetch() code can set an arbitrary User-Agent header. Never use User-Agent parsing as a security control; it's useful for analytics, debugging, and basic content adaptation, not for verifying who's actually making a request.",
+      },
+      {
+        q: "Why is Chrome's rendering engine listed as 'Blink' and not 'WebKit'?",
+        a: "Chrome forked WebKit's rendering engine in 2013 and the fork was named Blink. Chrome's UA string still contains an AppleWebKit/ token for legacy compatibility reasons (the same reason it contains \"Safari\"), but the actual rendering engine running in modern Chrome, Edge, Opera, and Brave is Blink.",
+      },
+    ],
+  },
+
+  "jwk-thumbprint-calculator": {
+    about:
+      "The ToolNinja JWK Thumbprint Calculator computes the RFC 7638 canonical thumbprint for a JSON Web Key — a deterministic fingerprint derived by hashing only the required members for that key's type, in a fixed lexicographic order, with no whitespace.\n\nFor an RSA key that means hashing exactly {\"e\":...,\"kty\":\"RSA\",\"n\":...} — nothing else. Any optional fields the key carries (kid, use, alg, x5c) are excluded entirely, which is exactly what makes the thumbprint useful: two JWK representations of the same underlying key always produce the same thumbprint regardless of which optional metadata happens to be attached, so it's commonly used as the kid value itself, or to confirm two differently-formatted JWKs actually represent the same key.\n\nSupports RSA, EC (any curve), oct (symmetric), and OKP (Ed25519/X25519) keys, with SHA-256, SHA-384, or SHA-512 as the hash. Everything runs 100% in your browser via the Web Crypto API — your key material never leaves your machine.",
+    useCases: [
+      "Generating a stable kid for a JWKS endpoint so key rotation doesn't require hand-assigning IDs",
+      "Confirming that a JWK you received matches a key you already have, without comparing every field manually",
+      "Debugging a 'key not found' error in a JWT verification flow by comparing the expected vs. actual kid",
+      "Computing the thumbprint required by DPoP (RFC 9449) or other specs that bind a token to a specific key",
+    ],
+    tips: [
+      "The thumbprint depends only on the required members (e/n for RSA, crv/x/y for EC) — changing kid, use, or alg on the same key never changes its thumbprint.",
+      "SHA-256 is overwhelmingly the standard choice (it's what most kid-generation conventions and DPoP implementations use) — only switch hash algorithms if a spec you're implementing explicitly calls for a different one.",
+      "The 'canonical JSON that was hashed' panel shows exactly what went into the hash — useful for debugging a thumbprint mismatch against another implementation.",
+    ],
+    faq: [
+      {
+        q: "Why use a JWK thumbprint instead of just picking a random kid?",
+        a: "A thumbprint is deterministic — the same key always produces the same thumbprint, from any JWK representation of it. That lets two systems that both have the same key (but received it through different channels, or with different optional metadata attached) independently compute matching identifiers, with no coordination needed.",
+      },
+      {
+        q: "Does changing the 'alg' or 'use' field in a JWK change its thumbprint?",
+        a: "No. RFC 7638 defines the thumbprint input as only the required members for the key type (kty plus the key-material fields) — optional fields like alg, use, kid, and x5c are deliberately excluded from the hash, precisely so the thumbprint identifies the cryptographic key itself, not its metadata.",
+      },
+      {
+        q: "Is a JWK thumbprint the same as a certificate fingerprint?",
+        a: "They're conceptually similar (both are a hash-based fingerprint of key material) but computed differently and not interchangeable. A certificate fingerprint typically hashes the DER-encoded X.509 certificate; a JWK thumbprint hashes a specific canonical JSON serialization defined by RFC 7638. Don't compare one against the other expecting a match.",
+      },
+    ],
+  },
+
+  "passkey-tester": {
+    about:
+      "The ToolNinja Passkey / WebAuthn Playground runs real WebAuthn ceremonies — navigator.credentials.create() to register a passkey, navigator.credentials.get() to authenticate with it — directly against your device's authenticator (Touch ID, Windows Hello, a hardware security key, or a synced passkey on your phone), entirely in your browser.\n\nThere's no backend here, which is the point: this is a sandbox for seeing exactly what a WebAuthn ceremony produces — the credential ID, attestation/assertion response, and decoded authenticatorData flags (user present, user verified, backup eligible, backup state, sign count, AAGUID) — without having to stand up a relying-party server first. It's useful for learning how WebAuthn actually works, or as a quick sanity check that your authenticator and browser support the flow before you wire up real server-side verification.\n\nWebAuthn requires a secure context (HTTPS or localhost) and browser support for the Credential Management API — both are detected automatically, with a clear message if either is missing.",
+    useCases: [
+      "Learning what a WebAuthn registration and authentication ceremony actually returns, before implementing server-side verification",
+      "Checking whether your current browser and authenticator (Touch ID, Windows Hello, a YubiKey) support passkeys at all",
+      "Seeing the difference between a synced passkey (backup eligible) and a device-bound credential (hardware key) via the decoded flags",
+      "Demonstrating passkeys to a team or in a presentation without needing a live backend",
+    ],
+    tips: [
+      "Sign count stays at 0 for most platform authenticators (Touch ID, Windows Hello, synced passkeys) — only hardware security keys reliably increment it, since it exists specifically to help a server detect a cloned hardware key.",
+      "\"Backup eligible\" means the credential can sync across a user's devices via a password manager or OS keychain — that's what makes something a true passkey rather than a device-bound credential.",
+      "If the authenticator prompt doesn't appear, check that you're on HTTPS or localhost — WebAuthn refuses to run in an insecure context.",
+    ],
+    faq: [
+      {
+        q: "Does this tool verify my passkey against a real server?",
+        a: "No — there's no backend involved at all. It calls the browser's WebAuthn API directly and decodes the response locally. Real passkey verification requires a relying-party server that stores the public key from registration and checks the signature on every subsequent authentication; this tool only shows you what the browser-side ceremony produces.",
+      },
+      {
+        q: "Why does my authenticator prompt not appear?",
+        a: "The two most common causes: you're not in a secure context (WebAuthn requires HTTPS or localhost — this is enforced by the browser, not this tool), or your browser/OS combination doesn't support platform authenticators. Check the warning banner at the top of the tool, which detects both conditions.",
+      },
+      {
+        q: "What's the difference between a passkey and a traditional WebAuthn security key?",
+        a: "Both use the same underlying WebAuthn protocol. A traditional security key (like a YubiKey) is device-bound — the private key never leaves that one physical device. A passkey is typically synced — the private key is backed up (usually encrypted) to a password manager or OS keychain and available across your devices. The 'backup eligible' flag this tool decodes tells you which kind you just created.",
       },
     ],
   },

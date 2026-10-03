@@ -92,6 +92,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online Base32 encoder and decoder. Encode text or hex bytes into RFC 4648 Base32 — the format behind TOTP secrets and DNSSEC — or decode Base32 back to text/hex. No login, 100% browser-based.",
   },
+  "base62-encoder": {
+    title: "Base62 Encoder & Decoder Online — Alphanumeric-Only Encoding | ToolNinja",
+    description:
+      "Free online Base62 encoder and decoder. Encode text or hex bytes into Base62 — the symbol-free alphabet (0-9A-Za-z) behind short URL slugs and compact database IDs — or decode back. No login, 100% browser-based.",
+  },
 
   // ── Generate ─────────────────────────────────────────────────────────────
   "lorem-ipsum": {
@@ -122,7 +127,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "jwt-generator": {
     title: "JWT Generator Online — Create & Sign JSON Web Tokens | ToolNinja",
     description:
-      "Free online JWT generator. Create and sign JSON Web Tokens with HMAC-SHA256 using WebCrypto directly in your browser. Custom header, payload and expiry support. Your secret never leaves the browser.",
+      "Free online JWT generator. Create and sign JSON Web Tokens with HS256, RS256, or ES256 using WebCrypto directly in your browser — paste a private key or generate a fresh RSA/EC key pair. Your key never leaves the browser.",
   },
   "git-command-generator": {
     title: "Git Command Generator — Plain English to Git Commands | ToolNinja",
@@ -339,6 +344,16 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online CORS error debugger. Enter your request details and the response headers you received, and get a step-by-step diagnosis of exactly why the browser blocked it. No login, 100% browser-based.",
   },
+  "jsonpath-tester": {
+    title: "JSONPath Tester Online — Query & Evaluate JSONPath Expressions | ToolNinja",
+    description:
+      "Free online JSONPath tester. Run JSONPath expressions against JSON and see every match with its exact path, live. Supports wildcards, recursive descent, slices and multi-index selectors. No login, 100% browser-based.",
+  },
+  "user-agent-parser": {
+    title: "User-Agent Parser Online — Decode Browser, OS & Device | ToolNinja",
+    description:
+      "Free online User-Agent string parser. Paste any User-Agent header and instantly see the browser, rendering engine, OS, and device type, with built-in bot and crawler detection. No login, 100% browser-based.",
+  },
 
   // ── Design ───────────────────────────────────────────────────────────────
   "css-animations": {
@@ -442,6 +457,16 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "Password Strength Checker Online — Entropy & Pattern Analysis | ToolNinja",
     description:
       "Free online password strength checker. Check entropy, common-password matches, sequential and keyboard-pattern weaknesses for any password. No login, 100% browser-based — nothing is sent anywhere.",
+  },
+  "jwk-thumbprint-calculator": {
+    title: "JWK Thumbprint Calculator Online — RFC 7638 JWK Fingerprint | ToolNinja",
+    description:
+      "Free online JWK thumbprint calculator. Compute the RFC 7638 canonical thumbprint (SHA-256/384/512) for any RSA, EC, or oct JSON Web Key — the standard way to derive a stable kid. No login, 100% browser-based.",
+  },
+  "passkey-tester": {
+    title: "Passkey / WebAuthn Playground Online — Test Passkeys in Your Browser | ToolNinja",
+    description:
+      "Free online passkey and WebAuthn tester. Create a real passkey and run an authentication ceremony using navigator.credentials, then inspect the decoded authenticator data — flags, sign count, AAGUID. No server, no login.",
   },
 
   // ── Accessibility ────────────────────────────────────────────────────────

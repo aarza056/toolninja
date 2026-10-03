@@ -3,9 +3,17 @@
 import { useState, useEffect, useCallback } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Eye, EyeOff, AlertCircle, CheckCircle, Clock, Key } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, CheckCircle, Clock, Key, Dices } from "lucide-react";
+import { generateJwtKeyPair } from "@/lib/jwt-keygen";
 
 const STORAGE_KEY = "toolninja:jwt-generator";
+
+type Algorithm = "HS256" | "RS256" | "ES256";
+const ALGORITHMS: { id: Algorithm; label: string }[] = [
+  { id: "HS256", label: "HS256 (HMAC)" },
+  { id: "RS256", label: "RS256 (RSA)" },
+  { id: "ES256", label: "ES256 (ECDSA)" },
+];
 
 function base64urlEncode(data: Uint8Array | string): string {
   let bytes: Uint8Array;
@@ -21,27 +29,38 @@ function base64urlEncode(data: Uint8Array | string): string {
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-async function signJwt(payload: Record<string, unknown>, secret: string): Promise<string> {
-  const header = { alg: "HS256", typ: "JWT" };
+function pemToArrayBuffer(pem: string): ArrayBuffer {
+  const b64 = pem.replace(/-----BEGIN [^-]+-----/, "").replace(/-----END [^-]+-----/, "").replace(/\s+/g, "");
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes.buffer;
+}
+
+async function importPrivateKey(pem: string, alg: Algorithm): Promise<CryptoKey> {
+  const der = pemToArrayBuffer(pem);
+  const params = alg === "RS256" ? { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" } : { name: "ECDSA", namedCurve: "P-256" };
+  return crypto.subtle.importKey("pkcs8", der, params, false, ["sign"]);
+}
+
+async function signJwt(payload: Record<string, unknown>, alg: Algorithm, secretOrPrivateKeyPem: string): Promise<string> {
+  const header = { alg, typ: "JWT" };
   const encodedHeader = base64urlEncode(JSON.stringify(header));
   const encodedPayload = base64urlEncode(JSON.stringify(payload));
   const signingInput = `${encodedHeader}.${encodedPayload}`;
+  const signingData = new TextEncoder().encode(signingInput);
 
-  const keyData = new TextEncoder().encode(secret);
-  const key = await crypto.subtle.importKey(
-    "raw",
-    keyData,
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-  const signature = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    new TextEncoder().encode(signingInput)
-  );
-  const encodedSig = base64urlEncode(new Uint8Array(signature));
-  return `${signingInput}.${encodedSig}`;
+  let signature: ArrayBuffer;
+  if (alg === "HS256") {
+    const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secretOrPrivateKeyPem), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+    signature = await crypto.subtle.sign("HMAC", key, signingData);
+  } else {
+    const key = await importPrivateKey(secretOrPrivateKeyPem, alg);
+    const signAlg = alg === "RS256" ? "RSASSA-PKCS1-v1_5" : { name: "ECDSA", hash: "SHA-256" };
+    signature = await crypto.subtle.sign(signAlg, key, signingData);
+  }
+
+  return `${signingInput}.${base64urlEncode(new Uint8Array(signature))}`;
 }
 
 function syntaxHighlight(obj: unknown): string {
@@ -99,12 +118,16 @@ const defaultPayload = JSON.stringify(
 );
 
 export default function JwtGeneratorClient() {
+  const [algorithm, setAlgorithm] = useState<Algorithm>("HS256");
   const [secret, setSecret] = useState("your-256-bit-secret");
+  const [privateKeyPem, setPrivateKeyPem] = useState("");
+  const [publicKeyPem, setPublicKeyPem] = useState("");
   const [payloadStr, setPayloadStr] = useState(defaultPayload);
   const [jwt, setJwt] = useState("");
   const [error, setError] = useState("");
   const [payloadError, setPayloadError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [generatingKeyPair, setGeneratingKeyPair] = useState(false);
   const [showSecret, setShowSecret] = useState(false);
 
   // Restore from localStorage
@@ -119,12 +142,27 @@ export default function JwtGeneratorClient() {
     } catch {}
   }, []);
 
-  // Persist to localStorage
+  // Persist to localStorage — only the HMAC secret is persisted; a generated private key is
+  // left in memory only, so it isn't silently re-shown on a later visit.
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ secret, payloadStr }));
     } catch {}
   }, [secret, payloadStr]);
+
+  const handleGenerateKeyPair = useCallback(async () => {
+    setGeneratingKeyPair(true);
+    setError("");
+    try {
+      const pair = await generateJwtKeyPair(algorithm === "RS256" ? "RS256" : "ES256");
+      setPrivateKeyPem(pair.privateKeyPem);
+      setPublicKeyPem(pair.publicKeyPem);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to generate a key pair");
+    } finally {
+      setGeneratingKeyPair(false);
+    }
+  }, [algorithm]);
 
   // Live JSON validation
   useEffect(() => {
@@ -140,10 +178,12 @@ export default function JwtGeneratorClient() {
     }
   }, [payloadStr]);
 
+  const signingKey = algorithm === "HS256" ? secret : privateKeyPem;
+
   const handleGenerate = useCallback(async () => {
     if (payloadError) return;
-    if (!secret.trim()) {
-      setError("Secret key is required");
+    if (!signingKey.trim()) {
+      setError(algorithm === "HS256" ? "Secret key is required" : "A private key (PEM) is required — paste one or generate a key pair");
       return;
     }
     let parsed: Record<string, unknown>;
@@ -158,14 +198,14 @@ export default function JwtGeneratorClient() {
     setError("");
     setJwt("");
     try {
-      const token = await signJwt(parsed, secret);
+      const token = await signJwt(parsed, algorithm, signingKey);
       setJwt(token);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to sign JWT");
     } finally {
       setLoading(false);
     }
-  }, [secret, payloadStr, payloadError]);
+  }, [algorithm, signingKey, payloadStr, payloadError]);
 
   // Parse JWT parts for colored display
   const jwtParts = jwt ? jwt.split(".") : [];
@@ -196,35 +236,90 @@ export default function JwtGeneratorClient() {
   return (
     <ToolLayout
       title="JWT Generator"
-      description="Create and sign JSON Web Tokens using HS256 (HMAC-SHA256)"
+      description="Create and sign JSON Web Tokens using HS256, RS256, or ES256"
     >
       <div className="max-w-2xl space-y-5">
-        {/* Secret Key */}
+        {/* Algorithm */}
         <div>
-          <label className="text-xs text-[#888888] font-medium block mb-1.5">Secret Key</label>
-          <div className="relative">
-            <input
-              type={showSecret ? "text" : "password"}
-              value={secret}
-              onChange={(e) => setSecret(e.target.value)}
-              placeholder="Enter your secret key..."
-              className="w-full p-3 pr-10 font-mono text-sm bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
-              spellCheck={false}
-            />
-            <button
-              type="button"
-              onClick={() => setShowSecret((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888888] hover:text-[#f5f5f5] transition-colors"
-              title={showSecret ? "Hide secret" : "Show secret"}
-            >
-              {showSecret ? <EyeOff size={15} /> : <Eye size={15} />}
-            </button>
+          <label className="text-xs text-[#888888] font-medium block mb-1.5">Algorithm</label>
+          <div className="flex">
+            {ALGORITHMS.map((a) => (
+              <button
+                key={a.id}
+                onClick={() => { setAlgorithm(a.id); setError(""); }}
+                className={`px-3 py-1.5 text-sm border first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+                  algorithm === a.id ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+                }`}
+              >
+                {a.label}
+              </button>
+            ))}
           </div>
-          <p className="text-xs text-[#555555] mt-1 flex items-center gap-1">
-            <Key size={11} />
-            Keep this secret in production — never expose it client-side
-          </p>
         </div>
+
+        {/* Secret Key / Private Key */}
+        {algorithm === "HS256" ? (
+          <div>
+            <label className="text-xs text-[#888888] font-medium block mb-1.5">Secret Key</label>
+            <div className="relative">
+              <input
+                type={showSecret ? "text" : "password"}
+                value={secret}
+                onChange={(e) => setSecret(e.target.value)}
+                placeholder="Enter your secret key..."
+                className="w-full p-3 pr-10 font-mono text-sm bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
+                spellCheck={false}
+              />
+              <button
+                type="button"
+                onClick={() => setShowSecret((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888888] hover:text-[#f5f5f5] transition-colors"
+                title={showSecret ? "Hide secret" : "Show secret"}
+              >
+                {showSecret ? <EyeOff size={15} /> : <Eye size={15} />}
+              </button>
+            </div>
+            <p className="text-xs text-[#555555] mt-1 flex items-center gap-1">
+              <Key size={11} />
+              Keep this secret in production — never expose it client-side
+            </p>
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs text-[#888888] font-medium">Private Key (PKCS8 PEM)</label>
+              <button
+                onClick={handleGenerateKeyPair}
+                disabled={generatingKeyPair}
+                className="flex items-center gap-1 text-xs text-[#a855f7] hover:text-[#9333ea] transition-colors disabled:opacity-50"
+              >
+                <Dices size={11} className={generatingKeyPair ? "animate-pulse" : ""} />
+                {generatingKeyPair ? "Generating…" : "Generate key pair"}
+              </button>
+            </div>
+            <textarea
+              value={privateKeyPem}
+              onChange={(e) => { setPrivateKeyPem(e.target.value); setPublicKeyPem(""); }}
+              placeholder={"-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"}
+              rows={6}
+              spellCheck={false}
+              className="w-full p-3 font-mono text-xs resize-y bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
+            />
+            <p className="text-xs text-[#555555] mt-1 flex items-center gap-1">
+              <Key size={11} />
+              Paste an existing PKCS8 private key, or generate a fresh pair — never expose a real production key client-side
+            </p>
+            {publicKeyPem && (
+              <div className="mt-2">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs text-[#888888] font-medium">Matching Public Key</label>
+                  <CopyButton text={publicKeyPem} size="sm" />
+                </div>
+                <pre className="p-3 font-mono text-xs bg-[#0d0d0d] border border-[#1a1a1a] rounded-[8px] text-[#888888] overflow-auto whitespace-pre-wrap break-all">{publicKeyPem}</pre>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Payload */}
         <div>
@@ -262,7 +357,7 @@ export default function JwtGeneratorClient() {
         {/* Generate button */}
         <button
           onClick={handleGenerate}
-          disabled={loading || !!payloadError || !secret.trim()}
+          disabled={loading || !!payloadError || !signingKey.trim()}
           className="px-5 py-2.5 rounded-[8px] text-sm font-medium bg-[#a855f7] hover:bg-[#9333ea] text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Signing..." : "Generate JWT"}

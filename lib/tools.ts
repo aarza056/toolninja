@@ -253,6 +253,19 @@ export const tools: Tool[] = [
       "base32 online tool",
     ],
   },
+  {
+    slug: "base62-encoder",
+    name: "Base62 Encoder / Decoder",
+    description: "Encode or decode Base62 strings — the alphanumeric-only alphabet behind short URL slugs",
+    icon: "Binary",
+    category: "Encode",
+    keywords: [
+      "base62 encoder", "base62 decoder", "base62 encode online",
+      "base62 decode online", "base62 converter", "base62 to hex",
+      "hex to base62", "short url encoding", "alphanumeric id encoder",
+      "base62 online tool",
+    ],
+  },
 
   // ─── Generate ─────────────────────────────────────────────────────────────
   {
@@ -885,6 +898,32 @@ export const tools: Tool[] = [
       "cors debugger online", "cors credentials wildcard error",
     ],
   },
+  {
+    slug: "jsonpath-tester",
+    name: "JSONPath Tester",
+    description: "Test JSONPath expressions against JSON with live results and the exact path to each match",
+    icon: "Crosshair",
+    category: "Test",
+    keywords: [
+      "jsonpath tester", "jsonpath tester online", "jsonpath evaluator",
+      "jsonpath query tester", "test jsonpath expression", "jsonpath online",
+      "jsonpath tool", "json query tester", "jsonpath checker",
+      "jsonpath validator", "jsonpath expression tester", "jsonpath playground",
+    ],
+  },
+  {
+    slug: "user-agent-parser",
+    name: "User-Agent String Parser",
+    description: "Break a User-Agent header into browser, engine, OS, and device — with bot detection",
+    icon: "MonitorSmartphone",
+    category: "Test",
+    keywords: [
+      "user agent parser", "user agent parser online", "parse user agent string",
+      "user agent string decoder", "user agent lookup", "ua string parser",
+      "user agent analyzer", "detect browser from user agent", "bot user agent detector",
+      "user agent string checker",
+    ],
+  },
 
   // ─── Design ───────────────────────────────────────────────────────────────
   {
@@ -1150,6 +1189,31 @@ export const tools: Tool[] = [
       "password strength test free", "password security checker online",
     ],
   },
+  {
+    slug: "jwk-thumbprint-calculator",
+    name: "JWK Thumbprint Calculator",
+    description: "Compute an RFC 7638 thumbprint for a JSON Web Key — the canonical fingerprint used as a stable kid",
+    icon: "Fingerprint",
+    category: "Security",
+    keywords: [
+      "jwk thumbprint calculator", "rfc 7638 thumbprint", "jwk thumbprint online",
+      "json web key thumbprint", "compute jwk thumbprint", "jwk fingerprint calculator",
+      "jwks kid generator", "jwk thumbprint generator", "rfc7638 online tool",
+    ],
+  },
+  {
+    slug: "passkey-tester",
+    name: "Passkey / WebAuthn Playground",
+    description: "Create a real passkey and run an authentication ceremony entirely in your browser — no server required",
+    icon: "ScanFace",
+    category: "Security",
+    keywords: [
+      "passkey tester", "webauthn tester", "passkey debugger online",
+      "test webauthn in browser", "passkey playground", "webauthn playground",
+      "navigator.credentials.create demo", "passkey demo online", "webauthn authenticator test",
+      "passkey ceremony tester",
+    ],
+  },
 
   // ─── Accessibility ────────────────────────────────────────────────────────
   {
@@ -1236,9 +1300,9 @@ export type Category = (typeof categories)[number];
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 export const LATEST_TOOL_SLUGS = [
-  "secret-scanner",
-  "css-carousel-generator",
-  "cors-debugger",
-  "password-strength-checker",
-  "svg-to-jsx",
+  "passkey-tester",
+  "jwk-thumbprint-calculator",
+  "jsonpath-tester",
+  "user-agent-parser",
+  "base62-encoder",
 ];

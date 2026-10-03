@@ -5,6 +5,7 @@ export interface SshKeyPairResult {
   publicKey: string;
   privateKey: string;
   fingerprint: string;
+  randomart: string;
   privateKeyFormat: "OpenSSH" | "PKCS8 PEM";
 }
 
@@ -70,9 +71,55 @@ function mpint(bytes: Uint8Array): Uint8Array {
   return trimmed;
 }
 
-async function sha256Fingerprint(pubBlob: Uint8Array): Promise<string> {
-  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", pubBlob as BufferSource));
+async function sha256Digest(pubBlob: Uint8Array): Promise<Uint8Array> {
+  return new Uint8Array(await crypto.subtle.digest("SHA-256", pubBlob as BufferSource));
+}
+
+function fingerprintFromDigest(digest: Uint8Array): string {
   return `SHA256:${toBase64(digest).replace(/=+$/, "")}`;
+}
+
+function centerPad(s: string, width: number, fill: string): string {
+  if (s.length >= width) return s.slice(0, width);
+  const total = width - s.length;
+  const left = Math.floor(total / 2);
+  return fill.repeat(left) + s + fill.repeat(total - left);
+}
+
+/** OpenSSH's "drunken bishop" randomart (ssh-keygen -lv): walks a 17x9 field using 2-bit moves
+ * read from the fingerprint digest, low bits first, then renders visit-density characters. */
+function buildRandomart(digest: Uint8Array, label: string): string {
+  const AUG = " .o+=*BOX@%&#/^SE";
+  const W = 17;
+  const H = 9;
+  const field: number[][] = Array.from({ length: H }, () => new Array(W).fill(0));
+
+  let x = Math.floor(W / 2);
+  let y = Math.floor(H / 2);
+  const startX = x;
+  const startY = y;
+
+  for (let d = 0; d < digest.length; d++) {
+    let input = digest[d];
+    for (let b = 0; b < 4; b++) {
+      x += input & 0x1 ? 1 : -1;
+      y += input & 0x2 ? 1 : -1;
+      x = Math.max(0, Math.min(W - 1, x));
+      y = Math.max(0, Math.min(H - 1, y));
+      if (field[y][x] < AUG.length - 2) field[y][x]++;
+      input >>= 2;
+    }
+  }
+
+  field[startY][startX] = AUG.length - 2; // 'S' — start
+  field[y][x] = AUG.length - 1; // 'E' — end
+
+  const lines = [`+${centerPad(` ${label} `, W, "-")}+`];
+  for (let row = 0; row < H; row++) {
+    lines.push(`|${field[row].map((v) => AUG[v]).join("")}|`);
+  }
+  lines.push(`+${"-".repeat(W)}+`);
+  return lines.join("\n");
 }
 
 async function generateEd25519(comment: string): Promise<SshKeyPairResult> {
@@ -113,11 +160,13 @@ async function generateEd25519(comment: string): Promise<SshKeyPairResult> {
 
   const privateKey = `-----BEGIN OPENSSH PRIVATE KEY-----\n${wrapBase64(toBase64(outer.toBytes()))}\n-----END OPENSSH PRIVATE KEY-----\n`;
 
+  const digest = await sha256Digest(pubBlob);
   return {
     type: "ed25519",
     publicKey,
     privateKey,
-    fingerprint: await sha256Fingerprint(pubBlob),
+    fingerprint: fingerprintFromDigest(digest),
+    randomart: buildRandomart(digest, "ED25519 256"),
     privateKeyFormat: "OpenSSH",
   };
 }
@@ -139,11 +188,13 @@ async function generateRsa(modulusLength: number, comment: string): Promise<SshK
   const pkcs8 = new Uint8Array(await crypto.subtle.exportKey("pkcs8", keyPair.privateKey));
   const privateKey = `-----BEGIN PRIVATE KEY-----\n${wrapBase64(toBase64(pkcs8), 64)}\n-----END PRIVATE KEY-----\n`;
 
+  const digest = await sha256Digest(pubBlob);
   return {
     type: "rsa",
     publicKey,
     privateKey,
-    fingerprint: await sha256Fingerprint(pubBlob),
+    fingerprint: fingerprintFromDigest(digest),
+    randomart: buildRandomart(digest, `RSA ${modulusLength}`),
     privateKeyFormat: "PKCS8 PEM",
   };
 }

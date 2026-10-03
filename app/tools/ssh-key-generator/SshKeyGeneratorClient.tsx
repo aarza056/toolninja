@@ -134,6 +134,13 @@ export default function SshKeyGeneratorClient() {
             <span>Fingerprint: <span className="text-[#f5f5f5] font-mono">{result.fingerprint}</span></span>
           </div>
 
+          <div className="mb-5">
+            <label className="text-xs text-[#888888] font-medium block mb-1.5">Randomart (ssh-keygen -lv)</label>
+            <pre className="inline-block p-3 font-mono text-xs leading-tight bg-[#111111] border border-[#222222] rounded-[8px] text-[#a855f7] whitespace-pre">
+              {result.randomart}
+            </pre>
+          </div>
+
           <div className="grid grid-cols-1 gap-4">
             <KeyBlock title="Public Key" content={result.publicKey} filename={`id_${result.type}.pub`} />
             <KeyBlock title="Private Key" content={result.privateKey} filename={`id_${result.type}`} />

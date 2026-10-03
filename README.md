@@ -1,6 +1,6 @@
 # 🥷 ToolNinja — Fast, Free Developer Tools
 
-> 90+ free browser-only developer tools. No login. Your data stays in your browser.
+> 95+ free browser-only developer tools. No login. Your data stays in your browser.
 
 **Live at: [toolninja.io](https://toolninja.io)**
 
@@ -16,28 +16,31 @@ that's inherent to what those tools do, not data leaving to us.)
 
 ---
 
-## 🛠️ Tools (40 total)
+## 🛠️ Tools (95 total)
 
 ### Format
-JSON Formatter · Markdown Preview · SQL Formatter · HTML Formatter
+JSON Formatter · Markdown Preview · SQL Formatter · HTML Formatter · Word Counter · SVG Optimizer · Image Compressor · GraphQL Query Formatter · XML Formatter · List Sorter & Deduplicator
 
 ### Encode
-Base64 Encoder/Decoder · URL Encoder/Decoder · JWT Decoder · Hash Generator · HTML Entity Encoder · Image to Base64 · JWT Generator
+Base64 Encoder/Decoder · URL Encoder/Decoder · JWT Decoder · Hash Generator · HTML Entity Encoder · Image to Base64 · Base58 Encoder / Decoder · Base32 Encoder / Decoder · Base62 Encoder / Decoder
 
 ### Generate
-Lorem Ipsum · Password Generator · UUID Generator · JSON to TypeScript · QR Code Generator · Git Command Generator · Markdown Table Generator · Meta Tags Generator
+Lorem Ipsum Generator · Password Generator · UUID Generator · JSON to TypeScript · QR Code Generator · JWT Generator · Git Command Generator · Markdown Table Generator · Meta Tags Generator · Favicon Generator · Fake Data Generator · .gitignore Generator · JSON Schema Generator · Slug Generator · robots.txt Generator · Barcode Generator · README Badge Generator
 
 ### Convert
-Color Converter · Timestamp Converter · Number Base Converter · String Case Converter · JSON ↔ YAML · CIDR Calculator · Docker Run to Compose ⭐
+Color Converter · Timestamp Converter · Number Base Converter · String Case Converter · JSON ↔ YAML Converter · IP / CIDR Calculator · Docker Run to Compose · CSV ↔ JSON Converter · Env File Tool · cURL to Code · URL Parser & Query String Builder · .htaccess to Nginx Converter · Meeting Planner · JSON to Markdown Table · SVG to JSX / React Component
 
 ### Test
-Regex Tester (40+ patterns) · Diff Checker · CRON Expression Tester · HTTP Request Builder · Config Validator · Text Diff · XPath Tester ⭐
+Regex Tester · Diff Checker · CRON Expression Tester · HTTP Request Builder · YAML / TOML / JSON Validator · Text Diff · XPath Tester · JSON Diff Checker · IBAN Validator & Generator · Unified Diff / Patch Generator · UUID Parser · TypeScript 7 Migration Checker · Node.js Type-Stripping Checker · HTTP Header Inspector · CORS Error Debugger · JSONPath Tester · User-Agent String Parser
 
 ### Design
-CSS Animations · CSS Gradient Generator · Color Palette Generator
+CSS Animations · CSS Gradient Generator · Color Palette Generator · Mermaid Diagram Editor · Image Color Palette Extractor · CSS Box Shadow Generator · CSS Specificity Calculator · Placeholder Image Generator · CSS Scrollbar Generator · CSS Scroll Carousel Generator
 
 ### Security
-AES / RSA Encryption (WebCrypto — in-browser)
+AES / RSA Encryption · CSP Header Builder & Analyzer · JWT Key Pair Generator · SSH Key Generator · TOTP / 2FA Code Generator · package.json Script Inspector · HTTP Security Headers Checker · JWK ↔ PEM Converter · Secret / API Key Scanner · Password Strength Checker · JWK Thumbprint Calculator · Passkey / WebAuthn Playground
+
+### Accessibility
+Color Contrast Checker · Color Blindness Simulator
 
 ### Reference
 HTTP Status Codes · Chmod Calculator · Unicode Explorer
@@ -109,7 +112,7 @@ components/
   CommandPalette.tsx  → Ctrl+K search
 
 lib/
-  tools.ts            → Master tool registry (40 tools)
+  tools.ts            → Master tool registry (95 tools)
   tool-content.ts     → SEO content per tool
   metadata.ts         → generateToolMetadata() + generateToolJsonLd()
 ```
