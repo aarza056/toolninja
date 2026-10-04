@@ -29,6 +29,7 @@ export default function LoremIpsumClient() {
   const [type, setType] = useState<"paragraphs" | "sentences" | "words">("paragraphs");
   const [count, setCount] = useState(3);
   const [classic, setClassic] = useState(true);
+  const [htmlOutput, setHtmlOutput] = useState(false);
   const [output, setOutput] = useState("");
 
   const generate = () => {
@@ -37,18 +38,20 @@ export default function LoremIpsumClient() {
       const paras = Array.from({ length: count }, (_, i) =>
         i === 0 && classic ? CLASSIC_START + " " + getParagraph(4) : getParagraph()
       );
-      result = paras.join("\n\n");
+      result = htmlOutput ? paras.map((p) => `<p>${p}</p>`).join("\n") : paras.join("\n\n");
     } else if (type === "sentences") {
       const sentences = Array.from({ length: count }, (_, i) =>
         i === 0 && classic ? CLASSIC_START : getSentence()
       );
       result = sentences.join(" ");
+      if (htmlOutput) result = `<p>${result}</p>`;
     } else {
       const words = Array.from({ length: count }, (_, i) => {
         const w = getWord();
         return i === 0 && classic ? w.charAt(0).toUpperCase() + w.slice(1) : w;
       });
       result = words.join(" ");
+      if (htmlOutput) result = `<p>${result}</p>`;
     }
     setOutput(result);
   };
@@ -96,6 +99,16 @@ export default function LoremIpsumClient() {
               className="accent-[#a855f7]"
             />
             Start with classic &ldquo;Lorem ipsum...&rdquo;
+          </label>
+
+          <label className="flex items-center gap-2 text-sm text-[#888888] cursor-pointer pb-1.5">
+            <input
+              type="checkbox"
+              checked={htmlOutput}
+              onChange={(e) => setHtmlOutput(e.target.checked)}
+              className="accent-[#a855f7]"
+            />
+            Wrap in &lt;p&gt; tags
           </label>
 
           <button

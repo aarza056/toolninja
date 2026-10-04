@@ -1,7 +1,34 @@
+export type HeaderCategory = "Security" | "Caching" | "CORS" | "General";
+
 export interface ParsedHeader {
   name: string;
   value: string;
   description: string | null;
+  category: HeaderCategory;
+}
+
+const SECURITY_HEADERS = new Set([
+  "strict-transport-security", "content-security-policy", "x-frame-options",
+  "x-content-type-options", "x-xss-protection", "permissions-policy",
+  "cross-origin-opener-policy", "cross-origin-resource-policy", "referrer-policy",
+  "www-authenticate", "authorization", "set-cookie", "x-powered-by", "server",
+]);
+
+const CACHING_HEADERS = new Set([
+  "cache-control", "etag", "last-modified", "expires", "age", "vary",
+]);
+
+const CORS_HEADERS = new Set([
+  "access-control-allow-origin", "access-control-allow-credentials",
+  "access-control-allow-methods", "access-control-allow-headers",
+]);
+
+function categorize(name: string): HeaderCategory {
+  const lower = name.toLowerCase();
+  if (SECURITY_HEADERS.has(lower)) return "Security";
+  if (CACHING_HEADERS.has(lower)) return "Caching";
+  if (CORS_HEADERS.has(lower)) return "CORS";
+  return "General";
 }
 
 const HEADER_DESCRIPTIONS: Record<string, string> = {
@@ -55,7 +82,7 @@ export function parseHeaders(raw: string): ParsedHeader[] {
     if (idx === -1) continue;
     const name = line.slice(0, idx).trim();
     const value = line.slice(idx + 1).trim();
-    result.push({ name, value, description: HEADER_DESCRIPTIONS[name.toLowerCase()] ?? null });
+    result.push({ name, value, description: HEADER_DESCRIPTIONS[name.toLowerCase()] ?? null, category: categorize(name) });
   }
   return result;
 }

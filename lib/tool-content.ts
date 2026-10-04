@@ -94,6 +94,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Decoding what a suspicious or complex-looking URL actually contains",
     ],
     tips: [
+      "Use Component mode for a single query value or path segment, and Full URL mode for a complete URL — Component mode escapes / ? : # too, which mangles a full URL if you encode the whole thing at once.",
       "Encode only the query parameter values — not the entire URL. Encoding slashes and colons in the domain will break the URL.",
       "Spaces encode to %20 in standard percent-encoding and to + in application/x-www-form-urlencoded (HTML form data).",
       "Most modern browsers auto-encode URLs when you paste them, but HTTP clients like curl do not.",
@@ -221,6 +222,7 @@ export const toolContent: Record<string, ToolContent> = {
     tips: [
       "Use paragraph mode for body copy, word mode for short labels and button text.",
       "Vary the paragraph count to test how your layout handles both short and long content.",
+      "Check 'Wrap in <p> tags' to paste the output directly into HTML without manually adding paragraph tags.",
     ],
     faq: [
       {
@@ -1972,6 +1974,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Batch mode processes one line at a time — paste an entire list of titles to get a matching list of slugs instantly.",
       "Accented and non-Latin characters are transliterated where possible (café → cafe) rather than stripped, keeping the slug readable.",
       "Set a max length to keep slugs from becoming unreasonably long for titles with many words — the cut respects word boundaries via the separator.",
+      "Enable 'Remove stopwords' to drop filler words (the, a, of, in…) for a tighter, more keyword-dense slug — common for SEO-focused titles.",
     ],
     faq: [
       {
@@ -2756,7 +2759,8 @@ export const toolContent: Record<string, ToolContent> = {
     ],
     tips: [
       "Specificity is compared left to right as separate counts, not added into one number — a single ID (1,0,0) always beats any number of classes (0,99,0), no matter how many classes are stacked.",
-      "Inline style=\"\" attributes and !important declarations override specificity entirely and aren't part of this comparison — they win (or lose, for !important vs !important) by a separate set of rules.",
+      "Toggle !important on a selector to see it override specificity entirely — a single !important selector beats every non-important one regardless of how low its own specificity is.",
+      "Inline style=\"\" attributes aren't part of this comparison — they're not a selector at all, and in practice beat every selector-based rule except an !important one.",
       "Use :where() specifically when you want to group selectors for convenience without adding any specificity weight — it's the one selector in CSS designed to be \"invisible\" to the cascade.",
     ],
     faq: [
@@ -2958,6 +2962,7 @@ export const toolContent: Record<string, ToolContent> = {
     ],
     tips: [
       "Paste the full raw header block, including an optional leading HTTP/1.1 200 OK status line — it's automatically skipped, not misread as a header.",
+      "Use the category filter chips (Security, Caching, CORS, General) above the results to jump straight to the headers you're actually debugging in a large dump.",
       "Set-Cookie can legitimately appear multiple times (once per cookie) — paste every occurrence on its own line to see each one explained.",
       "If a header shows no explanation, it's likely a custom or application-specific header (X-Request-Id, X-Correlation-Id) rather than one defined by an HTTP or web-platform spec.",
     ],
@@ -3269,6 +3274,156 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "What's the difference between a passkey and a traditional WebAuthn security key?",
         a: "Both use the same underlying WebAuthn protocol. A traditional security key (like a YubiKey) is device-bound — the private key never leaves that one physical device. A passkey is typically synced — the private key is backed up (usually encrypted) to a password manager or OS keychain and available across your devices. The 'backup eligible' flag this tool decodes tells you which kind you just created.",
+      },
+    ],
+  },
+
+  "css-flexbox-generator": {
+    about:
+      "The ToolNinja CSS Flexbox Generator builds flex container and item properties visually — direction, wrap, justify-content, align-items, align-content, and gap for the container, plus align-self and flex-grow for an individually selected item — with a live preview that updates instantly and copy-ready CSS below it.\n\nFlexbox's own terminology is a common source of confusion (justify-content vs align-items, which axis each one actually controls, what 'main axis' even means once you flip flex-direction to column), and most of that confusion only resolves by seeing it move. Dragging each control and watching the preview boxes react is faster than re-reading the spec for the tenth time.\n\nEverything runs 100% in your browser — the preview is live React/CSS, not a canvas rendering, so what you see matches real flexbox behavior exactly.",
+    useCases: [
+      "Prototyping a navbar, card row, or button group's alignment before writing it in your actual stylesheet",
+      "Understanding how flex-direction: column flips which axis justify-content and align-items each control",
+      "Demonstrating align-self overriding a single item's alignment within an otherwise uniform row",
+      "Generating a starting flex-wrap + gap layout for a responsive component",
+    ],
+    tips: [
+      "Switching flex-direction to column swaps which axis justify-content and align-items each control — justify-content always controls the main axis, align-items the cross axis.",
+      "align-content only has a visible effect when flex-wrap isn't nowrap and there's more than one line to distribute — the tool hides it otherwise since it would do nothing.",
+      "gap works on flex containers in every current browser — there's no need for the old margin-based spacing hacks.",
+    ],
+    faq: [
+      {
+        q: "What's the difference between justify-content and align-items?",
+        a: "justify-content controls alignment along the main axis (the direction flex-direction points — horizontal for row, vertical for column). align-items controls alignment along the cross axis (perpendicular to that). Flipping flex-direction swaps which one feels like 'horizontal' and which feels like 'vertical,' which is the single most common source of flexbox confusion.",
+      },
+      {
+        q: "When should I use CSS Grid instead of Flexbox?",
+        a: "Flexbox is one-dimensional — it's built for laying out a single row or column of items. Grid is two-dimensional — use it when you need to control rows and columns together, like a page layout or a card gallery with specific column spans. A lot of real UIs use both: Grid for the overall page structure, Flexbox for aligning items within one row of it.",
+      },
+      {
+        q: "Why isn't align-self doing anything on my selected item?",
+        a: "align-self only has an effect when the container's align-items value doesn't already stretch items to fill the cross axis in a way that leaves no room to move, or when the item has an explicit size smaller than the cross-axis space available. If the container is align-items: stretch and the item has no fixed height/width on the cross axis, it may visually fill the space regardless of align-self until you give it an explicit size.",
+      },
+    ],
+  },
+
+  "css-grid-generator": {
+    about:
+      "The ToolNinja CSS Grid Generator builds a grid-template-columns/rows layout visually — equal fr-unit columns or a responsive repeat(auto-fit, minmax()) track, configurable rows, gap, and item alignment — plus per-cell grid-column/grid-row spans on an individually selected cell, with a live preview and copy-ready CSS.\n\nThe responsive track mode demonstrates the single most useful CSS Grid pattern most developers reach for in practice: repeat(auto-fit, minmax(Npx, 1fr)), which produces a card/gallery layout that reflows its column count automatically as the container resizes, with zero media queries. The spanning controls demonstrate the other core Grid feature CSS alone can't easily replicate with Flexbox: making one specific cell deliberately wider or taller than its neighbors.\n\nEverything runs 100% in your browser — the preview is live CSS Grid, not a simulation, so the generated code behaves exactly like what you see.",
+    useCases: [
+      "Building a responsive card or image gallery layout that reflows columns without media queries",
+      "Prototyping a dashboard layout where one cell needs to span multiple columns or rows",
+      "Understanding how auto-fit and minmax() interact to produce a responsive grid",
+      "Generating a starting grid-template-columns value for a design you already have in mind",
+    ],
+    tips: [
+      "repeat(auto-fit, minmax(200px, 1fr)) — the 'Responsive' track mode — is the single most reusable CSS Grid pattern: it reflows column count automatically as the container resizes, no media queries required.",
+      "grid-column: span N and grid-row: span N (shown here when you widen the selected cell) only affect that one cell — every other cell keeps occupying exactly one track.",
+      "justify-items/align-items position content within each cell; they're unrelated to justify-content/align-content, which position the grid's tracks within the container when the grid is smaller than its container.",
+    ],
+    faq: [
+      {
+        q: "What does repeat(auto-fit, minmax(200px, 1fr)) actually do?",
+        a: "It tells the browser to fit as many 1fr-wide columns as possible, with each column never shrinking below 200px — so as the container narrows, columns reflow onto new rows automatically, and as it widens, existing columns stretch to fill the extra space. It's the standard zero-media-query way to build a responsive card grid.",
+      },
+      {
+        q: "What's the difference between auto-fit and auto-fill?",
+        a: "Both create as many tracks as fit, but auto-fit collapses any empty tracks to zero width once there's no content left to fill them (so existing items stretch to use the freed space), while auto-fill keeps those empty tracks at their minmax() width (so items stay their intended size and just leave visible gaps). auto-fit is what most people actually want for a responsive gallery.",
+      },
+      {
+        q: "Why use grid-column: span 2 instead of just making an item wider with CSS width?",
+        a: "span works in track units, not pixels — the spanning cell always occupies exactly that many of the grid's own columns, staying perfectly aligned to the grid regardless of how wide those columns currently are (which changes as the container resizes). A manual width in pixels or percent doesn't stay locked to the grid's actual column boundaries the same way.",
+      },
+    ],
+  },
+
+  "ai-token-counter": {
+    about:
+      "The ToolNinja AI Token Counter estimates how many tokens a piece of text would cost against a language model, and what that translates to in dollars across several current Claude, GPT, and Gemini models side by side.\n\nIt uses a character/word-based approximation rather than shipping any provider's actual BPE tokenizer client-side — real tokenizers (tiktoken, Claude's tokenizer) are trained vocabularies of tens of thousands of sub-word pieces, too large to bundle for an instant, no-dependency browser tool. The approximation mirrors how those tokenizers actually behave in shape — short common words cost about one token, longer or unusual words cost roughly a token per four characters, punctuation gets its own tokens — and lands within roughly 10–15% of the real count for ordinary English prose. For an exact count, use the provider's own token-counting endpoint (Anthropic's Messages API has a dedicated count_tokens call).\n\nEverything runs 100% in your browser. Your prompt is never sent anywhere — not even to count its own tokens.",
+    useCases: [
+      "Getting a quick ballpark on how much a prompt or document would cost before sending it to an LLM API",
+      "Comparing relative cost across Claude, GPT, and Gemini models for the same piece of text",
+      "Estimating total spend for a batch job by multiplying a per-call estimate by call count",
+      "Checking whether a document is likely to fit inside a model's context window before chunking it",
+    ],
+    tips: [
+      "This is an approximation, not an exact count — for billing-critical accuracy, use the provider's own tokenizer or token-counting API endpoint.",
+      "The 'assumed output length' slider lets you model cost scenarios beyond just the input — most real usage cost comes from output tokens, which are typically priced several times higher than input.",
+      "Code and non-English text tokenize less predictably than English prose — treat the estimate as looser for those inputs.",
+    ],
+    faq: [
+      {
+        q: "Why isn't this using the real GPT or Claude tokenizer?",
+        a: "Real tokenizers are trained vocabularies with tens of thousands of entries — too large to bundle into a lightweight, instant-load browser tool without adding a heavy dependency. The approximation here is tuned to track real tokenizer behavior closely for typical English text, but isn't a substitute for an exact count when precision actually matters (e.g. right before a batch job you're billed for).",
+      },
+      {
+        q: "Why do output tokens cost so much more than input tokens?",
+        a: "Generating a token requires a full forward pass through the model for every single token produced, run sequentially — it can't be parallelized the way processing a big input prompt can. That computational asymmetry is why every major provider prices output tokens at roughly 4-6x the input rate.",
+      },
+      {
+        q: "Are the prices shown here accurate?",
+        a: "They're approximate list rates captured as of October 2026 — AI API pricing changes frequently as providers release new models and adjust tiers. Treat the numbers here as useful for relative comparison between models, and always check the provider's own current pricing page before making a budgeting decision.",
+      },
+    ],
+  },
+
+  "markdown-toc-generator": {
+    about:
+      "The ToolNinja Markdown Table of Contents Generator scans a markdown document for headings (# through ######) and builds a nested, anchor-linked table of contents — as Markdown or as an HTML <ul> — ready to paste at the top of the same document.\n\nAnchor slugs are generated the same way GitHub renders them: lowercased, punctuation stripped, spaces turned into hyphens, with a numeric suffix appended to any duplicate heading text (so two headings both named 'Usage' become #usage and #usage-1). That matching matters — a TOC generated with a different slug algorithm than the platform actually renders will produce links that silently go nowhere.\n\nHeadings inside fenced code blocks are correctly ignored, so a markdown code sample containing a line that starts with # won't be mistaken for a real heading. Everything runs 100% in your browser — your document never leaves your machine.",
+    useCases: [
+      "Adding a table of contents to a long GitHub README without hand-writing anchor links",
+      "Regenerating a TOC after reordering or renaming sections in an existing document",
+      "Building a TOC for a blog post or documentation page before pasting it into a CMS",
+      "Checking which anchor slug a given heading will actually resolve to before linking to it from elsewhere",
+    ],
+    tips: [
+      "Run it again after editing headings — a TOC built from an older version of the document will have stale links once heading text changes (since the slug is derived from the text itself).",
+      "Duplicate heading text gets a -1, -2, ... suffix on its slug automatically, matching exactly how GitHub resolves the same collision.",
+      "Switch to HTML output if you're pasting into a CMS or static site generator that doesn't render raw markdown lists.",
+    ],
+    faq: [
+      {
+        q: "Why do my links not scroll to the right heading after I paste this in?",
+        a: "The most common cause is a slug mismatch — the platform rendering your markdown may use a slightly different slugification algorithm than GitHub's (different punctuation handling, different duplicate-suffix behavior). This tool matches GitHub's behavior specifically; if you're publishing somewhere else, check one link manually before trusting the rest.",
+      },
+      {
+        q: "Does this handle nested headings correctly?",
+        a: "Yes — the output list indents each heading according to its level (# through ######) relative to the shallowest heading in the document, so a ### under a ## is visually nested one level deeper, matching how GitHub and most markdown renderers display a proper table of contents.",
+      },
+      {
+        q: "Why are headings inside my code examples being skipped?",
+        a: "That's intentional — the tool tracks fenced code blocks (```) and ignores any line that looks like a heading while inside one, since a markdown tutorial showing \"# My Heading\" as a code example shouldn't itself become a table-of-contents entry.",
+      },
+    ],
+  },
+
+  "credit-card-test-generator": {
+    about:
+      "The ToolNinja Credit Card Test Number Generator produces Luhn-valid fake card numbers — correctly formatted for Visa, Mastercard, American Express, and Discover — for testing payment form validation, without using real card data.\n\nEvery generated number passes the Luhn checksum (the same mod-10 algorithm real card networks use to catch typos) and matches each network's real prefix and length rules, so it'll pass any client-side format validation your form runs. It is not, however, a real, working card number — there's no issuing bank behind it, and no payment processor will ever actually charge it. For a true end-to-end payment flow test (an actual simulated charge), use your payment processor's own published test numbers (Stripe, PayPal, and others all maintain official test card lists for their sandbox environments).\n\nThe Luhn validator mode works the other direction: paste any number and check whether it passes the checksum, useful for debugging why a form's client-side validation is rejecting (or wrongly accepting) a number. Everything runs 100% in your browser.",
+    useCases: [
+      "Filling out a payment form's UI/UX during development without typing real card data",
+      "Testing that a credit card input field correctly validates the Luhn checksum and rejects malformed numbers",
+      "Debugging why a specific number fails client-side Luhn validation",
+      "Demoing a checkout flow's front-end without wiring up a real payment processor sandbox",
+    ],
+    tips: [
+      "These numbers are for front-end format/checksum testing only — they will never process a real charge, and no payment processor sandbox will accept them as valid test cards either.",
+      "Each payment processor (Stripe, PayPal, Braintree, etc.) publishes its own official test numbers for actually simulating a charge in their sandbox — use those for end-to-end payment flow testing.",
+      "The Luhn checksum only confirms a number is structurally well-formed — it says nothing about whether a card exists, is active, or has any funds.",
+    ],
+    faq: [
+      {
+        q: "Will these numbers actually work on a real checkout page?",
+        a: "No. They pass the Luhn checksum and match real network prefix/length rules, so they'll pass client-side format validation, but there's no bank account behind them — any real payment processor will reject an actual charge attempt against one. They exist purely to test your form's validation logic, not to process payments.",
+      },
+      {
+        q: "Is it legal and safe to generate numbers like this?",
+        a: "Yes — these numbers follow the same publicly documented Luhn algorithm and network prefix ranges used throughout the payments industry for testing, the same category as the well-known test numbers payment processors themselves publish (e.g. Stripe's 4242 4242 4242 4242). They don't correspond to real accounts and can't be used to charge anyone.",
+      },
+      {
+        q: "What's the difference between this and Stripe's official test card numbers?",
+        a: "Stripe's (and other processors') official test numbers are specifically wired into their own sandbox systems to simulate particular outcomes — a successful charge, a decline, a specific error. This tool's numbers are structurally valid (correct Luhn checksum, correct network format) but aren't registered with any processor's sandbox, so use this for front-end validation testing and the processor's own test numbers for actually simulating a transaction.",
       },
     ],
   },

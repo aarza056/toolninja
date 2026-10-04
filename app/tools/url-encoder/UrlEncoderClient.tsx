@@ -7,10 +7,13 @@ import { Link2, Unlink2, Trash2, AlertCircle } from "lucide-react";
 
 const STORAGE_KEY = "toolninja:url-encoder";
 
+type Mode = "component" | "full";
+
 export default function UrlEncoderClient() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
+  const [mode, setMode] = useState<Mode>("component");
 
   useEffect(() => {
     try {
@@ -25,13 +28,13 @@ export default function UrlEncoderClient() {
 
   const encode = () => {
     setError("");
-    try { setOutput(encodeURIComponent(input)); }
+    try { setOutput(mode === "component" ? encodeURIComponent(input) : encodeURI(input)); }
     catch { setError("Failed to encode."); }
   };
 
   const decode = () => {
     setError("");
-    try { setOutput(decodeURIComponent(input)); }
+    try { setOutput(mode === "component" ? decodeURIComponent(input) : decodeURI(input)); }
     catch { setError("Invalid URL-encoded string."); }
   };
 
@@ -39,7 +42,26 @@ export default function UrlEncoderClient() {
 
   return (
     <ToolLayout title="URL Encoder / Decoder" description="Encode and decode URLs and query parameters">
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs text-[#555555]">Mode</span>
+          <div className="flex rounded-[6px] border border-[#222222] overflow-hidden">
+            <button
+              onClick={() => setMode("component")}
+              className={`px-2.5 py-1 text-xs transition-colors ${mode === "component" ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
+              title="Escapes everything, including / ? & # : — use for a single query param or path segment"
+            >
+              Component
+            </button>
+            <button
+              onClick={() => setMode("full")}
+              className={`px-2.5 py-1 text-xs border-l border-[#222222] transition-colors ${mode === "full" ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
+              title="Preserves reserved URL characters like : / ? # — use for a complete URL"
+            >
+              Full URL
+            </button>
+          </div>
+        </div>
         <button onClick={encode} className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-[6px] transition-colors">
           <Link2 size={14} /> Encode
         </button>
@@ -51,6 +73,11 @@ export default function UrlEncoderClient() {
         </button>
         {output && <CopyButton text={output} />}
       </div>
+      <p className="text-xs text-[#555555] -mt-2 mb-4">
+        {mode === "component"
+          ? "Component mode escapes every reserved character — use it on one query value or path segment, not a full URL."
+          : "Full URL mode leaves : / ? # (and similar reserved characters) alone — use it on a complete URL, not a single value that might itself contain one of those characters."}
+      </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[calc(100vh-280px)] min-h-[400px]">
         <div className="flex flex-col gap-1">

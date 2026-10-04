@@ -139,6 +139,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online Markdown table generator. Build tables visually with a spreadsheet-style editor and export as clean Markdown or HTML. Import from CSV, set column alignment. No login, browser-only.",
   },
+  "markdown-toc-generator": {
+    title: "Markdown Table of Contents Generator Online — Auto TOC | ToolNinja",
+    description:
+      "Free online Markdown table of contents generator. Paste a document and instantly get a nested, anchor-linked TOC with GitHub-style heading slugs, as Markdown or HTML. No login, 100% browser-based.",
+  },
   "meta-tags-generator": {
     title: "Meta Tags Generator — OG Tags & Social Preview Tool | ToolNinja",
     description:
@@ -339,6 +344,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online HTTP header inspector. Paste raw response headers and get a plain-English explanation of every one — Cache-Control, ETag, CSP, CORS headers, and more. No login, 100% browser-based.",
   },
+  "credit-card-test-generator": {
+    title: "Credit Card Test Number Generator Online — Luhn Validator | ToolNinja",
+    description:
+      "Free online credit card test number generator. Generate Luhn-valid fake Visa, Mastercard, Amex, and Discover numbers for testing payment forms, or validate any number's Luhn checksum. Not real cards. No login, 100% browser-based.",
+  },
   "cors-debugger": {
     title: "CORS Error Debugger Online — Fix Access-Control-Allow-Origin Errors | ToolNinja",
     description:
@@ -360,6 +370,16 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "CSS Animations Library — Copy-Paste Animation Code | ToolNinja",
     description:
       "Free CSS animations library with live previews. Ready-to-use CSS animation examples including buttons, loaders, text effects, card animations, and zero-JS scroll-driven animations (animation-timeline: scroll()/view()). One-click copy HTML and CSS code. No login required.",
+  },
+  "css-flexbox-generator": {
+    title: "CSS Flexbox Generator Online — Visual Flexbox Playground | ToolNinja",
+    description:
+      "Free online CSS flexbox generator. Build flex container and item properties visually — direction, wrap, justify-content, align-items, gap, and per-item align-self — with a live preview and copy-ready CSS. No login, browser-only.",
+  },
+  "css-grid-generator": {
+    title: "CSS Grid Generator Online — Visual Grid Layout Builder | ToolNinja",
+    description:
+      "Free online CSS grid generator. Build a grid-template-columns/rows layout visually, including responsive auto-fit tracks and per-cell column/row spans, with a live preview and copy-ready CSS. No login, browser-only.",
   },
   "css-gradient": {
     title: "CSS Gradient Generator — Linear, Radial & Mesh Gradients | ToolNinja",
@@ -491,6 +511,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "Chmod Calculator — Linux File Permissions & Special Bits | ToolNinja",
     description:
       "Free online chmod calculator and Linux file permission calculator. Convert between symbolic (rwxr-xr-x) and octal (755, 644, 4755) permissions visually, including setuid, setgid, and the sticky bit. No login, browser-only.",
+  },
+  "ai-token-counter": {
+    title: "AI Token Counter & Cost Estimator — Claude, GPT, Gemini | ToolNinja",
+    description:
+      "Free online AI token counter and cost estimator. Paste a prompt and estimate token count plus the cost across Claude, GPT, and Gemini models side by side. No login, 100% browser-based — your text never leaves your device.",
   },
   "unicode-explorer": {
     title: "Unicode Explorer — Search Unicode Characters & Code Points | ToolNinja",

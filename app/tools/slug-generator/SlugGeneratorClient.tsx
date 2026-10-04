@@ -12,6 +12,7 @@ export default function SlugGeneratorClient() {
   const [separator, setSeparator] = useState<SlugifyOptions["separator"]>("-");
   const [lowercase, setLowercase] = useState(true);
   const [maxLength, setMaxLength] = useState(0);
+  const [removeStopwords, setRemoveStopwords] = useState(false);
 
   useEffect(() => {
     try {
@@ -30,8 +31,8 @@ export default function SlugGeneratorClient() {
   );
 
   const slugs = useMemo(
-    () => lines.map((line) => slugify(line, { separator, lowercase, maxLength: maxLength || undefined })),
-    [lines, separator, lowercase, maxLength]
+    () => lines.map((line) => slugify(line, { separator, lowercase, maxLength: maxLength || undefined, removeStopwords })),
+    [lines, separator, lowercase, maxLength, removeStopwords]
   );
 
   const SegButton = <T extends string>({
@@ -63,6 +64,10 @@ export default function SlugGeneratorClient() {
         <label className="flex items-center gap-2 text-sm text-[#888888] pb-2">
           <input type="checkbox" checked={lowercase} onChange={(e) => setLowercase(e.target.checked)} className="accent-[#a855f7]" />
           Lowercase
+        </label>
+        <label className="flex items-center gap-2 text-sm text-[#888888] pb-2">
+          <input type="checkbox" checked={removeStopwords} onChange={(e) => setRemoveStopwords(e.target.checked)} className="accent-[#a855f7]" />
+          Remove stopwords (the, a, of, in…)
         </label>
         <div>
           <label className="text-xs text-[#888888] font-medium block mb-1">Max length (optional)</label>

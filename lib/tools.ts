@@ -379,6 +379,18 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "markdown-toc-generator",
+    name: "Markdown Table of Contents Generator",
+    description: "Generate an anchor-linked table of contents from markdown headings — GitHub-style slugs",
+    icon: "ListTree",
+    category: "Generate",
+    keywords: [
+      "markdown toc generator", "table of contents generator", "markdown table of contents",
+      "generate toc from markdown", "github readme toc generator", "markdown heading anchor generator",
+      "auto generate table of contents markdown", "markdown toc online",
+    ],
+  },
+  {
     slug: "meta-tags-generator",
     name: "Meta Tags Generator",
     description: "Generate Open Graph, Twitter Card, and SEO meta tags with live previews",
@@ -827,6 +839,18 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "credit-card-test-generator",
+    name: "Credit Card Test Number Generator",
+    description: "Generate Luhn-valid fake card numbers for testing payment forms, or validate a Luhn checksum",
+    icon: "CreditCard",
+    category: "Test",
+    keywords: [
+      "credit card test number generator", "fake credit card number generator", "luhn algorithm validator",
+      "test credit card numbers", "luhn checksum validator", "generate test visa number",
+      "generate test mastercard number", "credit card number validator online", "luhn algorithm online",
+    ],
+  },
+  {
     slug: "patch-generator",
     name: "Unified Diff / Patch Generator",
     description: "Generate a real, downloadable .patch file from two texts — usable with git apply or patch",
@@ -939,6 +963,31 @@ export const tools: Tool[] = [
       "css keyframe animations", "css animation generator",
       "css animation snippets", "css transition effects",
       "pure css animations", "css animation collection",
+    ],
+  },
+  {
+    slug: "css-flexbox-generator",
+    name: "CSS Flexbox Generator",
+    description: "Build flex container and item properties visually, with a live preview and copy-ready CSS",
+    icon: "AlignHorizontalSpaceBetween",
+    category: "Design",
+    keywords: [
+      "css flexbox generator", "flexbox generator online", "flexbox playground",
+      "css flex generator", "justify-content generator", "align-items generator",
+      "flexbox visualizer", "flex container generator", "css flexbox tool",
+      "flexbox cheat sheet generator",
+    ],
+  },
+  {
+    slug: "css-grid-generator",
+    name: "CSS Grid Generator",
+    description: "Build a CSS grid layout visually — columns, rows, gaps, and per-cell spans",
+    icon: "LayoutGrid",
+    category: "Design",
+    keywords: [
+      "css grid generator", "css grid generator online", "grid template columns generator",
+      "css grid layout generator", "grid-template-areas generator", "css grid visualizer",
+      "responsive css grid generator", "grid-column span generator", "css grid tool",
     ],
   },
   {
@@ -1276,6 +1325,19 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "ai-token-counter",
+    name: "AI Token Counter & Cost Estimator",
+    description: "Estimate how many tokens your prompt costs, and what it'd run across Claude, GPT, and Gemini",
+    icon: "Receipt",
+    category: "Reference",
+    keywords: [
+      "ai token counter", "llm token counter", "gpt token counter",
+      "claude token counter", "token cost estimator", "openai api cost calculator",
+      "gemini token counter", "estimate llm api cost", "token counter online",
+      "count tokens online", "llm cost calculator",
+    ],
+  },
+  {
     slug: "unicode-explorer",
     name: "Unicode Explorer",
     description: "Search and inspect Unicode characters by name, code point, or symbol",
@@ -1300,9 +1362,9 @@ export type Category = (typeof categories)[number];
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 export const LATEST_TOOL_SLUGS = [
-  "passkey-tester",
-  "jwk-thumbprint-calculator",
-  "jsonpath-tester",
-  "user-agent-parser",
-  "base62-encoder",
+  "ai-token-counter",
+  "css-flexbox-generator",
+  "css-grid-generator",
+  "credit-card-test-generator",
+  "markdown-toc-generator",
 ];
