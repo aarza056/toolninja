@@ -19,6 +19,7 @@ export default function XmlFormatterClient() {
   const [error, setError] = useState("");
   const [mode, setMode] = useState<Mode>("prettify");
   const [indentSize, setIndentSize] = useState<2 | 4>(2);
+  const [sortAttrs, setSortAttrs] = useState(false);
 
   useEffect(() => {
     try {
@@ -29,13 +30,13 @@ export default function XmlFormatterClient() {
     }
   }, []);
 
-  const run = useCallback((xml: string, m: Mode, indent: 2 | 4) => {
+  const run = useCallback((xml: string, m: Mode, indent: 2 | 4, sort: boolean) => {
     if (!xml.trim()) {
       setOutput("");
       setError("");
       return;
     }
-    const result = m === "prettify" ? formatXml(xml, indent) : minifyXml(xml);
+    const result = m === "prettify" ? formatXml(xml, indent, sort) : minifyXml(xml, sort);
     if (result.error) {
       setError(result.error);
       setOutput("");
@@ -46,7 +47,7 @@ export default function XmlFormatterClient() {
   }, []);
 
   useEffect(() => {
-    run(input, mode, indentSize);
+    run(input, mode, indentSize, sortAttrs);
     try {
       localStorage.setItem(STORAGE_KEY, input);
     } catch {}
@@ -55,12 +56,17 @@ export default function XmlFormatterClient() {
 
   const handleMode = (m: Mode) => {
     setMode(m);
-    run(input, m, indentSize);
+    run(input, m, indentSize, sortAttrs);
   };
 
   const handleIndent = (n: 2 | 4) => {
     setIndentSize(n);
-    if (mode === "prettify") run(input, mode, n);
+    if (mode === "prettify") run(input, mode, n, sortAttrs);
+  };
+
+  const handleSortAttrs = (checked: boolean) => {
+    setSortAttrs(checked);
+    run(input, mode, indentSize, checked);
   };
 
   const clear = () => {
@@ -107,6 +113,16 @@ export default function XmlFormatterClient() {
             </div>
           </div>
         )}
+
+        <label className="flex items-center gap-1.5 text-xs text-[#888888] cursor-pointer ml-2">
+          <input
+            type="checkbox"
+            checked={sortAttrs}
+            onChange={(e) => handleSortAttrs(e.target.checked)}
+            className="accent-[#a855f7]"
+          />
+          Sort attributes
+        </label>
 
         <button
           onClick={clear}

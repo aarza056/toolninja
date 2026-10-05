@@ -338,6 +338,18 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "qr-code-scanner",
+    name: "QR Code Scanner / Decoder",
+    description: "Upload a QR code image and decode exactly what it contains — including 2FA otpauth:// secrets",
+    icon: "ScanLine",
+    category: "Generate",
+    keywords: [
+      "qr code scanner online", "qr code decoder", "decode qr code from image",
+      "read qr code online", "qr code reader online", "scan qr code image upload",
+      "otpauth qr code decoder", "extract 2fa secret from qr code", "qr code to text",
+    ],
+  },
+  {
     slug: "jwt-generator",
     name: "JWT Generator",
     description: "Create and sign JWTs with custom claims in-browser",
@@ -626,6 +638,18 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "xml-json-converter",
+    name: "XML ↔ JSON Converter",
+    description: "Convert between XML and JSON formats instantly, in either direction",
+    icon: "FileJson",
+    category: "Convert",
+    keywords: [
+      "xml to json converter", "json to xml converter", "xml to json online",
+      "convert xml to json", "convert json to xml", "xml json converter free",
+      "xml to json parser", "soap xml to json", "xml to json array",
+    ],
+  },
+  {
     slug: "env-file-tool",
     name: "Env File Tool",
     description: "Parse, convert, and generate .env.example files from your .env",
@@ -810,6 +834,18 @@ export const tools: Tool[] = [
       "xpath tool", "xml xpath tester", "html xpath tester",
       "xpath checker", "xpath validator", "xpath expression tester",
       "xpath browser", "xpath selector tester", "xpath debugger",
+    ],
+  },
+  {
+    slug: "css-xpath-converter",
+    name: "CSS Selector ↔ XPath Converter",
+    description: "Convert between CSS selectors and XPath expressions for the common patterns both languages share",
+    icon: "ArrowRightLeft",
+    category: "Test",
+    keywords: [
+      "css selector to xpath", "xpath to css selector", "css to xpath converter",
+      "convert css selector to xpath", "xpath css converter online", "selenium css to xpath",
+      "css selector xpath equivalent", "css xpath converter free",
     ],
   },
   {
@@ -1178,6 +1214,30 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "hotp-generator",
+    name: "HOTP Generator",
+    description: "Generate RFC 4226 counter-based one-time passwords — TOTP's time-independent sibling",
+    icon: "Repeat",
+    category: "Security",
+    keywords: [
+      "hotp generator", "hotp generator online", "rfc 4226 generator",
+      "counter based otp generator", "hmac otp generator", "hotp code generator",
+      "hotp vs totp", "generate hotp code", "hotp online tool",
+    ],
+  },
+  {
+    slug: "backup-codes-generator",
+    name: "2FA Backup Codes Generator",
+    description: "Generate one-time recovery codes for account 2FA setup, plus their SHA-256 hashes for server-side storage",
+    icon: "LifeBuoy",
+    category: "Security",
+    keywords: [
+      "backup codes generator", "2fa backup codes generator", "recovery codes generator",
+      "one time recovery code generator", "2fa recovery codes online", "generate backup codes",
+      "mfa backup codes generator", "account recovery codes generator",
+    ],
+  },
+  {
     slug: "package-json-inspector",
     name: "package.json Script Inspector",
     description: "See exactly which scripts run automatically on install, and which dependencies aren't pinned",
@@ -1362,9 +1422,9 @@ export type Category = (typeof categories)[number];
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 export const LATEST_TOOL_SLUGS = [
-  "ai-token-counter",
-  "css-flexbox-generator",
-  "css-grid-generator",
-  "credit-card-test-generator",
-  "markdown-toc-generator",
+  "hotp-generator",
+  "backup-codes-generator",
+  "qr-code-scanner",
+  "css-xpath-converter",
+  "xml-json-converter",
 ];

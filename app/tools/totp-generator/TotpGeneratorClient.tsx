@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import QRCode from "qrcode";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { RefreshCw, KeyRound } from "lucide-react";
+import { RefreshCw, KeyRound, ScanLine, AlertCircle } from "lucide-react";
 import {
   generateTOTP,
   generateRandomSecret,
@@ -15,6 +15,7 @@ import {
   type TotpAlgorithm,
   type TotpOptions,
 } from "@/lib/totp";
+import { decodeQrFromImage } from "@/lib/qr-decode";
 
 const STORAGE_KEY = "toolninja:totp-generator";
 const ALGORITHMS: TotpAlgorithm[] = ["SHA-1", "SHA-256", "SHA-512"];
@@ -30,7 +31,10 @@ export default function TotpGeneratorClient() {
   const [remaining, setRemaining] = useState(30);
   const [error, setError] = useState("");
   const [qrDataUrl, setQrDataUrl] = useState("");
+  const [scanning, setScanning] = useState(false);
+  const [scanError, setScanError] = useState("");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const scanInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     try {
@@ -89,6 +93,27 @@ export default function TotpGeneratorClient() {
     setLabel(parsed.label);
     setIssuer(parsed.issuer);
     setOpts(parsed.opts);
+  };
+
+  const handleScanQr = async (file: File) => {
+    setScanError("");
+    setScanning(true);
+    try {
+      const result = await decodeQrFromImage(file);
+      if (!result) {
+        setScanError("No QR code found in that image.");
+        return;
+      }
+      if (!result.isOtpauth) {
+        setScanError("That QR code doesn't look like a 2FA (otpauth://) code.");
+        return;
+      }
+      handleImport(result.text);
+    } catch (e) {
+      setScanError(e instanceof Error ? e.message : "Failed to decode this image.");
+    } finally {
+      setScanning(false);
+    }
   };
 
   const otpauthUrl = secret.trim() ? buildOtpauthUrl(secret.trim(), label || "account", issuer, opts) : "";
@@ -203,7 +228,27 @@ export default function TotpGeneratorClient() {
           </div>
 
           <div>
-            <label className="text-xs text-[#888888] font-medium block mb-1">Import from otpauth:// URL</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs text-[#888888] font-medium">Import from otpauth:// URL</label>
+              <button
+                onClick={() => scanInputRef.current?.click()}
+                disabled={scanning}
+                className="flex items-center gap-1 text-xs text-[#a855f7] hover:text-[#9333ea] transition-colors disabled:opacity-50"
+              >
+                <ScanLine size={11} className={scanning ? "animate-pulse" : ""} /> {scanning ? "Scanning…" : "Scan QR image"}
+              </button>
+              <input
+                ref={scanInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleScanQr(f);
+                  e.target.value = "";
+                }}
+              />
+            </div>
             <input
               type="text"
               placeholder="otpauth://totp/Issuer:account?secret=..."
@@ -213,6 +258,11 @@ export default function TotpGeneratorClient() {
               onBlur={(e) => e.target.value && handleImport(e.target.value)}
               className="w-full px-3 py-2 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
             />
+            {scanError && (
+              <p className="flex items-center gap-1 text-xs text-[#ef4444] mt-1">
+                <AlertCircle size={11} /> {scanError}
+              </p>
+            )}
           </div>
         </div>
 

@@ -16,6 +16,7 @@ export default function JsonSchemaGeneratorClient() {
   const [input, setInput] = useState("");
   const [title, setTitle] = useState("");
   const [includeRequired, setIncludeRequired] = useState(true);
+  const [detectFormats, setDetectFormats] = useState(true);
   const [schemaInput, setSchemaInput] = useState("");
   const [dataInput, setDataInput] = useState("");
 
@@ -43,11 +44,11 @@ export default function JsonSchemaGeneratorClient() {
   const { output, error } = useMemo(() => {
     if (!input.trim()) return { output: "", error: "" };
     try {
-      return { output: generateJsonSchema(input, { title: title.trim() || undefined, includeRequired }), error: "" };
+      return { output: generateJsonSchema(input, { title: title.trim() || undefined, includeRequired, detectFormats }), error: "" };
     } catch (e) {
       return { output: "", error: e instanceof Error ? e.message : "Invalid JSON" };
     }
-  }, [input, title, includeRequired]);
+  }, [input, title, includeRequired, detectFormats]);
 
   const validation = useMemo(() => {
     if (!schemaInput.trim() || !dataInput.trim()) return { errors: [] as { path: string; message: string }[], parseError: "" };
@@ -105,6 +106,15 @@ export default function JsonSchemaGeneratorClient() {
                 className="accent-[#a855f7]"
               />
               Mark all present fields as required
+            </label>
+            <label className="flex items-center gap-2 text-sm text-[#888888] pb-2">
+              <input
+                type="checkbox"
+                checked={detectFormats}
+                onChange={(e) => setDetectFormats(e.target.checked)}
+                className="accent-[#a855f7]"
+              />
+              Detect string formats (email, date-time, uri, uuid)
             </label>
           </div>
 

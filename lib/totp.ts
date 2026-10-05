@@ -62,7 +62,7 @@ function counterToBytes(counter: number): ArrayBuffer {
   return buf;
 }
 
-async function hotp(keyBytes: Uint8Array, counter: number, digits: number, algorithm: TotpAlgorithm): Promise<string> {
+export async function hotp(keyBytes: Uint8Array, counter: number, digits: number, algorithm: TotpAlgorithm): Promise<string> {
   const cryptoKey = await crypto.subtle.importKey(
     "raw",
     keyBytes as BufferSource,

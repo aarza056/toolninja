@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import Link from "next/link";
 import ToolLayout from "@/components/ToolLayout";
-import { Play, Copy, Check, AlertTriangle, RotateCcw, Highlighter } from "lucide-react";
+import { Play, Copy, Check, AlertTriangle, RotateCcw, Highlighter, ArrowRightLeft } from "lucide-react";
+import { xpathToCss } from "@/lib/css-xpath-convert";
 
 type DocMode = "xml" | "html";
 
@@ -290,6 +292,14 @@ export default function XPathTesterClient() {
     [showHighlight, hasRun, error, results, docContent]
   );
 
+  const cssEquivalent = useMemo(() => {
+    try {
+      return xpathToCss(expression.trim());
+    } catch {
+      return null;
+    }
+  }, [expression]);
+
   return (
     <ToolLayout
       title="XPath Tester"
@@ -386,6 +396,16 @@ export default function XPathTesterClient() {
             <p className="text-[10px] text-[#444444] mt-1.5">
               Ctrl+Enter to run
             </p>
+            {cssEquivalent && (
+              <div className="flex items-center gap-1.5 mt-2 text-[10px] text-[#555555]">
+                <ArrowRightLeft size={10} className="text-[#a855f7] shrink-0" />
+                <span>as CSS:</span>
+                <code className="text-[#888888] font-mono">{cssEquivalent}</code>
+                <Link href="/tools/css-xpath-converter" className="text-[#a855f7] hover:text-[#9333ea] transition-colors ml-1">
+                  convert more →
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Quick Expressions */}

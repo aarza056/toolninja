@@ -53,7 +53,28 @@ function validateBasicStructure(xml: string): string | undefined {
   return undefined;
 }
 
-export function formatXml(xml: string, indentSize = 2): XmlFormatResult {
+function sortTagAttributes(tag: string): string {
+  const selfClosing = tag.endsWith("/>");
+  const inner = tag.slice(1, selfClosing ? -2 : -1);
+  const nameMatch = inner.match(/^([a-zA-Z_][\w.-]*(?::[a-zA-Z_][\w.-]*)?)/);
+  if (!nameMatch) return tag;
+  const name = nameMatch[1];
+  const rest = inner.slice(name.length);
+
+  const attrRe = /([a-zA-Z_:][\w.:-]*)(\s*=\s*(?:"[^"]*"|'[^']*'))?/g;
+  const attrs: string[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = attrRe.exec(rest)) !== null) {
+    const token = m[0].trim();
+    if (token) attrs.push(token);
+  }
+  if (attrs.length <= 1) return tag;
+
+  attrs.sort((a, b) => a.split(/[=\s]/)[0].localeCompare(b.split(/[=\s]/)[0]));
+  return `<${name} ${attrs.join(" ")}${selfClosing ? "/>" : ">"}`;
+}
+
+export function formatXml(xml: string, indentSize = 2, sortAttrs = false): XmlFormatResult {
   if (!xml.trim()) return { output: "" };
 
   const structureError = validateBasicStructure(xml);
@@ -90,14 +111,16 @@ export function formatXml(xml: string, indentSize = 2): XmlFormatResult {
       continue;
     }
 
+    const outputTag = sortAttrs ? sortTagAttributes(tag) : tag;
+
     // Self-closing tag (explicit /> — XML has no implicit void elements)
     if (tag.endsWith("/>")) {
-      lines.push(pad.repeat(level) + tag);
+      lines.push(pad.repeat(level) + outputTag);
       continue;
     }
 
     // Opening tag
-    lines.push(pad.repeat(level) + tag);
+    lines.push(pad.repeat(level) + outputTag);
     level++;
   }
 
@@ -105,19 +128,23 @@ export function formatXml(xml: string, indentSize = 2): XmlFormatResult {
   return { output: restoreCdataBlocks(result, blocks) };
 }
 
-export function minifyXml(xml: string): XmlFormatResult {
+export function minifyXml(xml: string, sortAttrs = false): XmlFormatResult {
   if (!xml.trim()) return { output: "" };
 
   const structureError = validateBasicStructure(xml);
   if (structureError) return { output: "", error: structureError };
 
   const { xml: extracted, blocks } = extractCdataBlocks(xml);
-  const result = extracted
+  let result = extracted
     .replace(/>\s+</g, "><")
     .split("\n")
     .map((l) => l.trim())
     .filter(Boolean)
     .join("");
+
+  if (sortAttrs) {
+    result = result.replace(/<[a-zA-Z_][^>]*>/g, (tag) => (tag.startsWith("</") ? tag : sortTagAttributes(tag)));
+  }
 
   return { output: restoreCdataBlocks(result, blocks) };
 }

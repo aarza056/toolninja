@@ -1266,6 +1266,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Use @attribute to select by attribute: //*[@id='main'] selects any element with id='main'. @* selects all attributes.",
       "contains() handles partial matches: //a[contains(@href, 'github')] finds links where the href includes 'github'.",
       "After running a query, click 'Highlight matches' to see every matched node marked directly in the source document instead of only in the results list.",
+      "When your expression has a CSS selector equivalent, it's shown automatically below the input — handy when you need the same locator in a CSS-only tool or testing framework.",
     ],
     faq: [
       {
@@ -1753,7 +1754,8 @@ export const toolContent: Record<string, ToolContent> = {
     tips: [
       "Generated schemas mark every field present in your sample as required — uncheck 'Mark all present fields as required' if your sample happens to have every optional field filled in.",
       "Arrays with mixed-type elements produce a schema based on the first element's shape — review array schemas manually if your data has genuinely heterogeneous array contents.",
-      "A generated schema is a draft, not a final spec — add format validators (email, date-time, uri) and value constraints (minimum, maxLength, pattern) by hand for fields that need them.",
+      "'Detect string formats' adds a format keyword (email, date-time, date, uri, uuid) when a sample string matches one of those shapes — review it, since a format match on your specific sample isn't a guarantee every value in production will match the same pattern.",
+      "A generated schema is a draft, not a final spec — add value constraints (minimum, maxLength, pattern) by hand for fields that need them beyond what format detection covers.",
       "In Validate mode, a type mismatch on a field stops that field's checks there — a wrong-type value can't meaningfully be checked for a missing nested property, for example, so the tool reports the type error and moves on rather than cascading confusing follow-up errors.",
     ],
     faq: [
@@ -2269,6 +2271,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Use the otpauth:// import field to quickly load a secret straight from a URL you've copied out of a QR code payload or a service's manual setup instructions.",
       "Treat any secret you paste in here as sensitive — anyone with the secret can generate valid 2FA codes for that account.",
       "Once a secret is entered, a scannable QR code appears automatically — point any authenticator app's camera at it to load the account without typing the secret manually.",
+      "Click 'Scan QR image' to import a secret directly from a screenshot or photo of an existing 2FA QR code, instead of typing or pasting the otpauth:// URL by hand.",
     ],
     faq: [
       {
@@ -2394,6 +2397,7 @@ export const toolContent: Record<string, ToolContent> = {
       "CDATA sections are left completely untouched during formatting — their content is meant to be opaque to the XML parser, and reformatting it would change its meaning.",
       "The structural validator catches unclosed and mismatched tags specifically — it's a syntax check, not a schema (XSD/DTD) validator, so it won't catch a tag that's well-formed but semantically wrong for a given format.",
       "Minify before storing XML in a database column or config value — it can meaningfully shrink payload size on high-volume systems still using XML for interchange.",
+      "Check 'Sort attributes' to alphabetize each tag's attributes — useful for diffing two versions of generated XML where attribute order varies but the content doesn't.",
     ],
     faq: [
       {
@@ -2569,17 +2573,19 @@ export const toolContent: Record<string, ToolContent> = {
 
   "patch-generator": {
     about:
-      "The Unified Diff / Patch Generator produces a real, standards-format .patch file from two pasted texts — the same unified diff format `git diff` and `diff -u` produce, and the same format `git apply` and the `patch` command consume. Paste an original and a modified version, and get back a downloadable patch with proper @@ hunk headers and configurable context lines, rather than just a visual highlight of what changed.\n\nThe diff itself is computed with a classic LCS (longest common subsequence) line-diff algorithm — the same category of algorithm underlying most real diff tools — then grouped into hunks with surrounding context lines, exactly like a real diff utility would produce.\n\nThis is a genuinely different tool from a visual diff checker: the output here is meant to be applied, not just read.",
+      "The Unified Diff / Patch Generator produces a real, standards-format .patch file from two pasted texts — the same unified diff format `git diff` and `diff -u` produce, and the same format `git apply` and the `patch` command consume. Paste an original and a modified version, and get back a downloadable patch with proper @@ hunk headers and configurable context lines, rather than just a visual highlight of what changed.\n\nThe diff itself is computed with a classic LCS (longest common subsequence) line-diff algorithm — the same category of algorithm underlying most real diff tools — then grouped into hunks with surrounding context lines, exactly like a real diff utility would produce.\n\nAn Apply mode goes the other direction: paste the original text and a unified diff (from this tool, git diff, or anywhere else), and get back the resulting text — or a specific error naming exactly which line didn't match, if the patch doesn't apply cleanly against that original. This is a genuinely different tool from a visual diff checker: the output here is meant to be applied, not just read.",
     useCases: [
       "Generating a .patch file to share a small fix without opening a pull request",
       "Producing a reviewable patch from a config file change made outside version control",
       "Understanding exactly what a unified diff's @@ hunk header numbers mean",
       "Creating a patch to apply the same textual change across multiple environments",
+      "Applying a patch someone sent you to see the resulting text, without a local git checkout to run git apply against",
     ],
     tips: [
       "Increase context lines if you plan to git apply this patch against a slightly different version of the file — more surrounding context makes the patch more likely to apply cleanly.",
       "The file name fields (a/file.txt, b/file.txt) become the --- and +++ lines in the patch — set them to match your real file paths if you intend to actually apply this patch.",
       "A patch this tool generates against text extracted from a real file should apply cleanly with git apply patchfile.patch or patch -p1 < patchfile.patch, provided the original text truly matches.",
+      "In Apply mode, a 'doesn't apply cleanly' error names the exact line and the text it expected to find — the most common cause is the original text having drifted from what the patch was generated against.",
     ],
     faq: [
       {
@@ -3424,6 +3430,156 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "What's the difference between this and Stripe's official test card numbers?",
         a: "Stripe's (and other processors') official test numbers are specifically wired into their own sandbox systems to simulate particular outcomes — a successful charge, a decline, a specific error. This tool's numbers are structurally valid (correct Luhn checksum, correct network format) but aren't registered with any processor's sandbox, so use this for front-end validation testing and the processor's own test numbers for actually simulating a transaction.",
+      },
+    ],
+  },
+
+  "hotp-generator": {
+    about:
+      "The ToolNinja HOTP Generator computes RFC 4226 HMAC-based one-time passwords — the counter-based algorithm that TOTP itself is built on top of. Where TOTP derives its counter from the current time divided into fixed intervals, HOTP uses an explicit counter value that only advances when a code is actually used, making it the right choice for hardware tokens (like early YubiKeys) and offline-generated code lists where there's no reliable shared clock between client and server.\n\nEnter a Base32 secret and a counter value, and it computes the exact same HMAC-SHA1/256/512-based code a real HOTP authenticator would produce for that counter. It also builds and parses otpauth://hotp/ URLs — the same URL format TOTP uses, just with a counter parameter instead of a period.\n\nEverything runs 100% in your browser via the Web Crypto API — your secret never leaves your machine.",
+    useCases: [
+      "Testing an HOTP-based authentication integration without physical hardware tokens",
+      "Understanding the difference between HOTP and TOTP by computing both for the same secret",
+      "Debugging a counter-desync issue between a client and server HOTP implementation",
+      "Generating a specific HOTP code for a known counter value during development",
+    ],
+    tips: [
+      "Unlike TOTP, an HOTP code never expires on its own — it stays valid until used, which is exactly why counter synchronization between client and server matters so much more than it does for TOTP.",
+      "Most real HOTP servers accept a small window of future counter values (not just the next one) to tolerate a user pressing the button on their token multiple times without using earlier codes.",
+      "If you're building something new, TOTP is usually the better default — it doesn't require either side to persist and synchronize a counter, since time serves that role automatically.",
+    ],
+    faq: [
+      {
+        q: "What's the actual difference between HOTP and TOTP?",
+        a: "Both compute an HMAC over a moving counter and truncate it into a short numeric code — the algorithms are nearly identical. TOTP (RFC 6238) derives the counter from the current time divided by a fixed period (usually 30 seconds), so it changes automatically without either side tracking state. HOTP (RFC 4226) uses an explicit counter that only increments when a code is generated and accepted, requiring the server to track and advance it.",
+      },
+      {
+        q: "Why would anyone use HOTP instead of TOTP today?",
+        a: "Mainly for hardware tokens without a reliable internal clock, or systems where a shared, synchronized time source between client and server can't be guaranteed. Most modern 2FA (Google Authenticator, Authy, most authenticator apps) uses TOTP specifically because it avoids the counter-synchronization problem entirely.",
+      },
+      {
+        q: "Is my secret key safe when using this tool?",
+        a: "Yes — HOTP computation runs entirely in your browser via the Web Crypto API. Your secret key and counter value never leave your device; there's no network request involved at any point.",
+      },
+    ],
+  },
+
+  "backup-codes-generator": {
+    about:
+      "The ToolNinja 2FA Backup Codes Generator creates a set of one-time recovery codes — the standard fallback mechanism offered alongside TOTP/authenticator-app 2FA, used when someone loses access to their primary authenticator. Each code is drawn from a 32-character alphabet that deliberately excludes visually ambiguous characters (0/O, 1/I) to reduce transcription errors when a user copies a code by hand.\n\nAlongside the plaintext codes, it computes a SHA-256 hash of each one — the form you should actually be storing server-side. Backup codes are exactly as sensitive as a password: storing them in plaintext means a database breach exposes a working 2FA bypass for every affected account, the same reasoning that's kept password hashing standard practice for decades.\n\nEverything runs 100% in your browser using crypto.getRandomValues for generation and the Web Crypto API for hashing — nothing is sent anywhere.",
+    useCases: [
+      "Generating a realistic set of backup codes to test a 2FA recovery flow during development",
+      "Understanding what a production backup-codes system should actually store (hashes, not plaintext)",
+      "Prototyping the UI for a 2FA setup wizard's backup-codes step",
+      "Learning the standard format and character set conventions real backup codes use",
+    ],
+    tips: [
+      "Store only the SHA-256 hash of each code server-side, exactly like a password — never the plaintext, and never reversibly encrypted either.",
+      "Mark each code as used immediately after successful redemption so the same code can't be replayed by someone who intercepted it once.",
+      "Show codes to the user exactly once, at generation time, with a clear prompt to save them somewhere safe — there's no secure way to display them again later if they're only stored hashed.",
+    ],
+    faq: [
+      {
+        q: "Why generate 8-16 codes instead of just one?",
+        a: "Multiple single-use codes mean losing or using one doesn't lock the user out — they simply have fewer remaining. It also lets a user who's used several codes know it's time to regenerate a fresh batch, rather than discovering their only recovery code is already spent.",
+      },
+      {
+        q: "Why exclude 0/O and 1/I from the code alphabet?",
+        a: "These character pairs are easily confused in many fonts, especially when a user is copying a code by hand from a printed page or a screenshot rather than copy-pasting. Removing them from the alphabet eliminates an entire category of 'the code doesn't work' support issues caused by a single mistyped character.",
+      },
+      {
+        q: "Should backup codes expire?",
+        a: "Most real systems don't put a time expiry on backup codes — they're meant to work whenever the primary 2FA method is unavailable, which could be months after generation. Instead, the security model relies on each code being single-use and on prompting the user to regenerate a fresh batch once they've used most of the current one.",
+      },
+    ],
+  },
+
+  "qr-code-scanner": {
+    about:
+      "The ToolNinja QR Code Scanner decodes any QR code image — upload a screenshot, a photo, or a saved image file, and it extracts exactly what's encoded inside, running entirely client-side via canvas pixel data and the jsQR decoding library.\n\nIt specifically recognizes otpauth:// QR codes — the format every 2FA setup screen encodes — and when it detects one, breaks out the issuer, account label, and algorithm/digits/period settings, with a direct link to open the decoded secret in the TOTP Generator. This is the natural complement to a situation that comes up more than people expect: you have a 2FA QR code (a screenshot, a backup photo) but no working authenticator app in front of you, and need to know what's actually inside it before you lose access to it entirely.\n\nEverything runs 100% in your browser — the image is decoded locally and never uploaded anywhere.",
+    useCases: [
+      "Extracting a 2FA secret from a QR code screenshot when you don't have an authenticator app handy",
+      "Checking what a QR code actually points to before scanning it with your phone",
+      "Debugging a QR code your own application generated, to confirm it encodes what you expect",
+      "Reading a QR code from an old screenshot or backup when the original source is gone",
+    ],
+    tips: [
+      "Works from a screenshot or photo, not just a cleanly-generated QR image — jsQR is reasonably tolerant of camera photos as long as the code is in focus and not too small.",
+      "An otpauth:// QR code is detected automatically and gets a direct 'Open in TOTP Generator' link so you don't have to copy the secret by hand.",
+      "If decoding fails on a photo, try cropping tighter around just the QR code itself — a lot of surrounding background can throw off detection.",
+    ],
+    faq: [
+      {
+        q: "Is my QR code image uploaded anywhere?",
+        a: "No. The image is decoded entirely in your browser — it's drawn to an off-screen canvas, read as raw pixel data, and passed to the jsQR library locally. No network request is made with the image at any point.",
+      },
+      {
+        q: "Can this scan a QR code using my camera, not just an uploaded image?",
+        a: "Not currently — this tool works from an uploaded image file. For a live camera scan, most phone camera apps and dedicated QR scanner apps already decode QR codes natively without needing a separate tool.",
+      },
+      {
+        q: "Why does it specifically call out otpauth:// QR codes?",
+        a: "Because that's one of the most common reasons someone needs to decode a QR code rather than just scan it normally — recovering a 2FA secret from an old screenshot when the original authenticator app entry is gone. Any other QR code (a URL, plain text, a WiFi config) decodes the same way, just without the extra otpauth-specific breakdown.",
+      },
+    ],
+  },
+
+  "css-xpath-converter": {
+    about:
+      "The ToolNinja CSS Selector ↔ XPath Converter translates between the two selector languages for the substantial common ground they share: tag names, #id and .class selectors, [attribute] selectors (including ^=, $=, *=, and ~= operators), the descendant/child/adjacent-sibling/general-sibling combinators, and :first-child/:last-child/:nth-child(n).\n\nThis common ground covers the overwhelming majority of real-world selectors, but the two languages aren't equivalent — XPath can select by text content, walk upward to parents and ancestors, and use arbitrary boolean logic in predicates, none of which CSS can express at all. Converting CSS → XPath always succeeds for a supported selector, since XPath is strictly more expressive. Converting XPath → CSS only works for XPath this converter's own output shape matches — arbitrary hand-written XPath using other axes or functions has no CSS equivalent and the tool says so clearly rather than guessing.\n\nEverything runs 100% in your browser — no selector or document content is ever sent anywhere, since there's no document involved at all, just the text conversion itself.",
+    useCases: [
+      "Converting a CSS selector into XPath for a tool or framework that only accepts XPath locators",
+      "Converting an XPath locator back to CSS for Selenium/Playwright tests that prefer CSS selectors for performance",
+      "Learning how a given CSS pattern (an attribute selector, a combinator) expresses in XPath syntax",
+      "Quickly checking whether a selector you're writing has a direct equivalent in the other language",
+    ],
+    tips: [
+      "CSS → XPath always succeeds for supported syntax, since XPath can express everything in this tool's CSS subset and more.",
+      "XPath → CSS fails loudly with a specific reason when it hits something CSS can't express (an axis like ancestor::, a function like text()) — that's expected, not a bug, since CSS genuinely has no equivalent for those.",
+      "Class selectors convert to a verbose-looking but standard XPath pattern (contains(concat(' ', normalize-space(@class), ' '), ' x ')) — that's the correct, robust way to match one class among several on an element in XPath 1.0, not an error.",
+    ],
+    faq: [
+      {
+        q: "Why does my simple .foo class selector turn into such a long XPath expression?",
+        a: "XPath 1.0 has no direct 'has this class' primitive — @class='foo' would only match if foo were the element's only class. The contains(concat(' ', normalize-space(@class), ' '), ' foo ')  pattern pads the class attribute with spaces and searches for ' foo ' specifically, which correctly matches regardless of how many other classes are present or in what order. It looks verbose, but it's the standard, correct way to do this in XPath 1.0.",
+      },
+      {
+        q: "Why can't every XPath expression convert back to CSS?",
+        a: "XPath is strictly more powerful than CSS selectors — it can select by text content, navigate upward to parent/ancestor nodes, use sibling-preceding axes, and apply arbitrary function logic in predicates. None of that has any CSS equivalent, because CSS selectors are fundamentally restricted to describing a downward path through the tree with simple attribute/class/structural conditions.",
+      },
+      {
+        q: "Does this handle :not(), :hover, or other dynamic pseudo-classes?",
+        a: "No — :not() would require negation logic this converter doesn't implement, and :hover, :focus, and similar dynamic pseudo-classes describe interaction state that has no meaning in a static document query language like XPath at all. These are intentionally out of scope.",
+      },
+    ],
+  },
+
+  "xml-json-converter": {
+    about:
+      "The ToolNinja XML ↔ JSON Converter converts between the two formats instantly, in either direction, following the widely-used xml-js convention: XML attributes become \"@name\" JSON keys, direct text content becomes a \"#text\" key (or the bare string value, for a leaf element with no attributes or children), and repeated child element names collapse into a JSON array automatically.\n\nThe JSON side always has exactly one top-level key — the root element's tag name — which is what makes the conversion round-trip cleanly in both directions rather than losing structure. This is the same fundamental challenge every XML-to-JSON tool has to solve: XML has no native concept of 'this is a list,' so the converter has to infer array-vs-single-value from whether a tag name repeats among its siblings.\n\nEverything runs 100% in your browser using the native DOMParser — your data never leaves your machine.",
+    useCases: [
+      "Converting a legacy XML API response into JSON for use in a modern JS/TS codebase",
+      "Converting a JSON config or test fixture into XML for a system that only accepts XML input",
+      "Inspecting a SOAP or RSS/Atom XML payload's structure more easily in JSON form",
+      "Understanding how attributes, text content, and repeated tags map between the two formats",
+    ],
+    tips: [
+      "An XML element with only text and no attributes or children converts to a plain JSON string — the \"#text\" wrapper only appears when an element also has attributes or child elements mixed in with its text.",
+      "Two or more sibling elements with the same tag name automatically become a JSON array; a single occurrence stays a plain object, not a one-item array.",
+      "Converting JSON back to XML requires the top-level object to have exactly one key (the root element's tag name) — if you're hand-editing the JSON side, keep that invariant or the conversion back will show a clear error.",
+    ],
+    faq: [
+      {
+        q: "Why does my JSON have a top-level object with just one key instead of being the data directly?",
+        a: "XML documents always have exactly one root element — there's no such thing as a bare XML document without one. Mirroring that with a single top-level JSON key (the root tag's name) is what keeps the conversion reversible; dropping it would mean the JSON → XML direction wouldn't know what to name the root element.",
+      },
+      {
+        q: "What happens to XML comments or processing instructions?",
+        a: "They're not represented in the JSON output — this converter focuses on elements, attributes, and text content, which is what the overwhelming majority of real XML-to-JSON use cases actually need. If you need comments preserved, this isn't the right tool for that specific case.",
+      },
+      {
+        q: "How does the converter decide something should be a JSON array?",
+        a: "Purely by counting: if two or more child elements under the same parent share a tag name, they become a JSON array under that key. A tag name that appears only once stays a plain object (or string), even if your application logic conceptually treats it as a list — XML itself doesn't distinguish 'a list with one item' from 'a single value,' so neither can this conversion.",
       },
     ],
   },

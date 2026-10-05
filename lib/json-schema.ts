@@ -2,25 +2,46 @@ type JsonSchemaType = "string" | "number" | "integer" | "boolean" | "null" | "ob
 
 interface JsonSchemaNode {
   type?: JsonSchemaType;
+  format?: string;
   properties?: Record<string, JsonSchemaNode>;
   required?: string[];
   items?: JsonSchemaNode | JsonSchemaNode[];
 }
 
-function inferSchema(value: unknown): JsonSchemaNode {
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const DATE_TIME_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const URI_RE = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\/\S+$/;
+
+// Checked most-specific first (date-time before date, since a date-time string also "looks like"
+// it starts with a date) — only applied when the caller opts in, since a guessed format is a
+// stronger claim than a bare type and shouldn't be silently assumed for every string.
+function detectStringFormat(value: string): string | undefined {
+  if (EMAIL_RE.test(value)) return "email";
+  if (UUID_RE.test(value)) return "uuid";
+  if (DATE_TIME_RE.test(value)) return "date-time";
+  if (DATE_RE.test(value)) return "date";
+  if (URI_RE.test(value)) return "uri";
+  return undefined;
+}
+
+function inferSchema(value: unknown, detectFormats: boolean): JsonSchemaNode {
   if (value === null) return { type: "null" };
 
   if (Array.isArray(value)) {
     if (value.length === 0) return { type: "array", items: {} };
-    const itemSchemas = value.map(inferSchema);
+    const itemSchemas = value.map((v) => inferSchema(v, detectFormats));
     const first = JSON.stringify(itemSchemas[0]);
     const homogeneous = itemSchemas.every((s) => JSON.stringify(s) === first);
     return { type: "array", items: homogeneous ? itemSchemas[0] : itemSchemas };
   }
 
   switch (typeof value) {
-    case "string":
-      return { type: "string" };
+    case "string": {
+      const format = detectFormats ? detectStringFormat(value) : undefined;
+      return format ? { type: "string", format } : { type: "string" };
+    }
     case "boolean":
       return { type: "boolean" };
     case "number":
@@ -30,7 +51,7 @@ function inferSchema(value: unknown): JsonSchemaNode {
       const properties: Record<string, JsonSchemaNode> = {};
       const required: string[] = [];
       Object.entries(obj).forEach(([k, v]) => {
-        properties[k] = inferSchema(v);
+        properties[k] = inferSchema(v, detectFormats);
         required.push(k);
       });
       return { type: "object", properties, required };
@@ -56,11 +77,12 @@ function stripRequired(node: unknown): void {
 export interface JsonSchemaOptions {
   title?: string;
   includeRequired?: boolean;
+  detectFormats?: boolean;
 }
 
 export function generateJsonSchema(json: string, options: JsonSchemaOptions = {}): string {
   const parsed = JSON.parse(json);
-  const schema = inferSchema(parsed);
+  const schema = inferSchema(parsed, options.detectFormats ?? false);
   const full: Record<string, unknown> = {
     $schema: "http://json-schema.org/draft-07/schema#",
     ...(options.title ? { title: options.title } : {}),

@@ -175,3 +175,72 @@ export function generateUnifiedDiff(
 
   return { patch: out.join("\n") + "\n", hunks, identical: false, tooLarge: false };
 }
+
+export interface ApplyPatchResult {
+  result: string;
+  error?: string;
+}
+
+const HUNK_HEADER_RE = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/;
+
+/** Applies a unified diff to the original text. Parses the raw patch text directly (not the
+ * Hunk[] this module builds internally), so it accepts a patch pasted from anywhere — git diff,
+ * another tool, or this one's own output — as long as it's a standard unified diff. */
+export function applyUnifiedDiff(original: string, patch: string): ApplyPatchResult {
+  const originalLines = original.split("\n");
+  const patchLines = patch.split("\n");
+  const outputLines: string[] = [];
+  let origIdx = 0;
+  let sawHunk = false;
+
+  let i = 0;
+  while (i < patchLines.length) {
+    const header = patchLines[i].match(HUNK_HEADER_RE);
+    if (!header) {
+      i++;
+      continue;
+    }
+    sawHunk = true;
+    const oldStart = parseInt(header[1], 10);
+    i++;
+
+    if (oldStart - 1 > originalLines.length) {
+      return { result: original, error: `Hunk starting at line ${oldStart} is beyond the end of the original text (${originalLines.length} lines).` };
+    }
+    while (origIdx < oldStart - 1) {
+      outputLines.push(originalLines[origIdx]);
+      origIdx++;
+    }
+
+    while (i < patchLines.length && !HUNK_HEADER_RE.test(patchLines[i])) {
+      const line = patchLines[i];
+      if (line === "") { i++; continue; }
+      const marker = line[0];
+      const content = line.slice(1);
+
+      if (marker === " " || marker === "-") {
+        if (origIdx >= originalLines.length || originalLines[origIdx] !== content) {
+          const found = origIdx < originalLines.length ? originalLines[origIdx] : "(end of file)";
+          return { result: original, error: `Patch doesn't apply cleanly at line ${origIdx + 1} — expected "${content}" but found "${found}". The original text may not match what this patch was generated against.` };
+        }
+        if (marker === " ") outputLines.push(content);
+        origIdx++;
+      } else if (marker === "+") {
+        outputLines.push(content);
+      }
+      // A "\ No newline at end of file" marker (backslash-prefixed) is silently ignored.
+      i++;
+    }
+  }
+
+  if (!sawHunk) {
+    return { result: original, error: "No valid hunks found — paste a unified diff starting with a line like \"@@ -1,3 +1,4 @@\"." };
+  }
+
+  while (origIdx < originalLines.length) {
+    outputLines.push(originalLines[origIdx]);
+    origIdx++;
+  }
+
+  return { result: outputLines.join("\n") };
+}

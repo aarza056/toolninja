@@ -124,6 +124,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online QR code generator. Create QR codes for URLs, text, emails and more instantly. Download as PNG. No account required, no watermarks, 100% free and browser-based.",
   },
+  "qr-code-scanner": {
+    title: "QR Code Scanner & Decoder Online — Read Any QR Code | ToolNinja",
+    description:
+      "Free online QR code scanner and decoder. Upload any QR code image and instantly see the decoded text, URL, or 2FA otpauth:// secret. Decoding runs entirely in your browser. No login, no upload to a server.",
+  },
   "jwt-generator": {
     title: "JWT Generator Online — Create & Sign JSON Web Tokens | ToolNinja",
     description:
@@ -232,6 +237,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online CSV to JSON and JSON to CSV converter. Convert instantly in either direction with support for custom delimiters, quoted fields, and file upload. No login, 100% browser-based.",
   },
+  "xml-json-converter": {
+    title: "XML to JSON Converter Online — Convert XML & JSON Both Ways | ToolNinja",
+    description:
+      "Free online XML to JSON and JSON to XML converter. Convert instantly in either direction, with attributes, text content, and repeated tags all handled correctly. No login, 100% browser-based.",
+  },
   "env-file-tool": {
     title: "Env File Tool — Parse, Convert & Generate .env.example | ToolNinja",
     description:
@@ -308,6 +318,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "XPath Tester Online — Test & Evaluate XPath Expressions | ToolNinja",
     description:
       "Free online XPath tester and evaluator. Test XPath expressions against XML and HTML documents with live results. Supports XPath 1.0, node selection, axis expressions and predicates. No login, 100% browser-based.",
+  },
+  "css-xpath-converter": {
+    title: "CSS Selector to XPath Converter Online — Convert Both Ways | ToolNinja",
+    description:
+      "Free online CSS selector to XPath converter. Convert CSS selectors (id, class, attribute, combinators, nth-child) to XPath expressions and back. Useful for Selenium, Playwright, and scraping. No login, browser-only.",
   },
   "json-diff": {
     title: "JSON Diff Checker Online — Compare Two JSON Objects | ToolNinja",
@@ -451,7 +466,17 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "totp-generator": {
     title: "TOTP Generator Online — Live 2FA Authenticator Codes | ToolNinja",
     description:
-      "Free online TOTP generator. Generate live, refreshing 2FA codes from a Base32 secret key — compatible with Google Authenticator and Authy. Supports SHA-1/256/512, 6/8 digits, and otpauth:// import/export. No login, browser-only.",
+      "Free online TOTP generator. Generate live, refreshing 2FA codes from a Base32 secret key — compatible with Google Authenticator and Authy. Supports SHA-1/256/512, 6/8 digits, QR code scanning, and otpauth:// import/export. No login, browser-only.",
+  },
+  "hotp-generator": {
+    title: "HOTP Generator Online — RFC 4226 Counter-Based OTP | ToolNinja",
+    description:
+      "Free online HOTP generator. Generate RFC 4226 counter-based one-time passwords from a Base32 secret key, with otpauth://hotp/ import/export. The counter-based sibling to TOTP. No login, 100% browser-based.",
+  },
+  "backup-codes-generator": {
+    title: "2FA Backup Codes Generator Online — Recovery Codes | ToolNinja",
+    description:
+      "Free online 2FA backup codes generator. Generate a set of one-time recovery codes plus their SHA-256 hashes, ready to store server-side. No login, 100% browser-based — nothing is sent anywhere.",
   },
   "package-json-inspector": {
     title: "package.json Script Inspector — Check for Risky Install Scripts | ToolNinja",
