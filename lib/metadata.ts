@@ -10,6 +10,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online JSON formatter, validator and beautifier. Format, validate, minify and pretty print JSON instantly with syntax highlighting and error detection. JSONPath query support included. No login, 100% browser-based.",
   },
+  "ndjson-formatter": {
+    title: "NDJSON / JSON Lines Formatter & Validator Online | ToolNinja",
+    description:
+      "Free online NDJSON (JSON Lines) formatter and validator. Validate and pretty-print newline-delimited JSON line by line, or convert to and from a regular JSON array. No login, 100% browser-based.",
+  },
   "markdown-preview": {
     title: "Markdown Preview & Editor Online — Live Markdown Renderer | ToolNinja",
     description:
@@ -114,6 +119,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online UUID and GUID generator. Generate random UUID v4, time-ordered UUID v7, deterministic namespace-based UUID v5, or NanoID identifiers, in bulk up to 100 at a time. No login, 100% browser-based.",
   },
+  "ulid-generator": {
+    title: "ULID Generator Online — Sortable, URL-Safe Unique IDs | ToolNinja",
+    description:
+      "Free online ULID generator. Generate sortable, URL-safe ULIDs in bulk — a 48-bit timestamp plus 80 bits of randomness, Crockford Base32 encoded. No login, 100% browser-based.",
+  },
   "json-to-typescript": {
     title: "JSON to TypeScript Converter — Generate TypeScript Interfaces | ToolNinja",
     description:
@@ -183,6 +193,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "robots.txt Generator Online — Block AI Crawlers & Bots | ToolNinja",
     description:
       "Free online robots.txt generator. Build per-bot Allow/Disallow rules, block AI crawlers like GPTBot and Google-Extended with one click, and add sitemap links. No login required.",
+  },
+  "sitemap-generator": {
+    title: "XML Sitemap Generator Online — Create sitemap.xml Free | ToolNinja",
+    description:
+      "Free online XML sitemap generator. Paste your page URLs and get a ready-to-upload sitemap.xml with lastmod, changefreq, and priority. No login, 100% browser-based.",
   },
   "barcode-generator": {
     title: "Barcode Generator Online — Code 128, EAN-13 & UPC-A | ToolNinja",
@@ -329,6 +344,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online JSON diff checker. Compare two JSON objects structurally and see exactly what was added, removed, or changed, path by path — key order doesn't matter, and an ignore-array-order option treats re-sorted arrays as unchanged. No login, 100% browser-based.",
   },
+  "json-patch-tool": {
+    title: "JSON Patch (RFC 6902) Generator & Applier Online | ToolNinja",
+    description:
+      "Free online JSON Patch generator and applier. Diff two JSON documents into an RFC 6902 patch, or apply an existing patch to a document — the format behind HTTP PATCH requests. No login, 100% browser-based.",
+  },
   "iban-validator": {
     title: "IBAN Validator & Generator Online — MOD-97 Checksum Check | ToolNinja",
     description:
@@ -395,6 +415,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "CSS Grid Generator Online — Visual Grid Layout Builder | ToolNinja",
     description:
       "Free online CSS grid generator. Build a grid-template-columns/rows layout visually, including responsive auto-fit tracks and per-cell column/row spans, with a live preview and copy-ready CSS. No login, browser-only.",
+  },
+  "fluid-typography-calculator": {
+    title: "CSS clamp() / Fluid Typography Calculator Online | ToolNinja",
+    description:
+      "Free online CSS clamp() and fluid typography calculator. Build a font-size that scales smoothly between a min and max viewport width, with a live type-scale preview. No login, browser-only.",
   },
   "css-gradient": {
     title: "CSS Gradient Generator — Linear, Radial & Mesh Gradients | ToolNinja",

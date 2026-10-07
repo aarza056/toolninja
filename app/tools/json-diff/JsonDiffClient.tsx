@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import ToolLayout from "@/components/ToolLayout";
-import { AlertCircle, PlusCircle, MinusCircle, RefreshCw, CheckCircle2 } from "lucide-react";
+import CopyButton from "@/components/CopyButton";
+import { AlertCircle, PlusCircle, MinusCircle, RefreshCw, CheckCircle2, FileCog, ArrowRight } from "lucide-react";
 import { diffJson, formatValue, type DiffEntry } from "@/lib/json-diff";
+import { generateJsonPatch } from "@/lib/json-patch";
 
 const STORAGE_KEY_A = "toolninja:json-diff:a";
 const STORAGE_KEY_B = "toolninja:json-diff:b";
@@ -19,6 +22,7 @@ export default function JsonDiffClient() {
   const [a, setA] = useState("");
   const [b, setB] = useState("");
   const [ignoreArrayOrder, setIgnoreArrayOrder] = useState(false);
+  const [showPatch, setShowPatch] = useState(false);
 
   useEffect(() => {
     try {
@@ -69,6 +73,15 @@ export default function JsonDiffClient() {
 
   const bothValid = !errorA && !errorB && a.trim() && b.trim() && parsedA !== undefined && parsedB !== undefined;
   const identical = bothValid && entries.length === 0;
+
+  const jsonPatch = useMemo(() => {
+    if (!bothValid || identical) return "";
+    try {
+      return JSON.stringify(generateJsonPatch(parsedA, parsedB), null, 2);
+    } catch {
+      return "";
+    }
+  }, [bothValid, identical, parsedA, parsedB]);
 
   const textareaClass =
     "w-full h-64 p-3 font-mono text-xs resize-none bg-[#111111] border rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]";
@@ -139,7 +152,32 @@ export default function JsonDiffClient() {
                 </span>
               );
             })}
+            {jsonPatch && (
+              <button
+                onClick={() => setShowPatch((v) => !v)}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-xs font-medium bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] hover:text-[#f5f5f5] border border-[#222222] transition-colors ml-auto"
+              >
+                <FileCog size={12} /> {showPatch ? "Hide" : "Export as"} JSON Patch
+              </button>
+            )}
           </div>
+
+          {showPatch && jsonPatch && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs text-[#888888] font-medium">RFC 6902 Patch (A → B)</label>
+                <div className="flex items-center gap-3">
+                  <Link href="/tools/json-patch-tool" className="flex items-center gap-1 text-xs text-[#a855f7] hover:text-[#9333ea] transition-colors">
+                    Apply it <ArrowRight size={11} />
+                  </Link>
+                  <CopyButton text={jsonPatch} size="sm" />
+                </div>
+              </div>
+              <pre className="p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] overflow-auto max-h-[240px]">
+                {jsonPatch}
+              </pre>
+            </div>
+          )}
 
           {identical ? (
             <div className="flex items-center gap-2 p-4 bg-[#22c55e]/10 border border-[#22c55e]/30 rounded-[8px] text-[#22c55e] text-sm">

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Plus, Trash2, Download, Bot } from "lucide-react";
+import { Plus, Trash2, Download, Bot, AlertTriangle, ArrowRight } from "lucide-react";
 import { buildRobotsTxt, AI_CRAWLER_BOTS, type RobotsGroup } from "@/lib/robots-txt";
+import { isValidUrl } from "@/lib/sitemap-xml";
 
 const STORAGE_KEY = "toolninja:robots-txt-generator";
 let groupIdCounter = 2;
@@ -65,6 +67,11 @@ export default function RobotsTxtGeneratorClient() {
   const output = useMemo(
     () => buildRobotsTxt(groups, sitemaps.split("\n")),
     [groups, sitemaps]
+  );
+
+  const invalidSitemapUrls = useMemo(
+    () => sitemaps.split("\n").map((s) => s.trim()).filter((s) => s && !isValidUrl(s)),
+    [sitemaps]
   );
 
   const listToText = (arr: string[]) => arr.join("\n");
@@ -139,7 +146,12 @@ export default function RobotsTxtGeneratorClient() {
           </button>
 
           <div className="mt-4">
-            <label className="text-xs text-[#888888] font-medium block mb-1">Sitemap URLs (one per line)</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs text-[#888888] font-medium">Sitemap URLs (one per line)</label>
+              <Link href="/tools/sitemap-generator" className="flex items-center gap-1 text-xs text-[#a855f7] hover:text-[#9333ea] transition-colors">
+                Don&apos;t have a sitemap.xml yet? Generate one <ArrowRight size={11} />
+              </Link>
+            </div>
             <textarea
               value={sitemaps}
               onChange={(e) => setSitemaps(e.target.value)}
@@ -147,6 +159,15 @@ export default function RobotsTxtGeneratorClient() {
               spellCheck={false}
               className="w-full px-3 py-2 text-sm font-mono bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
             />
+            {invalidSitemapUrls.length > 0 && (
+              <div className="flex items-start gap-1.5 text-xs text-[#ef4444] mt-1.5">
+                <AlertTriangle size={12} className="shrink-0 mt-0.5" />
+                <span>
+                  Not a valid absolute URL: <code className="font-mono">{invalidSitemapUrls.join(", ")}</code> — a
+                  crawler expects a full https://... address here, not a relative path.
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

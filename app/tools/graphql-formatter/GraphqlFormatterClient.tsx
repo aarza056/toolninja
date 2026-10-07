@@ -3,8 +3,8 @@
 import { useState, useEffect, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Trash2 } from "lucide-react";
-import { formatGraphQL, minifyGraphQL } from "@/lib/graphql-formatter";
+import { Trash2, Variable } from "lucide-react";
+import { formatGraphQL, minifyGraphQL, extractVariables, buildSampleVariables } from "@/lib/graphql-formatter";
 
 const STORAGE_KEY = "toolninja:graphql-formatter";
 
@@ -48,6 +48,9 @@ export default function GraphqlFormatterClient() {
       return "";
     }
   }, [input, mode]);
+
+  const variables = useMemo(() => (input.trim() ? extractVariables(input) : []), [input]);
+  const sampleVariables = useMemo(() => (variables.length > 0 ? buildSampleVariables(input) : ""), [variables, input]);
 
   const textareaClass =
     "w-full h-[calc(100vh-320px)] min-h-[350px] p-3 font-mono text-sm resize-none bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]";
@@ -102,6 +105,23 @@ export default function GraphqlFormatterClient() {
           </pre>
         </div>
       </div>
+
+      {variables.length > 0 && (
+        <div className="mt-4">
+          <div className="flex items-center justify-between mb-1">
+            <label className="flex items-center gap-1.5 text-xs text-[#888888] font-medium">
+              <Variable size={12} /> Starter variables ({variables.length} declared)
+            </label>
+            <CopyButton text={sampleVariables} size="sm" />
+          </div>
+          <pre className="p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] overflow-auto max-h-[160px]">
+            {sampleVariables}
+          </pre>
+          <p className="text-[10px] text-[#555555] mt-1.5">
+            Placeholder values by scalar type — fill in real ones before sending. Custom/enum/input types default to <code className="text-[#e879f9]">null</code> since their shape can&apos;t be inferred from the query alone.
+          </p>
+        </div>
+      )}
     </ToolLayout>
   );
 }

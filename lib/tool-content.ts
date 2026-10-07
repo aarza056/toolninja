@@ -486,6 +486,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Use @media (prefers-reduced-motion: reduce) to disable animations for users who have requested reduced motion in their OS settings.",
       "CSS animations are GPU-accelerated when using transform and opacity — avoid animating layout properties like width, height, or top.",
       "animation-timeline: scroll() ties progress to the nearest scrollable ancestor; animation-timeline: view() ties it to the animated element's own position as it crosses the viewport — pick scroll() for a progress bar, view() for a reveal-on-scroll effect.",
+      "Use the search box to jump straight to an animation by name instead of scanning categories — it filters live as you type.",
     ],
     faq: [
       {
@@ -1537,6 +1538,7 @@ export const toolContent: Record<string, ToolContent> = {
       "By default, arrays are compared index by index, so inserting an item in the middle of an array shows every later item as 'changed' — turn on Ignore array order to compare by content instead of position when that's not what you want.",
       "The path shown for each difference (e.g. $.user.roles[1]) can be pasted directly into a JSONPath-aware tool to locate the value.",
       "Ignore array order treats duplicate values correctly as a multiset — [1,1,2] vs [1,2,2] reports one 1 removed and one 2 added, not a confusing full rewrite.",
+      "Click 'Export as JSON Patch' to get the same diff as an applyable RFC 6902 patch — useful when you need to actually send the change (e.g. as an HTTP PATCH body), not just review it.",
     ],
     faq: [
       {
@@ -2011,6 +2013,7 @@ export const toolContent: Record<string, ToolContent> = {
       "One User-agent group can list multiple bots on separate lines above shared Allow/Disallow rules — you don't need a separate group per bot unless the rules actually differ.",
       "robots.txt is a request, not enforcement — well-behaved crawlers (Googlebot, Bingbot, and the major AI crawlers) respect it, but nothing stops a scraper from ignoring it entirely.",
       "Use the 'Block AI crawlers' preset as a starting point, then remove any bots you actually want indexing your content for AI-powered search or citation.",
+      "The sitemap field flags anything that isn't a full absolute URL — if you don't have a sitemap.xml yet, the link next to the field generates one.",
     ],
     faq: [
       {
@@ -2115,6 +2118,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Inline fragments (`... on User { ... }`) and named fragment spreads (`...UserFields`) are formatted correctly — most simple indenters break on these.",
       "Minify mode is useful for embedding queries in source code where you want a single-line string rather than a template literal.",
       "Comments (lines starting with #) are preserved by the formatter but stripped by the minifier, matching how GraphQL servers treat them.",
+      "If the query declares $variables, a starter variables JSON appears automatically below the output — placeholder values typed by scalar, ready to fill in before sending.",
     ],
     faq: [
       {
@@ -2616,6 +2620,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Get real headers with curl -I https://example.com, or from your browser's Network tab (click a request → Headers → Response Headers) — paste them exactly as shown.",
       "A header being 'present' isn't the same as being correctly configured — check the specific note under each header, since a few (like CSP with unsafe-inline, or HSTS with a short max-age) are flagged even when technically present.",
       "The critical-severity headers (HSTS, CSP) matter most — a page missing those has meaningfully weaker protection than one missing only the info-severity headers.",
+      "Click 'Generate fix snippet' for a ready-to-paste Nginx, Express, or Apache config covering every missing or misconfigured header — review the CSP line specifically, since the right policy depends on what your page actually loads.",
     ],
     faq: [
       {
@@ -3580,6 +3585,156 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "How does the converter decide something should be a JSON array?",
         a: "Purely by counting: if two or more child elements under the same parent share a tag name, they become a JSON array under that key. A tag name that appears only once stays a plain object (or string), even if your application logic conceptually treats it as a list — XML itself doesn't distinguish 'a list with one item' from 'a single value,' so neither can this conversion.",
+      },
+    ],
+  },
+
+  "ulid-generator": {
+    about:
+      "The ToolNinja ULID Generator creates ULIDs (Universally Unique Lexicographically Sortable Identifiers) in bulk — a 26-character identifier combining a 48-bit millisecond timestamp with 80 bits of randomness, encoded in Crockford's Base32 alphabet (which skips the visually ambiguous I, L, O, and U).\n\nThe timestamp-first design is the whole point: because the first 10 characters encode time, ULIDs generated later always sort after ones generated earlier when compared as plain strings — the same database-index-friendly property UUID v7 offers, but in a shorter, case-insensitive, URL-safe alphabet with no hyphens. Where a classic random UUID v4 forces a database to insert into random positions in a B-tree index (causing page splits and index fragmentation at scale), both ULID and UUID v7 insert roughly in order, which is measurably cheaper for write-heavy tables.\n\nEverything runs 100% in your browser via crypto.getRandomValues — no ID is ever sent anywhere.",
+    useCases: [
+      "Generating database primary keys that sort chronologically and insert efficiently into a B-tree index",
+      "Creating sortable identifiers for a distributed system where multiple nodes generate IDs independently",
+      "Producing test fixture IDs that are both unique and meaningfully ordered by creation time",
+      "Migrating a schema from UUID v4 to a sortable ID format and generating sample values to test with",
+    ],
+    tips: [
+      "The first 10 characters (highlighted) encode the timestamp — sorting ULIDs as plain strings sorts them chronologically, with no separate created_at column needed for basic ordering.",
+      "Crockford Base32 deliberately excludes I, L, O, and U to avoid confusion with 1, 1, 0, and V — safe to read aloud or transcribe by hand, unlike a UUID's hex-and-hyphens.",
+      "Set a custom timestamp to generate a ULID as if it were created at a specific point in time — useful for backfilling or testing time-based sorting logic.",
+    ],
+    faq: [
+      {
+        q: "What's the actual difference between a ULID and a UUID v7?",
+        a: "Both encode a millisecond timestamp first, specifically so IDs sort chronologically — that part is functionally equivalent. The difference is encoding: ULID uses 26 characters of Crockford Base32 with no separators, while UUID v7 uses the traditional 36-character hyphenated hex format. ULID is shorter and avoids hyphens, which matters if you're embedding IDs in URLs or file names; UUID v7 has the advantage of fitting directly into existing UUID-typed database columns without a schema change.",
+      },
+      {
+        q: "Why does ID sort order matter for a database primary key?",
+        a: "A B-tree index (what most databases use for primary keys) stays efficient when new entries insert near the end, appending to the rightmost page. A fully random key like UUID v4 inserts into random positions throughout the tree instead, causing page splits and fragmentation that measurably slows down writes and bloats the index at scale — a well-documented problem specifically motivating the move to sortable ID formats like ULID and UUID v7.",
+      },
+      {
+        q: "Can two ULIDs generated in the same millisecond collide?",
+        a: "In theory, yes — if both share the millisecond timestamp, uniqueness depends entirely on the 80 bits of randomness, same as any sufficiently-random identifier. In practice, the collision probability within the same millisecond is astronomically small (comparable to UUID v4's own collision odds), which is why ULID doesn't bother with a dedicated monotonic counter for most use cases — only an implementation that specifically needs guaranteed strict ordering within the same millisecond adds one.",
+      },
+    ],
+  },
+
+  "json-patch-tool": {
+    about:
+      "The ToolNinja JSON Patch tool implements RFC 6902 in both directions: Generate mode diffs two JSON documents into an actual applyable patch (an array of add/remove/replace operations with JSON Pointer paths), and Apply mode takes a document and a patch and produces the resulting document — or a specific error if the patch doesn't match what it expected to find.\n\nJSON Patch is the format behind a real HTTP PATCH request body with Content-Type: application/json-patch+json — rather than resending the whole resource (as a PUT would) or inventing a bespoke partial-update schema, the client sends exactly the operations that changed. This tool generates that patch directly from two example documents (a realistic 'before' and 'after'), which is usually faster than hand-writing the operations and their JSON Pointer paths from scratch.\n\nApply mode supports the full RFC 6902 operation set (add, remove, replace, move, copy, test) — not just what this tool's own generator produces — so it works on a patch from any source: hand-written, from another tool, or from a library like fast-json-patch.",
+    useCases: [
+      "Generating the JSON Patch body for a REST API's PATCH endpoint from a before/after example",
+      "Understanding exactly what operations a patch library produced before shipping it",
+      "Applying a patch someone sent you to see the resulting document without writing code",
+      "Debugging why a patch fails against a document — the apply error names the exact path and what it expected to find",
+    ],
+    tips: [
+      "Array diffs are positional, not LCS-aligned — inserting one item in the middle of a long array may show as several replace operations instead of a single clean insert. The resulting patch is still fully correct when applied, just not the shortest possible one.",
+      "A path of \"\" (empty string) in a patch means the whole document — add or replace at the root path replaces the entire document in one operation.",
+      "The 'test' operation lets a patch assert a precondition before making changes — if the asserted value doesn't match, applying stops with a clear error instead of silently corrupting the document.",
+    ],
+    faq: [
+      {
+        q: "What's the difference between JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7396)?",
+        a: "JSON Patch is a list of explicit, ordered operations (add/remove/replace/move/copy/test) with JSON Pointer paths — precise, but more verbose. JSON Merge Patch is just a partial JSON object merged into the target, which is more compact but can't express removing a key (it uses null for that) and can't target specific array elements at all. JSON Patch is the right choice whenever you need to operate on arrays or need the precondition-checking 'test' operation.",
+      },
+      {
+        q: "Why did my patch fail to apply with a \"does not exist\" error?",
+        a: "The document you're patching doesn't match what the patch expects at that path — usually because the patch was generated against a different version of the document than the one you're applying it to. The error names the exact path, which is the fastest way to spot where the two versions diverged.",
+      },
+      {
+        q: "Does array diffing produce the shortest possible patch?",
+        a: "No — this tool diffs arrays positionally (index by index), not with an LCS (longest common subsequence) alignment the way a true 'minimal diff' algorithm would. A single insertion in the middle of a long array can show up as a run of replace operations rather than one insert. The patch is always correct when applied, just not always the most compact representation of the change.",
+      },
+    ],
+  },
+
+  "fluid-typography-calculator": {
+    about:
+      "The ToolNinja CSS clamp() / Fluid Typography Calculator computes the exact rem + vw formula behind a fluid font-size — type that scales smoothly as the viewport resizes between your chosen min and max widths, then holds steady outside that range, with zero media query breakpoints.\n\nThe math is the standard linear-interpolation approach most fluid-type generators use: treat font size as a straight line between two points (min viewport → min size, max viewport → max size), derive that line's slope and y-intercept, and express it as clamp(minRem, interceptRem + slopeVw, maxRem). The preview panel applies the same formula across a small type scale (xs through 3xl) using an adjustable ratio, so you can see a whole heading hierarchy scale together, not just one font-size value.\n\nEverything computes instantly in your browser — resize the browser window itself to see the live preview text actually scale.",
+    useCases: [
+      "Replacing a stack of media-query font-size breakpoints with a single fluid clamp() declaration",
+      "Generating a complete, proportionally-scaling type hierarchy (headings through body text) for a design system",
+      "Understanding exactly how the rem + vw formula in a fluid-type CSS snippet was derived",
+      "Prototyping how aggressive a font size's growth should be across the viewport range before committing to final values",
+    ],
+    tips: [
+      "clamp() takes three values — min, preferred, max — and the browser picks whichever is appropriate: the preferred (fluid) value when it falls between min and max, otherwise the nearest boundary.",
+      "A narrower gap between min and max viewport width makes the font size change more aggressively per pixel of resize — widen the range for a gentler, more gradual scale.",
+      "The scale ratio slider only affects the preview panel's step sizes (xs through 3xl) — it doesn't change the single font-size clamp() output above it, which is driven solely by your min/max size and viewport inputs.",
+    ],
+    faq: [
+      {
+        q: "Why use clamp() instead of just a vw unit for font-size?",
+        a: "A bare vw value has no floor or ceiling — text can shrink to the point of being unreadable on a very narrow screen, or grow absurdly large on an ultrawide monitor. clamp(min, vw-based-value, max) keeps the fluid scaling behavior in between while guaranteeing the font size never goes below or above sizes you've explicitly chosen.",
+      },
+      {
+        q: "Does clamp() for font-size have good browser support?",
+        a: "Yes — clamp() has been supported in every major browser (Chrome, Firefox, Safari, Edge) since 2020, with no vendor prefix required. It's safe to use in production for any site that doesn't need to support browsers from before that point.",
+      },
+      {
+        q: "Why does the formula mix rem and vw units together?",
+        a: "The vw portion provides the actual fluid scaling as the viewport changes, while the rem offset (the line's y-intercept) is what makes the two endpoints — the exact min size at the min viewport, and the exact max size at the max viewport — come out mathematically correct. Without that rem offset, a pure vw-based value wouldn't pass through your chosen min/max points precisely.",
+      },
+    ],
+  },
+
+  "ndjson-formatter": {
+    about:
+      "The ToolNinja NDJSON / JSON Lines Formatter validates and pretty-prints newline-delimited JSON — one independent JSON value per line, rather than one big array — the format behind streaming API responses, log files, and increasingly, token-by-token LLM output.\n\nEach line is parsed and validated independently, so a single malformed line is reported with its exact line number rather than failing the whole input the way a single JSON.parse() over the full text would. A Convert mode turns valid NDJSON into a regular JSON array (and back) for the cases where you need the data in one format or the other — exporting NDJSON logs into a JSON array for a script that expects one, or splitting a JSON array into NDJSON for a streaming pipeline.\n\nEverything runs 100% in your browser — your log data or API response never leaves your machine.",
+    useCases: [
+      "Validating a log file or API response that uses NDJSON/JSON Lines format, with exact line numbers for any malformed entries",
+      "Converting NDJSON log output into a regular JSON array for a script or tool that doesn't support the line-delimited format",
+      "Converting a JSON array into NDJSON for a streaming pipeline or bulk-import API that expects one record per line",
+      "Pretty-printing minified NDJSON log lines to read them more easily during debugging",
+    ],
+    tips: [
+      "Blank lines are silently skipped — they're a common artifact of how NDJSON files get generated and aren't treated as errors.",
+      "Converting to a JSON array requires every line to be valid first — fix the lines listed as errors before the array conversion will produce output.",
+      "NDJSON and JSON Lines (.jsonl) are the same format under different names — both mean exactly one JSON value per line, no trailing comma, no wrapping array.",
+    ],
+    faq: [
+      {
+        q: "What's actually different between NDJSON and a regular JSON array?",
+        a: "A JSON array must be fully received and parsed as one unit — you can't know the array is 'done' until you see the closing ]. NDJSON has no wrapping structure at all; each line is independently complete and parseable the moment it arrives, which is exactly why streaming APIs and log pipelines prefer it — a consumer can process line 1 while line 50,000 is still being generated.",
+      },
+      {
+        q: "Why do LLM streaming APIs often use a line-delimited format?",
+        a: "Token-by-token generation produces output incrementally, and a consumer needs to process each chunk as it arrives rather than waiting for the full response — the same requirement NDJSON was designed for. Many LLM streaming endpoints use NDJSON directly, or a closely related line-delimited event format (like text/event-stream), for this reason.",
+      },
+      {
+        q: "Can NDJSON have trailing commas or wrap everything in brackets?",
+        a: "No — each line must be a complete, standalone JSON value with no trailing comma and no enclosing array brackets. A file that starts with [ and separates entries with commas is a regular (possibly pretty-printed) JSON array, not NDJSON, even if it has one value per line.",
+      },
+    ],
+  },
+
+  "sitemap-generator": {
+    about:
+      "The ToolNinja XML Sitemap Generator builds a standards-compliant sitemap.xml from a list of page URLs — the file search engines use to discover and prioritize crawling your site's pages, especially ones that might not be easily reachable through internal links alone.\n\nEach URL gets an optional lastmod date, changefreq hint, and priority value, following the sitemap protocol (sitemaps.org) that Google, Bing, and other search engines all support. URLs are validated as proper absolute http(s) addresses before generating output, since a sitemap entry that isn't a real absolute URL is simply ignored (or causes a validation warning) by every major search engine's sitemap parser.\n\nThis pairs directly with the existing robots.txt Generator — a robots.txt's Sitemap: directive is exactly how you tell crawlers where to find the sitemap this tool produces. Everything runs 100% in your browser — your URL list never leaves your machine.",
+    useCases: [
+      "Generating a sitemap.xml for a site that doesn't have server-side sitemap generation built in",
+      "Producing a sitemap for a subset of pages (e.g. just blog posts) to submit separately in Google Search Console",
+      "Quickly building a sitemap from a list of URLs exported from a CMS or static site generator's build output",
+      "Understanding exactly what changefreq and priority mean before deciding whether to set them",
+    ],
+    tips: [
+      "changefreq and priority are both just hints — search engines are explicit that they may largely ignore both, so don't rely on priority to meaningfully influence crawl behavior or rankings.",
+      "A sitemap is capped at 50,000 URLs per file — a larger site needs multiple sitemap files listed in a sitemap index file, which this tool doesn't generate directly.",
+      "Add the generated sitemap's URL to your robots.txt's Sitemap: line (the robots.txt Generator tool has a field for exactly this) so crawlers can discover it automatically.",
+    ],
+    faq: [
+      {
+        q: "Does a sitemap guarantee my pages will be indexed?",
+        a: "No — a sitemap only helps search engines discover and understand the structure of your site; it doesn't guarantee indexing, and it has essentially no direct effect on ranking. Pages still need to meet a search engine's own quality and indexing criteria independently of being listed in a sitemap.",
+      },
+      {
+        q: "Do search engines actually use the priority value?",
+        a: "Google has stated for years that it largely ignores the priority field, treating it as a weak signal at best. It's still part of the sitemap protocol and some search engines or internal tools may use it, but don't expect setting priority to 1.0 on every page to meaningfully change crawl behavior.",
+      },
+      {
+        q: "Why were some of my pasted URLs rejected?",
+        a: "Every sitemap entry must be a complete, absolute URL including the protocol (https://example.com/page, not /page or example.com/page) — the validator flags any line that doesn't parse as a proper absolute http or https URL, since those are the only forms search engines' sitemap parsers accept.",
       },
     ],
   },

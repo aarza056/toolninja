@@ -2,8 +2,15 @@
 
 import { useState, useMemo, useEffect } from "react";
 import ToolLayout from "@/components/ToolLayout";
-import { CheckCircle2, XCircle, AlertTriangle, Info } from "lucide-react";
-import { analyzeHeaders, type HeaderSeverity } from "@/lib/security-headers";
+import CopyButton from "@/components/CopyButton";
+import { CheckCircle2, XCircle, AlertTriangle, Info, Wrench } from "lucide-react";
+import { analyzeHeaders, buildFixSnippet, type HeaderSeverity, type FixSnippetFormat } from "@/lib/security-headers";
+
+const FORMATS: { id: FixSnippetFormat; label: string }[] = [
+  { id: "nginx", label: "Nginx" },
+  { id: "express", label: "Express" },
+  { id: "apache", label: "Apache" },
+];
 
 const STORAGE_KEY = "toolninja:security-headers-checker";
 
@@ -29,6 +36,8 @@ function scoreColor(score: number): string {
 
 export default function SecurityHeadersCheckerClient() {
   const [input, setInput] = useState("");
+  const [showFix, setShowFix] = useState(false);
+  const [fixFormat, setFixFormat] = useState<FixSnippetFormat>("nginx");
 
   useEffect(() => {
     try {
@@ -46,6 +55,7 @@ export default function SecurityHeadersCheckerClient() {
   }, [input]);
 
   const report = useMemo(() => (input.trim() ? analyzeHeaders(input) : null), [input]);
+  const fixSnippet = useMemo(() => (report ? buildFixSnippet(report.checks, fixFormat) : ""), [report, fixFormat]);
 
   return (
     <ToolLayout
@@ -87,6 +97,43 @@ export default function SecurityHeadersCheckerClient() {
                   )}
                 </div>
               </div>
+
+              {fixSnippet && (
+                <div className="mb-4">
+                  <button
+                    onClick={() => setShowFix((v) => !v)}
+                    className="flex items-center gap-1.5 text-xs text-[#a855f7] hover:text-[#9333ea] transition-colors mb-2"
+                  >
+                    <Wrench size={12} /> {showFix ? "Hide" : "Generate"} fix snippet for missing/misconfigured headers
+                  </button>
+                  {showFix && (
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex rounded-[6px] border border-[#222222] overflow-hidden">
+                          {FORMATS.map((f) => (
+                            <button
+                              key={f.id}
+                              onClick={() => setFixFormat(f.id)}
+                              className={`px-2.5 py-1 text-xs transition-colors ${fixFormat === f.id ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
+                            >
+                              {f.label}
+                            </button>
+                          ))}
+                        </div>
+                        <CopyButton text={fixSnippet} size="sm" />
+                      </div>
+                      <pre className="p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] overflow-auto max-h-[200px]">
+                        {fixSnippet}
+                      </pre>
+                      <p className="text-[10px] text-[#555555] mt-1.5">
+                        Generic recommended values — especially review the Content-Security-Policy
+                        value before using it, since the right CSP depends entirely on what your
+                        specific page actually loads.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="space-y-2">
                 {report.checks.map((check) => {

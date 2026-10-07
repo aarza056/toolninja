@@ -155,3 +155,45 @@ export function analyzeHeaders(raw: string): SecurityHeaderReport {
     criticalMissing,
   };
 }
+
+const RECOMMENDED_VALUES: Record<string, string> = {
+  "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+  "x-frame-options": "SAMEORIGIN",
+  "x-content-type-options": "nosniff",
+  "content-security-policy": "default-src 'self'",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "permissions-policy": "geolocation=(), microphone=(), camera=()",
+  "x-xss-protection": "0",
+  "cross-origin-opener-policy": "same-origin",
+  "cross-origin-resource-policy": "same-origin",
+};
+
+function titleCaseHeader(name: string): string {
+  return name.split("-").map((p) => p[0].toUpperCase() + p.slice(1)).join("-");
+}
+
+export type FixSnippetFormat = "nginx" | "express" | "apache";
+
+/** Builds a copy-paste config snippet for every check that's missing or flagged, using a safe
+ * generic recommended value — not a substitute for choosing your own CSP policy, which depends
+ * entirely on what your specific page actually loads. */
+export function buildFixSnippet(checks: HeaderCheck[], format: FixSnippetFormat): string {
+  const needsFix = checks.filter((c) => !c.present || c.message !== "Present and looks correctly configured.");
+  if (needsFix.length === 0) return "";
+
+  if (format === "nginx") {
+    return needsFix
+      .map((c) => `add_header ${titleCaseHeader(c.name)} "${RECOMMENDED_VALUES[c.name] ?? c.value ?? ""}" always;`)
+      .join("\n");
+  }
+
+  if (format === "apache") {
+    return needsFix
+      .map((c) => `Header always set ${titleCaseHeader(c.name)} "${RECOMMENDED_VALUES[c.name] ?? c.value ?? ""}"`)
+      .join("\n");
+  }
+
+  // express
+  const lines = needsFix.map((c) => `  res.setHeader("${titleCaseHeader(c.name)}", "${RECOMMENDED_VALUES[c.name] ?? c.value ?? ""}");`);
+  return `app.use((req, res, next) => {\n${lines.join("\n")}\n  next();\n});`;
+}

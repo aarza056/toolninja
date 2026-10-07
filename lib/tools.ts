@@ -24,6 +24,18 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "ndjson-formatter",
+    name: "NDJSON / JSON Lines Formatter & Validator",
+    description: "Validate and pretty-print newline-delimited JSON, or convert to/from a regular JSON array",
+    icon: "AlignJustify",
+    category: "Format",
+    keywords: [
+      "ndjson formatter", "json lines formatter", "ndjson validator online",
+      "json lines validator", "ndjson to json array", "json array to ndjson",
+      "newline delimited json formatter", "jsonl formatter online",
+    ],
+  },
+  {
     slug: "markdown-preview",
     name: "Markdown Preview",
     description: "Write and preview Markdown in real time",
@@ -311,6 +323,18 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "ulid-generator",
+    name: "ULID Generator",
+    description: "Generate sortable, URL-safe ULIDs in bulk — a 48-bit timestamp plus 80 bits of randomness",
+    icon: "ArrowUpDown",
+    category: "Generate",
+    keywords: [
+      "ulid generator", "ulid generator online", "generate ulid",
+      "sortable unique id generator", "ulid vs uuid", "crockford base32 id generator",
+      "ulid online tool", "generate ulid free", "lexicographically sortable id",
+    ],
+  },
+  {
     slug: "json-to-typescript",
     name: "JSON to TypeScript",
     description: "Auto-generate TypeScript interfaces from JSON objects",
@@ -493,6 +517,18 @@ export const tools: Tool[] = [
       "block ai crawlers robots.txt", "gptbot disallow", "robots.txt generator free",
       "sitemap robots.txt", "robots.txt online tool", "block google-extended",
       "ai bot blocker robots.txt",
+    ],
+  },
+  {
+    slug: "sitemap-generator",
+    name: "XML Sitemap Generator",
+    description: "Paste your page URLs and get a ready-to-upload sitemap.xml",
+    icon: "FolderTree",
+    category: "Generate",
+    keywords: [
+      "sitemap generator", "xml sitemap generator", "sitemap.xml generator online",
+      "generate sitemap xml", "create sitemap online", "sitemap generator free",
+      "website sitemap generator", "sitemap xml online tool",
     ],
   },
   {
@@ -862,6 +898,18 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "json-patch-tool",
+    name: "JSON Patch (RFC 6902) Generator & Applier",
+    description: "Diff two JSON documents into an applyable patch, or apply an existing patch to a document",
+    icon: "FileCog",
+    category: "Test",
+    keywords: [
+      "json patch generator", "rfc 6902 generator", "json patch online",
+      "apply json patch online", "json patch applier", "generate json patch from diff",
+      "json-patch+json", "http patch json body generator", "json patch tool free",
+    ],
+  },
+  {
     slug: "iban-validator",
     name: "IBAN Validator & Generator",
     description: "Validate an IBAN's MOD-97 checksum, or generate a test IBAN for any supported country",
@@ -1024,6 +1072,18 @@ export const tools: Tool[] = [
       "css grid generator", "css grid generator online", "grid template columns generator",
       "css grid layout generator", "grid-template-areas generator", "css grid visualizer",
       "responsive css grid generator", "grid-column span generator", "css grid tool",
+    ],
+  },
+  {
+    slug: "fluid-typography-calculator",
+    name: "CSS clamp() / Fluid Typography Calculator",
+    description: "Build a fluid font-size that scales smoothly between a min and max viewport — no media queries",
+    icon: "Ruler",
+    category: "Design",
+    keywords: [
+      "css clamp calculator", "fluid typography calculator", "fluid type scale generator",
+      "clamp font size generator", "responsive font size calculator", "css clamp generator",
+      "fluid typography css", "vw font size calculator",
     ],
   },
   {
@@ -1422,9 +1482,9 @@ export type Category = (typeof categories)[number];
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 export const LATEST_TOOL_SLUGS = [
-  "hotp-generator",
-  "backup-codes-generator",
-  "qr-code-scanner",
-  "css-xpath-converter",
-  "xml-json-converter",
+  "ulid-generator",
+  "json-patch-tool",
+  "fluid-typography-calculator",
+  "ndjson-formatter",
+  "sitemap-generator",
 ];

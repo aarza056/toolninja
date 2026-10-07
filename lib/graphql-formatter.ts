@@ -203,3 +203,58 @@ export function minifyGraphQL(input: string): string {
   }
   return out.trim();
 }
+
+export interface GraphQLVariable {
+  name: string;
+  type: string;
+  required: boolean;
+}
+
+/** Reads the `($var: Type, ...)` declaration list right after the operation keyword/name —
+ * the only place GraphQL variables are declared, so anonymous shorthand queries (bare `{ ... }`
+ * with no operation header) simply have none to find. */
+export function extractVariables(query: string): GraphQLVariable[] {
+  const headerMatch = query.match(/^\s*(?:query|mutation|subscription)\s*[A-Za-z_]\w*\s*\(([^)]*)\)/);
+  if (!headerMatch) return [];
+
+  const varRe = /\$([A-Za-z_]\w*)\s*:\s*([^,=]+?)\s*(?:=\s*[^,]+)?(?:,|$)/g;
+  const vars: GraphQLVariable[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = varRe.exec(headerMatch[1])) !== null) {
+    const type = m[2].trim();
+    vars.push({ name: m[1], type, required: type.endsWith("!") });
+  }
+  return vars;
+}
+
+function sampleValueForType(type: string): unknown {
+  const base = type.replace(/[!\[\]]/g, "").trim();
+  const isList = type.includes("[");
+  let sample: unknown;
+  switch (base) {
+    case "String":
+    case "ID":
+      sample = "";
+      break;
+    case "Int":
+    case "Float":
+      sample = 0;
+      break;
+    case "Boolean":
+      sample = false;
+      break;
+    default:
+      sample = null; // custom scalar, enum, or input type — can't guess a shape
+  }
+  return isList ? [sample] : sample;
+}
+
+/** Produces a starter variables JSON object for a query's declared $variables — placeholder
+ * values typed by GraphQL scalar (empty string, 0, false), null for anything custom. */
+export function buildSampleVariables(query: string): string {
+  const vars = extractVariables(query);
+  if (vars.length === 0) return "{}";
+  const obj: Record<string, unknown> = {};
+  for (const v of vars) obj[v.name] = sampleValueForType(v.type);
+  return JSON.stringify(obj, null, 2);
+}
