@@ -69,7 +69,7 @@ Array comparison deserves a specific caveat: most structural diff tools, includi
 
 ## Try It
 
-**[ToolNinja's JSON Diff Checker →](/tools/json-diff)** parses two JSON objects and shows every difference — added, removed, and changed — with the exact path and both values, color-coded and grouped. Key order never produces a false positive. It runs 100% in your browser, so it's safe to paste real API responses, including ones with tokens or user data, without anything leaving your machine.
+**[ToolNinja's JSON Diff Checker →](/tools/json-diff)** parses two JSON objects and shows every difference — added, removed, and changed — with the exact path and both values, color-coded and grouped. Key order never produces a false positive. Your JSON is processed in your browser and never uploaded, so it's safe to paste real API responses, including ones with tokens or user data, without anything leaving your machine.
 
 Pair it with the **[HTTP Request Builder](/tools/http-request)** to pull live responses from staging and production side by side before diffing them.
 

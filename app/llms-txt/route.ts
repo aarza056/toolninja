@@ -11,8 +11,10 @@ export async function GET() {
 
   const content = `# ToolNinja
 
-> ToolNinja is a free, browser-only developer toolbox at toolninja.io.
-> ${tools.length} tools that run 100% client-side — no login, your data stays in your browser.
+> ToolNinja is a free developer toolbox at toolninja.io.
+> ${tools.length} tools, no login. Your input is processed in your browser and never uploaded.
+> A few tools (HTTP Request Builder, README Badge Generator) send requests you direct to a third-party server; they say so on their page.
+> The site uses server logs, consent-based Google Analytics and AdSense: https://toolninja.io/privacy
 
 ## Tools
 

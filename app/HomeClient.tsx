@@ -10,6 +10,7 @@ import { devPhrases } from "@/lib/phrases";
 import { getRecentTools, getFavoriteTools } from "@/lib/user-prefs";
 import StarButton from "@/components/StarButton";
 import TrustBar from "@/components/TrustBar";
+import { INPUT_PRIVACY_CLAIM } from "@/lib/site";
 
 type FilterCategory = typeof categories[number] | "All";
 
@@ -80,13 +81,13 @@ function ToolCard({ tool, featured = false }: { tool: Tool; featured?: boolean }
 const WHY_ITEMS = [
   {
     icon: "Lock",
-    title: "Private by default",
-    desc: "Your code and data are processed locally and never sent to our servers — no matter what tool you're using.",
+    title: "Your input stays local",
+    desc: "Your input is processed in your browser and never uploaded. A few tools, like the HTTP Request Builder, send requests you direct, and say so on their page.",
   },
   {
     icon: "Zap",
     title: "Zero setup",
-    desc: "Open a tool and start working. No installs, no accounts, no configuration required.",
+    desc: "Open a tool and start working. No installs, no sign-up, no configuration required.",
   },
   {
     icon: "Code2",
@@ -95,8 +96,8 @@ const WHY_ITEMS = [
   },
   {
     icon: "WifiOff",
-    title: "Works offline",
-    desc: "All logic runs in your browser. Once loaded, no internet connection required.",
+    title: "Mostly works offline",
+    desc: "Tool logic runs in your browser, so most tools keep working once loaded. Tools that call an API you choose still need a connection.",
   },
 ] as const;
 
@@ -151,16 +152,15 @@ export default function HomeClient() {
       <div className="mb-12 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#a855f7]/10 border border-[#a855f7]/20 rounded-full text-xs text-[#a855f7] mb-6 font-medium">
           <span>🥷</span>
-          <span>{tools.length} tools · 0 accounts · 100% browser</span>
+          <span>{tools.length} tools · no sign-up · input processed in your browser</span>
         </div>
 
         <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight tracking-tight">
-          <span className="bg-gradient-to-r from-[#f5f5f5] to-[#888888] bg-clip-text text-transparent">
-            The dev toolbox
-          </span>
-          <br />
-          <span className="bg-gradient-to-r from-[#a855f7] to-[#3b82f6] bg-clip-text text-transparent">
-            you&apos;ve been looking for.
+          <span className="block">
+            <span className="bg-gradient-to-r from-[#f5f5f5] to-[#888888] bg-clip-text text-transparent">The dev toolbox</span>
+          </span>{" "}
+          <span className="block">
+            <span className="bg-gradient-to-r from-[#a855f7] to-[#3b82f6] bg-clip-text text-transparent">you&apos;ve been looking for.</span>
           </span>
         </h1>
 
@@ -182,8 +182,7 @@ export default function HomeClient() {
         </div>
 
         <p className="text-[#666666] text-base max-w-md mx-auto mb-8 leading-relaxed">
-          Fast, free, private. Every tool runs entirely in your browser —
-          no login, and your data stays there.
+          Fast and free, no login. {INPUT_PRIVACY_CLAIM}
         </p>
 
         {/* Search */}

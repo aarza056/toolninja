@@ -9,6 +9,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieBanner from "@/components/CookieBanner";
 import WhatsNewModal from "@/components/WhatsNewModal";
+import { INPUT_PRIVACY_CLAIM } from "@/lib/site";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
     template: "%s | ToolNinja",
   },
   description:
-    `Free online developer tools that run 100% in your browser. JSON formatter, Base64 encoder, JWT decoder, Regex tester, UUID generator, password generator, QR code generator, and ${TOOL_COUNT_LABEL} more. No login. Your data stays in your browser.`,
+    `${TOOL_COUNT_LABEL} free developer tools: JSON, JWT, regex, Base64, UUID and more. No login. ${INPUT_PRIVACY_CLAIM}`,
   keywords: [
     "developer tools", "json formatter", "base64 encoder", "jwt decoder",
     "regex tester", "url encoder", "uuid generator", "password generator",
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
     siteName: "ToolNinja",
     title: "ToolNinja — Fast, Free Developer Tools",
     description:
-      "Free online developer tools that run 100% in your browser. No login. Your data stays in your browser.",
+      `Free online developer tools. No login. ${INPUT_PRIVACY_CLAIM}`,
     url: "https://toolninja.io",
     images: [
       {
@@ -62,7 +63,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ToolNinja — Fast, Free Developer Tools",
     description:
-      "Free online developer tools that run 100% in your browser. No login. Your data stays in your browser.",
+      `Free online developer tools. No login. ${INPUT_PRIVACY_CLAIM}`,
     images: ["/api/og"],
   },
   robots: {
@@ -100,7 +101,6 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <head>
         <meta name="keywords" content="developer tools, json formatter, base64 decoder, jwt decoder, regex tester, uuid generator, hash generator, chmod calculator, cidr calculator, css gradient generator, online developer tools, free developer tools, browser tools no login" />
-        <meta name="description" content={`${TOOL_COUNT_LABEL} free browser-only developer tools. JSON formatter, Base64 encoder, JWT decoder, Regex tester, UUID generator, Chmod calculator, CIDR calculator, CSS animations and more. No login. Your data stays in your browser.`} />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png" />
         <link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png" />
@@ -112,12 +112,9 @@ export default function RootLayout({
         <link rel="search" type="application/opensearchdescription+xml" title="ToolNinja" href="/opensearch.xml" />
         <link rel="alternate" hrefLang="en" href="https://toolninja.io" />
         <link rel="alternate" hrefLang="x-default" href="https://toolninja.io" />
+        {/* Account verification only. The AdSense script itself is loaded by CookieBanner after
+            the visitor accepts cookies, never before. */}
         <meta name="google-adsense-account" content="ca-pub-3459524040712269" />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3459524040712269"
-          crossOrigin="anonymous"
-        />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0a0a0a] text-[#f5f5f5]`}>
         <ParticleBackground />

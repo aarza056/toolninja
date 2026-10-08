@@ -213,4 +213,4 @@ The first character indicates type (`-` = file, `d` = directory, `l` = symlink),
 
 Calculating octal values by hand is error-prone. Use the **[ToolNinja Chmod Calculator](/tools/chmod-calculator)** to click checkboxes and instantly see the octal value, symbolic notation, and a ready-to-run `chmod` command.
 
-No login, no tracking — runs 100% in your browser.
+No login. Your input is processed in your browser and never uploaded.

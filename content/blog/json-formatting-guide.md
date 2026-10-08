@@ -277,4 +277,4 @@ For Python: `ijson` library. For Go: `encoding/json` with `Decoder.Token()`.
 
 ## Try It: ToolNinja JSON Formatter
 
-Paste messy JSON and instantly format, validate, and minify it with the **[ToolNinja JSON Formatter](/tools/json-formatter)**. Highlights syntax errors with line numbers. Runs 100% in your browser.
+Paste messy JSON and instantly format, validate, and minify it with the **[ToolNinja JSON Formatter](/tools/json-formatter)**. Highlights syntax errors with line numbers. Your JSON is processed in your browser and never uploaded.

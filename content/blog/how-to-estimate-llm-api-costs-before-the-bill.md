@@ -8,13 +8,13 @@ tags: ["llm api cost", "token counter", "estimate api cost", "openai pricing", "
 relatedTools: ["ai-token-counter", "hash-generator"]
 faqs:
   - q: "Why do output tokens cost more than input tokens?"
-    a: "Generating a token requires a full forward pass through the model, run sequentially — it can't be parallelized across tokens the way processing a long input prompt can be. That computational asymmetry is why every major provider (Anthropic, OpenAI, Google) prices output tokens at roughly 4-6x the input rate."
+    a: "Generating a token requires a full forward pass through the model, run sequentially — it can't be parallelized across tokens the way processing a long input prompt can be. That computational asymmetry is why every major provider (Anthropic, OpenAI, Google) prices output tokens several times higher than input. In the rate table used by ToolNinja's AI Token Counter, the multiple ranges from about 4x to 8x depending on the model."
   - q: "Is a token the same as a word?"
     a: "No. A token is a sub-word unit — short, common words are usually one token, but longer or unusual words, code, and non-English text often split into multiple tokens. A commonly cited rule of thumb for English prose is about 4 characters per token, or roughly 0.75 tokens per word, but it varies by content type."
   - q: "What's the single biggest lever for reducing LLM API cost?"
     a: "Prompt caching, where the provider supports it. A system prompt or set of reference documents that gets reused across many requests can be cached so repeat requests pay a fraction of the normal input-token rate for that cached portion — often around 90% cheaper for cache hits versus a full-price read every time."
   - q: "Do I need to count tokens exactly, or is an estimate good enough?"
-    a: "For budgeting and comparing models, a close estimate (within 10-15%) is usually enough to make a decision. For anything billing-critical — like a hard spend cap you can't exceed — use the provider's own exact token-counting endpoint rather than an approximation, since estimates can run slightly high or low depending on the content."
+    a: "For budgeting and comparing models, a rough estimate is usually enough to make a decision. For anything billing-critical — like a hard spend cap you can't exceed — use the provider's own exact token-counting endpoint rather than an approximation, since estimates can run slightly high or low depending on the content."
 ---
 
 ## The Bill Always Arrives After the Decision
@@ -84,7 +84,7 @@ If you're resending the same long system prompt or document set on every call an
 
 | Question | Answer |
 |---|---|
-| Is input or output more expensive per token? | Output — typically 4-6x the input rate |
+| Is input or output more expensive per token? | Output — roughly 4x to 8x the input rate, depending on the model |
 | What's the fastest way to estimate token count? | ~4 characters per token for English prose (rougher for code/non-English) |
 | What's the biggest easy win for multi-call workloads? | Prompt caching on the static/reused portion of the prompt |
 | What silently inflates cost in a chat app? | Resending full conversation history on every turn |

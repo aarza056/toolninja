@@ -239,4 +239,4 @@ ToolNinja's free cURL to Code Converter handles it instantly:
 
 🔧 **[cURL to Code Converter — toolninja.io/tools/curl-to-code](https://toolninja.io/tools/curl-to-code)**
 
-No login. No server. Your API keys and tokens never leave your browser.
+No login. The command is parsed in your browser and never uploaded, so API keys and tokens in it stay on your machine.

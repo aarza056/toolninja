@@ -6,6 +6,7 @@ import ToolLayout from "@/components/ToolLayout";
 import { Loader2, Plus, Trash2, Copy, Check, ChevronDown, ChevronRight, Upload, Download, X, Terminal, ArrowRight } from "lucide-react";
 import { importFromPostman, exportToPostman, type ImportedRequest } from "@/lib/postman-collection";
 import { buildCurlCommand, toBase64Url } from "@/lib/curl-builder";
+import { NETWORK_TOOLS } from "@/lib/site";
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS";
 
@@ -316,8 +317,11 @@ export default function HttpRequestClient() {
 
       {/* CORS warning */}
       <div className="mb-4 p-3 bg-[#f97316]/10 border border-[#f97316]/30 rounded-[8px] text-[#f97316] text-xs">
-        ⚠ Browser requests are subject to CORS. Cross-origin APIs without proper CORS headers will
-        fail. For unrestricted requests, use curl or a backend proxy.
+        <p className="mb-1">⚠ {NETWORK_TOOLS["http-request"]}</p>
+        <p>
+          Browser requests are subject to CORS. Cross-origin APIs without proper CORS headers will
+          fail. For unrestricted requests, use curl or a backend proxy.
+        </p>
       </div>
 
       {/* Tab bar */}

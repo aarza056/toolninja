@@ -214,7 +214,7 @@ Large enterprise (multi-account):
 
 ## Calculate Your VPC Subnets Instantly
 
-Planning a VPC CIDR by hand is error-prone. Use ToolNinja's free [CIDR Calculator](https://toolninja.io/tools/cidr-calculator) to instantly see subnet masks, usable IP ranges, broadcast addresses, and binary breakdowns for any CIDR block — no login, no server, 100% in your browser.
+Planning a VPC CIDR by hand is error-prone. Use ToolNinja's free [CIDR Calculator](https://toolninja.io/tools/cidr-calculator) to instantly see subnet masks, usable IP ranges, broadcast addresses, and binary breakdowns for any CIDR block — no login, and your input is processed in your browser and never uploaded.
 
 Enter any CIDR notation (e.g. `10.0.0.0/24`) and instantly see:
 

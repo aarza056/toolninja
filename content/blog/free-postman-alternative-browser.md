@@ -55,7 +55,7 @@ To be direct about it: Postman is the more capable tool overall. The honest comp
 | Team workspaces / sync | ✅ | ❌ |
 | Mock servers | ✅ | ❌ |
 | Automated test scripts (pre-request/post-response) | ✅ | ❌ |
-| Runs 100% client-side, nothing leaves your browser | Partial (cloud sync) | ✅ Fully |
+| No cloud sync: requests go straight from your browser to your API, never via a third-party server | Partial (cloud sync) | ✅ Yes |
 | Cost | Free tier + paid tiers | Free, no tiers |
 
 If you recognized your own workflow in the "What you actually need" section above, the right column covers it. If you need shared environments across a five-person backend team, you still want Postman — or at minimum, you'll outgrow a browser tool quickly.

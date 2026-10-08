@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { tools, categories, LATEST_TOOL_SLUGS } from "@/lib/tools";
 import { Menu, X, Search } from "lucide-react";
 import * as LucideIcons from "lucide-react";
+import { INPUT_PRIVACY_CLAIM } from "@/lib/site";
 
 const NEW_TOOL_SLUGS = new Set(LATEST_TOOL_SLUGS);
 
@@ -97,7 +98,7 @@ export default function Sidebar() {
       {/* Footer */}
       <div className="px-4 py-4 border-t border-[#222222]">
         <p className="text-xs text-[#888888] leading-relaxed mb-2">
-          Your data never leaves the browser 🔒
+          {INPUT_PRIVACY_CLAIM}
         </p>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-[#555555]">
           <Link href="/privacy" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">

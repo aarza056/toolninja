@@ -6,7 +6,7 @@ const websiteJsonLd = {
   name: "ToolNinja",
   url: "https://toolninja.io",
   description:
-    "Free online developer tools that run 100% in your browser. No login. Your data stays in your browser.",
+    "Free online developer tools. No login. Your input is processed in your browser and never uploaded.",
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -24,7 +24,7 @@ const orgJsonLd = {
   url: "https://toolninja.io",
   logo: "https://toolninja.io/icon.svg",
   description:
-    "Fast, free developer tools. No login. No nonsense. Everything runs in your browser.",
+    "Fast, free developer tools. No login. Your input is processed in your browser and never uploaded.",
 };
 
 export default function HomePage() {

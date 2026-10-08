@@ -10,7 +10,7 @@ faqs:
   - q: "Can I decode a JWT without the secret key?"
     a: "Yes — the header and payload of a JWT are just Base64URL encoded, not encrypted. Anyone can decode them without the secret. The secret is only needed to verify the signature."
   - q: "Is it safe to paste my JWT into an online decoder?"
-    a: "Only if the tool runs entirely in your browser with no server calls. ToolNinja's JWT Decoder processes your token 100% client-side — nothing is ever sent to any server."
+    a: "Only if the tool runs entirely in your browser with no server calls. ToolNinja's JWT Decoder processes your token in your browser — it is never uploaded."
   - q: "What is the difference between JWT and session tokens?"
     a: "Session tokens require a database lookup on every request. JWTs are self-contained — the server can verify them without a database by checking the signature."
   - q: "What does the alg:none vulnerability mean in JWT?"
@@ -203,4 +203,4 @@ This only decodes — it does **not** verify the signature. Use this for debuggi
 
 ## Try It: ToolNinja JWT Decoder
 
-Paste any JWT into the **[ToolNinja JWT Decoder](/tools/jwt-decoder)** to instantly see the decoded header, payload, and expiry status. Works 100% in your browser — the token never leaves your machine.
+Paste any JWT into the **[ToolNinja JWT Decoder](/tools/jwt-decoder)** to instantly see the decoded header, payload, and expiry status. The token is decoded in your browser and never uploaded.

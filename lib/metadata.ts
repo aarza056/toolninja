@@ -8,12 +8,12 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "json-formatter": {
     title: "JSON Formatter & Validator Online — Beautify, Minify & Validate JSON | ToolNinja",
     description:
-      "Free online JSON formatter, validator and beautifier. Format, validate, minify and pretty print JSON instantly with syntax highlighting and error detection. JSONPath query support included. No login, 100% browser-based.",
+      "Free online JSON formatter, validator and beautifier. Format, validate, minify and pretty print JSON instantly with syntax highlighting and error detection. JSONPath query support included. No login. Your input is processed in your browser and never uploaded.",
   },
   "ndjson-formatter": {
     title: "NDJSON / JSON Lines Formatter & Validator Online | ToolNinja",
     description:
-      "Free online NDJSON (JSON Lines) formatter and validator. Validate and pretty-print newline-delimited JSON line by line, or convert to and from a regular JSON array. No login, 100% browser-based.",
+      "Free online NDJSON (JSON Lines) formatter and validator. Validate and pretty-print newline-delimited JSON line by line, or convert to and from a regular JSON array. No login. Your input is processed in your browser and never uploaded.",
   },
   "markdown-preview": {
     title: "Markdown Preview & Editor Online — Live Markdown Renderer | ToolNinja",
@@ -23,54 +23,54 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "sql-formatter": {
     title: "SQL Formatter Online — Beautify & Format SQL Queries | ToolNinja",
     description:
-      "Free online SQL formatter and beautifier. Format, indent and pretty print SQL queries instantly. Supports MySQL, PostgreSQL, SQLite, T-SQL and more. Keyword case options included. No login, browser-only.",
+      "Free online SQL formatter and beautifier. Format, indent and pretty print SQL queries instantly. Supports MySQL, PostgreSQL, SQLite, T-SQL and more. Keyword case options included. No login. Your input is processed in your browser and never uploaded.",
   },
   "html-formatter": {
     title: "HTML Formatter Online — Beautify & Minify HTML Code | ToolNinja",
     description:
-      "Free online HTML formatter, beautifier and minifier. Format messy HTML instantly with proper indentation and clean output. Also minifies HTML for production. No login, 100% browser-based.",
+      "Free online HTML formatter, beautifier and minifier. Format messy HTML instantly with proper indentation and clean output. Also minifies HTML for production. No login. Your input is processed in your browser and never uploaded.",
   },
   "word-counter": {
     title: "Word Counter Online — Count Words, Characters & Reading Time | ToolNinja",
     description:
-      "Free online word counter. Count words, characters, sentences and paragraphs instantly, with reading time and speaking time estimates. No login, 100% browser-based.",
+      "Free online word counter. Count words, characters, sentences and paragraphs instantly, with reading time and speaking time estimates. No login. Your input is processed in your browser and never uploaded.",
   },
   "svg-optimizer": {
     title: "SVG Optimizer Online — Minify & Clean SVG Files Free | ToolNinja",
     description:
-      "Free online SVG optimizer. Strip comments, metadata, and editor cruft (Inkscape/Sodipodi) from SVG files and shrink file size instantly. No login, 100% browser-based.",
+      "Free online SVG optimizer. Strip comments, metadata, and editor cruft (Inkscape/Sodipodi) from SVG files and shrink file size instantly. No login. Your input is processed in your browser and never uploaded.",
   },
   "image-compressor": {
     title: "Image Compressor Online — Compress JPEG, PNG & WebP Free | ToolNinja",
     description:
-      "Free online image compressor. Compress and resize JPEG, PNG and WebP images with adjustable quality, right in your browser. See before/after size comparison instantly. No upload to a server — images never leave your device.",
+      "Free online image compressor. Compress and resize JPEG, PNG and WebP images with adjustable quality, right in your browser. See before/after size comparison instantly. No login. Your input is processed in your browser and never uploaded.",
   },
   "graphql-formatter": {
     title: "GraphQL Formatter Online — Beautify & Minify GraphQL Queries | ToolNinja",
     description:
-      "Free online GraphQL query formatter and minifier. Beautify queries, mutations, subscriptions and fragments with proper indentation, or minify for production. Handles inline fragments and directives correctly. No login, browser-only.",
+      "Free online GraphQL query formatter and minifier. Beautify queries, mutations, subscriptions and fragments with proper indentation, or minify for production. Handles inline fragments and directives correctly. No login. Your input is processed in your browser and never uploaded.",
   },
   "xml-formatter": {
     title: "XML Formatter Online — Beautify, Minify & Validate XML | ToolNinja",
     description:
-      "Free online XML formatter and validator. Prettify or minify XML instantly with CDATA-safe formatting and structural validation that catches unclosed and mismatched tags. No login, 100% browser-based.",
+      "Free online XML formatter and validator. Prettify or minify XML instantly with CDATA-safe formatting and structural validation that catches unclosed and mismatched tags. No login. Your input is processed in your browser and never uploaded.",
   },
 
   // ── Encode ───────────────────────────────────────────────────────────────
   "base64": {
     title: "Base64 Encoder & Decoder Online — Encode & Decode Base64 | ToolNinja",
     description:
-      "Free online Base64 encoder and decoder. Encode text to Base64 or decode Base64 strings instantly. Supports standard Base64 and Base64URL encoding. Your data never leaves the browser. No login required.",
+      "Free online Base64 encoder and decoder. Encode text to Base64 or decode Base64 strings instantly. Supports standard Base64 and Base64URL encoding. Your input is processed in your browser and never uploaded. No login required.",
   },
   "url-encoder": {
     title: "URL Encoder & Decoder Online — Percent Encode & Decode URLs | ToolNinja",
     description:
-      "Free online URL encoder and decoder. Encode special characters for safe URL usage or decode percent-encoded URLs instantly. Supports full URI encoding and query string encoding. No login, browser-only.",
+      "Free online URL encoder and decoder. Encode special characters for safe URL usage or decode percent-encoded URLs instantly. Supports full URI encoding and query string encoding. No login. Your input is processed in your browser and never uploaded.",
   },
   "jwt-decoder": {
     title: "JWT Decoder Online — Decode, Inspect & Verify JSON Web Tokens | ToolNinja",
     description:
-      "Free online JWT decoder. Decode and inspect JSON Web Token header, payload and signature instantly, and verify the signature against a secret or public key (HS/RS/PS/ES). Check JWT expiry and view claims. Your token never leaves the browser.",
+      "Free online JWT decoder. Decode and inspect JSON Web Token header, payload and signature instantly, and verify the signature against a secret or public key (HS/RS/PS/ES). Check JWT expiry and view claims. Your input is processed in your browser and never uploaded.",
   },
   "hash-generator": {
     title: "Hash Generator & Verifier Online — SHA256, SHA512, HMAC | ToolNinja",
@@ -80,34 +80,34 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "html-entity": {
     title: "HTML Entity Encoder & Decoder — Escape & Unescape HTML | ToolNinja",
     description:
-      "Free online HTML entity encoder and decoder. Escape special characters to HTML entities or unescape HTML entities to plain text. Supports all standard HTML5 entities. No login, browser-only.",
+      "Free online HTML entity encoder and decoder. Escape special characters to HTML entities or unescape HTML entities to plain text. Supports all standard HTML5 entities. No login. Your input is processed in your browser and never uploaded.",
   },
   "image-to-base64": {
     title: "Image to Base64 Converter Online — Encode Images as Base64 | ToolNinja",
     description:
-      "Free online image to Base64 converter. Convert PNG, JPG, GIF, SVG and WebP images to Base64 strings instantly. Generate data URIs for embedding images in CSS or HTML. No upload to server — 100% browser-based.",
+      "Free online image to Base64 converter. Convert PNG, JPG, GIF, SVG and WebP images to Base64 strings instantly. Generate data URIs for embedding images in CSS or HTML. No login. Your input is processed in your browser and never uploaded.",
   },
   "base58": {
     title: "Base58 Encoder & Decoder Online — Bitcoin-Style Encoding | ToolNinja",
     description:
-      "Free online Base58 encoder and decoder. Encode text or hex bytes into Base58 (the Bitcoin-style alphabet that skips 0, O, I and l) or decode Base58 back to text/hex. No login, 100% browser-based.",
+      "Free online Base58 encoder and decoder. Encode text or hex bytes into Base58 (the Bitcoin-style alphabet that skips 0, O, I and l) or decode Base58 back to text/hex. No login. Your input is processed in your browser and never uploaded.",
   },
   "base32": {
     title: "Base32 Encoder & Decoder Online — RFC 4648 Base32 | ToolNinja",
     description:
-      "Free online Base32 encoder and decoder. Encode text or hex bytes into RFC 4648 Base32 — the format behind TOTP secrets and DNSSEC — or decode Base32 back to text/hex. No login, 100% browser-based.",
+      "Free online Base32 encoder and decoder. Encode text or hex bytes into RFC 4648 Base32 — the format behind TOTP secrets and DNSSEC — or decode Base32 back to text/hex. No login. Your input is processed in your browser and never uploaded.",
   },
   "base62-encoder": {
     title: "Base62 Encoder & Decoder Online — Alphanumeric-Only Encoding | ToolNinja",
     description:
-      "Free online Base62 encoder and decoder. Encode text or hex bytes into Base62 — the symbol-free alphabet (0-9A-Za-z) behind short URL slugs and compact database IDs — or decode back. No login, 100% browser-based.",
+      "Free online Base62 encoder and decoder. Encode text or hex bytes into Base62 — the symbol-free alphabet (0-9A-Za-z) behind short URL slugs and compact database IDs — or decode back. No login. Your input is processed in your browser and never uploaded.",
   },
 
   // ── Generate ─────────────────────────────────────────────────────────────
   "lorem-ipsum": {
     title: "Lorem Ipsum Generator Online — Placeholder Text Generator | ToolNinja",
     description:
-      "Free online Lorem Ipsum generator. Generate placeholder and dummy text by paragraphs, sentences or words instantly. Classic Lorem Ipsum or random text. No login required, 100% browser-based.",
+      "Free online Lorem Ipsum generator. Generate placeholder and dummy text by paragraphs, sentences or words instantly. Classic Lorem Ipsum or random text. No login. Your input is processed in your browser and never uploaded.",
   },
   "password-generator": {
     title: "Password Generator Online — Strong Random Password Creator | ToolNinja",
@@ -117,17 +117,17 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "uuid-generator": {
     title: "UUID Generator Online — UUID v4, v5, v7 & NanoID | ToolNinja",
     description:
-      "Free online UUID and GUID generator. Generate random UUID v4, time-ordered UUID v7, deterministic namespace-based UUID v5, or NanoID identifiers, in bulk up to 100 at a time. No login, 100% browser-based.",
+      "Free online UUID and GUID generator. Generate random UUID v4, time-ordered UUID v7, deterministic namespace-based UUID v5, or NanoID identifiers, in bulk up to 100 at a time. No login. Your input is processed in your browser and never uploaded.",
   },
   "ulid-generator": {
     title: "ULID Generator Online — Sortable, URL-Safe Unique IDs | ToolNinja",
     description:
-      "Free online ULID generator. Generate sortable, URL-safe ULIDs in bulk — a 48-bit timestamp plus 80 bits of randomness, Crockford Base32 encoded. No login, 100% browser-based.",
+      "Free online ULID generator. Generate sortable, URL-safe ULIDs in bulk — a 48-bit timestamp plus 80 bits of randomness, Crockford Base32 encoded. No login. Your input is processed in your browser and never uploaded.",
   },
   "json-to-typescript": {
     title: "JSON to TypeScript Converter — Generate TypeScript Interfaces | ToolNinja",
     description:
-      "Free online JSON to TypeScript converter. Paste any JSON and instantly generate TypeScript interfaces and type definitions. Perfect for API response typing. No login, 100% browser-based.",
+      "Free online JSON to TypeScript converter. Paste any JSON and instantly generate TypeScript interfaces and type definitions. Perfect for API response typing. No login. Your input is processed in your browser and never uploaded.",
   },
   "qr-code-generator": {
     title: "QR Code Generator Online — Create Free QR Codes Instantly | ToolNinja",
@@ -137,12 +137,12 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "qr-code-scanner": {
     title: "QR Code Scanner & Decoder Online — Read Any QR Code | ToolNinja",
     description:
-      "Free online QR code scanner and decoder. Upload any QR code image and instantly see the decoded text, URL, or 2FA otpauth:// secret. Decoding runs entirely in your browser. No login, no upload to a server.",
+      "Free online QR code scanner and decoder. Upload any QR code image and instantly see the decoded text, URL, or 2FA otpauth:// secret. Decoding runs entirely in your browser. No login. Your input is processed in your browser and never uploaded.",
   },
   "jwt-generator": {
     title: "JWT Generator Online — Create & Sign JSON Web Tokens | ToolNinja",
     description:
-      "Free online JWT generator. Create and sign JSON Web Tokens with HS256, RS256, or ES256 using WebCrypto directly in your browser — paste a private key or generate a fresh RSA/EC key pair. Your key never leaves the browser.",
+      "Free online JWT generator. Create and sign JSON Web Tokens with HS256, RS256, or ES256 using WebCrypto directly in your browser — paste a private key or generate a fresh RSA/EC key pair. Your input is processed in your browser and never uploaded.",
   },
   "git-command-generator": {
     title: "Git Command Generator — Plain English to Git Commands | ToolNinja",
@@ -152,12 +152,12 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "markdown-table-generator": {
     title: "Markdown Table Generator — Create Tables Visually | ToolNinja",
     description:
-      "Free online Markdown table generator. Build tables visually with a spreadsheet-style editor and export as clean Markdown or HTML. Import from CSV, set column alignment. No login, browser-only.",
+      "Free online Markdown table generator. Build tables visually with a spreadsheet-style editor and export as clean Markdown or HTML. Import from CSV, set column alignment. No login. Your input is processed in your browser and never uploaded.",
   },
   "markdown-toc-generator": {
     title: "Markdown Table of Contents Generator Online — Auto TOC | ToolNinja",
     description:
-      "Free online Markdown table of contents generator. Paste a document and instantly get a nested, anchor-linked TOC with GitHub-style heading slugs, as Markdown or HTML. No login, 100% browser-based.",
+      "Free online Markdown table of contents generator. Paste a document and instantly get a nested, anchor-linked TOC with GitHub-style heading slugs, as Markdown or HTML. No login. Your input is processed in your browser and never uploaded.",
   },
   "meta-tags-generator": {
     title: "Meta Tags Generator — OG Tags & Social Preview Tool | ToolNinja",
@@ -167,7 +167,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "favicon-generator": {
     title: "Favicon Generator Online — Generate All Favicon Sizes Free | ToolNinja",
     description:
-      "Free online favicon generator. Upload one image and instantly get favicon-16x16, favicon-32x32, apple-touch-icon, and Android Chrome icons, plus the HTML snippet to add them. No login, 100% browser-based.",
+      "Free online favicon generator. Upload one image and instantly get favicon-16x16, favicon-32x32, apple-touch-icon, and Android Chrome icons, plus the HTML snippet to add them. No login. Your input is processed in your browser and never uploaded.",
   },
   "fake-data-generator": {
     title: "Fake Data Generator — Mock JSON & CSV Test Data | ToolNinja",
@@ -182,12 +182,12 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "json-schema-generator": {
     title: "JSON Schema Generator & Validator Online | ToolNinja",
     description:
-      "Free online JSON Schema generator and validator. Infer a JSON Schema (draft-07) from a sample JSON object, or validate JSON against an existing schema and see exactly which fields fail and why. No login, 100% browser-based.",
+      "Free online JSON Schema generator and validator. Infer a JSON Schema (draft-07) from a sample JSON object, or validate JSON against an existing schema and see exactly which fields fail and why. No login. Your input is processed in your browser and never uploaded.",
   },
   "slug-generator": {
     title: "Slug Generator Online — Convert Titles to URL-Safe Slugs | ToolNinja",
     description:
-      "Free online slug generator. Turn titles into clean, URL-safe slugs instantly — batch mode supported, one per line. No login, 100% browser-based.",
+      "Free online slug generator. Turn titles into clean, URL-safe slugs instantly — batch mode supported, one per line. No login. Your input is processed in your browser and never uploaded.",
   },
   "robots-txt-generator": {
     title: "robots.txt Generator Online — Block AI Crawlers & Bots | ToolNinja",
@@ -197,12 +197,12 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "sitemap-generator": {
     title: "XML Sitemap Generator Online — Create sitemap.xml Free | ToolNinja",
     description:
-      "Free online XML sitemap generator. Paste your page URLs and get a ready-to-upload sitemap.xml with lastmod, changefreq, and priority. No login, 100% browser-based.",
+      "Free online XML sitemap generator. Paste your page URLs and get a ready-to-upload sitemap.xml with lastmod, changefreq, and priority. No login. Your input is processed in your browser and never uploaded.",
   },
   "barcode-generator": {
     title: "Barcode Generator Online — Code 128, EAN-13 & UPC-A | ToolNinja",
     description:
-      "Free online barcode generator. Create Code 128, EAN-13, and UPC-A barcodes with automatic check digits and download as PNG. Verified byte-for-byte against a reference decoder. No login, 100% browser-based.",
+      "Free online barcode generator. Create Code 128, EAN-13, and UPC-A barcodes with automatic check digits and download as PNG. Verified byte-for-byte against a reference decoder. No login. Your input is processed in your browser and never uploaded.",
   },
   "readme-badge-generator": {
     title: "README Badge Generator — Free shields.io Badge Maker | ToolNinja",
@@ -214,7 +214,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "color-converter": {
     title: "Color Converter Online — HEX, RGB, HSL, CMYK, OKLCH | ToolNinja",
     description:
-      "Free online color converter. Convert between HEX, RGB, HSL, CMYK, and OKLCH color formats instantly. Includes live color picker and copy buttons for each format. No login, 100% browser-based.",
+      "Free online color converter. Convert between HEX, RGB, HSL, CMYK, and OKLCH color formats instantly. Includes live color picker and copy buttons for each format. No login. Your input is processed in your browser and never uploaded.",
   },
   "timestamp-converter": {
     title: "Unix Timestamp Converter — Epoch Time to Date Converter | ToolNinja",
@@ -224,43 +224,43 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "number-base-converter": {
     title: "Number Base Converter — Binary, Decimal, Hex Converter | ToolNinja",
     description:
-      "Free online number base converter. Convert between binary, decimal, hexadecimal and octal number systems instantly. Supports any base from 2 to 36. No login, 100% browser-based.",
+      "Free online number base converter. Convert between binary, decimal, hexadecimal and octal number systems instantly. Supports any base from 2 to 36. No login. Your input is processed in your browser and never uploaded.",
   },
   "string-case-converter": {
     title: "String Case Converter — camelCase, snake_case, kebab-case | ToolNinja",
     description:
-      "Free online string case converter. Convert text between camelCase, snake_case, kebab-case, PascalCase, UPPER_CASE and more instantly. No login, 100% browser-based.",
+      "Free online string case converter. Convert text between camelCase, snake_case, kebab-case, PascalCase, UPPER_CASE and more instantly. No login. Your input is processed in your browser and never uploaded.",
   },
   "json-yaml": {
     title: "JSON to YAML Converter — Convert JSON & YAML Online | ToolNinja",
     description:
-      "Free online JSON to YAML and YAML to JSON converter. Convert between JSON and YAML formats instantly with syntax validation. Perfect for config file conversion. No login, browser-only.",
+      "Free online JSON to YAML and YAML to JSON converter. Convert between JSON and YAML formats instantly with syntax validation. Perfect for config file conversion. No login. Your input is processed in your browser and never uploaded.",
   },
   "cidr-calculator": {
     title: "CIDR Calculator — IPv4 & IPv6 Subnet Calculator | ToolNinja",
     description:
-      "Free online CIDR calculator and subnet calculator. Calculate IPv4 and IPv6 network ranges, subnet masks, host counts, and broadcast addresses instantly, with a subnet splitter. 100% browser-based, no login.",
+      "Free online CIDR calculator and subnet calculator. Calculate IPv4 and IPv6 network ranges, subnet masks, host counts, and broadcast addresses instantly, with a subnet splitter. No login. Your input is processed in your browser and never uploaded.",
   },
 
   "docker-run-to-compose": {
     title: "Docker Run to Compose Converter — Generate docker-compose.yml Online | ToolNinja",
     description:
-      "Free online Docker run to Compose converter. Paste any docker run command and instantly get a ready-to-use docker-compose.yml, or convert a docker-compose.yml back to docker run commands with warnings for anything (depends_on, build) that doesn't translate directly. No login, 100% browser-based.",
+      "Free online Docker run to Compose converter. Paste any docker run command and instantly get a ready-to-use docker-compose.yml, or convert a docker-compose.yml back to docker run commands with warnings for anything (depends_on, build) that doesn't translate directly. No login. Your input is processed in your browser and never uploaded.",
   },
   "csv-json": {
     title: "CSV to JSON Converter Online — Convert CSV & JSON Both Ways | ToolNinja",
     description:
-      "Free online CSV to JSON and JSON to CSV converter. Convert instantly in either direction with support for custom delimiters, quoted fields, and file upload. No login, 100% browser-based.",
+      "Free online CSV to JSON and JSON to CSV converter. Convert instantly in either direction with support for custom delimiters, quoted fields, and file upload. No login. Your input is processed in your browser and never uploaded.",
   },
   "xml-json-converter": {
     title: "XML to JSON Converter Online — Convert XML & JSON Both Ways | ToolNinja",
     description:
-      "Free online XML to JSON and JSON to XML converter. Convert instantly in either direction, with attributes, text content, and repeated tags all handled correctly. No login, 100% browser-based.",
+      "Free online XML to JSON and JSON to XML converter. Convert instantly in either direction, with attributes, text content, and repeated tags all handled correctly. No login. Your input is processed in your browser and never uploaded.",
   },
   "env-file-tool": {
     title: "Env File Tool — Parse, Convert & Generate .env.example | ToolNinja",
     description:
-      "Free online .env file tool. Parse and validate .env files, convert to JSON, and generate a safe-to-commit .env.example with values stripped. Catches duplicate keys instantly. No login, 100% browser-based.",
+      "Free online .env file tool. Parse and validate .env files, convert to JSON, and generate a safe-to-commit .env.example with values stripped. Catches duplicate keys instantly. No login. Your input is processed in your browser and never uploaded.",
   },
   "curl-to-code": {
     title: "cURL to Code Converter — curl to JavaScript, Python, PHP, Go | ToolNinja",
@@ -270,44 +270,44 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "url-parser": {
     title: "URL Parser Online — Parse URLs & Build Query Strings | ToolNinja",
     description:
-      "Free online URL parser and query string builder. Break any URL down into protocol, host, path, and query parameters, then edit params and rebuild the URL live. One-click UTM parameter add. No login, 100% browser-based.",
+      "Free online URL parser and query string builder. Break any URL down into protocol, host, path, and query parameters, then edit params and rebuild the URL live. One-click UTM parameter add. No login. Your input is processed in your browser and never uploaded.",
   },
   "htaccess-to-nginx": {
     title: ".htaccess to Nginx Converter — Convert Apache Rules Online | ToolNinja",
     description:
-      "Free online .htaccess to nginx converter. Convert RewriteRule, RewriteCond, redirects, ErrorDocument, and the standard WordPress rewrite block to nginx server block syntax. No login, 100% browser-based.",
+      "Free online .htaccess to nginx converter. Convert RewriteRule, RewriteCond, redirects, ErrorDocument, and the standard WordPress rewrite block to nginx server block syntax. No login. Your input is processed in your browser and never uploaded.",
   },
   "meeting-planner": {
     title: "Meeting Planner Online — Compare Time Zones & Export to Calendar | ToolNinja",
     description:
-      "Free online meeting planner and time zone converter. Compare working hours across multiple cities on one grid, find a meeting time that overlaps for everyone, and download it as a .ics calendar invite. No login, 100% browser-based.",
+      "Free online meeting planner and time zone converter. Compare working hours across multiple cities on one grid, find a meeting time that overlaps for everyone, and download it as a .ics calendar invite. No login. Your input is processed in your browser and never uploaded.",
   },
   "json-to-markdown-table": {
     title: "JSON to Markdown Table Converter Online | ToolNinja",
     description:
-      "Free online JSON to Markdown table converter. Paste a JSON array of objects and instantly get a ready-to-paste GitHub-Flavored Markdown table, with a live HTML preview. No login, 100% browser-based.",
+      "Free online JSON to Markdown table converter. Paste a JSON array of objects and instantly get a ready-to-paste GitHub-Flavored Markdown table, with a live HTML preview. No login. Your input is processed in your browser and never uploaded.",
   },
   "list-sorter": {
     title: "List Sorter & Deduplicator Online — Sort & Clean Text Lists | ToolNinja",
     description:
-      "Free online list sorter and deduplicator. Sort lines alphabetically or numerically, remove duplicates and blank lines, shuffle, reverse, and number a list of text lines. No login, 100% browser-based.",
+      "Free online list sorter and deduplicator. Sort lines alphabetically or numerically, remove duplicates and blank lines, shuffle, reverse, and number a list of text lines. No login. Your input is processed in your browser and never uploaded.",
   },
   "svg-to-jsx": {
     title: "SVG to JSX Converter Online — SVG to React Component | ToolNinja",
     description:
-      "Free online SVG to JSX converter. Paste raw SVG markup and get a ready-to-use React component — attributes converted to camelCase, props spread onto the root element. No login, 100% browser-based.",
+      "Free online SVG to JSX converter. Paste raw SVG markup and get a ready-to-use React component — attributes converted to camelCase, props spread onto the root element. No login. Your input is processed in your browser and never uploaded.",
   },
 
   // ── Test ─────────────────────────────────────────────────────────────────
   "regex-tester": {
     title: "Regex Tester Online — Live Highlighting, Patterns Library | ToolNinja",
     description:
-      "Test regular expressions with live match highlighting and capture groups table. 40+ ready-to-use regex patterns, plus a code snippet panel to use your regex in JavaScript, Python, or Java. No login, 100% browser-based.",
+      "Test regular expressions with live match highlighting and capture groups table. 40+ ready-to-use regex patterns, plus a code snippet panel to use your regex in JavaScript, Python, or Java. No login. Your input is processed in your browser and never uploaded.",
   },
   "diff-checker": {
     title: "Diff Checker Online — Compare Two Texts & Find Differences | ToolNinja",
     description:
-      "Free online diff checker. Compare two texts side by side with split or unified views, addition/deletion counts, and options to ignore whitespace or case. Character-level highlighting. No login, 100% browser-based.",
+      "Free online diff checker. Compare two texts side by side with split or unified views, addition/deletion counts, and options to ignore whitespace or case. Character-level highlighting. No login. Your input is processed in your browser and never uploaded.",
   },
   "cron-tester": {
     title: "CRON Expression Tester — Validate & Parse Cron Jobs Online | ToolNinja",
@@ -322,7 +322,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "config-validator": {
     title: "YAML & TOML Validator — Config File Validator Online | ToolNinja",
     description:
-      "Free online YAML, TOML and JSON validator. Validate and lint config files instantly with detailed error messages. Auto-detect format and convert between YAML, TOML and JSON. No login, browser-only.",
+      "Free online YAML, TOML and JSON validator. Validate and lint config files instantly with detailed error messages. Auto-detect format and convert between YAML, TOML and JSON. No login. Your input is processed in your browser and never uploaded.",
   },
   "text-diff": {
     title: "Text Diff Tool — Character & Word Level Text Comparison | ToolNinja",
@@ -332,72 +332,72 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "xpath-tester": {
     title: "XPath Tester Online — Test & Evaluate XPath Expressions | ToolNinja",
     description:
-      "Free online XPath tester and evaluator. Test XPath expressions against XML and HTML documents with live results. Supports XPath 1.0, node selection, axis expressions and predicates. No login, 100% browser-based.",
+      "Free online XPath tester and evaluator. Test XPath expressions against XML and HTML documents with live results. Supports XPath 1.0, node selection, axis expressions and predicates. No login. Your input is processed in your browser and never uploaded.",
   },
   "css-xpath-converter": {
     title: "CSS Selector to XPath Converter Online — Convert Both Ways | ToolNinja",
     description:
-      "Free online CSS selector to XPath converter. Convert CSS selectors (id, class, attribute, combinators, nth-child) to XPath expressions and back. Useful for Selenium, Playwright, and scraping. No login, browser-only.",
+      "Free online CSS selector to XPath converter. Convert CSS selectors (id, class, attribute, combinators, nth-child) to XPath expressions and back. Useful for Selenium, Playwright, and scraping. No login. Your input is processed in your browser and never uploaded.",
   },
   "json-diff": {
     title: "JSON Diff Checker Online — Compare Two JSON Objects | ToolNinja",
     description:
-      "Free online JSON diff checker. Compare two JSON objects structurally and see exactly what was added, removed, or changed, path by path — key order doesn't matter, and an ignore-array-order option treats re-sorted arrays as unchanged. No login, 100% browser-based.",
+      "Free online JSON diff checker. Compare two JSON objects structurally and see exactly what was added, removed, or changed, path by path — key order doesn't matter, and an ignore-array-order option treats re-sorted arrays as unchanged. No login. Your input is processed in your browser and never uploaded.",
   },
   "json-patch-tool": {
     title: "JSON Patch (RFC 6902) Generator & Applier Online | ToolNinja",
     description:
-      "Free online JSON Patch generator and applier. Diff two JSON documents into an RFC 6902 patch, or apply an existing patch to a document — the format behind HTTP PATCH requests. No login, 100% browser-based.",
+      "Free online JSON Patch generator and applier. Diff two JSON documents into an RFC 6902 patch, or apply an existing patch to a document — the format behind HTTP PATCH requests. No login. Your input is processed in your browser and never uploaded.",
   },
   "iban-validator": {
     title: "IBAN Validator & Generator Online — MOD-97 Checksum Check | ToolNinja",
     description:
-      "Free online IBAN validator and test IBAN generator. Validate an IBAN's MOD-97 checksum and country structure, or generate a valid test IBAN for 35+ countries. No login, 100% browser-based.",
+      "Free online IBAN validator and test IBAN generator. Validate an IBAN's MOD-97 checksum and country structure, or generate a valid test IBAN for 35+ countries. No login. Your input is processed in your browser and never uploaded.",
   },
   "patch-generator": {
     title: "Unified Diff / Patch Generator Online — Create .patch Files | ToolNinja",
     description:
-      "Free online unified diff and patch generator. Paste an original and modified text and get a real, downloadable .patch file usable with git apply or the patch command. No login, 100% browser-based.",
+      "Free online unified diff and patch generator. Paste an original and modified text and get a real, downloadable .patch file usable with git apply or the patch command. No login. Your input is processed in your browser and never uploaded.",
   },
   "uuid-parser": {
     title: "UUID Parser Online — Decode UUID & ULID Timestamps | ToolNinja",
     description:
-      "Free online UUID and ULID parser. Decode any UUID's version, variant, and embedded timestamp (v1, v6, v7), or a ULID's timestamp and randomness. No login, 100% browser-based.",
+      "Free online UUID and ULID parser. Decode any UUID's version, variant, and embedded timestamp (v1, v6, v7), or a ULID's timestamp and randomness. No login. Your input is processed in your browser and never uploaded.",
   },
   "ts7-migration-checker": {
     title: "TypeScript 7 Migration Checker — tsconfig.json Breaking Changes | ToolNinja",
     description:
-      "Free online TypeScript 7 migration checker. Paste a tsconfig.json and instantly see which compiler options the Go-based TypeScript 7 compiler removes — es5/es3 targets, amd/umd/systemjs modules, and more. No login, 100% browser-based.",
+      "Free online TypeScript 7 migration checker. Paste a tsconfig.json and instantly see which compiler options the Go-based TypeScript 7 compiler removes — es5/es3 targets, amd/umd/systemjs modules, and more. No login. Your input is processed in your browser and never uploaded.",
   },
   "node-type-stripping-checker": {
     title: "Node.js Type-Stripping Checker — TypeScript Compatibility Scan | ToolNinja",
     description:
-      "Free online Node.js type-stripping compatibility checker. Scan a TypeScript file for enums, parameter properties, runtime namespaces, and decorators — syntax Node's built-in --experimental-strip-types can't run. No login, 100% browser-based.",
+      "Free online Node.js type-stripping compatibility checker. Scan a TypeScript file for enums, parameter properties, runtime namespaces, and decorators — syntax Node's built-in --experimental-strip-types can't run. No login. Your input is processed in your browser and never uploaded.",
   },
   "http-header-inspector": {
     title: "HTTP Header Inspector Online — Explain Any Response Header | ToolNinja",
     description:
-      "Free online HTTP header inspector. Paste raw response headers and get a plain-English explanation of every one — Cache-Control, ETag, CSP, CORS headers, and more. No login, 100% browser-based.",
+      "Free online HTTP header inspector. Paste raw response headers and get a plain-English explanation of every one — Cache-Control, ETag, CSP, CORS headers, and more. No login. Your input is processed in your browser and never uploaded.",
   },
   "credit-card-test-generator": {
     title: "Credit Card Test Number Generator Online — Luhn Validator | ToolNinja",
     description:
-      "Free online credit card test number generator. Generate Luhn-valid fake Visa, Mastercard, Amex, and Discover numbers for testing payment forms, or validate any number's Luhn checksum. Not real cards. No login, 100% browser-based.",
+      "Free online credit card test number generator. Generate Luhn-valid fake Visa, Mastercard, Amex, and Discover numbers for testing payment forms, or validate any number's Luhn checksum. Not real cards. No login. Your input is processed in your browser and never uploaded.",
   },
   "cors-debugger": {
     title: "CORS Error Debugger Online — Fix Access-Control-Allow-Origin Errors | ToolNinja",
     description:
-      "Free online CORS error debugger. Enter your request details and the response headers you received, and get a step-by-step diagnosis of exactly why the browser blocked it. No login, 100% browser-based.",
+      "Free online CORS error debugger. Enter your request details and the response headers you received, and get a step-by-step diagnosis of exactly why the browser blocked it. No login. Your input is processed in your browser and never uploaded.",
   },
   "jsonpath-tester": {
     title: "JSONPath Tester Online — Query & Evaluate JSONPath Expressions | ToolNinja",
     description:
-      "Free online JSONPath tester. Run JSONPath expressions against JSON and see every match with its exact path, live. Supports wildcards, recursive descent, slices and multi-index selectors. No login, 100% browser-based.",
+      "Free online JSONPath tester. Run JSONPath expressions against JSON and see every match with its exact path, live. Supports wildcards, recursive descent, slices and multi-index selectors. No login. Your input is processed in your browser and never uploaded.",
   },
   "user-agent-parser": {
     title: "User-Agent Parser Online — Decode Browser, OS & Device | ToolNinja",
     description:
-      "Free online User-Agent string parser. Paste any User-Agent header and instantly see the browser, rendering engine, OS, and device type, with built-in bot and crawler detection. No login, 100% browser-based.",
+      "Free online User-Agent string parser. Paste any User-Agent header and instantly see the browser, rendering engine, OS, and device type, with built-in bot and crawler detection. No login. Your input is processed in your browser and never uploaded.",
   },
 
   // ── Design ───────────────────────────────────────────────────────────────
@@ -409,22 +409,22 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "css-flexbox-generator": {
     title: "CSS Flexbox Generator Online — Visual Flexbox Playground | ToolNinja",
     description:
-      "Free online CSS flexbox generator. Build flex container and item properties visually — direction, wrap, justify-content, align-items, gap, and per-item align-self — with a live preview and copy-ready CSS. No login, browser-only.",
+      "Free online CSS flexbox generator. Build flex container and item properties visually — direction, wrap, justify-content, align-items, gap, and per-item align-self — with a live preview and copy-ready CSS. No login. Your input is processed in your browser and never uploaded.",
   },
   "css-grid-generator": {
     title: "CSS Grid Generator Online — Visual Grid Layout Builder | ToolNinja",
     description:
-      "Free online CSS grid generator. Build a grid-template-columns/rows layout visually, including responsive auto-fit tracks and per-cell column/row spans, with a live preview and copy-ready CSS. No login, browser-only.",
+      "Free online CSS grid generator. Build a grid-template-columns/rows layout visually, including responsive auto-fit tracks and per-cell column/row spans, with a live preview and copy-ready CSS. No login. Your input is processed in your browser and never uploaded.",
   },
   "fluid-typography-calculator": {
     title: "CSS clamp() / Fluid Typography Calculator Online | ToolNinja",
     description:
-      "Free online CSS clamp() and fluid typography calculator. Build a font-size that scales smoothly between a min and max viewport width, with a live type-scale preview. No login, browser-only.",
+      "Free online CSS clamp() and fluid typography calculator. Build a font-size that scales smoothly between a min and max viewport width, with a live type-scale preview. No login. Your input is processed in your browser and never uploaded.",
   },
   "css-gradient": {
     title: "CSS Gradient Generator — Linear, Radial & Mesh Gradients | ToolNinja",
     description:
-      "Free online CSS gradient generator. Create linear, radial, conic and mesh gradients with a visual editor. Get clean CSS code instantly. Multi-stop gradient support included. No login, browser-only.",
+      "Free online CSS gradient generator. Create linear, radial, conic and mesh gradients with a visual editor. Get clean CSS code instantly. Multi-stop gradient support included. No login. Your input is processed in your browser and never uploaded.",
   },
   "color-palette": {
     title: "Color Palette Generator — Create & Export Color Schemes Online | ToolNinja",
@@ -434,17 +434,17 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "mermaid-editor": {
     title: "Mermaid Diagram Editor Online — Live Flowchart & Sequence Diagrams | ToolNinja",
     description:
-      "Free online Mermaid diagram editor. Write flowcharts, sequence diagrams, class diagrams, ER diagrams, Gantt charts and more as text, with a live preview. Export as SVG or PNG. No login, 100% browser-based.",
+      "Free online Mermaid diagram editor. Write flowcharts, sequence diagrams, class diagrams, ER diagrams, Gantt charts and more as text, with a live preview. Export as SVG or PNG. No login. Your input is processed in your browser and never uploaded.",
   },
   "image-color-picker": {
     title: "Image Color Palette Extractor — Get Colors From an Image | ToolNinja",
     description:
-      "Free online image color palette extractor. Upload any image and instantly extract its dominant colors as HEX and RGB values, ready to copy as CSS variables. No login, 100% browser-based — images never leave your device.",
+      "Free online image color palette extractor. Upload any image and instantly extract its dominant colors as HEX and RGB values, ready to copy as CSS variables. No login. Your input is processed in your browser and never uploaded.",
   },
   "box-shadow-generator": {
     title: "CSS Box Shadow Generator Online — Multi-Layer Shadows | ToolNinja",
     description:
-      "Free online CSS box shadow generator. Build single or multi-layer box shadows visually with live preview — adjust offset, blur, spread, color, and opacity per layer. No login, 100% browser-based.",
+      "Free online CSS box shadow generator. Build single or multi-layer box shadows visually with live preview — adjust offset, blur, spread, color, and opacity per layer. No login. Your input is processed in your browser and never uploaded.",
   },
   "css-specificity-calculator": {
     title: "CSS Specificity Calculator Online — Compare Selectors | ToolNinja",
@@ -454,24 +454,24 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "placeholder-image-generator": {
     title: "Placeholder Image Generator Online — Custom Size & Color | ToolNinja",
     description:
-      "Free online placeholder image generator. Create placeholder images with a custom width, height, background color, text color, and label, and download as PNG. No login, 100% browser-based.",
+      "Free online placeholder image generator. Create placeholder images with a custom width, height, background color, text color, and label, and download as PNG. No login. Your input is processed in your browser and never uploaded.",
   },
   "scrollbar-generator": {
     title: "CSS Scrollbar Generator Online — Custom Scrollbar Styling | ToolNinja",
     description:
-      "Free online CSS scrollbar generator. Style scrollbars visually with the modern scrollbar-color/scrollbar-width properties, plus a ::-webkit-scrollbar fallback for broader browser support. No login, 100% browser-based.",
+      "Free online CSS scrollbar generator. Style scrollbars visually with the modern scrollbar-color/scrollbar-width properties, plus a ::-webkit-scrollbar fallback for broader browser support. No login. Your input is processed in your browser and never uploaded.",
   },
   "css-carousel-generator": {
     title: "CSS Carousel Generator Online — Zero-JavaScript Scroll Carousel | ToolNinja",
     description:
-      "Free online CSS carousel generator. Build a scroll-snap carousel with auto-generated dot navigation using ::scroll-marker and ::scroll-marker-group — no JavaScript required. No login, 100% browser-based.",
+      "Free online CSS carousel generator. Build a scroll-snap carousel with auto-generated dot navigation using ::scroll-marker and ::scroll-marker-group — no JavaScript required. No login. Your input is processed in your browser and never uploaded.",
   },
 
   // ── Security ─────────────────────────────────────────────────────────────
   "crypto-tools": {
     title: "AES & RSA Encryption Online — Encrypt & Decrypt Text | ToolNinja",
     description:
-      "Free online AES-GCM and RSA-OAEP encryption tool. Encrypt and decrypt text directly in your browser using WebCrypto API. AES 256-bit with PBKDF2 key derivation. Your data never leaves your machine. No login.",
+      "Free online AES-GCM and RSA-OAEP encryption tool. Encrypt and decrypt text directly in your browser using WebCrypto API. AES 256-bit with PBKDF2 key derivation. Your input is processed in your browser and never uploaded. No login.",
   },
   "csp-builder": {
     title: "CSP Header Builder & Analyzer — Content-Security-Policy Tool | ToolNinja",
@@ -481,74 +481,74 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "jwt-keypair-generator": {
     title: "JWT Key Pair Generator — RS256, ES256, PS256 Key Generator | ToolNinja",
     description:
-      "Free online JWT key pair generator. Generate RSA and ECDSA key pairs for RS256, RS384, RS512, PS256, ES256 and more, in both PEM and JWK format, using WebCrypto. Private keys never leave your browser. No login required.",
+      "Free online JWT key pair generator. Generate RSA and ECDSA key pairs for RS256, RS384, RS512, PS256, ES256 and more, in both PEM and JWK format, using WebCrypto. Your input is processed in your browser and never uploaded. No login required.",
   },
   "ssh-key-generator": {
     title: "SSH Key Generator Online — Ed25519 & RSA Keys | ToolNinja",
     description:
-      "Free online SSH key generator. Generate Ed25519 or RSA key pairs in real OpenSSH format, verified byte-for-byte against ssh-keygen. Private keys are generated locally via WebCrypto and never leave your browser. No login required.",
+      "Free online SSH key generator. Generate Ed25519 or RSA key pairs in real OpenSSH format, verified byte-for-byte against ssh-keygen. Keys are generated in your browser via WebCrypto and never uploaded. No login required.",
   },
   "totp-generator": {
     title: "TOTP Generator Online — Live 2FA Authenticator Codes | ToolNinja",
     description:
-      "Free online TOTP generator. Generate live, refreshing 2FA codes from a Base32 secret key — compatible with Google Authenticator and Authy. Supports SHA-1/256/512, 6/8 digits, QR code scanning, and otpauth:// import/export. No login, browser-only.",
+      "Free online TOTP generator. Generate live, refreshing 2FA codes from a Base32 secret key — compatible with Google Authenticator and Authy. Supports SHA-1/256/512, 6/8 digits, QR code scanning, and otpauth:// import/export. No login. Your input is processed in your browser and never uploaded.",
   },
   "hotp-generator": {
     title: "HOTP Generator Online — RFC 4226 Counter-Based OTP | ToolNinja",
     description:
-      "Free online HOTP generator. Generate RFC 4226 counter-based one-time passwords from a Base32 secret key, with otpauth://hotp/ import/export. The counter-based sibling to TOTP. No login, 100% browser-based.",
+      "Free online HOTP generator. Generate RFC 4226 counter-based one-time passwords from a Base32 secret key, with otpauth://hotp/ import/export. The counter-based sibling to TOTP. No login. Your input is processed in your browser and never uploaded.",
   },
   "backup-codes-generator": {
     title: "2FA Backup Codes Generator Online — Recovery Codes | ToolNinja",
     description:
-      "Free online 2FA backup codes generator. Generate a set of one-time recovery codes plus their SHA-256 hashes, ready to store server-side. No login, 100% browser-based — nothing is sent anywhere.",
+      "Free online 2FA backup codes generator. Generate a set of one-time recovery codes plus their SHA-256 hashes, ready to store server-side. No login. Your input is processed in your browser and never uploaded.",
   },
   "package-json-inspector": {
     title: "package.json Script Inspector — Check for Risky Install Scripts | ToolNinja",
     description:
-      "Free online package.json inspector. See exactly which scripts run automatically on npm install (preinstall, postinstall, prepare) and which dependencies aren't version-pinned. No login, 100% browser-based.",
+      "Free online package.json inspector. See exactly which scripts run automatically on npm install (preinstall, postinstall, prepare) and which dependencies aren't version-pinned. No login. Your input is processed in your browser and never uploaded.",
   },
   "security-headers-checker": {
     title: "HTTP Security Headers Checker Online — HSTS, CSP & More | ToolNinja",
     description:
-      "Free online HTTP security headers checker. Paste raw response headers and get a scored analysis against HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy and more. No login, 100% browser-based.",
+      "Free online HTTP security headers checker. Paste raw response headers and get a scored analysis against HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy and more. No login. Your input is processed in your browser and never uploaded.",
   },
   "jwk-pem-converter": {
     title: "JWK to PEM Converter Online — Convert RSA & EC Keys | ToolNinja",
     description:
-      "Free online JWK to PEM and PEM to JWK converter. Convert RSA and EC (P-256/P-384/P-521) public and private keys between formats using the Web Crypto API. Nothing you paste ever leaves your browser. No login.",
+      "Free online JWK to PEM and PEM to JWK converter. Convert RSA and EC (P-256/P-384/P-521) public and private keys between formats using the Web Crypto API. Your input is processed in your browser and never uploaded. No login.",
   },
   "secret-scanner": {
     title: "Secret Scanner Online — Find Hardcoded API Keys & Credentials | ToolNinja",
     description:
-      "Free online secret scanner. Paste code or a config file and find hardcoded AWS keys, GitHub tokens, Stripe keys, Slack webhooks, and more before they reach git. No login, 100% browser-based.",
+      "Free online secret scanner. Paste code or a config file and find hardcoded AWS keys, GitHub tokens, Stripe keys, Slack webhooks, and more before they reach git. No login. Your input is processed in your browser and never uploaded.",
   },
   "password-strength-checker": {
     title: "Password Strength Checker Online — Entropy & Pattern Analysis | ToolNinja",
     description:
-      "Free online password strength checker. Check entropy, common-password matches, sequential and keyboard-pattern weaknesses for any password. No login, 100% browser-based — nothing is sent anywhere.",
+      "Free online password strength checker. Check entropy, common-password matches, sequential and keyboard-pattern weaknesses for any password. No login. Your input is processed in your browser and never uploaded.",
   },
   "jwk-thumbprint-calculator": {
     title: "JWK Thumbprint Calculator Online — RFC 7638 JWK Fingerprint | ToolNinja",
     description:
-      "Free online JWK thumbprint calculator. Compute the RFC 7638 canonical thumbprint (SHA-256/384/512) for any RSA, EC, or oct JSON Web Key — the standard way to derive a stable kid. No login, 100% browser-based.",
+      "Free online JWK thumbprint calculator. Compute the RFC 7638 canonical thumbprint (SHA-256/384/512) for any RSA, EC, or oct JSON Web Key — the standard way to derive a stable kid. No login. Your input is processed in your browser and never uploaded.",
   },
   "passkey-tester": {
     title: "Passkey / WebAuthn Playground Online — Test Passkeys in Your Browser | ToolNinja",
     description:
-      "Free online passkey and WebAuthn tester. Create a real passkey and run an authentication ceremony using navigator.credentials, then inspect the decoded authenticator data — flags, sign count, AAGUID. No server, no login.",
+      "Free online passkey and WebAuthn tester. Create a real passkey and run an authentication ceremony using navigator.credentials, then inspect the decoded authenticator data — flags, sign count, AAGUID. No login. Your input is processed in your browser and never uploaded.",
   },
 
   // ── Accessibility ────────────────────────────────────────────────────────
   "contrast-checker": {
     title: "Color Contrast Checker — WCAG AA/AAA Compliance Tool | ToolNinja",
     description:
-      "Free online WCAG color contrast checker. Check contrast ratio between foreground and background colors against AA and AAA thresholds for normal text, large text, and UI components. No login, 100% browser-based.",
+      "Free online WCAG color contrast checker. Check contrast ratio between foreground and background colors against AA and AAA thresholds for normal text, large text, and UI components. No login. Your input is processed in your browser and never uploaded.",
   },
   "color-blindness-simulator": {
     title: "Color Blindness Simulator — Test Images for Color Vision Deficiency | ToolNinja",
     description:
-      "Free online color blindness simulator. Upload an image and instantly see how it looks under protanopia, deuteranopia, tritanopia, achromatopsia, and their anomalous variants. No login — images never leave your browser.",
+      "Free online color blindness simulator. Upload an image and instantly see how it looks under protanopia, deuteranopia, tritanopia, achromatopsia, and their anomalous variants. No login. Your input is processed in your browser and never uploaded.",
   },
 
   // ── Reference ────────────────────────────────────────────────────────────
@@ -560,12 +560,12 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "chmod-calculator": {
     title: "Chmod Calculator — Linux File Permissions & Special Bits | ToolNinja",
     description:
-      "Free online chmod calculator and Linux file permission calculator. Convert between symbolic (rwxr-xr-x) and octal (755, 644, 4755) permissions visually, including setuid, setgid, and the sticky bit. No login, browser-only.",
+      "Free online chmod calculator and Linux file permission calculator. Convert between symbolic (rwxr-xr-x) and octal (755, 644, 4755) permissions visually, including setuid, setgid, and the sticky bit. No login. Your input is processed in your browser and never uploaded.",
   },
   "ai-token-counter": {
     title: "AI Token Counter & Cost Estimator — Claude, GPT, Gemini | ToolNinja",
     description:
-      "Free online AI token counter and cost estimator. Paste a prompt and estimate token count plus the cost across Claude, GPT, and Gemini models side by side. No login, 100% browser-based — your text never leaves your device.",
+      "Free online AI token counter and cost estimator. Paste a prompt and estimate token count plus the cost across Claude, GPT, and Gemini models side by side. No login. Your input is processed in your browser and never uploaded.",
   },
   "unicode-explorer": {
     title: "Unicode Explorer — Search Unicode Characters & Code Points | ToolNinja",
@@ -580,7 +580,7 @@ export function generateToolMetadata(slug: string): Metadata {
 
   const meta = toolMeta[slug] ?? {
     title: `${tool.name} Online — Free Developer Tool | ToolNinja`,
-    description: `${tool.description}. Free, online, no login required. Your data never leaves your browser.`,
+    description: `${tool.description}. Free, online, no login required. Your input is processed in your browser and never uploaded.`,
   };
 
   const url = `${BASE_URL}/tools/${slug}`;

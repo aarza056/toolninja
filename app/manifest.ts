@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "ToolNinja",
     short_name: "ToolNinja",
-    description: "Fast, free browser-only developer tools",
+    description: "Fast, free developer tools. Your input is processed in your browser and never uploaded.",
     start_url: "/",
     display: "standalone",
     background_color: "#0a0a0a",

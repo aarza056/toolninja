@@ -238,7 +238,7 @@ export default function BlogPostPage({ params }: Props) {
                   {tool!.name}
                 </span>
                 <span className="text-xs text-[#555555] ml-auto">
-                  Free, browser-only →
+                  Free tool →
                 </span>
               </Link>
             ))}
