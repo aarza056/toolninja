@@ -1,11 +1,12 @@
 ---
 title: "Cannot read properties of undefined (reading 'map') — React/JS Fix Guide"
 description: "This error means .map() was called on a value that isn't an array. Learn the five root causes — async timing, API shape mismatches, null returns — and the guards that fix each one."
+metaTitle: "Cannot Read Properties of Undefined ('map')"
+metaDescription: "Why .map() fails on undefined in React and JavaScript: async timing, API shape mismatches and null returns, with the guard that fixes each."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🧩"
 tags: ["javascript", "react", "frontend", "api", "undefined map error", "cannot read properties undefined"]
-relatedTools: ["json-formatter"]
 faqs:
   - q: "Why does this error happen in React but not in plain JavaScript?"
     a: "React renders synchronously but data fetches are asynchronous. When a component first renders, state is in its initial value (often undefined or null) because the API call hasn't completed yet. The fix is to initialize state as an empty array ([]) instead of null/undefined."
@@ -19,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 TypeError: Cannot read properties of undefined (reading 'map')
 ```
 
 Or in older JavaScript:
-```
+```text
 TypeError: Cannot read property 'map' of undefined
 TypeError: Cannot read property 'map' of null
 ```
@@ -152,4 +153,9 @@ users.map(u => u.name); // TypeScript knows users is always User[]
 
 When the actual API response doesn't match what your code expects, the JSON Formatter helps you quickly understand the structure. Paste the raw API response to see it formatted with proper indentation.
 
-🔧 **[JSON Formatter — toolninja.io/tools/json-formatter](https://toolninja.io/tools/json-formatter)**
+🔧 **[JSON Formatter](/tools/json-formatter)**
+
+
+## Related tools
+
+To stop guessing at the response shape, paste a real payload into the [JSON to TypeScript generator](/tools/json-to-typescript) and type your state from it, so the compiler flags a missing array before runtime does.

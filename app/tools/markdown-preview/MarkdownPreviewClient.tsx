@@ -41,7 +41,7 @@ console.log(greet("World"));
 | Base64 | Encode | Encode/Decode |
 | Regex Tester | Test | Test patterns |
 
-> Your data never leaves the browser 🔒
+> Your input is processed in your browser and never uploaded 🔒
 `;
 
 function parseFrontmatter(content: string): {

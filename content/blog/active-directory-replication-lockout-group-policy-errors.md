@@ -1,11 +1,12 @@
 ---
 title: "Active Directory Errors Explained: Replication Failures, Account Lockouts, and Group Policy Not Applying"
 description: "Replication error 8606, Group Policy silently failing to apply, and accounts that keep locking out for no visible reason — these three account for most of the AD tickets that eat a sysadmin's week. Here's what's really going on and the exact commands to fix them."
+metaTitle: "Active Directory Replication & Lockout Errors"
+metaDescription: "Fix AD replication error 8606, Group Policy that silently fails to apply, and accounts that keep locking out, with the exact commands to diagnose each."
 date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🗂️"
 tags: ["active directory replication error", "ad replication error 8606", "event id 1058", "event id 1030", "group policy not applying", "account lockout active directory", "dcdiag", "repadmin", "lingering objects", "active directory troubleshooting", "windows server", "sysadmin"]
-relatedTools: []
 faqs:
   - q: "What's the difference between replication error 8606 and 8524?"
     a: "8606 (\"insufficient attributes were given to create an object\") means a source DC is trying to replicate an update for an object that the destination DC has already garbage-collected as a lingering object — it's a data-consistency error. 8524 (\"the DSA operation is unable to proceed because of a DNS lookup failure\") is purely a DNS problem — the destination DC can't resolve the source DC's CNAME record, so replication never even starts. Always rule out 8524's DNS cause before assuming you have lingering objects."
@@ -25,7 +26,7 @@ Every Active Directory environment eventually generates the same three categorie
 
 ## Replication Error 8606: Lingering Objects
 
-```
+```text
 DC=example,DC=com
 Naming Context: CN=Configuration,DC=example,DC=com
 Source DC: CN=NTDS Settings,CN=DC02,CN=Servers,...
@@ -64,7 +65,7 @@ If that fails, fix DNS (a missing `_msdcs` zone, a stale record, or a DC pointin
 
 ## Group Policy That "Applied" But Didn't (Event ID 1058 / 1030)
 
-```
+```text
 Event ID: 1058
 Source: Group Policy
 The processing of Group Policy failed. Windows attempted to read the file
@@ -72,7 +73,7 @@ The processing of Group Policy failed. Windows attempted to read the file
 from a domain controller and was not successful.
 ```
 
-```
+```text
 Event ID: 1030
 Source: Group Policy
 Windows cannot query for the list of Group Policy objects. Check the event

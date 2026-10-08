@@ -1,11 +1,12 @@
 ---
 title: "Cron Expression Out of Range / Invalid Interval — Fix Guide"
 description: "Cron expression errors happen when field values fall outside allowed ranges or use invalid syntax. Learn the exact ranges for each field, common mistakes with day-of-week numbering, and how to validate before deploying."
+metaTitle: "Cron Expression \"Out of Range\" Errors Fixed"
+metaDescription: "The allowed range for every cron field, the day-of-week numbering mistakes that cause invalid intervals, and how to validate before deploying."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "⏰"
 tags: ["cron", "scheduling", "linux", "devops", "cron expression", "cron syntax", "invalid cron"]
-relatedTools: ["cron-tester"]
 faqs:
   - q: "What are the valid ranges for each cron field?"
     a: "Standard cron has 5 fields: minute (0-59), hour (0-23), day-of-month (1-31), month (1-12), day-of-week (0-7, where both 0 and 7 = Sunday). Extended cron (AWS, Quartz) adds a 6th field for seconds at the beginning."
@@ -19,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 Error: value 60 out of range [0..59] for minutes field
 ```
 
 Or:
-```
+```text
 Invalid cron expression: '0 25 * * *'
 QuartzException: '8' is not a valid value for hour
 ```
@@ -53,7 +54,7 @@ Common causes:
 
 ### Step 1 — Map fields to positions
 
-```
+```text
 Standard cron (5 fields):
 
 *  *  *  *  *
@@ -151,4 +152,4 @@ Quartz/AWS (6 fields):
 
 The Cron Tester lets you paste any cron expression and instantly see the next 10 scheduled run times in both UTC and your local timezone.
 
-🔧 **[Cron Tester — toolninja.io/tools/cron-tester](https://toolninja.io/tools/cron-tester)**
+🔧 **[Cron Tester](/tools/cron-tester)**

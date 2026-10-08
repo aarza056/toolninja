@@ -1,11 +1,12 @@
 ---
 title: "Invalid Regular Expression: Nothing to Repeat — Regex Fix Guide"
 description: "The 'nothing to repeat' regex error happens when a quantifier like *, +, or — has nothing to apply to. Learn the exact triggers, how to escape metacharacters, and how to write valid regex."
+metaTitle: "Regex \"Nothing to Repeat\" Error Fixed"
+metaDescription: "Why a regex throws \"nothing to repeat\" when a quantifier like *, + or ? has nothing before it, and how to escape metacharacters."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔍"
 tags: ["javascript", "regex", "regexp", "frontend", "regex error", "nothing to repeat", "invalid regex"]
-relatedTools: ["regex-tester"]
 faqs:
   - q: "What does 'nothing to repeat' mean in a regex error?"
     a: "Quantifiers like *, +, ?, and {n} modify the preceding element. If there is no preceding element — because the quantifier is at the start of the pattern or after another quantifier — the regex engine throws 'nothing to repeat'."
@@ -19,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 SyntaxError: Invalid regular expression: /+test/: Nothing to repeat
 ```
 
 Or:
-```
+```text
 SyntaxError: Invalid regular expression: /?pattern/: Nothing to repeat
 SyntaxError: Invalid regular expression: /*/: Nothing to repeat
 ```
@@ -156,4 +157,4 @@ function safeRegex(pattern, flags = '') {
 
 The Regex Tester shows the exact error position and highlights matching parts of input in real time. Fix the pattern and immediately see which test strings match.
 
-🔧 **[Regex Tester — toolninja.io/tools/regex-tester](https://toolninja.io/tools/regex-tester)**
+🔧 **[Regex Tester](/tools/regex-tester)**

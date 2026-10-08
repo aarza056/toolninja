@@ -1,11 +1,12 @@
 ---
 title: "UUIDs Explained: v1 vs v4 vs v7 and When to Use Each"
 description: "Understand UUID versions — v1 (time + MAC), v4 (random), v5 (name + hash), and the new v7 (sortable). When to use each, database implications, and alternatives like NanoID and ULID."
+metaTitle: "UUID Versions Explained: v1, v4, v5, v7"
+metaDescription: "UUID v1, v4, v5 and v7 compared: how each is built, when to use which, database implications, and alternatives like NanoID and ULID."
 date: "2026-05-06"
 author: "ToolNinja"
 coverEmoji: "🎲"
 tags: ["uuid generator online", "uuid v4 vs v7", "uuid explained", "guid vs uuid difference", "uuid primary key database", "uuid v4 random generation", "uuid v7 sortable", "ulid vs uuid", "nanoid vs uuid", "uuid collision probability", "generate uuid free", "uuid format explained"]
-relatedTools: ["uuid-generator"]
 faqs:
   - q: "What is the difference between UUID v4 and UUID v7?"
     a: "UUID v4 is randomly generated with no ordering — great for privacy but poor for database indexing. UUID v7 is time-ordered while still random enough to avoid collisions, making it better for database primary keys."
@@ -21,7 +22,7 @@ faqs:
 
 A **UUID** (Universally Unique Identifier) is a 128-bit value, formatted as 32 hex digits in groups of 8-4-4-4-12:
 
-```
+```text
 550e8400-e29b-41d4-a716-446655440000
 xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
 ```
@@ -29,7 +30,7 @@ xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
 - `M` = version digit
 - `N` = variant bits (always 8, 9, a, or b in standard UUIDs)
 
-The RFC 4122 standard defines several versions. Each serves a different purpose.
+The [RFC 4122](https://www.rfc-editor.org/rfc/rfc4122) standard defines several versions. Each serves a different purpose.
 
 ---
 
@@ -37,7 +38,7 @@ The RFC 4122 standard defines several versions. Each serves a different purpose.
 
 ### v1 — Time + MAC Address
 
-```
+```text
 6ba7b810-9dad-11d1-80b4-00c04fd430c8
          ^^^^  Version 1
 ```
@@ -55,7 +56,7 @@ Generated from the current timestamp (100-nanosecond intervals since Oct 15, 158
 
 ### v4 — Random
 
-```
+```text
 550e8400-e29b-41d4-a716-446655440000
                ^ Version 4
 ```
@@ -86,7 +87,7 @@ uuidv5("example.com", uuidv5.DNS) // deterministic
 
 ### v7 — Unix Time-Ordered (New in 2022)
 
-```
+```text
 018c4b5c-e3a0-7000-a8b4-c8a6b9d51b8e
          ^^^^  Version 7
 ```
@@ -133,12 +134,12 @@ CREATE TABLE orders (
 ```
 
 **ULID** — 26-character base32 string, sortable, URL-safe:
-```
+```text
 01ARZ3NDEKTSV4RRFFQ69G5FAV
 ```
 
 **NanoID** — configurable length, URL-safe, 21 chars by default:
-```
+```text
 V1StGXR8_Z5jdHi6B-myT
 ```
 
@@ -225,3 +226,8 @@ SELECT uuid_generate_v1();
 ## Try It: ToolNinja UUID Generator
 
 Generate cryptographically secure UUID v4s (and v7s) instantly with the **[ToolNinja UUID Generator](/tools/uuid-generator)**. Generate in bulk, copy with one click, runs in your browser.
+
+
+## Related tools
+
+To find out which version an existing UUID is, and read the timestamp inside v1, v6 and v7 values, use the [UUID Parser](/tools/uuid-parser).

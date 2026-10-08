@@ -1,11 +1,12 @@
 ---
 title: "Mock Data for API Testing: How to Generate Realistic Test Data Without a Real Backend"
 description: "Waiting on a backend, real data, or production access shouldn't block frontend work or test coverage. Here's how and when to use generated mock data — and where it falls short."
+metaTitle: "Mock Data for API Testing"
+metaDescription: "How and when to use generated mock data so a missing backend doesn't block frontend work or tests, and where mock data falls short."
 date: "2026-07-31"
 author: "ToolNinja"
 coverEmoji: "🎲"
 tags: ["mock data generator", "test data generator", "fake data for testing", "api testing mock data", "generate test data json", "frontend development without backend", "seeded test data", "mock json data", "testing", "api", "development"]
-relatedTools: ["fake-data-generator", "json-formatter"]
 faqs:
   - q: "Why not just use real production data for testing?"
     a: "Production data usually contains real user information — a serious privacy and compliance risk to copy into a dev or test environment. It's also often incomplete or unrepresentative of edge cases you specifically need to test, like empty strings, extreme numbers, or malformed dates. Generated mock data avoids the privacy issue entirely and lets you construct exactly the edge cases you need."
@@ -70,6 +71,10 @@ Being direct about the limits: generated mock data is for unblocking development
 **[ToolNinja's Fake Data Generator →](/tools/fake-data-generator)** lets you define a schema — field name plus type, choosing from 20 types including names, emails, UUIDs, dates, addresses, and Lorem-style text — and instantly generates realistic mock data as JSON or CSV. Set an optional seed for reproducible output across test runs. Everything happens in your browser with no row limits and no account required.
 
 Pair it with the **[JSON Formatter](/tools/json-formatter)** to quickly inspect or reshape the generated output before dropping it into your test fixtures.
+
+## Related tools
+
+To make sure generated data matches the shape your API expects, create a schema from a real response with the [JSON Schema Generator](/tools/json-schema-generator) and validate the mock data against it.
 
 ---
 

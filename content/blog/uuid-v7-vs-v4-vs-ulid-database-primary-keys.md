@@ -1,11 +1,12 @@
 ---
 title: "UUID v7 vs v4 vs ULID: Which One Should Actually Be Your Database Primary Key"
 description: "Random UUIDv4 primary keys quietly wreck your index performance as tables grow. Here's why, and how UUIDv7 and ULID fix it without giving up the properties that made you choose a UUID in the first place."
+metaTitle: "UUID v7 vs v4 vs ULID for Primary Keys"
+metaDescription: "Why random UUIDv4 keys hurt index performance as tables grow, and how UUIDv7 and ULID fix it while keeping the benefits of UUIDs."
 date: "2026-09-15"
 author: "ToolNinja"
 coverEmoji: "🆔"
 tags: ["uuid v7", "uuid vs ulid", "database primary key", "uuid v4 performance", "ulid", "database indexing", "postgres uuid", "mysql uuid primary key", "distributed id generation"]
-relatedTools: ["uuid-generator", "uuid-parser"]
 faqs:
   - q: "Is UUIDv7 a real, standardized format, or a convention people made up?"
     a: "It's a real IETF standard — UUID version 7 was formally standardized in RFC 9562 (May 2024), alongside version 6 and version 8. It's not a hack or a community convention; database drivers, ORMs, and UUID libraries across most major languages now ship native v7 support."
@@ -39,7 +40,7 @@ None of this is theoretical — it's the standard explanation database vendors t
 
 UUIDv7 (standardized in [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562.html), May 2024) and ULID both solve this the same way: put a millisecond-precision timestamp in the **most significant bits**, and fill the rest with randomness.
 
-```
+```text
 UUIDv7:  018f4d2e-7b3a-7c21-8a4f-1e2d3c4b5a69
          └────┬────┘└─┬─┘
           48-bit ms    version + 74 bits of randomness
@@ -82,3 +83,8 @@ For most internal or moderately-sensitive data, this is a non-issue — it's gen
 - **Existing UUIDv4 tables that *are* hurting** (rising insert latency, index bloat you can't otherwise explain): this is a genuine "add a new v7/ULID column, backfill, cut over" migration — plan it like any other primary key change, with the standard caution that implies. It's not a quick find-and-replace.
 
 The underlying lesson generalizes past UUIDs specifically: **a primary key's write pattern is a property of your storage engine, not just an identifier format choice** — and it's worth getting right before a table is too large to comfortably change.
+
+
+## Related tools
+
+To try both formats, create time-ordered v7 values with the [UUID Generator](/tools/uuid-generator) and sortable IDs with the [ULID Generator](/tools/ulid-generator).

@@ -1,11 +1,12 @@
 ---
 title: "bcrypt Hash Verification Error: Invalid Salt / Password Fix"
 description: "bcrypt errors like 'Invalid salt version', 'data and hash arguments required', and 'Invalid hash provided' happen for specific reasons. Learn exactly why and how to fix them."
+metaTitle: "bcrypt \"Invalid Salt\" & Hash Errors Fixed"
+metaDescription: "Why bcrypt throws \"Invalid salt version\", \"data and hash arguments required\" and \"Invalid hash provided\", and how to fix each one."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔐"
 tags: ["bcrypt", "password hashing", "nodejs", "security", "hash error", "invalid salt"]
-relatedTools: ["hash-generator"]
 faqs:
   - q: "What does 'Invalid salt version' mean in bcrypt?"
     a: "The stored hash does not start with a recognized bcrypt prefix ($2a$, $2b$, or $2y$). This usually means the hash was truncated, stored incorrectly in the database, or is not a bcrypt hash at all."
@@ -17,7 +18,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 Error: Invalid salt version
 Error: data and hash arguments required
 Error: Invalid hash provided to bcrypt
@@ -171,4 +172,9 @@ userSchema.methods.comparePassword = async function(candidate) {
 
 The Hash Generator lets you create bcrypt hashes and verify them interactively — useful for testing the correct round count and verifying that a known password matches a stored hash.
 
-🔧 **[Hash Generator — toolninja.io/tools/hash-generator](https://toolninja.io/tools/hash-generator)**
+🔧 **[Hash Generator](/tools/hash-generator)**
+
+
+## Related tools
+
+If you need a fresh test password while reproducing a verification error, the [Password Generator](/tools/password-generator) creates one with the length and character set you choose.

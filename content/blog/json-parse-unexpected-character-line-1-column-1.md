@@ -1,11 +1,12 @@
 ---
 title: "Unexpected Token in JSON: Every Cause and How to Fix It"
 description: "SyntaxError: Unexpected token in JSON at position N is the most common JSON error in JavaScript. Here's every real-world cause — from HTML error pages to trailing commas to BOM characters — and the fix for each."
+metaTitle: "Unexpected Token in JSON: Causes & Fixes"
+metaDescription: "Every common cause of \"Unexpected token in JSON at position N\", from HTML error pages to trailing commas and BOMs, with the fix for each."
 date: "2026-08-03"
 author: "ToolNinja"
 coverEmoji: "🧩"
 tags: ["unexpected token json", "json.parse error", "syntaxerror unexpected token", "unexpected token in json at position", "json parse error fix", "unexpected token < in json", "json trailing comma error", "fix json syntax error", "javascript", "json", "errors"]
-relatedTools: ["json-formatter"]
 faqs:
   - q: "What does 'position N' actually mean in the error message?"
     a: "It's the character offset (not line number) in the string where JSON.parse gave up — counting every character from the very start of the string, including whitespace and newlines. For a large string this is hard to use directly; the fastest approach is usually to paste the string into a JSON formatter/validator, which converts that raw offset into a specific line and column."
@@ -19,7 +20,7 @@ faqs:
 
 ## The Most Common JSON Error, by a Wide Margin
 
-```
+```text
 SyntaxError: Unexpected token < in JSON at position 0
 SyntaxError: Unexpected token } in JSON at position 47
 SyntaxError: Unexpected non-whitespace character after JSON at position 128
@@ -31,7 +32,7 @@ If you write JavaScript that talks to an API, you will see some variant of this 
 
 ## Cause 1: You Parsed HTML, Not JSON (the #1 cause of position 0)
 
-```
+```text
 SyntaxError: Unexpected token < in JSON at position 0
 ```
 

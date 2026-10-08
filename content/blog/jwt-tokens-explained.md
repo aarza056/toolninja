@@ -1,16 +1,17 @@
 ---
 title: "JWT Tokens Explained: Structure, Signing, and Security"
 description: "Learn how JSON Web Tokens (JWT) work, how to decode and verify them, common vulnerabilities like the 'alg:none' attack, and best practices for using JWTs securely in your applications."
+metaTitle: "JWT Explained: Structure, Signing, Security"
+metaDescription: "How JSON Web Tokens work, how to decode and verify them, attacks like alg:none, and how to use JWTs securely."
 date: "2026-05-03"
 author: "ToolNinja"
 coverEmoji: "🔑"
 tags: ["jwt decoder", "decode jwt token", "json web token explained", "jwt token structure", "jwt header payload signature", "jwt security", "how to decode jwt online", "jwt debugger", "jwt expiry check", "jwt vs session tokens", "jwt alg none attack", "jwt tutorial"]
-relatedTools: ["jwt-decoder"]
 faqs:
   - q: "Can I decode a JWT without the secret key?"
     a: "Yes — the header and payload of a JWT are just Base64URL encoded, not encrypted. Anyone can decode them without the secret. The secret is only needed to verify the signature."
   - q: "Is it safe to paste my JWT into an online decoder?"
-    a: "Only if the tool runs entirely in your browser with no server calls. ToolNinja's JWT Decoder processes your token 100% client-side — nothing is ever sent to any server."
+    a: "Only if the tool runs entirely in your browser with no server calls. ToolNinja's JWT Decoder processes your token in your browser — it is never uploaded."
   - q: "What is the difference between JWT and session tokens?"
     a: "Session tokens require a database lookup on every request. JWTs are self-contained — the server can verify them without a database by checking the signature."
   - q: "What does the alg:none vulnerability mean in JWT?"
@@ -29,7 +30,7 @@ You've seen them: that long `eyJ...` string in an `Authorization: Bearer` header
 
 A JWT is three Base64URL-encoded JSON objects joined by dots:
 
-```
+```text
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
 .eyJzdWIiOiJ1c2VyXzEyMyIsImVtYWlsIjoiYWxpY2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MzAwMDAwMDAsImV4cCI6MTczMDA4NjQwMH0
 .SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
@@ -54,7 +55,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
 ```
 
 **Signature** — proof of integrity:
-```
+```text
 HMACSHA256(
   base64UrlEncode(header) + "." + base64UrlEncode(payload),
   secret
@@ -149,7 +150,7 @@ Attackers sometimes switch a token from RS256 to HS256 and sign with the **publi
 
 Short-lived access tokens + long-lived refresh tokens is the standard pattern:
 
-```
+```text
 Access token:  15 minutes  (stored in memory, not localStorage)
 Refresh token: 7–30 days   (stored in httpOnly cookie)
 ```
@@ -203,4 +204,9 @@ This only decodes — it does **not** verify the signature. Use this for debuggi
 
 ## Try It: ToolNinja JWT Decoder
 
-Paste any JWT into the **[ToolNinja JWT Decoder](/tools/jwt-decoder)** to instantly see the decoded header, payload, and expiry status. Works 100% in your browser — the token never leaves your machine.
+Paste any JWT into the **[ToolNinja JWT Decoder](/tools/jwt-decoder)** to instantly see the decoded header, payload, and expiry status. The token is decoded in your browser and never uploaded.
+
+
+## Related tools
+
+To create test tokens with a known secret or key, use the [JWT Generator](/tools/jwt-generator) and then decode them to see each part.

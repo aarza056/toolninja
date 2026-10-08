@@ -7,6 +7,9 @@ import { tools } from "@/lib/tools";
 import BlogContent from "./BlogContent";
 import ShareButtons from "@/components/ShareButtons";
 import RelatedArticles from "@/components/RelatedArticles";
+import { getAuthor } from "@/lib/authors";
+import AuthorBio from "@/components/AuthorBio";
+import { blogPostGraph, jsonLdString } from "@/lib/structured-data";
 
 interface Props {
   params: { slug: string };
@@ -20,31 +23,36 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPostBySlug(params.slug);
   if (!post) return {};
 
+  const url = `https://toolninja.io/blog/${post.slug}`;
+  const description = post.metaDescription ?? post.description;
+  const author = getAuthor(post.author);
+
   return {
-    title: post.title,
-    description: post.description,
-    keywords: post.tags,
-    authors: [{ name: post.author, url: "https://toolninja.io" }],
+    title: post.metaTitle ?? post.title,
+    description,
+    authors: [{ name: author.name, url: `https://toolninja.io/authors/${author.id}` }],
     openGraph: {
       title: post.title,
-      description: post.description,
-      url: `https://toolninja.io/blog/${post.slug}`,
+      description,
+      url,
       type: "article",
       publishedTime: post.date,
-      authors: ["ToolNinja"],
+      modifiedTime: post.updated ?? post.date,
+      authors: [author.name],
       tags: post.tags,
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.description,
+      description,
     },
-    alternates: { canonical: `https://toolninja.io/blog/${post.slug}` },
+    alternates: { canonical: url },
   };
 }
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-US", {
+    timeZone: "UTC",
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -61,79 +69,18 @@ export default function BlogPostPage({ params }: Props) {
     .map((slug) => tools.find((t) => t.slug === slug))
     .filter(Boolean);
 
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.description,
-    datePublished: post.date,
-    dateModified: post.date,
-    author: {
-      "@type": "Organization",
-      name: "ToolNinja",
-      url: "https://toolninja.io",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "ToolNinja",
-      url: "https://toolninja.io",
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://toolninja.io/blog/${post.slug}`,
-    },
-  };
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://toolninja.io" },
-      { "@type": "ListItem", position: 2, name: "Blog", item: "https://toolninja.io/blog" },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: post.title,
-        item: `https://toolninja.io/blog/${post.slug}`,
-      },
-    ],
-  };
-
-  const faqSchema =
-    post.faqs.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: post.faqs.map((faq) => ({
-            "@type": "Question",
-            name: faq.q,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: faq.a,
-            },
-          })),
-        }
-      : null;
+  const jsonLd = blogPostGraph(post);
+  const author = getAuthor(post.author);
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      {faqSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      )}
 
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-[#555555] mb-8">
+      <div className="flex items-center gap-2 text-sm text-[#999999] mb-8">
         <Link href="/" className="hover:text-[#888888] transition-colors">
           Home
         </Link>
@@ -167,21 +114,31 @@ export default function BlogPostPage({ params }: Props) {
         <p className="text-[#888888] text-base leading-relaxed mb-4">
           {post.description}
         </p>
-        <div className="flex items-center gap-4 text-xs text-[#555555] border-t border-[#1e1e1e] pt-4">
-          <span className="flex items-center gap-1.5">
-            <Calendar size={12} />
-            {formatDate(post.date)}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#888888] border-t border-[#1e1e1e] pt-4">
+          <span>
+            By{" "}
+            <Link href={`/authors/${author.id}`} rel="author" className="text-[#c084fc] hover:underline">
+              {author.name}
+            </Link>
           </span>
           <span className="flex items-center gap-1.5">
-            <Clock size={12} />
+            <Calendar size={12} aria-hidden="true" />
+            Published <time dateTime={post.date}>{formatDate(post.date)}</time>
+          </span>
+          <span>
+            Last updated <time dateTime={post.updated ?? post.date}>{formatDate(post.updated ?? post.date)}</time>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Clock size={12} aria-hidden="true" />
             {post.readingTime} min read
           </span>
-          <span className="text-[#333333]">by {post.author}</span>
         </div>
       </header>
 
       {/* 1. Article content */}
       <BlogContent content={post.content} />
+
+      <AuthorBio author={author} />
 
       {/* 2. Share buttons */}
       <ShareButtons
@@ -237,8 +194,8 @@ export default function BlogPostPage({ params }: Props) {
                 <span className="text-sm text-[#f5f5f5] group-hover:text-[#a855f7] transition-colors font-medium">
                   {tool!.name}
                 </span>
-                <span className="text-xs text-[#555555] ml-auto">
-                  Free, browser-only →
+                <span className="text-xs text-[#999999] ml-auto">
+                  Free tool →
                 </span>
               </Link>
             ))}
@@ -250,7 +207,7 @@ export default function BlogPostPage({ params }: Props) {
       <div className="mt-8 pt-6 border-t border-[#1e1e1e]">
         <Link
           href="/blog"
-          className="text-sm text-[#555555] hover:text-[#a855f7] transition-colors"
+          className="text-sm text-[#999999] hover:text-[#a855f7] transition-colors"
         >
           ← All articles
         </Link>

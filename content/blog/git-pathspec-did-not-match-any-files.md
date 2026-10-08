@@ -1,11 +1,12 @@
 ---
 title: "error: pathspec did not match any file(s) known to git — Fix Guide"
 description: "This Git error means the branch, file, or path you specified doesn't exist or isn't tracked. Learn how to detect the exact cause — wrong branch name, unstaged file, detached HEAD — and fix each case."
+metaTitle: "Git \"pathspec did not match any files\" Fix"
+metaDescription: "Why git says pathspec did not match any files: a wrong branch name, an untracked file or a typo'd path, and how to fix each case."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔧"
 tags: ["git", "version control", "devops", "git checkout", "git branch", "pathspec error"]
-relatedTools: ["git-command-generator"]
 faqs:
   - q: "Why does 'git checkout branch-name' say path doesn't match when the branch exists on GitHub?"
     a: "A remote branch exists on the remote but not locally until you fetch it. Run 'git fetch origin' first to download the branch reference, then 'git checkout branch-name'. Git will automatically create a local tracking branch."
@@ -19,7 +20,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 error: pathspec 'feature/my-branch' did not match any file(s) known to git
 ```
 
@@ -137,4 +138,4 @@ git config --global fetch.prune true
 
 The Git Command Generator helps you build the right Git command — fetch + checkout, branch creation, file restoration — without memorizing the flag combinations.
 
-🔧 **[Git Command Generator — toolninja.io/tools/git-command-generator](https://toolninja.io/tools/git-command-generator)**
+🔧 **[Git Command Generator](/tools/git-command-generator)**

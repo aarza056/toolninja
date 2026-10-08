@@ -43,7 +43,7 @@ const components: Components = {
     const isBlock = className?.startsWith("language-");
     if (isBlock) {
       return (
-        <code className="text-[#c9d1d9] font-mono text-[13px] leading-relaxed">
+        <code className={`${className} text-[#c9d1d9] font-mono text-[13px] leading-relaxed`}>
           {children}
         </code>
       );
@@ -73,7 +73,7 @@ const components: Components = {
     <li className="text-[#aaaaaa] text-[15px] leading-relaxed">{children}</li>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="border-l-2 border-[#a855f7]/40 pl-4 my-4 text-[#666666] italic">
+    <blockquote className="border-l-2 border-[#a855f7]/40 pl-4 my-4 text-[#a3a3a3] italic">
       {children}
     </blockquote>
   ),

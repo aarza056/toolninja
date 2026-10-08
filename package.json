@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "check:seo": "node scripts/check-seo.mjs"
   },
   "dependencies": {
     "@tsparticles/react": "^3.0.0",

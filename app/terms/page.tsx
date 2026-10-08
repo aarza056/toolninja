@@ -4,6 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description: "ToolNinja terms of service. Free to use for personal and commercial projects. All tools run in your browser with no warranties.",
+  alternates: { canonical: "https://toolninja.io/terms" },
 };
 
 export default function TermsPage() {

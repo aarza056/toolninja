@@ -1,6 +1,6 @@
 # 🥷 ToolNinja — Fast, Free Developer Tools
 
-> 95+ free browser-only developer tools. No login. Your data stays in your browser.
+> 110 free developer tools. No login. Your input is processed in your browser and never uploaded.
 
 **Live at: [toolninja.io](https://toolninja.io)**
 
@@ -49,11 +49,11 @@ HTTP Status Codes · Chmod Calculator · Unicode Explorer
 
 ## ✨ Why ToolNinja?
 
-- **Private by default** — nothing sent to any server, ever
+- **Input stays local** — your input is processed in your browser and never uploaded
 - **Zero setup** — open a tool and start working
 - **Built for depth** — match tables, tree views, char-level diffs, WebCrypto
-- **Works offline** — once loaded, no internet required
-- **No ads, no accounts** — just tools that work
+- **Mostly works offline** — once loaded, tools that don't call an external API keep working
+- **No accounts** — just tools that work (the site shows ads and uses analytics only after cookie consent)
 
 ---
 

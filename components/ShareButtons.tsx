@@ -20,7 +20,7 @@ export default function ShareButtons({ title, url }: ShareButtonsProps) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 py-5 border-t border-[#1e1e1e] mt-8">
-      <span className="text-xs text-[#555555] mr-1">Share:</span>
+      <span className="text-xs text-[#999999] mr-1">Share:</span>
       <a
         href={`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`}
         target="_blank"

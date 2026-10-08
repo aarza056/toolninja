@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import { Trash2, Info } from "lucide-react";
-import { MODEL_PRICING, estimateTokens, estimateCost } from "@/lib/token-counter";
+import { MODEL_PRICING, PRICES_LAST_VERIFIED, TOKENIZER_ACCURACY, estimateTokens, estimateCost } from "@/lib/token-counter";
 
 const STORAGE_KEY = "toolninja:ai-token-counter";
 
@@ -43,9 +43,45 @@ export default function AiTokenCounterClient() {
     <ToolLayout
       title="AI Token Counter & Cost Estimator"
       description="Estimate how many tokens your prompt costs, and what it'd run across Claude, GPT, and Gemini"
+      lastReviewed={PRICES_LAST_VERIFIED}
+      lastReviewedWhat="model prices"
     >
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
         <div>
+          <div className="mb-3 grid grid-cols-3 gap-3">
+            <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
+              <div className="text-lg font-semibold text-[#a855f7] font-mono">~{estimate.tokens.toLocaleString()}</div>
+              <div className="text-[11px] text-[#888888] mt-0.5">estimated tokens</div>
+            </div>
+            <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
+              <div className="text-lg font-semibold text-[#f5f5f5] font-mono">{estimate.words.toLocaleString()}</div>
+              <div className="text-[11px] text-[#888888] mt-0.5">words</div>
+            </div>
+            <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
+              <div className="text-lg font-semibold text-[#f5f5f5] font-mono">{estimate.characters.toLocaleString()}</div>
+              <div className="text-[11px] text-[#888888] mt-0.5">characters</div>
+            </div>
+          </div>
+
+          <div className="mb-3 flex items-start gap-2 text-xs text-[#888888]" role="note">
+            <Info size={13} className="shrink-0 mt-0.5" />
+            <div>
+              <p>
+                <strong className="text-[#f5f5f5] font-medium">Approximate.</strong> This uses a
+                character/word heuristic, not each provider&apos;s real tokenizer, so real counts
+                will differ, especially for code and non-English text. For an exact Claude count,
+                use the Messages API&apos;s <code className="text-[#aaaaaa]">count_tokens</code> endpoint.
+              </p>
+              <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5">
+                {TOKENIZER_ACCURACY.map((t) => (
+                  <li key={t.family}>
+                    {t.family}: {t.measuredRange ? `typically ${t.measuredRange} of real count` : "rough estimate (not yet measured)"}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
           <div className="flex items-center justify-between mb-1">
             <label className="text-xs text-[#888888] font-medium">Text / prompt</label>
             {input && (
@@ -65,30 +101,6 @@ export default function AiTokenCounterClient() {
             spellCheck={true}
           />
 
-          <div className="mt-4 grid grid-cols-3 gap-3">
-            <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
-              <div className="text-lg font-semibold text-[#a855f7] font-mono">~{estimate.tokens.toLocaleString()}</div>
-              <div className="text-[11px] text-[#888888] mt-0.5">estimated tokens</div>
-            </div>
-            <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
-              <div className="text-lg font-semibold text-[#f5f5f5] font-mono">{estimate.words.toLocaleString()}</div>
-              <div className="text-[11px] text-[#888888] mt-0.5">words</div>
-            </div>
-            <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
-              <div className="text-lg font-semibold text-[#f5f5f5] font-mono">{estimate.characters.toLocaleString()}</div>
-              <div className="text-[11px] text-[#888888] mt-0.5">characters</div>
-            </div>
-          </div>
-
-          <div className="mt-3 flex items-start gap-2 text-xs text-[#555555]">
-            <Info size={13} className="shrink-0 mt-0.5" />
-            <span>
-              This is a character/word-based approximation, not the real tokenizer each provider
-              uses internally — expect it to land within roughly 10–15% of the actual count for
-              plain English text. For an exact count against Claude&apos;s own tokenizer, use the
-              Messages API&apos;s <code className="text-[#888888]">count_tokens</code> endpoint.
-            </span>
-          </div>
         </div>
 
         <div className="space-y-4">
@@ -134,10 +146,13 @@ export default function AiTokenCounterClient() {
             </div>
           </div>
 
-          <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px] text-xs text-[#666666] leading-relaxed">
-            Prices are approximate list rates as of October 2026 and change often — this is a
-            ballpark for comparing models relatively, not a bill. Always check the provider&apos;s
-            own pricing page before budgeting against it.
+          <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px] text-xs text-[#888888] leading-relaxed">
+            <p className="mb-1 text-[#aaaaaa]">
+              Prices last verified: <time dateTime={PRICES_LAST_VERIFIED}>{PRICES_LAST_VERIFIED}</time>
+            </p>
+            Prices are approximate list rates and change often — this is a ballpark for comparing
+            models relatively, not a bill. Always check the provider&apos;s own pricing page before
+            budgeting against it.
           </div>
         </div>
       </div>

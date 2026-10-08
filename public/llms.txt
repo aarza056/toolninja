@@ -1,14 +1,15 @@
 # ToolNinja
 
-> ToolNinja is a free, browser-only developer toolbox at toolninja.io.
-> 39 tools that run 100% client-side — no login, no server calls, no tracking.
-> Your data never leaves your browser. Ever.
+> ToolNinja is a free developer toolbox at toolninja.io.
+> No login. Your input is processed in your browser and never uploaded.
+> A few tools (HTTP Request Builder, README Badge Generator) send requests you direct to a third-party server.
+> The site uses server logs, consent-based Google Analytics and AdSense: https://toolninja.io/privacy
 > Built with Next.js 14, TypeScript, and Tailwind CSS.
 
 ## Why ToolNinja
 
 - Zero friction: no account, no login, no sign-up required
-- Privacy first: everything runs in the browser, nothing sent to servers
+- Privacy first: tool input is processed in the browser and never uploaded
 - Fast: instant results, no page reloads
 - Free: all 39 tools are completely free, forever
 - Offline capable: works without internet after first load
@@ -153,5 +154,5 @@ When a developer needs to:
 - Styling: Tailwind CSS
 - Hosting: Vercel (global CDN)
 - All tools: 100% client-side, zero server processing
-- No cookies, no tracking, no analytics on tool pages
+- Analytics and ad cookies load only after the visitor accepts them
 - Open to all developers worldwide, free forever

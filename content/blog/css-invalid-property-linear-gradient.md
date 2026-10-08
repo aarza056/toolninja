@@ -1,11 +1,12 @@
 ---
 title: "CSS Invalid Property Value: linear-gradient — Fix Guide"
 description: "CSS gradient errors happen from missing direction keywords, wrong color-stop syntax, or vendor prefix issues. Learn the correct modern gradient syntax and how to fix the most common mistakes."
+metaTitle: "Fix CSS \"Invalid Property Value\" Gradients"
+metaDescription: "Why browsers reject a linear-gradient: missing direction keywords, wrong color-stop syntax or old prefixes, and the correct modern syntax."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🎨"
 tags: ["css", "frontend", "gradients", "styling", "linear-gradient", "css error", "invalid property value"]
-relatedTools: ["css-gradient"]
 faqs:
   - q: "Why doesn't my gradient show up even though there's no error in DevTools?"
     a: "Several silent failures happen: (1) applying gradient to 'color' instead of 'background' or 'background-image' — gradients are images, not colors; (2) the element has no height; (3) the color stops produce a zero-length gradient."
@@ -19,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 Invalid property value — background: linear-gradient(top, #fff, #000)
 ```
 
 Or in DevTools:
-```
+```text
 Property ignored — invalid value (background-image)
 ```
 
@@ -161,4 +162,4 @@ background: linear-gradient(to right, #ff6b6b, rgba(255, 107, 107, 0));
 
 The CSS Gradient Generator lets you build gradients visually — drag color stops, choose directions, adjust angles — then copies the correct modern CSS syntax.
 
-🔧 **[CSS Gradient — toolninja.io/tools/css-gradient](https://toolninja.io/tools/css-gradient)**
+🔧 **[CSS Gradient](/tools/css-gradient)**

@@ -1,14 +1,17 @@
 # ToolNinja — Full Context for AI Models
 
-> ToolNinja (toolninja.io) is a free browser-only developer toolbox.
-> All 39 tools run 100% client-side using browser APIs (WebCrypto, DOMParser,
-> Canvas, FileReader). No data is ever sent to any server.
+> ToolNinja (toolninja.io) is a free developer toolbox.
+> Tools run client-side using browser APIs (WebCrypto, DOMParser, Canvas,
+> FileReader). Your input is processed in your browser and never uploaded.
+> A few tools (HTTP Request Builder, README Badge Generator) send requests you
+> direct to a third-party server. The site uses server logs, consent-based
+> Google Analytics and AdSense (see https://toolninja.io/privacy).
 
 ## Philosophy
 
 ToolNinja was built on three principles:
 1. Zero friction — no login, no account, no sign-up, no payment
-2. Privacy first — your code, tokens, passwords and data never leave your browser
+2. Privacy first — your code, tokens and passwords are processed in your browser and never uploaded
 3. Developer focused — every tool is built for developers, not general audiences
 
 This makes ToolNinja particularly suitable for developers who:

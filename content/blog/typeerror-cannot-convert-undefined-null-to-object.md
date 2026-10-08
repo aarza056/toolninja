@@ -1,11 +1,12 @@
 ---
 title: "TypeError: Cannot convert undefined or null to object — JS Fix Guide"
 description: "This error is thrown by Object.keys(), Object.values(), and Object.entries() when called on null or undefined. Learn the five root causes and the guards that fix each one."
+metaTitle: "Cannot Convert Undefined or Null to Object"
+metaDescription: "Why Object.keys(), values() and entries() throw on null or undefined, the common root causes, and the guard that fixes each one."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🧩"
 tags: ["javascript", "typescript", "frontend", "api", "object error", "undefined null to object"]
-relatedTools: ["json-to-typescript"]
 faqs:
   - q: "Why do Object.keys() and Object.values() throw on null but Array.isArray() doesn't?"
     a: "Object.keys() calls ToObject() internally, which explicitly throws a TypeError for null and undefined per the ECMAScript specification. Array.isArray() is a type-checking function that returns false for any non-array value including null — it never throws."
@@ -19,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 TypeError: Cannot convert undefined or null to object
 ```
 
 Or:
-```
+```text
 TypeError: Cannot convert undefined to object (Object.keys called on non-object)
 TypeError: null is not an object (evaluating 'Object.keys(data)')
 ```
@@ -150,4 +151,9 @@ if (config !== null) {
 
 When `Object.keys()` throws because the API returned an unexpected shape, the JSON to TypeScript converter shows exactly what type your API is returning — including which fields can be `null`.
 
-🔧 **[JSON to TypeScript — toolninja.io/tools/json-to-typescript](https://toolninja.io/tools/json-to-typescript)**
+🔧 **[JSON to TypeScript](/tools/json-to-typescript)**
+
+
+## Related tools
+
+To check whether the value you pass to `Object.keys()` is really an object, paste the API response into the [JSON Formatter](/tools/json-formatter) and look for a `null` where you expected `{}`.

@@ -1,11 +1,12 @@
 ---
 title: "HMAC Webhook Signature Verification: The Two Bugs Everyone Hits"
 description: "Stripe, GitHub, and Shopify all sign webhooks with HMAC-SHA256 — and almost everyone trips on the same two mistakes: verifying against the parsed body instead of the raw one, and comparing signatures with ==."
+metaTitle: "HMAC Webhook Signature Verification Guide"
+metaDescription: "Verify Stripe, GitHub and Shopify webhook signatures without the two classic bugs: hashing the parsed body and comparing with ==."
 date: "2026-08-07"
 author: "ToolNinja"
 coverEmoji: "🔏"
 tags: ["hmac signature verification", "webhook signature verification", "stripe webhook signature failed", "github webhook secret", "hmac sha256 webhook", "verify webhook signature nodejs", "timing safe comparison", "webhook security", "webhooks", "security", "api"]
-relatedTools: ["hash-generator"]
 faqs:
   - q: "Why does my webhook signature verification fail even though I'm using the correct secret?"
     a: "The most common cause by far is verifying against the parsed-and-reserialized JSON body instead of the exact raw bytes the provider sent. JSON.stringify(JSON.parse(rawBody)) is not guaranteed to produce byte-identical output — key order, whitespace, and number formatting can all shift — and HMAC is computed over exact bytes, so any difference produces a completely different signature."

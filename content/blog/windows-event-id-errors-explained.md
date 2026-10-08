@@ -1,11 +1,12 @@
 ---
 title: "Windows Event IDs You'll Actually See: 4625, 1000, 7000, and 41 Explained"
 description: "Event Viewer logs thousands of entries a day and almost none of them matter. These four — failed logon, application crash, service start failure, and unexpected shutdown — are the ones that actually mean something. Here's how to read each one."
+metaTitle: "Windows Event IDs 4625, 1000, 7000, 41"
+metaDescription: "How to read the Windows events that matter: failed logon (4625), app crash (1000), service failure (7000) and unexpected shutdown (41)."
 date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🪟"
 tags: ["event id 4625", "event id 1000 application error", "event id 7000 service control manager", "event id 41 kernel-power", "windows event log errors", "event viewer troubleshooting", "failed logon event id", "service failed to start", "unexpected shutdown windows", "windows server logs", "sysadmin", "windows"]
-relatedTools: []
 faqs:
   - q: "What's the difference between Event ID 4624 and 4625?"
     a: "4624 is a successful logon; 4625 is a failed one. They share the same set of fields (Logon Type, Workstation Name, Source Network Address), which is what makes them useful together — a 4625 immediately followed by a 4624 from the same source often just means someone mistyped their password once, while a long unbroken run of 4625s from an external IP with no matching successful logon is the pattern that indicates a brute-force or credential-stuffing attempt."
@@ -27,7 +28,7 @@ Windows logs an enormous volume of routine noise by default, and the temptation 
 
 **Log:** Security
 
-```
+```text
 An account failed to log on.
 
 Subject:
@@ -59,7 +60,7 @@ Network Information:
 
 **Log:** Application
 
-```
+```text
 Faulting application name: myapp.exe, version: 2.4.1.0
 Faulting module name: KERNELBASE.dll, version: 10.0.19041.1
 Exception code: 0xc0000005
@@ -82,12 +83,12 @@ Faulting process id: 0x1a3c
 
 **Log:** System
 
-```
+```text
 The MyCompanyService service failed to start due to the following error:
 The service did not respond to the start or control request in a timely fashion.
 ```
 
-```
+```text
 Error 1069: The service did not start due to a logon failure.
 ```
 
@@ -107,7 +108,7 @@ Error 1069: The service did not start due to a logon failure.
 
 **Log:** System
 
-```
+```text
 The system has rebooted without cleanly shutting down first. This error could
 be caused if the system stopped responding, crashed, or lost power unexpectedly.
 ```

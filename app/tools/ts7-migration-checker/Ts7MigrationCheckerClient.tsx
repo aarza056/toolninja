@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
-import { checkTs7Migration } from "@/lib/ts7-migration";
+import { TS7_RULES_LAST_REVIEWED, checkTs7Migration } from "@/lib/ts7-migration";
 import { AlertCircle, AlertTriangle, CheckCircle } from "lucide-react";
 
 const STORAGE_KEY = "toolninja:ts7-migration-checker";
@@ -41,6 +41,8 @@ export default function Ts7MigrationCheckerClient() {
     <ToolLayout
       title="TypeScript 7 Migration Checker"
       description="Paste a tsconfig.json and see exactly which compiler options TypeScript 7's Go-based compiler removes"
+      lastReviewed={TS7_RULES_LAST_REVIEWED}
+      lastReviewedWhat="compiler option rules"
     >
       <div className="mb-4">
         <label className="text-xs text-[#888888] font-medium block mb-1">tsconfig.json</label>

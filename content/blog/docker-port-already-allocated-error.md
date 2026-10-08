@@ -1,11 +1,12 @@
 ---
 title: "Docker 'Port Is Already Allocated' (and Other Common Docker Errors), Explained"
 description: "Port conflicts, a daemon that won't connect, and container exit codes are the errors that eat the most Docker debugging time. Here's what causes each and the fastest way to fix them."
+metaTitle: "Docker \"Port Is Already Allocated\" Fix"
+metaDescription: "What causes Docker's \"port is already allocated\", a daemon that won't connect, and confusing exit codes, and the fastest fix for each."
 date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🐳"
 tags: ["docker port already allocated", "bind for 0.0.0.0 failed", "cannot connect to the docker daemon", "docker error response from daemon", "docker exit code 137", "docker port conflict fix", "docker daemon not running", "docker errors explained", "docker", "devops", "errors"]
-relatedTools: ["docker-run-to-compose"]
 faqs:
   - q: "How do I find out what's already using the port Docker is complaining about?"
     a: "On Linux/macOS, run lsof -i :PORT (e.g. lsof -i :8080) to see the process holding that port. On Windows, netstat -ano | findstr :PORT gives you the process ID, which you can then look up in Task Manager. Often it's a previous container you forgot was still running — docker ps will show you."
@@ -25,7 +26,7 @@ Most Docker errors that eat real debugging time aren't exotic — they're one of
 
 ## "Port Is Already Allocated"
 
-```
+```text
 Error response from daemon: driver failed programming external connectivity
 on endpoint myapp: Bind for 0.0.0.0:8080 failed: port is already allocated
 ```
@@ -64,7 +65,7 @@ docker run -p 8081:8080 myapp
 
 ## "Cannot Connect to the Docker Daemon"
 
-```
+```text
 Cannot connect to the Docker daemon at unix:///var/run/docker.sock.
 Is the docker daemon running?
 ```

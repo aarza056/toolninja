@@ -1,11 +1,12 @@
 ---
 title: "robots.txt for AI Crawlers in 2026: What to Actually Block"
 description: "GPTBot, ClaudeBot, CCBot and others can eat 40% of your bandwidth during a deep crawl. Here's the selective-blocking approach more site owners are taking instead of an all-or-nothing rule."
+metaTitle: "robots.txt for AI Crawlers: What to Block"
+metaDescription: "How to selectively allow or block GPTBot, ClaudeBot, CCBot and other AI crawlers in robots.txt instead of an all-or-nothing rule."
 date: "2026-08-10"
 author: "ToolNinja"
 coverEmoji: "🤖"
 tags: ["robots.txt ai crawlers", "block gptbot", "block claudebot", "google-extended robots.txt", "ai bot blocking 2026", "robots.txt template ai", "ccbot disallow", "cloudflare ai crawler block", "seo", "robots-txt", "ai"]
-relatedTools: ["robots-txt-generator"]
 faqs:
   - q: "Which AI crawler is blocked most often?"
     a: "GPTBot leads, appearing in roughly 5.5% of Disallow rules sitewide as of early 2026, just ahead of CCBot (about 5.1%) and ClaudeBot (about 4.9%). These three account for the majority of AI-crawler-specific blocking rules currently in the wild."
@@ -66,7 +67,7 @@ The useful split is between bots that harvest your content to train a model some
 
 A robots.txt reflecting that split looks roughly like this:
 
-```
+```text
 # Block training-only crawlers
 User-agent: GPTBot
 User-agent: CCBot
@@ -92,7 +93,7 @@ This isn't a universal answer — a publisher whose entire business model is lic
 
 Worth calling out separately: `Google-Extended` doesn't control whether Googlebot indexes your site for regular search — that's a completely separate crawler and separate rule. `Google-Extended` specifically controls whether Google can use your content to train Gemini and improve AI Overviews. Blocking it has no effect on your regular Google search rankings, which makes it one of the lower-risk blocks available if training-data use is your specific concern, independent of your broader AI-crawler stance.
 
-```
+```text
 User-agent: Google-Extended
 Disallow: /
 ```
@@ -108,6 +109,10 @@ robots.txt is a voluntary convention, not an enforcement mechanism your server a
 ## Build Your Rules
 
 **[ToolNinja's robots.txt Generator →](/tools/robots-txt-generator)** includes a one-click preset that adds a Disallow group for the common AI training crawlers — GPTBot, Google-Extended, ClaudeBot, CCBot, and others — which you can then edit down to match a selective-blocking policy like the one above, plus per-bot Allow/Disallow rules and sitemap links, all generated and downloadable in your browser.
+
+## Related tools
+
+To check which crawler a request in your logs came from, paste its User-Agent string into the [User-Agent Parser](/tools/user-agent-parser), which flags known bots.
 
 ---
 

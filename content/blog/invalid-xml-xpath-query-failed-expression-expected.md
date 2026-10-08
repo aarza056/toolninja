@@ -1,11 +1,12 @@
 ---
 title: "Invalid XML / XPath Query Failed: Expression Expected Fix"
 description: "XPath errors like 'expression expected' or 'invalid token' appear when XPath syntax is wrong or the XML is malformed. Learn the exact causes and fixes with examples."
+metaTitle: "XPath \"Expression Expected\" Error Fixed"
+metaDescription: "Why XPath fails with \"expression expected\" or \"invalid token\": broken syntax or malformed XML. Causes and fixes with examples."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "📄"
 tags: ["xml", "xpath", "parsing", "xml error", "xpath error", "expression expected"]
-relatedTools: ["xpath-tester"]
 faqs:
   - q: "What causes 'expression expected' in an XPath query?"
     a: "It means the XPath parser hit a position where an expression was required but found something invalid — typically a typo, an unclosed bracket, or a missing axis specifier."
@@ -17,14 +18,14 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 XPathException: expression expected
 XPathResult Error: Invalid XPath expression
 Error: Failed to execute 'evaluate' on 'Document': The string '//div[@class=active]' is not a valid XPath expression.
 ```
 
 Or in Java:
-```
+```text
 javax.xml.xpath.XPathExpressionException: Invalid XPath expression
 ```
 
@@ -192,4 +193,9 @@ NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
 The XPath Tester lets you paste XML and test expressions interactively — it highlights matching nodes and shows the exact error position.
 
-🔧 **[XPath Tester — toolninja.io/tools/xpath-tester](https://toolninja.io/tools/xpath-tester)**
+🔧 **[XPath Tester](/tools/xpath-tester)**
+
+
+## Related tools
+
+If the XML itself might be malformed, run it through the [XML Formatter](/tools/xml-formatter) first; its validation catches unclosed and mismatched tags before you debug the XPath.

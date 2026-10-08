@@ -1,11 +1,12 @@
 ---
 title: "SSH \"Permission Denied (publickey)\": The Real Causes and How to Fix Each One"
 description: "This error hides at least six different root causes behind one generic message. Here's how to tell which one you're actually looking at, with the exact commands to diagnose and fix each."
+metaTitle: "SSH \"Permission Denied (publickey)\" Fixes"
+metaDescription: "The real causes behind SSH \"Permission denied (publickey)\", how to tell which one you have, and the commands to fix each."
 date: "2026-09-01"
 author: "ToolNinja"
 coverEmoji: "🔑"
 tags: ["ssh permission denied publickey", "ssh permission denied", "ssh key authentication failed", "too many authentication failures ssh", "ssh authorized_keys not working", "ssh-add no identities", "ssh strictmodes", "ssh troubleshooting", "ssh key errors explained", "devops", "linux", "ssh"]
-relatedTools: ["ssh-key-generator"]
 faqs:
   - q: "How do I see exactly which key SSH is trying, instead of just getting the generic denial?"
     a: "Run ssh -v user@host (or -vvv for maximum detail). Verbose mode prints every key SSH offers to the server and the server's response to each one, which is the single most useful piece of information for narrowing down which of the several possible causes you're actually hitting — a permissions problem and a wrong-key problem produce the identical final error message, but look completely different in verbose output."
@@ -21,7 +22,7 @@ faqs:
 
 `Permission denied (publickey)` is one of the most-searched SSH errors that exists, and the frustrating part is that the message itself gives you almost no information about *which* of several unrelated problems you're actually facing. A permissions issue, a wrong key, an unloaded agent, and a server-side config restriction all produce the exact same line. Here's how to tell them apart and fix each one.
 
-```
+```text
 user@host: Permission denied (publickey).
 ```
 
@@ -41,7 +42,7 @@ This prints every key `ssh` offers and the server's response to each — it's th
 
 ## Cause 1: Server-Side Directory/File Permissions (StrictModes)
 
-```
+```text
 # in the server's auth log, not on your client:
 Authentication refused: bad ownership or modes for directory /home/user
 ```
@@ -74,7 +75,7 @@ Confirm it's a single unbroken line starting with `ssh-ed25519` or `ssh-rsa`, ma
 
 ## Cause 3: SSH Is Offering the Wrong Key
 
-```
+```text
 debug1: Offering public key: /home/user/.ssh/id_rsa_old RSA SHA256:...
 debug1: Authentications that can continue: publickey
 ...
@@ -91,7 +92,7 @@ ssh -i ~/.ssh/id_ed25519 user@host
 
 Or make it permanent for that host in `~/.ssh/config`:
 
-```
+```text
 Host myserver
     HostName host.example.com
     User user
@@ -125,7 +126,7 @@ ssh-add ~/.ssh/id_ed25519
 
 Even a perfectly valid key fails if the server itself is configured to reject it — check `/etc/ssh/sshd_config` for:
 
-```
+```text
 PubkeyAuthentication no
 ```
 
@@ -172,6 +173,10 @@ Watch this while you attempt to connect — it will usually state the exact reas
 ## Generating a Fresh Key the Right Way
 
 If you're setting up a new key from scratch rather than debugging an existing one, it's worth generating it in the current recommended format from the start — Ed25519 rather than RSA, in genuine OpenSSH format. **[ToolNinja's SSH Key Generator →](/tools/ssh-key-generator)** creates Ed25519 or RSA key pairs directly in your browser, verified byte-for-byte against real `ssh-keygen` output, so the public key you copy into `authorized_keys` is guaranteed to be in exactly the format the server expects.
+
+## Related tools
+
+Permissions on `~/.ssh` and `authorized_keys` are a frequent cause; the [Chmod Calculator](/tools/chmod-calculator) shows what modes like 700 and 600 mean.
 
 ---
 

@@ -1,11 +1,12 @@
 ---
 title: "QR Code Generator Guide: WiFi, vCard, and Custom QR Codes"
 description: "How QR codes actually encode data, the exact WiFi and vCard string formats, calendar event QR codes, and how to choose an error correction level — with a free browser-based generator for each type."
+metaTitle: "QR Code Guide: WiFi, vCard and Events"
+metaDescription: "How QR codes encode data, the exact WiFi, vCard and calendar event formats, and how to pick an error correction level."
 date: "2026-07-15"
 author: "ToolNinja"
 coverEmoji: "📱"
 tags: ["qr code generator guide", "wifi qr code generator", "vcard qr code", "how to make wifi qr code", "qr code for contact card", "custom qr code generator free", "qr code error correction explained", "qr code for calendar event", "free qr code generator no login", "qr code types explained", "qr-code", "tools", "mobile", "networking"]
-relatedTools: ["qr-code-generator"]
 faqs:
   - q: "How do I make a WiFi QR code?"
     a: "Open the ToolNinja QR Code Generator, switch to the WiFi tab, enter your network name (SSID), password, and encryption type (WPA/WEP/None), and the QR code updates live. Scanning it with a phone camera prompts the user to join the network — no need to say the password out loud or type it on a screen."
@@ -35,7 +36,7 @@ Once you know this, "how do I make a WiFi QR code" stops being a mystery — you
 
 The format standardized across Android and iOS camera apps is:
 
-```
+```text
 WIFI:T:WPA;S:mynetwork;P:mypassword;;
 ```
 
@@ -56,9 +57,9 @@ Use the **[WiFi tab in the QR Code Generator](/tools/qr-code-generator)** — en
 
 ## vCard QR Codes — Digital Business Cards
 
-A vCard is a plain-text contact card format (RFC 6350). The minimal structure looks like:
+A vCard is a plain-text contact card format ([RFC 6350](https://www.rfc-editor.org/rfc/rfc6350)). The minimal structure looks like:
 
-```
+```text
 BEGIN:VCARD
 VERSION:3.0
 N:Doe;Jane;;;
@@ -86,7 +87,7 @@ Use the **Contact tab** in the QR Code Generator to fill in the fields — first
 
 Calendar QR codes use the iCal `VEVENT` format:
 
-```
+```text
 BEGIN:VEVENT
 SUMMARY:Product Launch Call
 DTSTART:20260901T140000Z
@@ -126,3 +127,8 @@ The simplest case, and still the most common: paste any URL or plain text into t
 ## Try It Now
 
 **[Open the QR Code Generator →](/tools/qr-code-generator)** — switch between Text/URL, WiFi, Contact, and Event modes, adjust error correction and colors, and download as PNG. Runs entirely in your browser — no data sent anywhere.
+
+
+## Related tools
+
+To confirm a generated code decodes to exactly the string you intended, upload it to the [QR Code Scanner](/tools/qr-code-scanner).

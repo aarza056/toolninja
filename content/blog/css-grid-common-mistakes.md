@@ -1,11 +1,11 @@
 ---
 title: "Common CSS Grid Mistakes and How to Fix Them"
 description: "The most common CSS Grid mistakes developers make — forgetting display: grid, sizing unit confusion, overflow bugs, typo'd grid-template-areas, and more — each with broken and fixed code."
+metaDescription: "The CSS Grid mistakes developers make most, from missing display: grid to unit confusion, overflow and typo'd template areas, with fixed code."
 date: "2026-07-13"
 author: "ToolNinja"
 coverEmoji: "🎨"
 tags: ["css grid not working", "css grid mistakes", "grid-template-columns not working", "css grid overflow", "css grid gap not working", "css grid item not aligning", "css grid vs flexbox", "common css grid errors", "css grid debugging", "grid-template-areas not working", "css grid implicit vs explicit", "css", "frontend", "grid", "layout"]
-relatedTools: ["css-gradient", "css-animations"]
 faqs:
   - q: "Why isn't my CSS Grid working at all?"
     a: "The most common cause is a missing display: grid (or display: inline-grid) on the parent container. Without it, grid-template-columns, gap, and every other grid property are silently ignored and the children lay out as normal block elements."
@@ -250,3 +250,8 @@ If you need to support an older engine without `subgrid`, the fallback is to man
 ## Build Your Layout Visually
 
 ToolNinja doesn't have a dedicated Grid Builder yet, but you can prototype the visual side of a layout right now with the [CSS Gradient Generator](/tools/css-gradient) for backgrounds and panel treatments, and [CSS Animations](/tools/css-animations) for copy-paste transition and hover effects to drop into your grid items. A dedicated visual Grid Builder is on our radar as a future tool — if that's something you'd use, it's a good sign CSS Grid tooling is worth investing in further.
+
+
+## Related tools
+
+To experiment with tracks, spans and gaps without editing a stylesheet, use the [CSS Grid Generator](/tools/css-grid-generator), and for one-dimensional rows or columns compare the same layout in the [CSS Flexbox Generator](/tools/css-flexbox-generator).

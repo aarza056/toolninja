@@ -98,6 +98,24 @@ input:focus {
   border-color: #a855f7;
 }
 
+/* Visible keyboard focus for every interactive control. Text fields already show a purple
+   border on focus; this adds a ring for links, buttons, selects, checkboxes and sliders, and
+   only for keyboard focus (:focus-visible), so mouse clicks don't leave a ring behind. */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible,
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible,
+input[type="range"]:focus-visible,
+input[type="color"]:focus-visible,
+input[type="file"]:focus-visible {
+  outline: 2px solid #a855f7 !important;
+  outline-offset: 2px;
+}
+
 pre {
   background: #111111;
   border: 1px solid #222222;

@@ -1,11 +1,11 @@
 ---
 title: "JWT Error: Invalid Key Size / Key Too Short Fix"
 description: "The 'invalid key size' JWT error appears when the secret used to sign or verify a token is shorter than the algorithm requires. Learn the minimum key sizes and how to fix them."
+metaDescription: "Why JWT libraries reject a signing key as too short, the minimum key size for each algorithm, and how to generate a key that fits."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔑"
 tags: ["jwt", "json web token", "nodejs", "security", "jwt error", "invalid key size", "key too short"]
-relatedTools: ["jwt-generator"]
 faqs:
   - q: "What is the minimum key size for HS256?"
     a: "HS256 (HMAC-SHA256) requires a secret of at least 256 bits (32 bytes). HS384 requires 384 bits (48 bytes). HS512 requires 512 bits (64 bytes). Using a shorter secret will cause a 'key too short' error in strict libraries."
@@ -17,7 +17,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 Error: secretOrPrivateKey must have a value
 JsonWebTokenError: invalid key size
 Error: The secret length must be >= 32 bytes for HS256
@@ -30,7 +30,7 @@ io.jsonwebtoken.security.WeakKeyException: The signing key's size is 120 bits wh
 
 ## Why This Error Happens
 
-HMAC-based JWT algorithms have minimum key size requirements defined in RFC 7518:
+HMAC-based JWT algorithms have minimum key size requirements defined in [RFC 7518](https://www.rfc-editor.org/rfc/rfc7518):
 
 | Algorithm | Minimum key length |
 |---|---|
@@ -89,7 +89,7 @@ node -e "console.log(require('crypto').randomBytes(64).toString('base64'))"
 ```
 
 Add to `.env`:
-```
+```text
 JWT_SECRET=your-generated-64-byte-hex-string-here
 ```
 
@@ -169,4 +169,9 @@ export function verifyToken(token) {
 
 The JWT Generator lets you create and inspect JWTs interactively — useful for verifying token structure and testing signing with different algorithms.
 
-🔧 **[JWT Generator — toolninja.io/tools/jwt-generator](https://toolninja.io/tools/jwt-generator)**
+🔧 **[JWT Generator](/tools/jwt-generator)**
+
+
+## Related tools
+
+For asymmetric algorithms, the [JWT Key Pair Generator](/tools/jwt-keypair-generator) creates RSA and EC keys of a valid size in PEM and JWK format.

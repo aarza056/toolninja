@@ -1,11 +1,12 @@
 ---
 title: "AWS VPC CIDR Blocks Explained: A Practical Guide for Cloud Engineers"
 description: "Learn how to plan AWS VPC CIDR blocks and subnets correctly. Covers VPC sizing, subnet tiers, reserved IPs, multi-AZ design, and common mistakes. Includes a free CIDR calculator."
+metaTitle: "AWS VPC CIDR Blocks: A Practical Guide"
+metaDescription: "Plan AWS VPC CIDR blocks and subnets: VPC sizing, subnet tiers, reserved IPs, multi-AZ layouts and the common mistakes to avoid."
 date: "2026-05-20"
 author: "ToolNinja"
 coverEmoji: "☁️"
 tags: ["aws vpc cidr blocks", "aws cidr calculator", "vpc cidr planning", "aws subnet calculator", "aws vpc subnetting", "cidr blocks aws", "how to choose vpc cidr", "aws vpc ip address planning", "vpc subnet sizing", "aws networking cidr", "cidr notation aws", "aws vpc best practices cidr"]
-relatedTools: ["cidr-calculator"]
 faqs:
   - q: "What CIDR block should I use for my first AWS VPC?"
     a: "Start with 10.0.0.0/16 for production. It gives you 65,536 addresses — enough for years of growth — and leaves the entire 10.1.x.x through 10.255.x.x range for future VPCs. Avoid 192.168.0.0/16 for AWS VPCs as it's too small and commonly conflicts with on-premises networks."
@@ -61,9 +62,9 @@ Always factor AWS's 5 reserved addresses into your subnet sizing calculations.
 
 ### The RFC 1918 Private Ranges
 
-AWS strongly recommends using the RFC 1918 private address ranges:
+AWS strongly recommends using the [RFC 1918](https://www.rfc-editor.org/rfc/rfc1918) private address ranges:
 
-```
+```text
 10.0.0.0/8      — 10.x.x.x addresses (largest range)
 172.16.0.0/12   — 172.16.x.x to 172.31.x.x
 192.168.0.0/16  — 192.168.x.x (smallest, avoid for AWS)
@@ -111,7 +112,7 @@ Typical size: /24 per Availability Zone (251 usable IPs)
 
 Starting CIDR: `10.0.0.0/16`
 
-```
+```text
 Public Subnets:
   us-east-1a — 10.0.0.0/24   (public)
   us-east-1b — 10.0.1.0/24   (public)
@@ -138,7 +139,7 @@ Always deploy subnets across at least 3 Availability Zones for production worklo
 
 This means your VPC needs enough CIDR space for at least:
 
-```
+```text
 3 AZs × 3 subnet tiers = 9 subnets minimum for production
 ```
 
@@ -154,7 +155,7 @@ Overlapping CIDR blocks between peered VPCs cannot be resolved without destroyin
 
 ### Recommended Multi-VPC CIDR Allocation
 
-```
+```text
 Production VPC:     10.0.0.0/16
 Staging VPC:        10.1.0.0/16
 Development VPC:    10.2.0.0/16
@@ -192,7 +193,7 @@ AWS allows up to 5 secondary CIDR blocks per VPC. If you're running out of IP ad
 
 ## Quick Reference — Common VPC CIDR Patterns
 
-```
+```text
 Small SaaS startup:
   VPC: 10.0.0.0/20 (4,096 IPs)
   3 public /24 subnets
@@ -214,7 +215,7 @@ Large enterprise (multi-account):
 
 ## Calculate Your VPC Subnets Instantly
 
-Planning a VPC CIDR by hand is error-prone. Use ToolNinja's free [CIDR Calculator](https://toolninja.io/tools/cidr-calculator) to instantly see subnet masks, usable IP ranges, broadcast addresses, and binary breakdowns for any CIDR block — no login, no server, 100% in your browser.
+Planning a VPC CIDR by hand is error-prone. Use ToolNinja's free [CIDR Calculator](/tools/cidr-calculator) to instantly see subnet masks, usable IP ranges, broadcast addresses, and binary breakdowns for any CIDR block — no login, and your input is processed in your browser and never uploaded.
 
 Enter any CIDR notation (e.g. `10.0.0.0/24`) and instantly see:
 

@@ -3,12 +3,14 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { tools } from "@/lib/tools";
 import Sidebar from "@/components/Sidebar";
-import ParticleBackground from "@/components/ParticleBackground";
+import DeferredParticles from "@/components/DeferredParticles";
 import CommandPalette from "@/components/CommandPalette";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieBanner from "@/components/CookieBanner";
 import WhatsNewModal from "@/components/WhatsNewModal";
+import { INPUT_PRIVACY_CLAIM } from "@/lib/site";
+import { graph, organizationNode, websiteNode, jsonLdString } from "@/lib/structured-data";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,6 +27,12 @@ const geistMono = localFont({
 // single tool is added — matches the "NN+" convention already used in TrustBar.
 const TOOL_COUNT_LABEL = `${Math.floor(tools.length / 10) * 10}+`;
 
+// Site-wide WebSite + Organization, emitted once per page from the root layout.
+const SITE_JSON_LD = graph(
+  websiteNode(`Free online developer tools. No login. ${INPUT_PRIVACY_CLAIM}`),
+  organizationNode()
+);
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://toolninja.io"),
   title: {
@@ -32,14 +40,7 @@ export const metadata: Metadata = {
     template: "%s | ToolNinja",
   },
   description:
-    `Free online developer tools that run 100% in your browser. JSON formatter, Base64 encoder, JWT decoder, Regex tester, UUID generator, password generator, QR code generator, and ${TOOL_COUNT_LABEL} more. No login. Your data stays in your browser.`,
-  keywords: [
-    "developer tools", "json formatter", "base64 encoder", "jwt decoder",
-    "regex tester", "url encoder", "uuid generator", "password generator",
-    "timestamp converter", "color converter", "markdown preview", "hash generator",
-    "chmod calculator", "cron expression", "qr code generator", "diff checker",
-    "css gradient generator", "free online tools", "browser dev tools", "toolninja",
-  ],
+    `${TOOL_COUNT_LABEL} free developer tools: JSON, JWT, regex, Base64, UUID and more. No login. ${INPUT_PRIVACY_CLAIM}`,
   authors: [{ name: "ToolNinja", url: "https://toolninja.io" }],
   creator: "ToolNinja",
   openGraph: {
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
     siteName: "ToolNinja",
     title: "ToolNinja — Fast, Free Developer Tools",
     description:
-      "Free online developer tools that run 100% in your browser. No login. Your data stays in your browser.",
+      `Free online developer tools. No login. ${INPUT_PRIVACY_CLAIM}`,
     url: "https://toolninja.io",
     images: [
       {
@@ -62,7 +63,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ToolNinja — Fast, Free Developer Tools",
     description:
-      "Free online developer tools that run 100% in your browser. No login. Your data stays in your browser.",
+      `Free online developer tools. No login. ${INPUT_PRIVACY_CLAIM}`,
     images: ["/api/og"],
   },
   robots: {
@@ -75,9 +76,6 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
-  },
-  alternates: {
-    canonical: "https://toolninja.io",
   },
   icons: {
     icon: [
@@ -99,8 +97,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        <meta name="keywords" content="developer tools, json formatter, base64 decoder, jwt decoder, regex tester, uuid generator, hash generator, chmod calculator, cidr calculator, css gradient generator, online developer tools, free developer tools, browser tools no login" />
-        <meta name="description" content={`${TOOL_COUNT_LABEL} free browser-only developer tools. JSON formatter, Base64 encoder, JWT decoder, Regex tester, UUID generator, Chmod calculator, CIDR calculator, CSS animations and more. No login. Your data stays in your browser.`} />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png" />
         <link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png" />
@@ -110,17 +106,16 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://va.vercel-scripts.com" />
         <link rel="search" type="application/opensearchdescription+xml" title="ToolNinja" href="/opensearch.xml" />
-        <link rel="alternate" hrefLang="en" href="https://toolninja.io" />
-        <link rel="alternate" hrefLang="x-default" href="https://toolninja.io" />
+        {/* Account verification only. The AdSense script itself is loaded by CookieBanner after
+            the visitor accepts cookies, never before. */}
         <meta name="google-adsense-account" content="ca-pub-3459524040712269" />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3459524040712269"
-          crossOrigin="anonymous"
-        />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0a0a0a] text-[#f5f5f5]`}>
-        <ParticleBackground />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdString(SITE_JSON_LD) }}
+        />
+        <DeferredParticles />
         <div className="relative z-[1] flex min-h-screen">
           <Sidebar />
           <main className="flex-1 md:ml-[240px] min-h-screen overflow-y-auto">
@@ -130,7 +125,7 @@ export default function RootLayout({
 
         <CommandPalette />
         {/* Watermark */}
-        <div className="fixed bottom-3 right-4 text-xs text-[#333333] pointer-events-none select-none z-50">
+        <div className="fixed bottom-3 right-4 text-xs text-[#333333] pointer-events-none select-none z-50" aria-hidden="true">
           🥷 ToolNinja
         </div>
         <Analytics />

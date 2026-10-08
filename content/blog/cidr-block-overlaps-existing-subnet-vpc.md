@@ -1,11 +1,12 @@
 ---
 title: "CIDR Block Overlaps with Existing Subnet — AWS VPC Fix Guide"
 description: "CIDR overlap errors in AWS VPC happen when two subnets or VPCs share IP address ranges. Learn how to calculate non-overlapping CIDR blocks, detect conflicts, and plan your IP space."
+metaTitle: "Fix \"CIDR Block Overlaps\" in AWS VPC"
+metaDescription: "Why AWS rejects overlapping CIDR blocks for subnets and VPCs, how to find the conflict, and how to plan non-overlapping IP ranges."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🌐"
 tags: ["aws", "vpc", "networking", "cidr", "subnets", "devops", "ip addressing", "cidr overlap"]
-relatedTools: ["cidr-calculator"]
 faqs:
   - q: "What does CIDR overlap mean and why is it a problem?"
     a: "Two CIDR blocks overlap when they share one or more IP addresses. Overlapping subnets create routing ambiguity — the network can't determine which subnet to use for a given IP — so AWS prevents creating them."
@@ -19,17 +20,17 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 The CIDR '10.0.1.0/24' conflicts with another subnet
 ```
 
 Or in Terraform:
-```
+```text
 Error: creating EC2 Subnet: InvalidSubnet.Conflict: The CIDR '10.0.0.0/24' conflicts with another subnet.
 ```
 
 Or for VPC peering:
-```
+```text
 InvalidVpcPeeringConnectionState: Cannot create a peering connection between VPCs with overlapping CIDR blocks
 ```
 
@@ -47,7 +48,7 @@ Four root causes:
 
 **2. VPC peering with overlapping ranges** — Both VPCs use `10.0.0.0/16` — peering is impossible.
 
-**3. On-premises network conflict** — VPC connected to corporate network via VPN when both use the same RFC 1918 range.
+**3. On-premises network conflict** — VPC connected to corporate network via VPN when both use the same [RFC 1918](https://www.rfc-editor.org/rfc/rfc1918) range.
 
 **4. Copy-paste from a template** — Reusing the same Terraform template without updating CIDR blocks per environment.
 
@@ -139,4 +140,4 @@ subnet_cidrs = ["10.1.1.0/24", "10.1.2.0/24"]
 
 The CIDR Calculator shows the full IP range, number of hosts, and network/broadcast addresses for any CIDR block. Use it to verify non-overlapping ranges before opening the AWS console.
 
-🔧 **[CIDR Calculator — toolninja.io/tools/cidr-calculator](https://toolninja.io/tools/cidr-calculator)**
+🔧 **[CIDR Calculator](/tools/cidr-calculator)**

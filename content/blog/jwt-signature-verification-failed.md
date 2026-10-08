@@ -1,11 +1,12 @@
 ---
 title: "SignatureVerificationException: Signature verification failed — JWT Fix Guide"
 description: "JWT signature verification failures are almost always caused by key mismatches, algorithm mismatches, or encoding differences. Learn to diagnose and fix every case with step-by-step examples."
+metaTitle: "JWT \"Signature Verification Failed\" Fix"
+metaDescription: "Why JWT signature verification fails: key mismatch, algorithm mismatch or encoding differences, with steps to diagnose each case."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔑"
 tags: ["jwt", "security", "authentication", "tokens", "signature verification", "jwt invalid signature"]
-relatedTools: ["jwt-decoder"]
 faqs:
   - q: "What is the difference between HS256 and RS256, and why does it cause this error?"
     a: "HS256 (HMAC-SHA256) is symmetric — the same secret key signs and verifies. RS256 (RSA-SHA256) is asymmetric — a private key signs, a public key verifies. The error occurs when you sign with one algorithm but verify with another, or when library defaults differ between signing and verification code."
@@ -19,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 SignatureVerificationException: Signature verification failed
 ```
 
 Or in various libraries:
-```
+```text
 JsonWebTokenError: invalid signature
 io.jsonwebtoken.SignatureException: JWT signature does not match locally computed signature
 jwt.exceptions.InvalidSignatureError: Signature verification failed
@@ -168,4 +169,9 @@ Node.js service signs HS256, Java Spring service expects RS256 by default. Decod
 
 The JWT Decoder lets you instantly inspect any JWT's header, payload, and claims. Check the `alg` field in the header and verify `exp` hasn't passed — before writing a single line of debugging code.
 
-🔧 **[JWT Decoder — toolninja.io/tools/jwt-decoder](https://toolninja.io/tools/jwt-decoder)**
+🔧 **[JWT Decoder](/tools/jwt-decoder)**
+
+
+## Related tools
+
+If the key arrived as a JWK but your library expects PEM (or the other way round), convert it with the [JWK to PEM Converter](/tools/jwk-pem-converter) and compare it with the key the issuer actually uses.

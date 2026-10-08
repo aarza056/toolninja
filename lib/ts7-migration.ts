@@ -1,3 +1,9 @@
+// The date the removed/changed-option rules below were last checked against the TypeScript 7
+// release notes. Shown on the tool page as "Last reviewed". Bump it whenever the rules are re-checked.
+// TODO(owner): this is the date the rules were written (git history); re-check them against the
+// current TypeScript 7 release notes and update the date.
+export const TS7_RULES_LAST_REVIEWED = "2026-09-16";
+
 export interface MigrationFinding {
   option: string;
   value: string;

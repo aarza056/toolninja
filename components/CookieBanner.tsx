@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 type ConsentState = "accepted" | "declined" | null;
 
 const CONSENT_KEY = "toolninja_cookie_consent";
-const CONSENT_VERSION = "v1";
+// v2: consent now covers advertising (AdSense) as well as analytics, so earlier "v1" answers,
+// which only covered analytics, are asked again.
+const CONSENT_VERSION = "v2";
 
 export default function CookieBanner() {
   const [consent, setConsent] = useState<ConsentState>(null);
@@ -17,7 +19,7 @@ export default function CookieBanner() {
         const { state, version } = JSON.parse(stored);
         if (version === CONSENT_VERSION) {
           setConsent(state);
-          if (state === "accepted") loadGoogleAnalytics();
+          if (state === "accepted") loadConsentedScripts();
           return;
         }
       }
@@ -38,7 +40,7 @@ export default function CookieBanner() {
     );
     setConsent("accepted");
     setVisible(false);
-    loadGoogleAnalytics();
+    loadConsentedScripts();
   };
 
   const handleDecline = () => {
@@ -72,13 +74,14 @@ export default function CookieBanner() {
                 <span className="text-xl flex-shrink-0 mt-0.5">🍪</span>
                 <div>
                   <p className="text-sm text-[#f5f5f5] font-medium mb-1">
-                    We use cookies for analytics
+                    Cookies for analytics and ads
                   </p>
-                  <p className="text-xs text-[#666] leading-relaxed">
-                    Google Analytics helps us understand which tools developers
-                    use most. Your tool inputs never leave your browser —
-                    that&apos;s our core promise and it doesn&apos;t change.{" "}
-                    <a href="/privacy" className="text-[#a855f7] hover:underline">
+                  <p className="text-xs text-[#888] leading-relaxed">
+                    If you accept, we load Google Analytics (to see which tools get
+                    used) and Google AdSense (ads, which may be personalized). If you
+                    decline, neither loads. Either way, what you type into a tool is
+                    processed in your browser and never uploaded.{" "}
+                    <a href="/privacy" className="text-[#c084fc] underline hover:text-[#d8b4fe]">
                       Privacy policy
                     </a>
                   </p>
@@ -87,15 +90,15 @@ export default function CookieBanner() {
               <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto">
                 <button
                   onClick={handleDecline}
-                  className="flex-1 sm:flex-none px-4 py-2 text-xs text-[#666] bg-transparent border border-[#333] rounded-lg hover:text-[#888] hover:border-[#444] transition-colors"
+                  className="flex-1 sm:flex-none px-4 py-2 text-xs text-[#a3a3a3] bg-transparent border border-[#333] rounded-lg hover:text-[#888] hover:border-[#444] transition-colors"
                 >
                   Decline
                 </button>
                 <button
                   onClick={handleAccept}
-                  className="flex-1 sm:flex-none px-4 py-2 text-xs text-white bg-[#a855f7] rounded-lg hover:bg-[#9333ea] transition-colors font-medium"
+                  className="flex-1 sm:flex-none px-4 py-2 text-xs text-white bg-[#9333ea] rounded-lg hover:bg-[#7e22ce] transition-colors font-medium"
                 >
-                  Accept analytics
+                  Accept
                 </button>
               </div>
             </div>
@@ -104,6 +107,26 @@ export default function CookieBanner() {
       </div>
     </>
   );
+}
+
+// Nothing here runs until the visitor has accepted. That applies to every visitor, not only
+// EU/EEA/UK ones, so no region detection is needed to keep AdSense from loading before consent.
+function loadConsentedScripts() {
+  loadGoogleAnalytics();
+  loadAdSense();
+}
+
+const ADSENSE_CLIENT = "ca-pub-3459524040712269";
+
+function loadAdSense() {
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production") return;
+  if (document.getElementById("adsense-script")) return;
+  const script = document.createElement("script");
+  script.id = "adsense-script";
+  script.async = true;
+  script.crossOrigin = "anonymous";
+  script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`;
+  document.head.appendChild(script);
 }
 
 function loadGoogleAnalytics() {

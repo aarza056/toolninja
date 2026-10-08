@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
-import { findTypeStrippingIssues } from "@/lib/node-type-stripping";
+import { TYPE_STRIPPING_RULES_LAST_REVIEWED, findTypeStrippingIssues } from "@/lib/node-type-stripping";
 import { CheckCircle, AlertTriangle } from "lucide-react";
 
 const STORAGE_KEY = "toolninja:node-type-stripping-checker";
@@ -56,6 +56,8 @@ export default function NodeTypeStrippingCheckerClient() {
     <ToolLayout
       title="Node.js Type-Stripping Checker"
       description="Scan a TypeScript file for syntax Node's built-in type stripping can't run directly"
+      lastReviewed={TYPE_STRIPPING_RULES_LAST_REVIEWED}
+      lastReviewedWhat="unsupported syntax rules"
     >
       <div className="mb-4">
         <label className="text-xs text-[#888888] font-medium block mb-1">TypeScript source</label>

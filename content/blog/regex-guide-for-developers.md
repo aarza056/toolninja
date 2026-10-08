@@ -1,11 +1,12 @@
 ---
 title: "Regex for Developers: Practical Patterns You'll Actually Use"
 description: "A practical regex guide covering anchors, quantifiers, groups, lookaheads, and 20+ real-world patterns for emails, URLs, dates, IDs, and more. Includes JavaScript, Python, and Go examples."
+metaTitle: "Regex Guide: Patterns You'll Actually Use"
+metaDescription: "Regex anchors, quantifiers, groups and lookaheads, plus real patterns for emails, URLs, dates and IDs, with JavaScript, Python and Go."
 date: "2026-05-04"
 author: "ToolNinja"
 coverEmoji: "🔍"
 tags: ["regex tester online", "regex tutorial", "regular expressions explained", "regex patterns cheat sheet", "test regex online", "regex flags javascript", "capture groups regex", "regex email validation", "regex url matching", "regex101 alternative", "regex for beginners", "javascript regex guide"]
-relatedTools: ["regex-tester"]
 faqs:
   - q: "What is the difference between .* and .+ in regex?"
     a: ".* matches zero or more of any character and can match an empty string. .+ matches one or more and requires at least one character."
@@ -74,7 +75,7 @@ Regular expressions are a mini-language for pattern matching. Mastering a handfu
 
 Lookarounds match a position without consuming characters — they're **zero-width assertions**.
 
-```
+```text
 (?=...)   Positive lookahead   — followed by
 (?!...)   Negative lookahead   — not followed by
 (?<=...)  Positive lookbehind  — preceded by
@@ -98,7 +99,7 @@ Matches `14` in `14px` but not in `14em`.
 
 ### Validation
 
-**Email address** (pragmatic, not RFC 5321 complete):
+**Email address** (pragmatic, not [RFC 5321](https://www.rfc-editor.org/rfc/rfc5321) complete):
 ```regex
 ^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$
 ```

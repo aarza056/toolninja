@@ -1,11 +1,12 @@
 ---
 title: "SQL Incorrect Syntax Near — Complete Fix Guide for Reserved Word Errors"
 description: "SQL syntax errors near keywords are almost always caused by using SQL reserved words as column or table names without quoting them. Learn how to identify reserved words, quote them correctly, and fix the most common cases."
+metaTitle: "SQL \"Incorrect Syntax Near\" Keyword Fix"
+metaDescription: "Why SQL reports incorrect syntax near a keyword: reserved words used as names. How to spot them and quote them correctly per database."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🗄️"
 tags: ["sql", "database", "mysql", "postgresql", "syntax error", "sql reserved words", "sql syntax near"]
-relatedTools: ["sql-formatter"]
 faqs:
   - q: "Why does SQL use the same word as a reserved keyword for my column name?"
     a: "SQL standards define hundreds of reserved words (SELECT, FROM, WHERE, ORDER, USER, KEY, VALUE, etc.) that are part of the language grammar. The SQL parser sees the word and tries to interpret it as a keyword rather than an identifier. The fix is to quote the identifier using the correct quoting style for your database."
@@ -19,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order' at line 1
 ```
 
 Or in other databases:
-```
+```text
 ERROR: syntax error at or near "order"
 Incorrect syntax near the keyword 'user'
 ```
@@ -133,4 +134,4 @@ const sequelize = new Sequelize(database, username, password, {
 
 The SQL Formatter reformats your query with proper indentation, making syntax errors immediately visible. Paste the failing query and the problematic identifier becomes clear.
 
-🔧 **[SQL Formatter — toolninja.io/tools/sql-formatter](https://toolninja.io/tools/sql-formatter)**
+🔧 **[SQL Formatter](/tools/sql-formatter)**

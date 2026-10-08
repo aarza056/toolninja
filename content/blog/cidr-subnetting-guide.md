@@ -1,11 +1,12 @@
 ---
 title: "CIDR Notation & Subnetting: A Practical Guide for Developers"
 description: "Understand CIDR notation, subnet masks, and IP ranges. Learn how /24, /16, /8 networks work, when to use private ranges, and how to subnet for cloud and on-prem infrastructure."
+metaTitle: "CIDR Notation & Subnetting Guide"
+metaDescription: "CIDR notation, subnet masks and IP ranges explained: how /24, /16 and /8 work, private ranges, and subnetting for cloud and on-prem networks."
 date: "2026-05-02"
 author: "ToolNinja"
 coverEmoji: "🌐"
 tags: ["cidr calculator", "subnet calculator online", "cidr notation explained", "what is /24 network", "ip subnet calculator", "cidr to ip range", "subnet mask calculator", "network address calculator", "ipv4 subnetting guide", "cidr block calculator", "what is 0.0.0.0/0", "subnetting explained"]
-relatedTools: ["cidr-calculator"]
 faqs:
   - q: "What does /24 mean in an IP address like 192.168.1.0/24?"
     a: "The /24 means the first 24 bits are the network portion, leaving 8 bits for hosts. This gives you 256 addresses (254 usable hosts) and corresponds to a subnet mask of 255.255.255.0."
@@ -34,7 +35,7 @@ An IPv4 address is 32 bits. If the prefix is `/24`, then:
 - **8 bits** = host addresses (variable)
 - **2⁸ = 256** total addresses, **254 usable** (first = network, last = broadcast)
 
-```
+```text
 192.168.1.0/24
 │           │
 │           └─ 24 network bits, 8 host bits
@@ -78,7 +79,7 @@ These ranges are reserved for private networks and will never be routed on the p
 
 When you have a `/24` (256 IPs) and need 4 separate subnets for different teams or security zones, you **subnet** it by borrowing host bits:
 
-```
+```text
 192.168.1.0/24  →  split into 4 × /26 subnets
 
 192.168.1.0/26    (0–63)    Hosts: 192.168.1.1–62
@@ -101,7 +102,7 @@ AWS is where most developers encounter CIDR in practice. Key rules:
 
 A typical 3-AZ production setup:
 
-```
+```text
 VPC: 10.0.0.0/16
 
 Public subnets (one per AZ):
@@ -153,7 +154,7 @@ Fix by specifying a custom range in `/etc/docker/daemon.json`:
 
 The reverse of subnetting — combining multiple networks into one summary route:
 
-```
+```text
 192.168.0.0/24
 192.168.1.0/24
 192.168.2.0/24

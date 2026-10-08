@@ -1,11 +1,12 @@
 ---
 title: "Base64 Encoding Explained: What It Is, When to Use It"
 description: "Understand how Base64 encoding works, the difference between Base64 and Base64URL, when to encode vs encrypt, and practical use cases in web development, APIs, and data transfer."
+metaTitle: "Base64 Encoding Explained"
+metaDescription: "How Base64 works, how it differs from Base64URL, why encoding is not encryption, and where it is used in web development and APIs."
 date: "2026-05-05"
 author: "ToolNinja"
 coverEmoji: "🔢"
 tags: ["base64 encoding explained", "base64 decoder online", "base64 vs encryption", "base64url encoding", "what is base64", "base64 padding equals sign", "base64 encode decode free", "binary to text encoding", "base64 in jwt tokens", "base64 image encoding", "base64 encode online"]
-relatedTools: ["base64-encoder"]
 faqs:
   - q: "Is Base64 the same as encryption?"
     a: "No. Base64 is encoding, not encryption. It transforms binary data into ASCII text — anyone can decode it without a key. Never use Base64 to hide sensitive data."
@@ -21,7 +22,7 @@ faqs:
 
 Base64 is a binary-to-text encoding scheme that represents binary data as ASCII characters. It converts every 3 bytes of input into 4 printable characters from a 64-character alphabet:
 
-```
+```text
 A–Z  (26)
 a–z  (26)
 0–9  (10)
@@ -38,7 +39,7 @@ The result is about **33% larger** than the original but is guaranteed to be saf
 
 Base64 processes input 3 bytes at a time, converting each group into 4 characters:
 
-```
+```text
 Input:   M    a    n
 Binary:  01001101 01100001 01101110
 Groups:  010011 010110 000101 101110
@@ -95,7 +96,7 @@ btoa("hello+world")
 ```
 
 **HTTP Basic Authentication:**
-```
+```http
 Authorization: Basic dXNlcjpwYXNzd29yZA==
 ```
 (This is `user:password` Base64-encoded — note: **not encrypted**, just encoded)
@@ -192,4 +193,9 @@ This trades network requests for larger HTML/CSS size. Good for small, critical 
 
 ## Try It: ToolNinja Base64 Encoder
 
-Encode or decode any text or file instantly with the **[ToolNinja Base64 Encoder](/tools/base64-encoder)**. Supports both standard and URL-safe variants, handles binary file uploads, and runs entirely in your browser.
+Encode or decode any text or file instantly with the **[ToolNinja Base64 Encoder](/tools/base64)**. Supports both standard and URL-safe variants, handles binary file uploads, and runs entirely in your browser.
+
+
+## Related tools
+
+To embed an image as a data URI, the [Image to Base64 converter](/tools/image-to-base64) produces the string for you, and when the encoded value has to travel in a URL, the [URL Encoder](/tools/url-encoder) shows how characters like `+` and `/` get percent-encoded.

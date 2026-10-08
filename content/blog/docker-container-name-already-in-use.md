@@ -1,11 +1,12 @@
 ---
 title: "docker: Error response from daemon: Conflict. The container name is already in use — Fix Guide"
 description: "This Docker error means a stopped container still owns the name you want. Learn how to remove it, prevent it with --rm, and migrate to Docker Compose to eliminate the problem entirely."
+metaTitle: "Docker \"Container Name Already in Use\" Fix"
+metaDescription: "Why Docker says the container name is already in use, how to remove the stopped container, and how --rm or Compose prevents it."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🐳"
 tags: ["docker", "containers", "devops", "docker run", "container conflict", "docker name error"]
-relatedTools: ["docker-run-to-compose"]
 faqs:
   - q: "Why does the error happen even when the container isn't running?"
     a: "Docker container names are unique across ALL containers — running and stopped. When you run docker stop, the container stops but isn't deleted. It still exists in a stopped (Exited) state and continues to own its name. You need docker rm to actually delete it and release the name."
@@ -19,7 +20,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 docker: Error response from daemon: Conflict. The container name "/myapp" is already in use
 by container "a3f8b2c1d4e5f6...". You have to remove (or rename) that container to be able
 to reuse that name.
@@ -160,4 +161,4 @@ docker run --name test-runner myimage npm test
 
 The Docker Run to Compose Converter instantly translates any `docker run` command into a production-ready `docker-compose.yml`. Compose's lifecycle management means you'll never see this name conflict error again.
 
-🔧 **[Docker Run to Compose — toolninja.io/tools/docker-run-to-compose](https://toolninja.io/tools/docker-run-to-compose)**
+🔧 **[Docker Run to Compose](/tools/docker-run-to-compose)**

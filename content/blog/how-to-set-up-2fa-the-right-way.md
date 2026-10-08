@@ -1,11 +1,12 @@
 ---
 title: "How to Set Up 2FA the Right Way: TOTP, Backup Codes, and What Actually Breaks"
 description: "A practical guide to implementing two-factor authentication correctly — why TOTP beats HOTP for most cases, how backup codes should actually be stored, and the handful of mistakes that account for nearly every real-world 2FA bug report."
+metaTitle: "How to Set Up 2FA the Right Way"
+metaDescription: "Implement two-factor auth correctly: TOTP vs HOTP, how to store backup codes, and the mistakes behind most real-world 2FA bugs."
 date: "2026-10-05"
 author: "ToolNinja"
 coverEmoji: "🔐"
 tags: ["2fa setup guide", "totp vs hotp", "backup codes best practices", "how to implement 2fa", "otpauth url", "2fa recovery codes", "authenticator app setup", "security", "authentication"]
-relatedTools: ["totp-generator", "hotp-generator", "backup-codes-generator", "qr-code-scanner"]
 faqs:
   - q: "Should I implement TOTP or HOTP for a new 2FA feature?"
     a: "TOTP, in almost every case. It doesn't require your server to track and synchronize a counter with the client — time serves that role automatically, which eliminates an entire category of desync bugs. HOTP exists mainly for hardware tokens without a reliable clock; if you're building a software-based 2FA flow today, TOTP is the near-universal default."
@@ -19,7 +20,7 @@ faqs:
 
 ## Most 2FA Bugs Aren't Cryptography Bugs
 
-The HMAC-based algorithm underneath TOTP and HOTP is simple, well-specified, and essentially impossible to get wrong if you follow RFC 6238 or RFC 4226 directly. Almost every real 2FA bug report traces back to something else entirely: which algorithm variant was chosen, how backup codes are stored, or a clock that's drifted by more than the verification window tolerates.
+The HMAC-based algorithm underneath TOTP and HOTP is simple, well-specified, and essentially impossible to get wrong if you follow [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238) or [RFC 4226](https://www.rfc-editor.org/rfc/rfc4226) directly. Almost every real 2FA bug report traces back to something else entirely: which algorithm variant was chosen, how backup codes are stored, or a clock that's drifted by more than the verification window tolerates.
 
 ---
 

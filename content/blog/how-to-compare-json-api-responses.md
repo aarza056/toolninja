@@ -1,11 +1,12 @@
 ---
 title: "How to Compare JSON API Responses (and Actually Find What Changed)"
 description: "Manually scanning two JSON blobs for differences doesn't scale. Here's how to compare API responses properly — for incident response, API version upgrades, and staging-vs-production debugging."
+metaTitle: "How to Compare JSON API Responses"
+metaDescription: "Compare two JSON API responses properly for incident response, version upgrades and staging-vs-production debugging."
 date: "2026-07-29"
 author: "ToolNinja"
 coverEmoji: "🔍"
 tags: ["json diff", "compare json objects", "api response debugging", "json diff tool", "compare api responses", "staging vs production diff", "api version comparison", "json comparison online", "api", "debugging", "json"]
-relatedTools: ["json-diff", "http-request"]
 faqs:
   - q: "Why not just eyeball two JSON responses side by side?"
     a: "It works for a 5-line object. It falls apart the moment you're comparing a real API response with nested objects, arrays, and 40+ fields — the human eye is bad at spotting a single changed value buried in an otherwise-identical block of text, and even worse at noticing something that's silently missing."
@@ -69,7 +70,7 @@ Array comparison deserves a specific caveat: most structural diff tools, includi
 
 ## Try It
 
-**[ToolNinja's JSON Diff Checker →](/tools/json-diff)** parses two JSON objects and shows every difference — added, removed, and changed — with the exact path and both values, color-coded and grouped. Key order never produces a false positive. It runs 100% in your browser, so it's safe to paste real API responses, including ones with tokens or user data, without anything leaving your machine.
+**[ToolNinja's JSON Diff Checker →](/tools/json-diff)** parses two JSON objects and shows every difference — added, removed, and changed — with the exact path and both values, color-coded and grouped. Key order never produces a false positive. Your JSON is processed in your browser and never uploaded, so it's safe to paste real API responses, including ones with tokens or user data, without anything leaving your machine.
 
 Pair it with the **[HTTP Request Builder](/tools/http-request)** to pull live responses from staging and production side by side before diffing them.
 

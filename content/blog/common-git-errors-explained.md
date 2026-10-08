@@ -1,11 +1,12 @@
 ---
 title: "The Git Errors Every Developer Hits (and the Exact Fix for Each)"
 description: "Failed to push some refs, refusing to merge unrelated histories, detached HEAD, and merge conflicts — the Git errors everyone Googles at least once. Here's what each one actually means and how to resolve it."
+metaTitle: "Common Git Errors and How to Fix Them"
+metaDescription: "What \"failed to push some refs\", \"refusing to merge unrelated histories\", detached HEAD and merge conflicts mean, and how to resolve each."
 date: "2026-08-05"
 author: "ToolNinja"
 coverEmoji: "🔧"
 tags: ["git errors explained", "failed to push some refs", "refusing to merge unrelated histories", "git merge conflict fix", "detached head state", "fatal not a git repository", "git error messages", "how to fix git errors", "git", "version-control", "errors"]
-relatedTools: ["git-command-generator"]
 faqs:
   - q: "Is git pull --force ever a good way to fix 'failed to push some refs'?"
     a: "There's no such thing as git pull --force — the force flag applies to push, not pull, and force-pushing to resolve a rejected push is exactly the wrong instinct in most cases: it overwrites whatever the remote has, including a teammate's work you haven't seen yet. The correct default is git pull to merge or rebase the remote changes in first, and reserve force-pushing for branches only you use, like your own feature branch after an interactive rebase."
@@ -27,7 +28,7 @@ Here are the five that come up constantly, explained properly.
 
 ## 1. "error: failed to push some refs"
 
-```
+```text
 error: failed to push some refs to 'https://github.com/you/repo.git'
 hint: Updates were rejected because the remote contains work that you do not
 hint: have locally.
@@ -50,7 +51,7 @@ If `git pull` produces a merge conflict, resolve it (see below) before pushing. 
 
 ## 2. Merge Conflict
 
-```
+```text
 Auto-merging src/app.js
 CONFLICT (content): Merge conflict in src/app.js
 Automatic merge failed; fix conflicts and then commit the result.
@@ -60,7 +61,7 @@ Automatic merge failed; fix conflicts and then commit the result.
 
 **Fix:** open the conflicting file — Git marks the conflicting sections directly in the file:
 
-```
+```text
 <<<<<<< HEAD
 your version of the line
 =======
@@ -81,7 +82,7 @@ For conflicts in generated or binary files where you know which side should simp
 
 ## 3. "fatal: refusing to merge unrelated histories"
 
-```
+```text
 fatal: refusing to merge unrelated histories
 ```
 
@@ -99,7 +100,7 @@ Expect a genuine merge conflict resolution step afterward, since Git now has to 
 
 ## 4. Detached HEAD State
 
-```
+```text
 Note: switching to '3f2a1b9'.
 
 You are in 'detached HEAD' state...
@@ -159,6 +160,10 @@ If you meant to be inside an existing project, double check you're actually in t
 ## Look Up the Right Command Without Guessing
 
 **[ToolNinja's Git Command Generator →](/tools/git-command-generator)** covers 65+ common Git operations — search by what you're trying to do in plain English and get the exact command, with warnings on the destructive ones before you run them.
+
+## Related tools
+
+When a merge conflict is hard to read in the terminal, paste both versions into the [Diff Checker](/tools/diff-checker) to see exactly which lines differ.
 
 ---
 

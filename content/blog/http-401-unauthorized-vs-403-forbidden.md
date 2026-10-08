@@ -1,11 +1,11 @@
 ---
 title: "HTTP 401 vs 403: Unauthorized vs Forbidden Explained"
 description: "HTTP 401 Unauthorized and 403 Forbidden are both auth-related errors but mean different things. Learn the exact difference and how to fix each one."
+metaTitle: "HTTP 401 vs 403: What's the Difference?"
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🚫"
 tags: ["http", "http 401", "http 403", "unauthorized", "forbidden", "authentication", "authorization"]
-relatedTools: ["http-status-codes"]
 faqs:
   - q: "What is the difference between 401 and 403?"
     a: "401 Unauthorized means you are not authenticated — the server does not know who you are. 403 Forbidden means you are authenticated but not authorized — the server knows who you are but you don't have permission."
@@ -17,7 +17,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```http
 HTTP/1.1 401 Unauthorized
 WWW-Authenticate: Bearer realm="api"
 {
@@ -26,7 +26,7 @@ WWW-Authenticate: Bearer realm="api"
 }
 ```
 
-```
+```http
 HTTP/1.1 403 Forbidden
 {
   "error": "Forbidden",
@@ -198,4 +198,9 @@ async function apiFetch(url, options = {}) {
 
 The HTTP Status Codes reference gives you the full definition, typical causes, and fix strategies for every HTTP status code.
 
-🔧 **[HTTP Status Codes — toolninja.io/tools/http-status-codes](https://toolninja.io/tools/http-status-codes)**
+🔧 **[HTTP Status Codes](/tools/http-status-codes)**
+
+
+## Related tools
+
+When a bearer token is involved, decode it with the [JWT Decoder](/tools/jwt-decoder) to check whether it has expired (usually a 401) or lacks the scope or role the endpoint needs (usually a 403).

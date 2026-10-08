@@ -1,11 +1,12 @@
 ---
 title: "TypeScript Type Errors: The Ones Every Developer Hits"
 description: "A deep dive into the five TypeScript type errors every developer runs into — TS2322, TS2339, TS2345, TS2532, and TS2304 — with root causes, diagnosis steps, fixes, and when to use a type assertion instead."
+metaTitle: "Common TypeScript Type Errors Explained"
+metaDescription: "TS2322, TS2339, TS2345, TS2532 and TS2304 explained: root causes, how to diagnose them, the fixes, and when an assertion is fine."
 date: "2026-07-17"
 author: "ToolNinja"
 coverEmoji: "🔷"
 tags: ["type is not assignable to type", "typescript type error", "property does not exist on type", "typescript object is possibly undefined", "typescript argument of type not assignable", "typescript cannot find name", "ts2322", "ts2339", "ts2345", "typescript common errors explained", "typescript", "javascript", "frontend", "errors"]
-relatedTools: ["json-to-typescript"]
 faqs:
   - q: "What's the fastest way to fix 'Property does not exist on type' (TS2339)?"
     a: "First check for a typo — it's the most common cause. If the property genuinely exists at runtime but TypeScript doesn't know about it, the real fix is correcting or extending the type definition, not silencing the error with `any`. Generate the interface from a real API response with a JSON-to-TypeScript tool if the type was hand-written and drifted out of sync."
@@ -29,7 +30,7 @@ For each one: the exact error, the root cause, how to diagnose it, the fix, and 
 
 **The exact error:**
 
-```
+```text
 Type 'string' is not assignable to type 'number'.
 ```
 
@@ -68,7 +69,7 @@ const user: User = {
 
 **The exact error:**
 
-```
+```text
 Property 'firstName' does not exist on type 'User'.
 ```
 
@@ -122,7 +123,7 @@ function area(s: Shape) {
 
 **The exact error:**
 
-```
+```text
 Argument of type 'string' is not assignable to parameter of type 'number'.
 ```
 
@@ -157,7 +158,7 @@ function double(n: number | string): number {
 
 **The exact error:**
 
-```
+```text
 Object is possibly 'undefined'.
 ```
 
@@ -222,7 +223,7 @@ function process(config: Config) {
 
 **The exact error:**
 
-```
+```text
 Cannot find name 'useState'.
 ```
 

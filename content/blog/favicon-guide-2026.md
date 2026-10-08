@@ -1,11 +1,12 @@
 ---
 title: "The Favicon Guide for 2026: Which Files You Actually Need"
 description: "Favicon requirements have quietly simplified — SVG is now the primary format, several old PNG sizes are obsolete, and Android manifests still need raster icons. Here's the current, minimal setup."
+metaTitle: "Favicon Guide 2026: The Files You Need"
+metaDescription: "The minimal favicon setup today: SVG first, which PNG sizes are obsolete, and why Android web app manifests still need raster icons."
 date: "2026-07-30"
 author: "ToolNinja"
 coverEmoji: "🖼️"
 tags: ["favicon guide 2026", "favicon sizes", "favicon generator", "svg favicon", "apple touch icon size", "android chrome icon", "favicon best practices", "how many favicon sizes do i need", "favicon", "web development", "seo"]
-relatedTools: ["favicon-generator"]
 faqs:
   - q: "Do I still need a favicon.ico file in 2026?"
     a: "Not strictly. Modern browsers all support PNG and SVG favicons referenced via <link> tags in your HTML. A .ico file at your site root is a fallback some very old browsers and crawlers request by default, so keeping one doesn't hurt, but it is no longer a hard requirement for current browser versions."
@@ -88,6 +89,10 @@ It doesn't vectorize a raster upload into an SVG — that's a fundamentally diff
 | 512×512 PNG | Android splash screen / manifest | Yes if you have a manifest |
 | favicon.ico | Legacy fallback for old browsers/crawlers | Optional, not harmful to keep |
 | 96×96, 128×128, 64×64 | — | No, obsolete |
+
+## Related tools
+
+Before using an SVG as your primary favicon, strip editor metadata with the [SVG Optimizer](/tools/svg-optimizer) so the file stays small.
 
 ---
 

@@ -5,12 +5,13 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { tools, categories, LATEST_TOOL_SLUGS } from "@/lib/tools";
 import { Menu, X, Search } from "lucide-react";
-import * as LucideIcons from "lucide-react";
+import { TOOL_ICONS } from "@/lib/tool-icons";
+import { INPUT_PRIVACY_CLAIM } from "@/lib/site";
 
 const NEW_TOOL_SLUGS = new Set(LATEST_TOOL_SLUGS);
 
 function ToolIcon({ name }: { name: string }) {
-  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[name];
+  const Icon = TOOL_ICONS[name];
   if (!Icon) return null;
   return <Icon size={16} />;
 }
@@ -45,13 +46,14 @@ export default function Sidebar() {
       <div className="px-3 pb-2 pt-1">
         <button
           onClick={openPalette}
-          className="w-full flex items-center justify-between px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg text-sm text-[#555555] hover:text-[#888888] hover:border-[#333333] transition-colors"
+          className="w-full flex items-center justify-between px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg text-sm text-[#999999] hover:text-[#f5f5f5] hover:border-[#444444] transition-colors"
+          aria-label={`Search tools (${isMac ? "Command" : "Control"}+K)`}
         >
           <div className="flex items-center gap-2">
             <Search size={12} />
             <span className="text-xs">Search tools...</span>
           </div>
-          <kbd className="text-[10px] bg-[#111111] border border-[#333333] px-1.5 py-0.5 rounded text-[#444444]">
+          <kbd className="text-[10px] bg-[#111111] border border-[#333333] px-1.5 py-0.5 rounded text-[#999999]" aria-hidden="true">
             {isMac ? "⌘K" : "Ctrl+K"}
           </kbd>
         </button>
@@ -97,22 +99,22 @@ export default function Sidebar() {
       {/* Footer */}
       <div className="px-4 py-4 border-t border-[#222222]">
         <p className="text-xs text-[#888888] leading-relaxed mb-2">
-          Your data never leaves the browser 🔒
+          {INPUT_PRIVACY_CLAIM}
         </p>
-        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-[#555555]">
-          <Link href="/privacy" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-[#999999]">
+          <Link href="/privacy" onClick={() => setMobileOpen(false)} className="hover:text-[#f5f5f5] transition-colors">
             Privacy
           </Link>
-          <Link href="/terms" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+          <Link href="/terms" onClick={() => setMobileOpen(false)} className="hover:text-[#f5f5f5] transition-colors">
             Terms
           </Link>
-          <Link href="/changelog" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+          <Link href="/changelog" onClick={() => setMobileOpen(false)} className="hover:text-[#f5f5f5] transition-colors">
             Changelog
           </Link>
-          <Link href="/blog" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+          <Link href="/blog" onClick={() => setMobileOpen(false)} className="hover:text-[#f5f5f5] transition-colors">
             Blog
           </Link>
-          <Link href="/explain-error" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+          <Link href="/explain-error" onClick={() => setMobileOpen(false)} className="hover:text-[#f5f5f5] transition-colors">
             Explain Error
           </Link>
           {hasConsent && (
@@ -121,7 +123,7 @@ export default function Sidebar() {
                 localStorage.removeItem("toolninja_cookie_consent");
                 window.location.reload();
               }}
-              className="text-xs text-[#555555] hover:text-[#888888] transition-colors bg-transparent border-0 p-0 m-0 cursor-pointer text-left"
+              className="text-xs text-[#999999] hover:text-[#f5f5f5] transition-colors bg-transparent border-0 p-0 m-0 cursor-pointer text-left"
             >
               Cookies
             </button>

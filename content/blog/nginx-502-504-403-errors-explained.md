@@ -1,11 +1,12 @@
 ---
 title: "nginx 502, 504, and 403 Errors Explained (and How to Actually Fix Them)"
 description: "502 means nginx never got a valid response. 504 means it got one too slowly. 403 means nginx itself is blocking you before your app ever sees the request. Here's how to tell them apart and fix the real cause of each."
+metaTitle: "nginx 502, 504 and 403 Errors Explained"
+metaDescription: "How to tell nginx 502, 504 and 403 errors apart and fix the real cause: a bad upstream response, a slow one, or nginx blocking the request."
 date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🌐"
 tags: ["nginx 502 bad gateway", "nginx 504 gateway timeout", "nginx 403 forbidden", "proxy_read_timeout", "nginx errors explained", "bad gateway fix", "gateway timeout fix", "nginx troubleshooting", "reverse proxy errors", "php-fpm socket", "devops", "nginx"]
-relatedTools: ["http-status-codes", "http-request"]
 faqs:
   - q: "Is raising proxy_read_timeout a real fix for a 504?"
     a: "Rarely. proxy_read_timeout controls the maximum gap between reads from the upstream, not the total request time — raising it globally just makes every request wait longer before nginx gives up, and it does nothing about why the upstream is slow in the first place. It's a reasonable stopgap for one genuinely slow endpoint (set in that location block specifically), but if requests are timing out across the board, the real fix is finding the slow query, the exhausted worker pool, or the saturated connection limit on the upstream."
@@ -31,12 +32,12 @@ Here's what actually causes each one, with the fastest real fix.
 
 ## 502 Bad Gateway
 
-```
+```text
 502 Bad Gateway
 nginx/1.25.3
 ```
 
-```
+```text
 [error] 12345#0: *1 connect() failed (111: Connection refused) while connecting
 to upstream, client: 203.0.113.7, server: example.com,
 upstream: "fastcgi://unix:/run/php/php8.3-fpm.sock:"
@@ -68,12 +69,12 @@ A mismatched port after a config change (app moved from 3000 to 3001, nginx conf
 
 ## 504 Gateway Timeout
 
-```
+```text
 504 Gateway Time-out
 nginx/1.25.3
 ```
 
-```
+```text
 [error] 12345#0: *1 upstream timed out (110: Connection timed out) while reading
 response header from upstream, client: 203.0.113.7,
 upstream: "http://127.0.0.1:3000/api/report"
@@ -102,7 +103,7 @@ Check the upstream's own logs for how long it actually took to respond — if it
 
 ## 403 Forbidden (Straight From nginx)
 
-```
+```text
 403 Forbidden
 nginx/1.25.3
 ```
@@ -144,6 +145,10 @@ If SELinux is silently blocking something, `sealert -a /var/log/audit/audit.log`
 ## Testing the Actual Response, Not Just the Symptom
 
 Once you suspect which layer is failing, it helps to hit the upstream directly and compare — bypass nginx entirely and send the request straight to the app's port to confirm whether the app itself is healthy. **[ToolNinja's HTTP Request Builder →](/tools/http-request)** lets you send that request with custom headers and see the raw status, timing, and response body without needing curl flags memorized. And when you just need to double-check what a status code actually means before you go debugging the wrong thing, **[the HTTP Status Codes reference →](/tools/http-status-codes)** has the full list with plain-English explanations.
+
+## Related tools
+
+If you are moving a site from Apache, the [.htaccess to Nginx Converter](/tools/htaccess-to-nginx) translates rewrite and redirect rules, a common source of unexpected 403s after a migration.
 
 ---
 

@@ -1,11 +1,12 @@
 ---
 title: "standard_init_linux.go:211: exec user process caused: no such file or directory — Docker Fix"
 description: "The most common cause of this Docker error is Windows CRLF line endings in shell scripts. Learn how to detect, fix, and prevent it with .gitattributes and Dockerfile workarounds."
+metaTitle: "Docker \"exec user process\" No Such File Fix"
+metaDescription: "Why Docker fails with \"exec user process caused: no such file or directory\", usually CRLF line endings, and how to fix and prevent it."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🐳"
 tags: ["docker", "linux", "shell", "containers", "crlf", "entrypoint error", "docker no such file"]
-relatedTools: ["chmod-calculator"]
 faqs:
   - q: "Why does this error only happen on Linux but not on my Windows machine?"
     a: "On Windows, Docker Desktop runs a Linux VM internally, but your source files are written with Windows CRLF line endings. The Linux kernel inside Docker sees #!/bin/bash\\r and can't find an interpreter named /bin/bash\\r — so it throws 'no such file or directory'."
@@ -19,13 +20,13 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 standard_init_linux.go:211: exec user process caused: no such file or directory
 ```
 
 Or in newer Docker versions:
 
-```
+```text
 exec /app/entrypoint.sh: no such file or directory
 ```
 
@@ -93,7 +94,7 @@ Click `CRLF` in the bottom-right status bar and select `LF`. Save.
 
 ### Solution 4 — Fix permanently with .gitattributes
 
-```
+```text
 *.sh text eol=lf
 Dockerfile text eol=lf
 docker-compose.yml text eol=lf
@@ -137,4 +138,9 @@ ENTRYPOINT ["/app/entrypoint.sh"]
 
 After fixing line endings, verify that file permissions are correct — shell scripts need execute (+x) permission. The chmod calculator gives you the right value without memorizing octal notation.
 
-🔧 **[Chmod Calculator — toolninja.io/tools/chmod-calculator](https://toolninja.io/tools/chmod-calculator)**
+🔧 **[Chmod Calculator](/tools/chmod-calculator)**
+
+
+## Related tools
+
+If you start the container with a long `docker run` command, the [Docker Run to Compose converter](/tools/docker-run-to-compose) turns it into a `docker-compose.yml` you can version alongside the `.gitattributes` fix.

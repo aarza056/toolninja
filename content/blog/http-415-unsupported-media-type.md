@@ -1,11 +1,11 @@
 ---
 title: "HTTP 415 Unsupported Media Type: Causes and Fix"
 description: "HTTP 415 Unsupported Media Type means the server rejected the request body because the Content-Type header doesn't match what it accepts. Learn how to diagnose and fix it."
+metaDescription: "HTTP 415 means the server rejected the body because its Content-Type doesn't match what it accepts. How to diagnose and fix it."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "📡"
 tags: ["http", "http 415", "content-type", "api", "rest api", "unsupported media type"]
-relatedTools: ["http-request"]
 faqs:
   - q: "What is HTTP 415 Unsupported Media Type?"
     a: "It means the server understands the request method but refuses to process it because the payload is in a format it does not support. The client needs to change the Content-Type header to match what the server accepts."
@@ -17,7 +17,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```http
 HTTP/1.1 415 Unsupported Media Type
 {
   "error": "Unsupported Media Type",
@@ -26,7 +26,7 @@ HTTP/1.1 415 Unsupported Media Type
 ```
 
 Or in frameworks:
-```
+```text
 org.springframework.web.HttpMediaTypeNotSupportedException: Content type 'application/x-www-form-urlencoded' not supported
 ```
 
@@ -169,4 +169,9 @@ curl -X POST https://api.example.com/users   -H "Content-Type: application/json"
 
 The HTTP Request tool lets you build and send requests with full control over headers and body format — test your Content-Type against real APIs directly in the browser.
 
-🔧 **[HTTP Request Tool — toolninja.io/tools/http-request](https://toolninja.io/tools/http-request)**
+🔧 **[HTTP Request Tool](/tools/http-request)**
+
+
+## Related tools
+
+To check what `Content-Type` and `Accept` headers actually mean for your request and response, paste them into the [HTTP Header Inspector](/tools/http-header-inspector).

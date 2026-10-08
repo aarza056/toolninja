@@ -1,11 +1,12 @@
 ---
 title: "MySQL Error 1064: You Have an Error in Your SQL Syntax Fix"
 description: "MySQL Error 1064 means the SQL parser hit something it didn't expect. Learn the most common causes — reserved words, quoting mistakes, missing commas — and how to fix them fast."
+metaTitle: "MySQL Error 1064: SQL Syntax Error Fix"
+metaDescription: "What MySQL error 1064 means and its usual causes, from reserved words and quoting mistakes to missing commas, with fixes."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🗄️"
 tags: ["mysql", "sql", "database", "sql error", "error 1064", "sql syntax"]
-relatedTools: ["sql-formatter"]
 faqs:
   - q: "What does MySQL Error 1064 mean?"
     a: "It means the MySQL parser encountered a token it did not expect at a specific position in your SQL statement. The error message points to the part of the query near the problem, though the actual mistake may be one token earlier."
@@ -17,7 +18,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 ERROR 1064 (42000): You have an error in your SQL syntax;
 check the manual that corresponds to your MySQL server version
 for the right syntax to use near 'order FROM users WHERE id = 1' at line 1
@@ -45,7 +46,7 @@ for the right syntax to use near 'order FROM users WHERE id = 1' at line 1
 
 ### Step 1 — Read what's in `near '...'`
 
-```
+```text
 near 'order FROM users' at line 1
 ```
 
@@ -170,4 +171,4 @@ status: {
 
 The SQL Formatter formats and highlights your SQL, making missing commas, mismatched parentheses, and unquoted reserved words immediately visible.
 
-🔧 **[SQL Formatter — toolninja.io/tools/sql-formatter](https://toolninja.io/tools/sql-formatter)**
+🔧 **[SQL Formatter](/tools/sql-formatter)**

@@ -1,11 +1,12 @@
 ---
 title: "Linux 'No Space Left on Device' and 'Permission Denied': The Errors That Lie to You"
 description: "df -h says you have gigabytes free but writes still fail. chmod 777 doesn't fix a permission error that isn't actually about Unix permissions. Here's what's really going on and the exact commands to find it."
+metaTitle: "Linux \"No Space Left\" & \"Permission Denied\""
+metaDescription: "Why writes fail when df shows free space, why chmod 777 doesn't fix some permission errors, and the commands to find the real cause."
 date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "💾"
 tags: ["no space left on device", "linux disk full but df shows space", "inode exhaustion", "df -i", "permission denied linux", "systemd permission denied", "lsof deleted files", "chattr immutable file", "noexec mount permission denied", "linux troubleshooting", "linux errors explained", "sysadmin"]
-relatedTools: ["chmod-calculator"]
 faqs:
   - q: "I ran df -h and there's plenty of free space, so why do writes still fail with 'no space left on device'?"
     a: "df -h only shows block (byte) usage. Every filesystem also has a separate, fixed pool of inodes — one consumed per file, directory, or symlink — and if that pool is exhausted, the kernel refuses to create new files even with terabytes of block space free. Run df -i alongside df -h; if IUse% is at or near 100% while block usage is low, it's inode exhaustion, not a space problem in the way most people picture it."

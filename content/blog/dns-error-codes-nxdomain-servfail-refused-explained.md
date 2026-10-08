@@ -1,11 +1,12 @@
 ---
 title: "DNS Error Codes Explained: NXDOMAIN, SERVFAIL, and REFUSED"
 description: "\"It's probably still propagating\" is wrong more often than it's right. NXDOMAIN, SERVFAIL, and REFUSED each mean something specific and diagnosable — here's how to tell them apart with dig and fix the actual cause."
+metaTitle: "DNS Errors: NXDOMAIN, SERVFAIL, REFUSED"
+metaDescription: "What NXDOMAIN, SERVFAIL and REFUSED each mean, how to tell them apart with dig, and how to fix the actual cause instead of waiting."
 date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🧭"
 tags: ["nxdomain error", "servfail dns error", "dns refused error", "dns resolution failure", "dig troubleshooting", "nslookup errors", "dns propagation myth", "dns error codes explained", "domain not resolving", "dnssec servfail", "networking", "dns"]
-relatedTools: ["url-parser"]
 faqs:
   - q: "I just added a DNS record and it still isn't resolving. Is this just propagation?"
     a: "Often not — 'propagation' gets blamed for what's actually negative caching. When a resolver queries a name that doesn't exist yet, it caches that NXDOMAIN answer for a period defined by the zone's SOA minimum TTL (commonly a few hours), separate from the record's own TTL. If you added the record after a resolver already cached a negative answer, that resolver won't re-check until its cached negative answer expires, no matter how long you wait in the usual sense. Query an authoritative nameserver directly with dig @<authoritative-ns> to confirm the record exists there right now, bypassing every cache in between."
@@ -25,7 +26,7 @@ When a domain won't resolve, "check DNS propagation" is the reflexive answer —
 
 ## NXDOMAIN — "This Name Does Not Exist"
 
-```
+```bash
 $ dig app.example.com
 
 ;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 41230
@@ -51,7 +52,7 @@ If that returns a real answer while your normal resolver still returns NXDOMAIN,
 
 ## SERVFAIL — "Something Failed While I Was Trying to Answer"
 
-```
+```bash
 $ dig broken.example.com
 
 ;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 58821
@@ -79,7 +80,7 @@ dig +cd broken.example.com
 
 ## REFUSED — "I Won't Answer That"
 
-```
+```bash
 $ dig internal.corp.local @10.0.0.53
 
 ;; ->>HEADER<<- opcode: QUERY, status: REFUSED, id: 9012

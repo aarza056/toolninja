@@ -1,11 +1,12 @@
 ---
 title: "chmod Explained: Linux File Permissions for Developers"
 description: "Master Linux file permissions with chmod. Understand octal notation, symbolic mode, chmod 755 vs 777 vs 644, and real-world examples for web servers and scripts."
+metaTitle: "chmod Explained: Linux File Permissions"
+metaDescription: "Linux file permissions with chmod: octal and symbolic modes, 755 vs 644 vs 777, and real examples for web servers and scripts."
 date: "2026-05-01"
 author: "ToolNinja"
 coverEmoji: "🔐"
 tags: ["chmod calculator", "chmod 755", "chmod 777", "chmod 644", "linux file permissions", "rwxr-xr-x", "octal permissions", "unix permissions calculator", "chmod converter", "linux permission calculator", "file permission linux", "chmod explained"]
-relatedTools: ["chmod-calculator"]
 faqs:
   - q: "What does chmod 755 mean?"
     a: "chmod 755 gives the owner full read, write, and execute permissions (7), while group and others get read and execute only (5). It's the standard permission for web server directories and executable scripts."
@@ -213,4 +214,4 @@ The first character indicates type (`-` = file, `d` = directory, `l` = symlink),
 
 Calculating octal values by hand is error-prone. Use the **[ToolNinja Chmod Calculator](/tools/chmod-calculator)** to click checkboxes and instantly see the octal value, symbolic notation, and a ready-to-run `chmod` command.
 
-No login, no tracking — runs 100% in your browser.
+No login. Your input is processed in your browser and never uploaded.

@@ -1,11 +1,12 @@
 ---
 title: "Why Hardcoded Secrets Still End Up in Git — and How to Actually Catch Them"
 description: "Hardcoded API keys and credentials remain one of the most common security findings in real codebases. Here's what the common secret formats actually look like, why regex-based scanning works (and where it doesn't), and how to stop a leak before it's committed."
+metaTitle: "How to Catch Hardcoded Secrets Before Git"
+metaDescription: "What common API key formats look like, where regex-based secret scanning works and fails, and how to stop a leak before it's committed."
 date: "2026-10-02"
 author: "ToolNinja"
 coverEmoji: "🔑"
 tags: ["hardcoded secrets", "secret scanning", "api key leak", "gitleaks", "security mistakes", "env variables", "git history secrets", "credential leak"]
-relatedTools: ["secret-scanner", "env-file-tool"]
 faqs:
   - q: "If GitHub already scans for secrets, do I need to check my own code too?"
     a: "GitHub's secret scanning only covers patterns from partner providers who've registered their token format, and by default only runs automatically on public repositories (private repos need it enabled, and historically needed GitHub Advanced Security for some features). It's also reactive — it finds a secret after it's already in your git history. Catching a hardcoded secret before you commit it, in your editor or in a pre-commit hook, avoids ever needing a revocation step at all."
@@ -67,3 +68,8 @@ Step 1 is the one that actually matters. A rotated key is safe to leave sitting 
 - [List of regex for scraping secret API keys — h33tlit/secret-regex-list](https://github.com/h33tlit/secret-regex-list)
 - [How to Find Hardcoded Secrets in Your Codebase — aquilax.ai](https://aquilax.ai/blog/find-hardcoded-secrets-codebase)
 - [Rafter — Secrets Detection: How to Find and Fix Hardcoded Credentials](https://rafter.so/blog/secrets-detection-guide)
+
+
+## Related tools
+
+Move secrets into environment variables and commit only a placeholder file: the [.env File Tool](/tools/env-file-tool) generates a `.env.example` with values stripped, and the [.gitignore Generator](/tools/gitignore-generator) makes sure the real `.env` is ignored.

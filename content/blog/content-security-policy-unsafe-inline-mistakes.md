@@ -1,11 +1,12 @@
 ---
 title: "Content-Security-Policy: The 'unsafe-inline' Mistake 87% of Sites Make"
 description: "Most CSP headers in the wild include 'unsafe-inline' in script-src — which quietly disables the exact XSS protection CSP exists to provide. Here's why it happens and what to do instead."
+metaTitle: "CSP 'unsafe-inline': Why It Breaks XSS Defense"
+metaDescription: "Why 'unsafe-inline' in script-src quietly disables the XSS protection CSP is for, why it ends up there, and what to use instead (nonces, hashes)."
 date: "2026-08-09"
 author: "ToolNinja"
 coverEmoji: "🛡️"
 tags: ["content security policy", "csp unsafe-inline", "csp xss protection", "csp header mistakes", "csp nonce hash", "content-security-policy guide", "csp object-src none", "csp best practices 2026", "security", "csp", "xss"]
-relatedTools: ["csp-builder"]
 faqs:
   - q: "What does Content-Security-Policy actually protect against?"
     a: "CSP's primary purpose is mitigating Cross-Site Scripting (XSS). Even if an attacker successfully injects a <script> tag into your page — through a stored XSS vulnerability, for example — a correctly configured CSP prevents that injected script from executing, because it didn't come from an explicitly allowed source. It also restricts other risky behaviors, including framing (clickjacking) and form submission targets."
@@ -31,7 +32,7 @@ CSP works by restricting scripts to an explicit allowlist of trusted sources. By
 
 The problem is that a lot of real codebases — especially older ones, or ones using certain templating patterns — genuinely have inline scripts and inline event handlers scattered throughout their HTML. Turning on a strict CSP against that codebase breaks the page immediately, in the browser console, with a wall of blocked-script errors. The fast fix that makes the errors go away is adding `'unsafe-inline'` to `script-src`. It works, in the sense that the errors disappear — but it also means the CSP is no longer actually restricting inline scripts at all, which was the entire point.
 
-```
+```text
 # Looks like a real security header:
 Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'
 
@@ -54,7 +55,7 @@ The point of restricting inline scripts is to distinguish scripts *you* wrote fr
 </script>
 ```
 
-```
+```http
 Content-Security-Policy: script-src 'self' 'nonce-8fZ2mK9x...'
 ```
 
@@ -62,7 +63,7 @@ An attacker injecting a script into your page has no way to know the nonce for t
 
 **Hashes** — for scripts with fixed, unchanging content, CSP can allow them by their SHA hash instead:
 
-```
+```http
 Content-Security-Policy: script-src 'self' 'sha256-<base64-hash-of-exact-script-content>'
 ```
 
@@ -76,7 +77,7 @@ Neither approach is free — both require actual engineering work to wire nonces
 
 Less dramatic than `unsafe-inline`, but still worth fixing deliberately: **explicitly set `object-src 'none'`** unless you have a specific, current reason not to. `<object>`, `<embed>`, and `<applet>` are legacy HTML elements that most sites built in 2026 have no legitimate use for at all, and they've historically been a vector for CSP bypass techniques that specifically target plugin content. Since the vast majority of sites don't need them, blocking them outright costs nothing:
 
-```
+```http
 Content-Security-Policy: object-src 'none'
 ```
 
@@ -86,7 +87,7 @@ Content-Security-Policy: object-src 'none'
 
 Putting the fixes together, a reasonably strong baseline CSP for a modern site looks like:
 
-```
+```http
 Content-Security-Policy:
   default-src 'self';
   script-src 'self' 'nonce-<per-request-value>';
@@ -102,6 +103,10 @@ Notice what's absent: no `'unsafe-inline'`, no `'unsafe-eval'`, no wildcard `*` 
 ## Check Your Own Policy
 
 **[ToolNinja's CSP Header Builder & Analyzer →](/tools/csp-builder)** does both directions of this work: build a policy visually with per-directive source lists, or switch to Analyze mode and paste your current production CSP to get it checked automatically for `unsafe-inline`, `unsafe-eval`, wildcard sources, and missing `object-src`/`base-uri`/`frame-ancestors` — the exact mistakes covered above, flagged instantly instead of found during a security review.
+
+## Related tools
+
+Once a policy is deployed, paste your response headers into the [HTTP Security Headers Checker](/tools/security-headers-checker) to confirm CSP is present and free of `unsafe-inline`, and use the [Hash Generator](/tools/hash-generator) with Base64 output to compute the SHA-256 digest of an inline script for a `'sha256-…'` source.
 
 ---
 

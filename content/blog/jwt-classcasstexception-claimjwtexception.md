@@ -1,11 +1,12 @@
 ---
 title: "ClaimJwtException: JWT Claim Validation Failed — Timestamp and Expiry Fix Guide"
 description: "JWT claim validation errors are almost always caused by milliseconds vs seconds confusion or clock skew between services. Learn to diagnose expired tokens, iat-in-the-future errors, and fix each case."
+metaTitle: "ClaimJwtException: Fix JWT Expiry Errors"
+metaDescription: "JWT claim errors usually come from seconds vs milliseconds or clock skew. Diagnose expired tokens and \"iat in the future\" errors."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔑"
 tags: ["jwt", "security", "authentication", "tokens", "timestamp", "jwt expired", "claim validation"]
-relatedTools: ["timestamp-converter", "jwt-decoder"]
 faqs:
   - q: "What is the difference between exp, iat, and nbf JWT claims?"
     a: "exp (expiration time) is the Unix timestamp after which the token is invalid. iat (issued at) is when the token was created. nbf (not before) is the earliest time the token can be used. All three are Unix timestamps in seconds — not milliseconds — per the JWT specification (RFC 7519)."
@@ -19,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 io.jsonwebtoken.ExpiredJwtException: JWT expired at 2024-01-15T10:00:00Z. Current time: 2024-01-15T11:00:00Z
 ```
 
 Or:
-```
+```text
 ClaimJwtException: JWT claim validation failed
 JsonWebTokenError: jwt expired
 jwt.exceptions.ExpiredSignatureError: Signature has expired
@@ -36,7 +37,7 @@ jwt.exceptions.ExpiredSignatureError: Signature has expired
 
 ## Why This Error Happens
 
-JWT timestamps (`exp`, `iat`, `nbf`) are Unix timestamps measured in **seconds** since January 1, 1970 (RFC 7519).
+JWT timestamps (`exp`, `iat`, `nbf`) are Unix timestamps measured in **seconds** since January 1, 1970 ([RFC 7519](https://www.rfc-editor.org/rfc/rfc7519)).
 
 Four root causes:
 
@@ -164,4 +165,9 @@ async function fetchWithAuth(url) {
 
 The Timestamp Converter lets you instantly convert between Unix timestamps and human-readable dates. Paste the `exp` value from your JWT payload and see if it's in seconds or milliseconds, and when the token actually expires.
 
-🔧 **[Timestamp Converter — toolninja.io/tools/timestamp-converter](https://toolninja.io/tools/timestamp-converter)**
+🔧 **[Timestamp Converter](/tools/timestamp-converter)**
+
+
+## Related tools
+
+To see the exact `exp`, `iat` and `nbf` values in a failing token, paste it into the [JWT Decoder](/tools/jwt-decoder), which shows each claim as a readable date.

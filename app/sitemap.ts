@@ -1,6 +1,7 @@
 ﻿import type { MetadataRoute } from "next";
 import { tools } from "@/lib/tools";
 import { getAllPosts } from "@/lib/blog";
+import { AUTHORS } from "@/lib/authors";
 
 const BASE_URL = "https://toolninja.io";
 
@@ -15,12 +16,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const blogPosts = getAllPosts();
   const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
+    lastModified: new Date(post.updated ?? post.date),
     changeFrequency: "monthly",
     priority: 0.7,
   }));
 
+  const authorPages: MetadataRoute.Sitemap = Object.keys(AUTHORS).map((id) => ({
+    url: `${BASE_URL}/authors/${id}`,
+    changeFrequency: "monthly",
+    priority: 0.3,
+  }));
+
   return [
+    ...authorPages,
     {
       url: BASE_URL,
       lastModified: new Date(),

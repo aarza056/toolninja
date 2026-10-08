@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   const title = searchParams.get("title") ?? "ToolNinja";
   const desc =
     searchParams.get("desc") ??
-    "Fast, free developer tools. No login. Your data stays in your browser.";
+    "Fast, free developer tools. No login. Your input is processed in your browser and never uploaded.";
 
   const shortDesc = desc.length > 90 ? desc.slice(0, 90) + "…" : desc;
 

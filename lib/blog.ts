@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { DEFAULT_AUTHOR_ID } from "./authors";
+import { getToolsForPost } from "./blog-tool-map";
 
 const BLOG_DIR = path.join(process.cwd(), "content", "blog");
 
@@ -14,7 +16,14 @@ export interface BlogPost {
   title: string;
   description: string;
   date: string;
+  /** Last substantive update (YYYY-MM-DD). Falls back to `date`. */
+  updated?: string;
+  /** Author id from lib/authors.ts. */
   author: string;
+  /** Optional shorter <title> when the H1 is too long for search results (≤ 48 chars). */
+  metaTitle?: string;
+  /** Optional search description when `description` is longer than 155 chars. */
+  metaDescription?: string;
   tags: string[];
   readingTime: number;
   content: string;
@@ -50,11 +59,14 @@ export function getPostBySlug(slug: string): BlogPost | null {
     title: data.title ?? "",
     description: data.description ?? "",
     date: data.date ?? "",
-    author: data.author ?? "ToolNinja",
+    updated: data.updated ?? undefined,
+    author: String(data.author ?? DEFAULT_AUTHOR_ID).toLowerCase(),
+    metaTitle: data.metaTitle ?? undefined,
+    metaDescription: data.metaDescription ?? undefined,
     tags: data.tags ?? [],
     readingTime: estimateReadingTime(content),
     content,
-    relatedTools: data.relatedTools ?? [],
+    relatedTools: getToolsForPost(slug),
     coverEmoji: data.coverEmoji ?? "🥷",
     faqs: data.faqs ?? [],
   };

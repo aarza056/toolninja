@@ -1,11 +1,12 @@
 ---
 title: "Unix Timestamps and Time Zones: A Developer's Reference"
 description: "Everything you need to know about Unix timestamps, UTC vs local time, ISO 8601 format, daylight saving pitfalls, and how to work with dates correctly in JavaScript, Python, and Go."
+metaTitle: "Unix Timestamps & Time Zones Reference"
+metaDescription: "Unix timestamps, UTC vs local time, ISO 8601, daylight saving pitfalls, and working with dates in JavaScript, Python and Go."
 date: "2026-05-11"
 author: "ToolNinja"
 coverEmoji: "⏱️"
 tags: ["unix timestamp converter", "epoch time explained", "unix time tutorial", "timestamp to date online", "year 2038 problem", "utc vs gmt difference", "javascript date now", "convert timestamp free", "milliseconds vs seconds timestamp", "unix epoch time", "datetime programming guide"]
-relatedTools: ["timestamp-converter"]
 faqs:
   - q: "What is Unix time / epoch time?"
     a: "Unix time is the number of seconds elapsed since January 1, 1970 at 00:00:00 UTC. It's timezone-independent making it ideal for storing timestamps across distributed systems."
@@ -21,7 +22,7 @@ faqs:
 
 A Unix timestamp (also called epoch time) is the number of **seconds since January 1, 1970 00:00:00 UTC**. This "epoch" was chosen somewhat arbitrarily when Unix was designed.
 
-```
+```text
 1730000000   →   2024-10-27 07:33:20 UTC
 0            →   1970-01-01 00:00:00 UTC
 -86400       →   1969-12-31 00:00:00 UTC (negative timestamps are valid)
@@ -51,7 +52,7 @@ new Date(1730000000000)       // 2024-10-27... (also correct)
 
 ISO 8601 is the international standard for date/time strings:
 
-```
+```text
 2024-10-27T07:33:20Z          UTC (Z = Zulu = UTC)
 2024-10-27T07:33:20+00:00     UTC with explicit offset
 2024-10-27T10:33:20+03:00     UTC+3 (same moment)

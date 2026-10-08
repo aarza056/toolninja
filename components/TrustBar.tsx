@@ -1,11 +1,12 @@
 import { tools } from "@/lib/tools";
+import { PUBLIC_USER_COUNT } from "@/lib/site";
 
 export default function TrustBar() {
   const stats = [
-    { value: "1,000+", label: "developers" },
+    ...(PUBLIC_USER_COUNT ? [{ value: PUBLIC_USER_COUNT.value, label: PUBLIC_USER_COUNT.label }] : []),
     { value: String(tools.length), label: "free tools" },
-    { value: "0", label: "data uploads" },
-    { value: "100%", label: "browser only" },
+    { value: "0", label: "sign-ups needed" },
+    { value: "Local", label: "input processing" },
   ];
 
   return (
@@ -20,7 +21,7 @@ export default function TrustBar() {
           <span className="text-sm font-medium text-[#a855f7] leading-none mb-0.5">
             {stat.value}
           </span>
-          <span className="text-[10px] text-[#555555]">{stat.label}</span>
+          <span className="text-[10px] text-[#888888]">{stat.label}</span>
         </div>
       ))}
     </div>

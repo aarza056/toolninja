@@ -1,11 +1,12 @@
 ---
 title: "Password Security: Entropy, Strength, and Best Practices"
 description: "Understand password entropy and why length beats complexity. Learn the difference between random and memorable passwords, how password managers work, and current NIST guidelines."
+metaTitle: "Password Security: Entropy & Best Practices"
+metaDescription: "Password entropy and why length beats complexity, random vs memorable passwords, password managers, and current NIST guidance."
 date: "2026-05-09"
 author: "ToolNinja"
 coverEmoji: "🛡️"
 tags: ["password generator", "strong password tips", "password security 2026", "password entropy explained", "bcrypt vs md5 passwords", "password hashing guide", "nist password guidelines", "password manager safe", "random password generator", "how long should password be", "argon2 vs bcrypt", "secure password"]
-relatedTools: ["password-generator"]
 faqs:
   - q: "How long should a password be in 2026?"
     a: "NIST guidelines recommend at least 15 characters, with longer being better. Length matters more than complexity — a 20-character passphrase is stronger than a 10-character symbol mix."
@@ -23,7 +24,7 @@ The key metric is **entropy** — the measure of unpredictability. A password wi
 
 Entropy is calculated as:
 
-```
+```text
 H = L × log₂(N)
 ```
 
@@ -66,7 +67,7 @@ The xkcd comic from 2011 was right: four random common words is more secure and 
 
 For accounts accessed via a password manager:
 
-```
+```text
 Random 20-character: T7$kN#m2Qp!vZe9xRw3Y
 ```
 
@@ -76,7 +77,7 @@ You never type this — the manager fills it in. Maximize entropy and length.
 
 For accounts you type frequently (system login, password manager master password):
 
-```
+```text
 correct-horse-battery-staple
 purple-cloud-eleven-dragon
 ```
@@ -111,7 +112,7 @@ Understanding attacks helps you design better passwords:
 ### Dictionary attacks
 
 Crackers don't try random characters — they start with known passwords and common patterns:
-```
+```text
 password, password1, Password1, P@ssword1, p@$$w0rd
 ```
 Any password that follows a predictable substitution pattern (a→@, o→0, e→3) is vulnerable.
@@ -195,3 +196,8 @@ Even a perfect password can be phished. MFA adds a second factor:
 ## Try It: ToolNinja Password Generator
 
 Generate cryptographically strong passwords and passphrases with the **[ToolNinja Password Generator](/tools/password-generator)**. Configure length, character sets, and exclusions. Runs entirely in your browser — the password is never transmitted anywhere.
+
+
+## Related tools
+
+To see how a specific password holds up, check it in the [Password Strength Checker](/tools/password-strength-checker), which estimates entropy and flags common patterns.

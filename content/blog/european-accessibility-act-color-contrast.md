@@ -1,11 +1,12 @@
 ---
 title: "European Accessibility Act: What Website Owners Need to Know About Color Contrast"
 description: "The EAA has been enforceable since June 2025, and 2026 is the first full year of active enforcement. Here's what the color contrast requirement actually means and how to check your site."
+metaTitle: "European Accessibility Act: Color Contrast"
+metaDescription: "What the European Accessibility Act means for color contrast on websites, which WCAG ratios apply, and how to check your site."
 date: "2026-07-28"
 author: "ToolNinja"
 coverEmoji: "⚖️"
 tags: ["european accessibility act", "eaa compliance 2026", "wcag color contrast requirement", "eaa website requirements", "accessibility lawsuit risk", "wcag 2.1 aa contrast", "eaa deadline 2026", "color contrast checker", "accessibility", "compliance", "wcag"]
-relatedTools: ["contrast-checker"]
 faqs:
   - q: "When did the European Accessibility Act actually take effect?"
     a: "The EAA became enforceable across all EU member states on June 28, 2025. All newly published digital content — websites and apps — has been required to meet EAA standards since that date. Existing content that predates the EAA has a longer runway: it must be fully compliant by June 28, 2030."
@@ -19,7 +20,7 @@ faqs:
 
 ## Why This Matters Now, Not Eventually
 
-The European Accessibility Act (EAA) stopped being a "someday" compliance item a while ago. It became enforceable across all EU member states on **June 28, 2025**, which makes 2026 the first full calendar year that national authorities are actively supervising against it. The first EAA lawsuits were filed in France in November 2025, and other member states — the Netherlands among them — have enforcement activity planned through 2026.
+The [European Accessibility Act](https://eur-lex.europa.eu/eli/dir/2019/882/oj) (EAA) stopped being a "someday" compliance item a while ago. It became enforceable across all EU member states on **June 28, 2025**, which makes 2026 the first full calendar year that national authorities are actively supervising against it. The first EAA lawsuits were filed in France in November 2025, and other member states — the Netherlands among them — have enforcement activity planned through 2026.
 
 If your product has EU customers, this isn't a hypothetical legal risk anymore. It's active.
 
@@ -40,7 +41,7 @@ That five-year window sounds comfortable until you consider that a website redes
 
 ## What the EAA Actually Requires
 
-The EAA doesn't invent its own accessibility checklist — it points to **WCAG 2.1 Level AA** as the applicable standard. In practice, that means:
+The EAA doesn't invent its own accessibility checklist — it points to **[WCAG 2.1](https://www.w3.org/TR/WCAG21/) Level AA** as the applicable standard. In practice, that means:
 
 - Meaningful alt text on images
 - Full keyboard operability (nothing that only works with a mouse)
@@ -87,6 +88,10 @@ It runs entirely in your browser — paste your hex or `rgb()` values, get an an
 Being direct about the limits here matters: a contrast checker verifies one specific, mechanical requirement. It won't tell you if your alt text is meaningful, if your site is fully keyboard-navigable, or if a screen reader user can actually complete your checkout flow. Automated tooling as a category — even AI-assisted scanners — currently catches an estimated 55-65% of WCAG issues, up from 30-40% a few years ago, but that gap is still real.
 
 Treat a contrast checker as the fast, precise tool for the contrast requirement specifically, and pair it with manual review and real assistive-technology testing for the rest of your EAA posture.
+
+## Related tools
+
+Contrast ratios don't cover color-only cues, so also check your design in the [Color Blindness Simulator](/tools/color-blindness-simulator) to see how it reads with common color vision deficiencies.
 
 ---
 

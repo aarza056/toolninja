@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
+import { NETWORK_TOOLS } from "@/lib/site";
 import {
   buildBadgeUrl,
   buildMarkdown,
@@ -63,6 +64,10 @@ export default function ReadmeBadgeGeneratorClient() {
           Repo / Package Badges
         </button>
       </div>
+
+      <p className="mb-4 p-3 text-xs text-[#f97316] bg-[#f97316]/10 border border-[#f97316]/30 rounded-[8px]">
+        {NETWORK_TOOLS["readme-badge-generator"]}
+      </p>
 
       {mode === "custom" ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -138,7 +143,7 @@ export default function ReadmeBadgeGeneratorClient() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={customBadgeUrl} alt={`${label} ${message}`} className="max-w-full" />
               </div>
-              <p className="text-[10px] text-[#555555] mt-1">Fetched live from img.shields.io for an accurate preview.</p>
+              <p className="text-[10px] text-[#888888] mt-1">Fetched live from img.shields.io for an accurate preview.</p>
             </div>
 
             <div>
