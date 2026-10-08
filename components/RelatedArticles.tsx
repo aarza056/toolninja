@@ -35,7 +35,7 @@ export default function RelatedArticles({
             <h3 className="text-xs font-medium text-[#e5e5e5] mb-1 leading-snug group-hover:text-[#a855f7] transition-colors">
               {article.title}
             </h3>
-            <p className="text-[10px] text-[#555555]">
+            <p className="text-[10px] text-[#999999]">
               {article.readingTime} min read
             </p>
           </Link>

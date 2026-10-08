@@ -3,15 +3,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { tools, LATEST_TOOL_SLUGS } from "@/lib/tools";
-import * as LucideIcons from "lucide-react";
+import { TOOL_ICONS } from "@/lib/tool-icons";
 import { X, Sparkles } from "lucide-react";
 
 const SEEN_KEY = "toolninja_whats_new_seen";
 
 function ToolIcon({ name }: { name: string }) {
-  const Icon = (
-    LucideIcons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>
-  )[name];
+  const Icon = TOOL_ICONS[name];
   if (!Icon) return null;
   return <Icon size={18} className="text-[#a855f7]" />;
 }
@@ -93,7 +91,7 @@ export default function WhatsNewModal() {
         <div className="px-5 py-3 border-t border-[#1a1a1a]">
           <button
             onClick={dismiss}
-            className="w-full py-2 text-sm font-medium bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-[6px] transition-colors"
+            className="w-full py-2 text-sm font-medium bg-[#9333ea] hover:bg-[#7e22ce] text-white rounded-[6px] transition-colors"
           >
             Got it
           </button>

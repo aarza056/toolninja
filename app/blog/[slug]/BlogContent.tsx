@@ -73,7 +73,7 @@ const components: Components = {
     <li className="text-[#aaaaaa] text-[15px] leading-relaxed">{children}</li>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="border-l-2 border-[#a855f7]/40 pl-4 my-4 text-[#666666] italic">
+    <blockquote className="border-l-2 border-[#a855f7]/40 pl-4 my-4 text-[#a3a3a3] italic">
       {children}
     </blockquote>
   ),

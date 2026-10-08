@@ -81,7 +81,7 @@ export default function CookieBanner() {
                     used) and Google AdSense (ads, which may be personalized). If you
                     decline, neither loads. Either way, what you type into a tool is
                     processed in your browser and never uploaded.{" "}
-                    <a href="/privacy" className="text-[#a855f7] hover:underline">
+                    <a href="/privacy" className="text-[#c084fc] underline hover:text-[#d8b4fe]">
                       Privacy policy
                     </a>
                   </p>
@@ -90,13 +90,13 @@ export default function CookieBanner() {
               <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto">
                 <button
                   onClick={handleDecline}
-                  className="flex-1 sm:flex-none px-4 py-2 text-xs text-[#666] bg-transparent border border-[#333] rounded-lg hover:text-[#888] hover:border-[#444] transition-colors"
+                  className="flex-1 sm:flex-none px-4 py-2 text-xs text-[#a3a3a3] bg-transparent border border-[#333] rounded-lg hover:text-[#888] hover:border-[#444] transition-colors"
                 >
                   Decline
                 </button>
                 <button
                   onClick={handleAccept}
-                  className="flex-1 sm:flex-none px-4 py-2 text-xs text-white bg-[#a855f7] rounded-lg hover:bg-[#9333ea] transition-colors font-medium"
+                  className="flex-1 sm:flex-none px-4 py-2 text-xs text-white bg-[#9333ea] rounded-lg hover:bg-[#7e22ce] transition-colors font-medium"
                 >
                   Accept
                 </button>

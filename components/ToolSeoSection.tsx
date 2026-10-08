@@ -106,12 +106,12 @@ export default function ToolSeoSection({ slug }: Props) {
 
           {/* Use cases */}
           <section>
-            <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-3">
+            <h2 className="text-xs font-semibold text-[#999999] uppercase tracking-widest mb-3">
               When to use it
             </h2>
             <ul className="space-y-2">
               {content.useCases.map((uc, i) => (
-                <li key={i} className="flex gap-2.5 text-sm text-[#666]">
+                <li key={i} className="flex gap-2.5 text-sm text-[#a3a3a3]">
                   <span className="text-[#a855f7] shrink-0 mt-0.5">→</span>
                   <span className="leading-relaxed">{uc}</span>
                 </li>
@@ -122,12 +122,12 @@ export default function ToolSeoSection({ slug }: Props) {
           {/* Tips */}
           {content.tips && content.tips.length > 0 && (
             <section>
-              <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-3">
+              <h2 className="text-xs font-semibold text-[#999999] uppercase tracking-widest mb-3">
                 Tips
               </h2>
               <ul className="space-y-2">
                 {content.tips.map((tip, i) => (
-                  <li key={i} className="flex gap-2.5 text-sm text-[#666]">
+                  <li key={i} className="flex gap-2.5 text-sm text-[#a3a3a3]">
                     <span className="text-[#06b6d4] shrink-0 mt-0.5">◆</span>
                     <span className="leading-relaxed">{tip}</span>
                   </li>
@@ -139,7 +139,7 @@ export default function ToolSeoSection({ slug }: Props) {
           {/* FAQ */}
           {content.faq && content.faq.length > 0 && (
             <section>
-              <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-4">
+              <h2 className="text-xs font-semibold text-[#999999] uppercase tracking-widest mb-4">
                 Frequently asked questions
               </h2>
               <div className="space-y-5">
@@ -148,7 +148,7 @@ export default function ToolSeoSection({ slug }: Props) {
                     <h3 className="text-sm font-medium text-[#888] mb-1.5">
                       {item.q}
                     </h3>
-                    <p className="text-sm text-[#555] leading-relaxed">{item.a}</p>
+                    <p className="text-sm text-[#999999] leading-relaxed">{item.a}</p>
                   </div>
                 ))}
               </div>
@@ -181,7 +181,7 @@ export default function ToolSeoSection({ slug }: Props) {
       {/* Related tools */}
       {relatedTools.length > 0 && (
         <section data-related-tools>
-          <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-3">
+          <h2 className="text-xs font-semibold text-[#999999] uppercase tracking-widest mb-3">
             Related tools
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -189,7 +189,7 @@ export default function ToolSeoSection({ slug }: Props) {
               <Link
                 key={t.slug}
                 href={`/tools/${t.slug}`}
-                className="px-3 py-1.5 text-xs bg-[#111111] border border-[#222222] rounded-[6px] text-[#666] hover:text-[#a855f7] hover:border-[#a855f7]/40 transition-colors"
+                className="px-3 py-1.5 text-xs bg-[#111111] border border-[#222222] rounded-[6px] text-[#a3a3a3] hover:text-[#a855f7] hover:border-[#a855f7]/40 transition-colors"
               >
                 {t.name}
               </Link>

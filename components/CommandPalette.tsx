@@ -31,6 +31,8 @@ function searchTools(query: string): Tool[] {
     .slice(0, 10);
 }
 
+const optionId = (slug: string) => `palette-option-${slug}`;
+
 function ResultItem({
   tool,
   isHighlighted,
@@ -44,8 +46,11 @@ function ResultItem({
 }) {
   return (
     <div
+      id={optionId(tool.slug)}
+      role="option"
+      aria-selected={isHighlighted}
       className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors ${
-        isHighlighted ? "bg-[#1a1a1a]" : "hover:bg-[#111111]"
+        isHighlighted ? "bg-[#1f1f1f] shadow-[inset_2px_0_0_#a855f7]" : "hover:bg-[#161616]"
       }`}
       onClick={() => onNavigate(tool.slug)}
       onMouseEnter={onHover}
@@ -59,10 +64,10 @@ function ResultItem({
       </span>
       <div className="flex-1 min-w-0">
         <p className="text-sm text-[#f5f5f5]">{tool.name}</p>
-        <p className="text-xs text-[#555555] truncate">{tool.description}</p>
+        <p className="text-xs text-[#999999] truncate">{tool.description}</p>
       </div>
       {isHighlighted && (
-        <span className="text-xs text-[#444444] flex-shrink-0">↵</span>
+        <span className="text-xs text-[#999999] flex-shrink-0" aria-hidden="true">↵</span>
       )}
     </div>
   );
@@ -85,8 +90,8 @@ function SectionGroup({
 }) {
   if (items.length === 0) return null;
   return (
-    <div>
-      <p className="px-4 pt-3 pb-1 text-[10px] font-semibold text-[#444444] uppercase tracking-wider">
+    <div role="group" aria-label={label}>
+      <p className="px-4 pt-3 pb-1 text-[10px] font-semibold text-[#888888] uppercase tracking-wider" aria-hidden="true">
         {label}
       </p>
       {items.map((tool, i) => (
@@ -109,7 +114,17 @@ export default function CommandPalette() {
   const [recentSlugs, setRecentSlugs] = useState<string[]>([]);
   const [favSlugs, setFavSlugs] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
   const router = useRouter();
+
+  // Give focus back to whatever had it when the palette opened (recorded by the open handlers
+  // below, before the search box takes focus), so keyboard users land where they were.
+  useEffect(() => {
+    if (!open && returnFocusRef.current) {
+      returnFocusRef.current.focus?.();
+      returnFocusRef.current = null;
+    }
+  }, [open]);
 
   // Load persisted data whenever palette opens
   useEffect(() => {
@@ -123,8 +138,11 @@ export default function CommandPalette() {
   // Ctrl+K / Cmd+K shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
+        if (!document.querySelector('[role="dialog"][aria-label="Search tools"]')) {
+          returnFocusRef.current = document.activeElement as HTMLElement | null;
+        }
         setOpen((prev) => {
           if (!prev) setQuery("");
           return !prev;
@@ -139,6 +157,7 @@ export default function CommandPalette() {
   // Custom event from sidebar button
   useEffect(() => {
     const handler = () => {
+      returnFocusRef.current = document.activeElement as HTMLElement | null;
       setOpen(true);
       setQuery("");
     };
@@ -149,6 +168,7 @@ export default function CommandPalette() {
 
   const navigate = useCallback(
     (slug: string) => {
+      returnFocusRef.current = null;
       router.push(`/tools/${slug}`);
       setOpen(false);
       setQuery("");
@@ -179,7 +199,20 @@ export default function CommandPalette() {
     ? searchResults
     : [...favTools, ...recentTools, ...defaultTools];
 
+  const activeTool = navList[highlighted];
+
+  // Keep the highlighted option visible while arrowing through a long list.
+  useEffect(() => {
+    if (!open || !activeTool) return;
+    document.getElementById(optionId(activeTool.slug))?.scrollIntoView({ block: "nearest" });
+  }, [open, activeTool]);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // The search box is the only focusable element in the dialog; keep Tab from leaving it.
+    if (e.key === "Tab") {
+      e.preventDefault();
+      return;
+    }
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setHighlighted((h) => Math.min(h + 1, navList.length - 1));
@@ -201,13 +234,19 @@ export default function CommandPalette() {
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
         onClick={() => setOpen(false)}
+        aria-hidden="true"
       />
 
       {/* Modal */}
-      <div className="fixed top-[15%] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg z-[101] bg-[#111111] border border-[#333333] rounded-xl shadow-2xl overflow-hidden">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Search tools"
+        className="fixed top-[15%] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg z-[101] bg-[#111111] border border-[#333333] rounded-xl shadow-2xl overflow-hidden"
+      >
         {/* Input */}
         <div className="flex items-center gap-2 px-4 border-b border-[#222222]">
-          <Search size={14} className="text-[#555555] flex-shrink-0" />
+          <Search size={14} className="text-[#888888] flex-shrink-0" aria-hidden="true" />
           <input
             ref={inputRef}
             autoFocus
@@ -217,19 +256,25 @@ export default function CommandPalette() {
               setHighlighted(0);
             }}
             onKeyDown={handleKeyDown}
+            role="combobox"
+            aria-label="Search tools"
+            aria-expanded={navList.length > 0}
+            aria-controls="palette-results"
+            aria-autocomplete="list"
+            aria-activedescendant={activeTool ? optionId(activeTool.slug) : undefined}
             placeholder={`Search ${tools.length} tools...`}
-            className="flex-1 bg-transparent py-3.5 text-sm text-[#f5f5f5] placeholder-[#444444] focus:outline-none"
+            className="flex-1 bg-transparent py-3.5 text-sm text-[#f5f5f5] placeholder-[#777777] focus:outline-none"
           />
-          <kbd className="text-xs text-[#444444] bg-[#1a1a1a] border border-[#333333] px-1.5 py-0.5 rounded flex-shrink-0">
+          <kbd className="text-xs text-[#999999] bg-[#1a1a1a] border border-[#333333] px-1.5 py-0.5 rounded flex-shrink-0">
             esc
           </kbd>
         </div>
 
         {/* Results */}
-        <div className="max-h-80 overflow-y-auto">
+        <div id="palette-results" role="listbox" aria-label="Tools" className="max-h-80 overflow-y-auto">
           {isSearching ? (
             searchResults.length === 0 ? (
-              <p className="text-center text-sm text-[#444444] py-8">
+              <p className="text-center text-sm text-[#999999] py-8" role="status">
                 No tools found for &ldquo;{query}&rdquo;
               </p>
             ) : (
@@ -277,10 +322,10 @@ export default function CommandPalette() {
 
         {/* Footer */}
         <div className="flex items-center gap-4 px-4 py-2 border-t border-[#1a1a1a]">
-          <span className="text-xs text-[#333333]">↑↓ navigate</span>
-          <span className="text-xs text-[#333333]">↵ open</span>
-          <span className="text-xs text-[#333333]">esc close</span>
-          <span className="ml-auto text-xs text-[#333333]">{tools.length} tools</span>
+          <span className="text-xs text-[#888888]">↑↓ navigate</span>
+          <span className="text-xs text-[#888888]">↵ open</span>
+          <span className="text-xs text-[#888888]">esc close</span>
+          <span className="ml-auto text-xs text-[#888888]">{tools.length} tools</span>
         </div>
       </div>
     </>

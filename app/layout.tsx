@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { tools } from "@/lib/tools";
 import Sidebar from "@/components/Sidebar";
-import ParticleBackground from "@/components/ParticleBackground";
+import DeferredParticles from "@/components/DeferredParticles";
 import CommandPalette from "@/components/CommandPalette";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -115,7 +115,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: jsonLdString(SITE_JSON_LD) }}
         />
-        <ParticleBackground />
+        <DeferredParticles />
         <div className="relative z-[1] flex min-h-screen">
           <Sidebar />
           <main className="flex-1 md:ml-[240px] min-h-screen overflow-y-auto">
@@ -125,7 +125,7 @@ export default function RootLayout({
 
         <CommandPalette />
         {/* Watermark */}
-        <div className="fixed bottom-3 right-4 text-xs text-[#333333] pointer-events-none select-none z-50">
+        <div className="fixed bottom-3 right-4 text-xs text-[#333333] pointer-events-none select-none z-50" aria-hidden="true">
           🥷 ToolNinja
         </div>
         <Analytics />

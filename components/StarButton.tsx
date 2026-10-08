@@ -24,12 +24,15 @@ export default function StarButton({ slug, size = "sm" }: StarButtonProps) {
 
   return (
     <button
+      type="button"
       onClick={handleClick}
       title={starred ? "Remove from favorites" : "Add to favorites"}
-      className={`transition-colors rounded p-0.5 leading-none ${
+      aria-label={starred ? "Remove from favorites" : "Add to favorites"}
+      aria-pressed={starred}
+      className={`transition-colors rounded leading-none min-w-[24px] min-h-[24px] inline-flex items-center justify-center ${
         starred
           ? "text-[#f59e0b] hover:text-[#d97706]"
-          : "text-[#333333] hover:text-[#888888]"
+          : "text-[#777777] hover:text-[#bbbbbb]"
       } ${size === "md" ? "text-xl" : "text-base"}`}
     >
       {starred ? "★" : "☆"}

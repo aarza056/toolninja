@@ -4,8 +4,8 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { tools, categories, LATEST_TOOL_SLUGS } from "@/lib/tools";
 import type { Tool } from "@/lib/tools";
-import * as LucideIcons from "lucide-react";
-import { Search, X, RefreshCw } from "lucide-react";
+import { Search, X, RefreshCw, Lock, Zap, Code2, WifiOff } from "lucide-react";
+import { TOOL_ICONS } from "@/lib/tool-icons";
 import { devPhrases } from "@/lib/phrases";
 import { getRecentTools, getFavoriteTools } from "@/lib/user-prefs";
 import StarButton from "@/components/StarButton";
@@ -37,9 +37,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 function ToolIcon({ name, size = 20 }: { name: string; size?: number }) {
-  const Icon = (
-    LucideIcons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>
-  )[name];
+  const Icon = TOOL_ICONS[name];
   if (!Icon) return null;
   return <Icon size={size} className="text-[#a855f7]" />;
 }
@@ -57,7 +55,7 @@ function ToolCard({ tool, featured = false }: { tool: Tool; featured?: boolean }
         </div>
         <div className="flex items-center gap-1.5">
           {isNew ? (
-            <span className="text-[10px] px-1.5 py-0.5 bg-[#a855f7]/15 text-[#a855f7] rounded-[4px] font-semibold tracking-wider">
+            <span className="text-[10px] px-1.5 py-0.5 bg-[#a855f7]/15 text-[#c084fc] rounded-[4px] font-semibold tracking-wider">
               NEW
             </span>
           ) : (
@@ -77,6 +75,8 @@ function ToolCard({ tool, featured = false }: { tool: Tool; featured?: boolean }
     </Link>
   );
 }
+
+const WHY_ICONS: Record<string, typeof Lock> = { Lock, Zap, Code2, WifiOff };
 
 const WHY_ITEMS = [
   {
@@ -165,13 +165,13 @@ export default function HomeClient() {
         </h1>
 
         <div className="flex items-center justify-center gap-2 mb-5">
-          <p className="font-mono text-sm italic text-[#555555]">
+          <p className="font-mono text-sm italic text-[#999999]">
             &ldquo;{devPhrases[phraseIdx]}&rdquo;
           </p>
           <button
             onClick={nextPhrase}
             aria-label="Next phrase"
-            className="text-[#444444] hover:text-[#a855f7] transition-colors flex-shrink-0"
+            className="text-[#888888] hover:text-[#a855f7] transition-colors flex-shrink-0"
           >
             <RefreshCw size={13} />
           </button>
@@ -181,24 +181,27 @@ export default function HomeClient() {
           <TrustBar />
         </div>
 
-        <p className="text-[#666666] text-base max-w-md mx-auto mb-8 leading-relaxed">
+        <p className="text-[#a3a3a3] text-base max-w-md mx-auto mb-8 leading-relaxed">
           Fast and free, no login. {INPUT_PRIVACY_CLAIM}
         </p>
 
         {/* Search */}
         <div className="relative max-w-sm mx-auto">
-          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#444444]" />
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#888888]" aria-hidden="true" />
           <input
             type="text"
+            aria-label="Search tools"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={`Search ${tools.length} tools…`}
-            className="w-full pl-10 pr-9 py-2.5 bg-[#111111] border border-[#222222] rounded-[8px] text-sm text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#333333] transition-colors"
+            className="w-full pl-10 pr-9 py-2.5 bg-[#111111] border border-[#222222] rounded-[8px] text-sm text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#777777] transition-colors"
           />
           {search && (
             <button
+              type="button"
+              aria-label="Clear search"
               onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#555555] hover:text-[#888888] transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#f5f5f5] transition-colors"
             >
               <X size={13} />
             </button>
@@ -207,15 +210,17 @@ export default function HomeClient() {
       </div>
 
       {/* Category pills ───────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap gap-2 mb-10">
+      <div className="flex flex-wrap gap-2 mb-10" role="group" aria-label="Filter tools by category">
         {(["All", ...categories] as FilterCategory[]).map((cat) => (
           <button
             key={cat}
+            type="button"
+            aria-pressed={activeCategory === cat}
             onClick={() => setActiveCategory(cat)}
             className={`px-3 py-1.5 text-xs rounded-[6px] border transition-colors ${
               activeCategory === cat
-                ? "bg-[#a855f7] border-[#a855f7] text-white"
-                : "bg-[#111111] border-[#222222] text-[#666666] hover:text-[#f5f5f5] hover:border-[#333333]"
+                ? "bg-[#9333ea] border-[#9333ea] text-white"
+                : "bg-[#111111] border-[#2a2a2a] text-[#aaaaaa] hover:text-[#f5f5f5] hover:border-[#444444]"
             }`}
           >
             {cat}
@@ -226,7 +231,7 @@ export default function HomeClient() {
       {/* Favorites ───────────────────────────────────────────────────────── */}
       {!isFiltering && favoriteTools.length > 0 && (
         <div className="mb-10">
-          <h2 className="flex items-center gap-2 text-xs font-semibold text-[#555555] uppercase tracking-wider mb-4">
+          <h2 className="flex items-center gap-2 text-xs font-semibold text-[#999999] uppercase tracking-wider mb-4">
             <span className="text-[#f59e0b]">★</span> Your Favorites
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -240,7 +245,7 @@ export default function HomeClient() {
       {/* Recently Used ────────────────────────────────────────────────────── */}
       {!isFiltering && recentTools.length > 0 && (
         <div className="mb-10">
-          <h2 className="flex items-center gap-2 text-xs font-semibold text-[#555555] uppercase tracking-wider mb-4">
+          <h2 className="flex items-center gap-2 text-xs font-semibold text-[#999999] uppercase tracking-wider mb-4">
             <span>🕐</span> Recently Used
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -254,8 +259,8 @@ export default function HomeClient() {
       {/* New ──────────────────────────────────────────────────────────────── */}
       {!isFiltering && (
         <div className="mb-10">
-          <h2 className="flex items-center gap-2 text-xs font-semibold text-[#555555] uppercase tracking-wider mb-4">
-            <span className="inline-flex items-center px-1.5 py-0.5 bg-[#a855f7]/15 text-[#a855f7] rounded-[4px] text-[9px] font-bold tracking-wider">NEW</span>
+          <h2 className="flex items-center gap-2 text-xs font-semibold text-[#999999] uppercase tracking-wider mb-4">
+            <span className="inline-flex items-center px-1.5 py-0.5 bg-[#a855f7]/15 text-[#c084fc] rounded-[4px] text-[9px] font-bold tracking-wider">NEW</span>
             Just added
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -269,7 +274,7 @@ export default function HomeClient() {
       {/* Featured ─────────────────────────────────────────────────────────── */}
       {!isFiltering && (
         <div className="mb-12">
-          <h2 className="flex items-center gap-2 text-xs font-semibold text-[#555555] uppercase tracking-wider mb-4">
+          <h2 className="flex items-center gap-2 text-xs font-semibold text-[#999999] uppercase tracking-wider mb-4">
             <span className="text-[#a855f7]">★</span> Featured
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -283,12 +288,12 @@ export default function HomeClient() {
       {/* Filtered results or full category list ──────────────────────────── */}
       {isFiltering ? (
         <div>
-          <h2 className="text-xs font-semibold text-[#555555] uppercase tracking-wider mb-4">
+          <h2 className="text-xs font-semibold text-[#999999] uppercase tracking-wider mb-4" aria-live="polite">
             {filteredTools.length} result{filteredTools.length !== 1 ? "s" : ""}
             {search ? ` for "${search}"` : ""}
           </h2>
           {filteredTools.length === 0 ? (
-            <div className="p-12 text-center border border-dashed border-[#222222] rounded-[8px] text-[#444444] text-sm">
+            <div className="p-12 text-center border border-dashed border-[#222222] rounded-[8px] text-[#999999] text-sm">
               No tools found. Try a different search term.
             </div>
           ) : (
@@ -305,7 +310,7 @@ export default function HomeClient() {
           if (catTools.length === 0) return null;
           return (
             <div key={cat} className="mb-10">
-              <h2 className="text-xs font-semibold text-[#555555] uppercase tracking-wider mb-4">{cat}</h2>
+              <h2 className="text-xs font-semibold text-[#999999] uppercase tracking-wider mb-4">{cat}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {catTools.map((t) => (
                   <ToolCard key={t.slug} tool={t} />
@@ -319,30 +324,28 @@ export default function HomeClient() {
       {/* Why ToolNinja ────────────────────────────────────────────────────── */}
       {!isFiltering && (
         <div className="mt-16 pt-12 border-t border-[#161616]">
-          <h2 className="text-xs font-semibold text-[#444444] uppercase tracking-wider mb-8 text-center">
+          <h2 className="text-xs font-semibold text-[#888888] uppercase tracking-wider mb-8 text-center">
             Why ToolNinja
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {WHY_ITEMS.map((item) => {
-              const Icon = (
-                LucideIcons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>
-              )[item.icon];
+              const Icon = WHY_ICONS[item.icon];
               return (
                 <div key={item.title} className="p-5 bg-[#0d0d0d] border border-[#1a1a1a] rounded-[8px]">
                   <div className="mb-3">
                     {Icon && <Icon size={18} className="text-[#a855f7]" />}
                   </div>
                   <h3 className="text-sm font-semibold text-[#d4d4d4] mb-1.5">{item.title}</h3>
-                  <p className="text-xs text-[#555555] leading-relaxed">{item.desc}</p>
+                  <p className="text-xs text-[#999999] leading-relaxed">{item.desc}</p>
                 </div>
               );
             })}
           </div>
 
-          <p className="text-center text-xs text-[#333333] mt-10">
-            <Link href="/privacy" className="hover:text-[#555555] transition-colors">Privacy Policy</Link>
+          <p className="text-center text-xs text-[#999999] mt-10">
+            <Link href="/privacy" className="hover:text-[#f5f5f5] transition-colors">Privacy Policy</Link>
             <span className="mx-2">·</span>
-            <Link href="/terms" className="hover:text-[#555555] transition-colors">Terms of Service</Link>
+            <Link href="/terms" className="hover:text-[#f5f5f5] transition-colors">Terms of Service</Link>
           </p>
         </div>
       )}

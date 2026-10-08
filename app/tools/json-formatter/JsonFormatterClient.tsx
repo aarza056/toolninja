@@ -40,7 +40,7 @@ function TreeNode({ value, depth = 0 }: { value: unknown; depth?: number }) {
     if (value.length === 0) return <span className="text-[#888888]">[]</span>;
     return (
       <span>
-        <button onClick={() => setOpen((o) => !o)} className="text-[#555555] hover:text-[#888888] mr-1 align-middle">
+        <button onClick={() => setOpen((o) => !o)} className="text-[#999999] hover:text-[#888888] mr-1 align-middle">
           {open ? <ChevronDown size={11} className="inline" /> : <ChevronRight size={11} className="inline" />}
         </button>
         <span className="text-[#888888]">[</span>
@@ -48,14 +48,14 @@ function TreeNode({ value, depth = 0 }: { value: unknown; depth?: number }) {
           <div className="ml-4 border-l border-[#1e1e1e] pl-3">
             {value.map((v, i) => (
               <div key={i} className="leading-relaxed">
-                <span className="text-[#444444] mr-1">{i}</span>
+                <span className="text-[#888888] mr-1">{i}</span>
                 <TreeNode value={v} depth={depth + 1} />
-                {i < value.length - 1 && <span className="text-[#555555]">,</span>}
+                {i < value.length - 1 && <span className="text-[#999999]">,</span>}
               </div>
             ))}
           </div>
         ) : (
-          <span className="text-[#555555]"> {value.length} items </span>
+          <span className="text-[#999999]"> {value.length} items </span>
         )}
         <span className="text-[#888888]">]</span>
       </span>
@@ -67,7 +67,7 @@ function TreeNode({ value, depth = 0 }: { value: unknown; depth?: number }) {
     if (entries.length === 0) return <span className="text-[#888888]">{"{}"}</span>;
     return (
       <span>
-        <button onClick={() => setOpen((o) => !o)} className="text-[#555555] hover:text-[#888888] mr-1 align-middle">
+        <button onClick={() => setOpen((o) => !o)} className="text-[#999999] hover:text-[#888888] mr-1 align-middle">
           {open ? <ChevronDown size={11} className="inline" /> : <ChevronRight size={11} className="inline" />}
         </button>
         <span className="text-[#888888]">{"{"}</span>
@@ -78,12 +78,12 @@ function TreeNode({ value, depth = 0 }: { value: unknown; depth?: number }) {
                 <span className="json-key">{'"'}{k}{'"'}</span>
                 <span className="text-[#888888]">: </span>
                 <TreeNode value={v} depth={depth + 1} />
-                {i < entries.length - 1 && <span className="text-[#555555]">,</span>}
+                {i < entries.length - 1 && <span className="text-[#999999]">,</span>}
               </div>
             ))}
           </div>
         ) : (
-          <span className="text-[#555555]"> {entries.length} keys </span>
+          <span className="text-[#999999]"> {entries.length} keys </span>
         )}
         <span className="text-[#888888]">{"}"}</span>
       </span>
@@ -235,7 +235,7 @@ export default function JsonFormatterClient() {
       <div className="flex flex-wrap gap-2 mb-4">
         <button
           onClick={() => format(input)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-[6px] transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#9333ea] hover:bg-[#7e22ce] text-white rounded-[6px] transition-colors"
         >
           <Braces size={14} /> Format
         </button>
@@ -286,7 +286,7 @@ export default function JsonFormatterClient() {
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
-                className={`px-3 py-1.5 text-xs border-r last:border-0 border-[#222222] transition-colors ${t.id === tab ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
+                className={`px-3 py-1.5 text-xs border-r last:border-0 border-[#222222] transition-colors ${t.id === tab ? "bg-[#9333ea] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
               >
                 {t.label}
               </button>
@@ -306,7 +306,7 @@ export default function JsonFormatterClient() {
                   style={{ whiteSpace: "pre-wrap", wordBreak: "break-all" }}
                 />
               ) : (
-                <p className="text-[#444444] text-sm italic">
+                <p className="text-[#888888] text-sm italic">
                   {error ? "Fix the JSON error to see output" : "Formatted JSON will appear here..."}
                 </p>
               )}
@@ -322,7 +322,7 @@ export default function JsonFormatterClient() {
               {parsedJson !== null ? (
                 <TreeNode key={output} value={parsedJson} depth={0} />
               ) : (
-                <p className="text-[#444444] italic">
+                <p className="text-[#888888] italic">
                   {error ? "Fix JSON error to view tree" : "Tree view will appear here..."}
                 </p>
               )}
@@ -335,7 +335,7 @@ export default function JsonFormatterClient() {
               <div>
                 <label className="text-xs text-[#888888] font-medium block mb-1">
                   Path{" "}
-                  <span className="text-[#555555]">$.key, $.arr[0], $.a.b.c</span>
+                  <span className="text-[#999999]">$.key, $.arr[0], $.a.b.c</span>
                 </label>
                 <input
                   type="text"
@@ -361,7 +361,7 @@ export default function JsonFormatterClient() {
                     </pre>
                   )
                 ) : (
-                  <p className="text-[#444444] italic">
+                  <p className="text-[#888888] italic">
                     {error
                       ? "Fix JSON error to query"
                       : parsedJson === null
@@ -380,20 +380,20 @@ export default function JsonFormatterClient() {
                 <div className="flex rounded-[6px] border border-[#222222] overflow-hidden">
                   <button
                     onClick={() => setFlattenMode("flatten")}
-                    className={`px-3 py-1.5 text-xs transition-colors ${flattenMode === "flatten" ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
+                    className={`px-3 py-1.5 text-xs transition-colors ${flattenMode === "flatten" ? "bg-[#9333ea] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
                   >
                     Flatten
                   </button>
                   <button
                     onClick={() => setFlattenMode("unflatten")}
-                    className={`px-3 py-1.5 text-xs border-l border-[#222222] transition-colors ${flattenMode === "unflatten" ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
+                    className={`px-3 py-1.5 text-xs border-l border-[#222222] transition-colors ${flattenMode === "unflatten" ? "bg-[#9333ea] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
                   >
                     Unflatten
                   </button>
                 </div>
                 {flattenOutput && <CopyButton text={flattenOutput} size="sm" />}
               </div>
-              <p className="text-[10px] text-[#555555]">
+              <p className="text-[10px] text-[#999999]">
                 {flattenMode === "flatten"
                   ? 'Nested keys become dot-notation: {"a":{"b":1}} → {"a.b":1}'
                   : 'Dot-notation keys become nested: {"a.b":1} → {"a":{"b":1}}'}
@@ -405,7 +405,7 @@ export default function JsonFormatterClient() {
                 {flattenOutput ? (
                   <pre className="m-0 p-0 bg-transparent text-[#f5f5f5] whitespace-pre-wrap break-all">{flattenOutput}</pre>
                 ) : (
-                  <p className="text-[#444444] italic">
+                  <p className="text-[#888888] italic">
                     {error
                       ? "Fix JSON error first"
                       : parsedJson === null

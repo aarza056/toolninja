@@ -80,7 +80,7 @@ export default function BlogPostPage({ params }: Props) {
       />
 
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-[#555555] mb-8">
+      <div className="flex items-center gap-2 text-sm text-[#999999] mb-8">
         <Link href="/" className="hover:text-[#888888] transition-colors">
           Home
         </Link>
@@ -194,7 +194,7 @@ export default function BlogPostPage({ params }: Props) {
                 <span className="text-sm text-[#f5f5f5] group-hover:text-[#a855f7] transition-colors font-medium">
                   {tool!.name}
                 </span>
-                <span className="text-xs text-[#555555] ml-auto">
+                <span className="text-xs text-[#999999] ml-auto">
                   Free tool →
                 </span>
               </Link>
@@ -207,7 +207,7 @@ export default function BlogPostPage({ params }: Props) {
       <div className="mt-8 pt-6 border-t border-[#1e1e1e]">
         <Link
           href="/blog"
-          className="text-sm text-[#555555] hover:text-[#a855f7] transition-colors"
+          className="text-sm text-[#999999] hover:text-[#a855f7] transition-colors"
         >
           ← All articles
         </Link>
