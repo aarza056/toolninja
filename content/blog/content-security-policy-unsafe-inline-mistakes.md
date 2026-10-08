@@ -7,7 +7,6 @@ date: "2026-08-09"
 author: "ToolNinja"
 coverEmoji: "🛡️"
 tags: ["content security policy", "csp unsafe-inline", "csp xss protection", "csp header mistakes", "csp nonce hash", "content-security-policy guide", "csp object-src none", "csp best practices 2026", "security", "csp", "xss"]
-relatedTools: ["csp-builder"]
 faqs:
   - q: "What does Content-Security-Policy actually protect against?"
     a: "CSP's primary purpose is mitigating Cross-Site Scripting (XSS). Even if an attacker successfully injects a <script> tag into your page — through a stored XSS vulnerability, for example — a correctly configured CSP prevents that injected script from executing, because it didn't come from an explicitly allowed source. It also restricts other risky behaviors, including framing (clickjacking) and form submission targets."
@@ -104,6 +103,10 @@ Notice what's absent: no `'unsafe-inline'`, no `'unsafe-eval'`, no wildcard `*` 
 ## Check Your Own Policy
 
 **[ToolNinja's CSP Header Builder & Analyzer →](/tools/csp-builder)** does both directions of this work: build a policy visually with per-directive source lists, or switch to Analyze mode and paste your current production CSP to get it checked automatically for `unsafe-inline`, `unsafe-eval`, wildcard sources, and missing `object-src`/`base-uri`/`frame-ancestors` — the exact mistakes covered above, flagged instantly instead of found during a security review.
+
+## Related tools
+
+Once a policy is deployed, paste your response headers into the [HTTP Security Headers Checker](/tools/security-headers-checker) to confirm CSP is present and free of `unsafe-inline`, and use the [Hash Generator](/tools/hash-generator) with Base64 output to compute the SHA-256 digest of an inline script for a `'sha256-…'` source.
 
 ---
 

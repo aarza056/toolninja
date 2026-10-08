@@ -7,7 +7,6 @@ date: "2026-07-14"
 author: "ToolNinja"
 coverEmoji: "🚀"
 tags: ["free postman alternative", "postman alternative no login", "test api without postman", "browser api testing tool", "postman alternative online", "lightweight postman alternative", "api testing tool no account", "postman vs http request builder", "free api client online", "test rest api browser", "no login api tester", "api", "http", "testing", "postman"]
-relatedTools: ["http-request"]
 faqs:
   - q: "Is there a free Postman alternative that doesn't require a login?"
     a: "Yes — ToolNinja's HTTP Request Builder runs entirely in your browser with no account, no login, and no data sent to a server. It covers the core workflow (method, URL, headers, body, response inspection) that most day-to-day API testing needs."
@@ -95,3 +94,8 @@ None of that is a knock on browser tools — it's just a different job. A browse
 ## Try It Now
 
 **[Open the HTTP Request Builder →](/tools/http-request)** — paste a URL, hit Send, see the response. No install, no account, no sync prompt.
+
+
+## Related tools
+
+If you already have a request as a curl command, the [cURL to Code converter](/tools/curl-to-code) turns it into fetch, axios, Python, PHP or Go code.

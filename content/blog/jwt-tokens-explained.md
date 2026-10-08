@@ -7,7 +7,6 @@ date: "2026-05-03"
 author: "ToolNinja"
 coverEmoji: "🔑"
 tags: ["jwt decoder", "decode jwt token", "json web token explained", "jwt token structure", "jwt header payload signature", "jwt security", "how to decode jwt online", "jwt debugger", "jwt expiry check", "jwt vs session tokens", "jwt alg none attack", "jwt tutorial"]
-relatedTools: ["jwt-decoder"]
 faqs:
   - q: "Can I decode a JWT without the secret key?"
     a: "Yes — the header and payload of a JWT are just Base64URL encoded, not encrypted. Anyone can decode them without the secret. The secret is only needed to verify the signature."
@@ -206,3 +205,8 @@ This only decodes — it does **not** verify the signature. Use this for debuggi
 ## Try It: ToolNinja JWT Decoder
 
 Paste any JWT into the **[ToolNinja JWT Decoder](/tools/jwt-decoder)** to instantly see the decoded header, payload, and expiry status. The token is decoded in your browser and never uploaded.
+
+
+## Related tools
+
+To create test tokens with a known secret or key, use the [JWT Generator](/tools/jwt-generator) and then decode them to see each part.

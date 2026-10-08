@@ -7,7 +7,6 @@ date: "2026-10-07"
 author: "ToolNinja"
 coverEmoji: "🩹"
 tags: ["json patch", "rfc 6902", "http patch request", "json pointer", "how to use json patch", "partial update api", "json merge patch vs json patch", "api", "rest"]
-relatedTools: ["json-patch-tool", "json-diff"]
 faqs:
   - q: "What's the difference between JSON Patch and JSON Merge Patch?"
     a: "JSON Patch (RFC 6902) is an explicit, ordered list of operations with JSON Pointer paths — precise, and able to target specific array elements or assert preconditions, but more verbose. JSON Merge Patch (RFC 7396) is just a partial object merged into the target — more compact, but it can't remove a key without a special null convention and can't address individual array elements at all. Use JSON Patch whenever arrays are involved or you need the 'test' operation's precondition check."

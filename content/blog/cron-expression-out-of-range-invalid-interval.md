@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "⏰"
 tags: ["cron", "scheduling", "linux", "devops", "cron expression", "cron syntax", "invalid cron"]
-relatedTools: ["cron-tester"]
 faqs:
   - q: "What are the valid ranges for each cron field?"
     a: "Standard cron has 5 fields: minute (0-59), hour (0-23), day-of-month (1-31), month (1-12), day-of-week (0-7, where both 0 and 7 = Sunday). Extended cron (AWS, Quartz) adds a 6th field for seconds at the beginning."
@@ -153,4 +152,4 @@ Quartz/AWS (6 fields):
 
 The Cron Tester lets you paste any cron expression and instantly see the next 10 scheduled run times in both UTC and your local timezone.
 
-🔧 **[Cron Tester — toolninja.io/tools/cron-tester](https://toolninja.io/tools/cron-tester)**
+🔧 **[Cron Tester](/tools/cron-tester)**

@@ -7,7 +7,6 @@ date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🌐"
 tags: ["nginx 502 bad gateway", "nginx 504 gateway timeout", "nginx 403 forbidden", "proxy_read_timeout", "nginx errors explained", "bad gateway fix", "gateway timeout fix", "nginx troubleshooting", "reverse proxy errors", "php-fpm socket", "devops", "nginx"]
-relatedTools: ["http-status-codes", "http-request"]
 faqs:
   - q: "Is raising proxy_read_timeout a real fix for a 504?"
     a: "Rarely. proxy_read_timeout controls the maximum gap between reads from the upstream, not the total request time — raising it globally just makes every request wait longer before nginx gives up, and it does nothing about why the upstream is slow in the first place. It's a reasonable stopgap for one genuinely slow endpoint (set in that location block specifically), but if requests are timing out across the board, the real fix is finding the slow query, the exhausted worker pool, or the saturated connection limit on the upstream."
@@ -146,6 +145,10 @@ If SELinux is silently blocking something, `sealert -a /var/log/audit/audit.log`
 ## Testing the Actual Response, Not Just the Symptom
 
 Once you suspect which layer is failing, it helps to hit the upstream directly and compare — bypass nginx entirely and send the request straight to the app's port to confirm whether the app itself is healthy. **[ToolNinja's HTTP Request Builder →](/tools/http-request)** lets you send that request with custom headers and see the raw status, timing, and response body without needing curl flags memorized. And when you just need to double-check what a status code actually means before you go debugging the wrong thing, **[the HTTP Status Codes reference →](/tools/http-status-codes)** has the full list with plain-English explanations.
+
+## Related tools
+
+If you are moving a site from Apache, the [.htaccess to Nginx Converter](/tools/htaccess-to-nginx) translates rewrite and redirect rules, a common source of unexpected 403s after a migration.
 
 ---
 

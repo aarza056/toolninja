@@ -7,7 +7,6 @@ date: "2026-05-08"
 author: "ToolNinja"
 coverEmoji: "📋"
 tags: ["json formatter online", "json validator", "json vs yaml", "json syntax rules", "json parse error fix", "jsonpath tutorial", "json beautifier", "format json online free", "json schema validation", "json vs javascript object", "json trailing comma", "json editor online"]
-relatedTools: ["json-formatter"]
 faqs:
   - q: "What is the difference between JSON and JavaScript objects?"
     a: "JSON requires double-quoted string keys, no trailing commas, no comments, and no undefined values. JavaScript objects are more flexible runtime structures. JSON is a strict subset of JavaScript syntax."
@@ -280,3 +279,8 @@ For Python: `ijson` library. For Go: `encoding/json` with `Decoder.Token()`.
 ## Try It: ToolNinja JSON Formatter
 
 Paste messy JSON and instantly format, validate, and minify it with the **[ToolNinja JSON Formatter](/tools/json-formatter)**. Highlights syntax errors with line numbers. Your JSON is processed in your browser and never uploaded.
+
+
+## Related tools
+
+To pull specific values out of a large document, test expressions in the [JSONPath Tester](/tools/jsonpath-tester), and to turn a sample document into a schema you can validate against, use the [JSON Schema Generator](/tools/json-schema-generator).

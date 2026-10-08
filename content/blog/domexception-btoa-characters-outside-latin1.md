@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔤"
 tags: ["javascript", "base64", "encoding", "unicode", "btoa", "frontend", "domexception"]
-relatedTools: ["base64"]
 faqs:
   - q: "Why does btoa() only support Latin-1 characters?"
     a: "btoa() was designed to encode binary data (Latin-1 = one byte per character). Base64 encoding works on raw bytes, and Latin-1 maps exactly one character to one byte (character codes 0-255). Unicode characters above U+00FF require multiple bytes in UTF-8 and btoa() doesn't handle multi-byte characters."
@@ -150,4 +149,9 @@ const b64decode = str => decodeURIComponent(atob(str));
 
 The Base64 tool handles Unicode encoding and decoding correctly — paste any string including emojis, CJK characters, and accented text to get the correct Base64 output.
 
-🔧 **[Base64 Encoder/Decoder — toolninja.io/tools/base64](https://toolninja.io/tools/base64)**
+🔧 **[Base64 Encoder/Decoder](/tools/base64)**
+
+
+## Related tools
+
+To see which characters in your string fall outside Latin-1, look them up in the [Unicode Explorer](/tools/unicode-explorer), which shows each character's code point and UTF-8 bytes.

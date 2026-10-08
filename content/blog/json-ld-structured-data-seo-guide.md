@@ -7,7 +7,6 @@ date: "2026-08-08"
 author: "ToolNinja"
 coverEmoji: "🏷️"
 tags: ["json-ld structured data", "schema markup seo", "json-ld generator", "google rich results", "ai overviews structured data", "schema.org json-ld", "structured data guide 2026", "rich snippets seo", "seo", "structured-data", "json-ld"]
-relatedTools: ["meta-tags-generator"]
 faqs:
   - q: "What is the difference between JSON-LD, Microdata, and RDFa?"
     a: "All three are ways to add schema.org markup to a page, but JSON-LD is a standalone <script type=\"application/ld+json\"> block, completely separate from your HTML — you can add or change it without touching page markup. Microdata and RDFa embed attributes directly inside HTML tags, which is more fragile to maintain and easier to break during redesigns. Google explicitly recommends JSON-LD, and it's the format virtually all modern implementations use."
@@ -113,6 +112,10 @@ This makes JSON-LD one of those tasks where doing it 80% of the way often captur
 ## Generate It Without Memorizing the Spec
 
 **[ToolNinja's Meta Tags Generator →](/tools/meta-tags-generator)** generates a matching JSON-LD block (WebSite, Article, or Person) alongside your Open Graph and Twitter Card tags — driven by the same title, description, URL, author, and page-type fields you're already filling in for social sharing, so you're not maintaining two separate mental models of the same page metadata.
+
+## Related tools
+
+JSON-LD has to be valid JSON before any search engine can read it, so paste your block into the [JSON Formatter](/tools/json-formatter) to catch syntax errors first.
 
 ---
 

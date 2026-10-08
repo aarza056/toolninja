@@ -7,7 +7,6 @@ date: "2026-09-16"
 author: "ToolNinja"
 coverEmoji: "🟦"
 tags: ["typescript 7", "tsgo", "go compiler", "typescript migration", "project corsa", "tsconfig breaking changes", "node.js type stripping", "typescript-eslint", "ts-morph"]
-relatedTools: ["ts7-migration-checker", "node-type-stripping-checker"]
 faqs:
   - q: "Do I need to rename tsc to tsgo in my scripts?"
     a: "No — from the TypeScript 7.0 release candidate onward, the command name reverted to the familiar tsc. The Go rewrite (codenamed Project Corsa, package typescript-go) powers it underneath, but your package.json scripts, CI commands, and editor integrations don't need to change just to pick up the new compiler."

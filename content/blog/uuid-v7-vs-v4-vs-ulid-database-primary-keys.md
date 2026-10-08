@@ -7,7 +7,6 @@ date: "2026-09-15"
 author: "ToolNinja"
 coverEmoji: "🆔"
 tags: ["uuid v7", "uuid vs ulid", "database primary key", "uuid v4 performance", "ulid", "database indexing", "postgres uuid", "mysql uuid primary key", "distributed id generation"]
-relatedTools: ["uuid-generator", "uuid-parser"]
 faqs:
   - q: "Is UUIDv7 a real, standardized format, or a convention people made up?"
     a: "It's a real IETF standard — UUID version 7 was formally standardized in RFC 9562 (May 2024), alongside version 6 and version 8. It's not a hack or a community convention; database drivers, ORMs, and UUID libraries across most major languages now ship native v7 support."
@@ -84,3 +83,8 @@ For most internal or moderately-sensitive data, this is a non-issue — it's gen
 - **Existing UUIDv4 tables that *are* hurting** (rising insert latency, index bloat you can't otherwise explain): this is a genuine "add a new v7/ULID column, backfill, cut over" migration — plan it like any other primary key change, with the standard caution that implies. It's not a quick find-and-replace.
 
 The underlying lesson generalizes past UUIDs specifically: **a primary key's write pattern is a property of your storage engine, not just an identifier format choice** — and it's worth getting right before a table is too large to comfortably change.
+
+
+## Related tools
+
+To try both formats, create time-ordered v7 values with the [UUID Generator](/tools/uuid-generator) and sortable IDs with the [ULID Generator](/tools/ulid-generator).

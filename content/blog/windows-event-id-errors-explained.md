@@ -7,7 +7,6 @@ date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🪟"
 tags: ["event id 4625", "event id 1000 application error", "event id 7000 service control manager", "event id 41 kernel-power", "windows event log errors", "event viewer troubleshooting", "failed logon event id", "service failed to start", "unexpected shutdown windows", "windows server logs", "sysadmin", "windows"]
-relatedTools: []
 faqs:
   - q: "What's the difference between Event ID 4624 and 4625?"
     a: "4624 is a successful logon; 4625 is a failed one. They share the same set of fields (Logon Type, Workstation Name, Source Network Address), which is what makes them useful together — a 4625 immediately followed by a 4624 from the same source often just means someone mistyped their password once, while a long unbroken run of 4625s from an external IP with no matching successful logon is the pattern that indicates a brute-force or credential-stuffing attempt."

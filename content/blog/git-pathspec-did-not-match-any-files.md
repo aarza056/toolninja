@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔧"
 tags: ["git", "version control", "devops", "git checkout", "git branch", "pathspec error"]
-relatedTools: ["git-command-generator"]
 faqs:
   - q: "Why does 'git checkout branch-name' say path doesn't match when the branch exists on GitHub?"
     a: "A remote branch exists on the remote but not locally until you fetch it. Run 'git fetch origin' first to download the branch reference, then 'git checkout branch-name'. Git will automatically create a local tracking branch."
@@ -139,4 +138,4 @@ git config --global fetch.prune true
 
 The Git Command Generator helps you build the right Git command — fetch + checkout, branch creation, file restoration — without memorizing the flag combinations.
 
-🔧 **[Git Command Generator — toolninja.io/tools/git-command-generator](https://toolninja.io/tools/git-command-generator)**
+🔧 **[Git Command Generator](/tools/git-command-generator)**

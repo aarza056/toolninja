@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { DEFAULT_AUTHOR_ID } from "./authors";
+import { getToolsForPost } from "./blog-tool-map";
 
 const BLOG_DIR = path.join(process.cwd(), "content", "blog");
 
@@ -65,7 +66,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     tags: data.tags ?? [],
     readingTime: estimateReadingTime(content),
     content,
-    relatedTools: data.relatedTools ?? [],
+    relatedTools: getToolsForPost(slug),
     coverEmoji: data.coverEmoji ?? "🥷",
     faqs: data.faqs ?? [],
   };

@@ -7,7 +7,6 @@ date: "2026-05-05"
 author: "ToolNinja"
 coverEmoji: "🔢"
 tags: ["base64 encoding explained", "base64 decoder online", "base64 vs encryption", "base64url encoding", "what is base64", "base64 padding equals sign", "base64 encode decode free", "binary to text encoding", "base64 in jwt tokens", "base64 image encoding", "base64 encode online"]
-relatedTools: ["base64-encoder"]
 faqs:
   - q: "Is Base64 the same as encryption?"
     a: "No. Base64 is encoding, not encryption. It transforms binary data into ASCII text — anyone can decode it without a key. Never use Base64 to hide sensitive data."
@@ -194,4 +193,9 @@ This trades network requests for larger HTML/CSS size. Good for small, critical 
 
 ## Try It: ToolNinja Base64 Encoder
 
-Encode or decode any text or file instantly with the **[ToolNinja Base64 Encoder](/tools/base64-encoder)**. Supports both standard and URL-safe variants, handles binary file uploads, and runs entirely in your browser.
+Encode or decode any text or file instantly with the **[ToolNinja Base64 Encoder](/tools/base64)**. Supports both standard and URL-safe variants, handles binary file uploads, and runs entirely in your browser.
+
+
+## Related tools
+
+To embed an image as a data URI, the [Image to Base64 converter](/tools/image-to-base64) produces the string for you, and when the encoded value has to travel in a URL, the [URL Encoder](/tools/url-encoder) shows how characters like `+` and `/` get percent-encoded.

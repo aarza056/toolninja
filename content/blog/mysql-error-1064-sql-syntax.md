@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🗄️"
 tags: ["mysql", "sql", "database", "sql error", "error 1064", "sql syntax"]
-relatedTools: ["sql-formatter"]
 faqs:
   - q: "What does MySQL Error 1064 mean?"
     a: "It means the MySQL parser encountered a token it did not expect at a specific position in your SQL statement. The error message points to the part of the query near the problem, though the actual mistake may be one token earlier."
@@ -172,4 +171,4 @@ status: {
 
 The SQL Formatter formats and highlights your SQL, making missing commas, mismatched parentheses, and unquoted reserved words immediately visible.
 
-🔧 **[SQL Formatter — toolninja.io/tools/sql-formatter](https://toolninja.io/tools/sql-formatter)**
+🔧 **[SQL Formatter](/tools/sql-formatter)**

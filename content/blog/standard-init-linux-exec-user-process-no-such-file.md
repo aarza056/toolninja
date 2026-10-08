@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🐳"
 tags: ["docker", "linux", "shell", "containers", "crlf", "entrypoint error", "docker no such file"]
-relatedTools: ["chmod-calculator"]
 faqs:
   - q: "Why does this error only happen on Linux but not on my Windows machine?"
     a: "On Windows, Docker Desktop runs a Linux VM internally, but your source files are written with Windows CRLF line endings. The Linux kernel inside Docker sees #!/bin/bash\\r and can't find an interpreter named /bin/bash\\r — so it throws 'no such file or directory'."
@@ -139,4 +138,9 @@ ENTRYPOINT ["/app/entrypoint.sh"]
 
 After fixing line endings, verify that file permissions are correct — shell scripts need execute (+x) permission. The chmod calculator gives you the right value without memorizing octal notation.
 
-🔧 **[Chmod Calculator — toolninja.io/tools/chmod-calculator](https://toolninja.io/tools/chmod-calculator)**
+🔧 **[Chmod Calculator](/tools/chmod-calculator)**
+
+
+## Related tools
+
+If you start the container with a long `docker run` command, the [Docker Run to Compose converter](/tools/docker-run-to-compose) turns it into a `docker-compose.yml` you can version alongside the `.gitattributes` fix.

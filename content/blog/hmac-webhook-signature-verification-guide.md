@@ -7,7 +7,6 @@ date: "2026-08-07"
 author: "ToolNinja"
 coverEmoji: "🔏"
 tags: ["hmac signature verification", "webhook signature verification", "stripe webhook signature failed", "github webhook secret", "hmac sha256 webhook", "verify webhook signature nodejs", "timing safe comparison", "webhook security", "webhooks", "security", "api"]
-relatedTools: ["hash-generator"]
 faqs:
   - q: "Why does my webhook signature verification fail even though I'm using the correct secret?"
     a: "The most common cause by far is verifying against the parsed-and-reserialized JSON body instead of the exact raw bytes the provider sent. JSON.stringify(JSON.parse(rawBody)) is not guaranteed to produce byte-identical output — key order, whitespace, and number formatting can all shift — and HMAC is computed over exact bytes, so any difference produces a completely different signature."

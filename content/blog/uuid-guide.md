@@ -7,7 +7,6 @@ date: "2026-05-06"
 author: "ToolNinja"
 coverEmoji: "🎲"
 tags: ["uuid generator online", "uuid v4 vs v7", "uuid explained", "guid vs uuid difference", "uuid primary key database", "uuid v4 random generation", "uuid v7 sortable", "ulid vs uuid", "nanoid vs uuid", "uuid collision probability", "generate uuid free", "uuid format explained"]
-relatedTools: ["uuid-generator"]
 faqs:
   - q: "What is the difference between UUID v4 and UUID v7?"
     a: "UUID v4 is randomly generated with no ordering — great for privacy but poor for database indexing. UUID v7 is time-ordered while still random enough to avoid collisions, making it better for database primary keys."
@@ -227,3 +226,8 @@ SELECT uuid_generate_v1();
 ## Try It: ToolNinja UUID Generator
 
 Generate cryptographically secure UUID v4s (and v7s) instantly with the **[ToolNinja UUID Generator](/tools/uuid-generator)**. Generate in bulk, copy with one click, runs in your browser.
+
+
+## Related tools
+
+To find out which version an existing UUID is, and read the timestamp inside v1, v6 and v7 values, use the [UUID Parser](/tools/uuid-parser).

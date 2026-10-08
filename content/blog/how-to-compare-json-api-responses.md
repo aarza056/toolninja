@@ -7,7 +7,6 @@ date: "2026-07-29"
 author: "ToolNinja"
 coverEmoji: "🔍"
 tags: ["json diff", "compare json objects", "api response debugging", "json diff tool", "compare api responses", "staging vs production diff", "api version comparison", "json comparison online", "api", "debugging", "json"]
-relatedTools: ["json-diff", "http-request"]
 faqs:
   - q: "Why not just eyeball two JSON responses side by side?"
     a: "It works for a 5-line object. It falls apart the moment you're comparing a real API response with nested objects, arrays, and 40+ fields — the human eye is bad at spotting a single changed value buried in an otherwise-identical block of text, and even worse at noticing something that's silently missing."

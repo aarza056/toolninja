@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🧩"
 tags: ["javascript", "typescript", "frontend", "api", "object error", "undefined null to object"]
-relatedTools: ["json-to-typescript"]
 faqs:
   - q: "Why do Object.keys() and Object.values() throw on null but Array.isArray() doesn't?"
     a: "Object.keys() calls ToObject() internally, which explicitly throws a TypeError for null and undefined per the ECMAScript specification. Array.isArray() is a type-checking function that returns false for any non-array value including null — it never throws."
@@ -152,4 +151,9 @@ if (config !== null) {
 
 When `Object.keys()` throws because the API returned an unexpected shape, the JSON to TypeScript converter shows exactly what type your API is returning — including which fields can be `null`.
 
-🔧 **[JSON to TypeScript — toolninja.io/tools/json-to-typescript](https://toolninja.io/tools/json-to-typescript)**
+🔧 **[JSON to TypeScript](/tools/json-to-typescript)**
+
+
+## Related tools
+
+To check whether the value you pass to `Object.keys()` is really an object, paste the API response into the [JSON Formatter](/tools/json-formatter) and look for a `null` where you expected `{}`.

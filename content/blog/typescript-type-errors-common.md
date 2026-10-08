@@ -7,7 +7,6 @@ date: "2026-07-17"
 author: "ToolNinja"
 coverEmoji: "🔷"
 tags: ["type is not assignable to type", "typescript type error", "property does not exist on type", "typescript object is possibly undefined", "typescript argument of type not assignable", "typescript cannot find name", "ts2322", "ts2339", "ts2345", "typescript common errors explained", "typescript", "javascript", "frontend", "errors"]
-relatedTools: ["json-to-typescript"]
 faqs:
   - q: "What's the fastest way to fix 'Property does not exist on type' (TS2339)?"
     a: "First check for a typo — it's the most common cause. If the property genuinely exists at runtime but TypeScript doesn't know about it, the real fix is correcting or extending the type definition, not silencing the error with `any`. Generate the interface from a real API response with a JSON-to-TypeScript tool if the type was hand-written and drifted out of sync."

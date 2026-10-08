@@ -7,7 +7,6 @@ date: "2026-05-02"
 author: "ToolNinja"
 coverEmoji: "🌐"
 tags: ["cidr calculator", "subnet calculator online", "cidr notation explained", "what is /24 network", "ip subnet calculator", "cidr to ip range", "subnet mask calculator", "network address calculator", "ipv4 subnetting guide", "cidr block calculator", "what is 0.0.0.0/0", "subnetting explained"]
-relatedTools: ["cidr-calculator"]
 faqs:
   - q: "What does /24 mean in an IP address like 192.168.1.0/24?"
     a: "The /24 means the first 24 bits are the network portion, leaving 8 bits for hosts. This gives you 256 addresses (254 usable hosts) and corresponds to a subnet mask of 255.255.255.0."

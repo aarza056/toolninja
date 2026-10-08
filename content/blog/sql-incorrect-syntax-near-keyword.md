@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🗄️"
 tags: ["sql", "database", "mysql", "postgresql", "syntax error", "sql reserved words", "sql syntax near"]
-relatedTools: ["sql-formatter"]
 faqs:
   - q: "Why does SQL use the same word as a reserved keyword for my column name?"
     a: "SQL standards define hundreds of reserved words (SELECT, FROM, WHERE, ORDER, USER, KEY, VALUE, etc.) that are part of the language grammar. The SQL parser sees the word and tries to interpret it as a keyword rather than an identifier. The fix is to quote the identifier using the correct quoting style for your database."
@@ -135,4 +134,4 @@ const sequelize = new Sequelize(database, username, password, {
 
 The SQL Formatter reformats your query with proper indentation, making syntax errors immediately visible. Paste the failing query and the problematic identifier becomes clear.
 
-🔧 **[SQL Formatter — toolninja.io/tools/sql-formatter](https://toolninja.io/tools/sql-formatter)**
+🔧 **[SQL Formatter](/tools/sql-formatter)**

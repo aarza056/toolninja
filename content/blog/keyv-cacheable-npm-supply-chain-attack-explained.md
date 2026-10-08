@@ -7,7 +7,6 @@ date: "2026-08-11"
 author: "ToolNinja"
 coverEmoji: "🪱"
 tags: ["keyv npm attack", "cacheable npm supply chain", "flat-cache compromised", "file-entry-cache malware", "npm worm august 2026", "npm supply chain attack", "postinstall script malware", "npm credential stealer", "shai-hulud npm", "chaindrop worm", "devops", "security"]
-relatedTools: ["hash-generator"]
 faqs:
   - q: "How do I know for sure if I pulled a compromised version?"
     a: "Run npm ls keyv flat-cache file-entry-cache cacheable-request cacheable cache-manager @cacheable/utils @cacheable/memory @cacheable/node-cache --all in every project and check the resolved versions against the known-bad list. Also grep your lockfile (package-lock.json, yarn.lock, or pnpm-lock.yaml) directly, since a version can still be pinned in the lockfile even after npm pulls the bad release from the registry — and check recent CI run logs for install steps that pulled one of these packages between August 4 and when you patch."
@@ -119,6 +118,10 @@ Until that ships, `--ignore-scripts` on `npm install` is the closest thing to a 
 | Confirmed bad versions | `keyv@6.0.0`, `flat-cache@6.1.24`, `file-entry-cache@11.1.6`, plus others — check current advisories |
 | Confirmed clean rollback | `flat-cache@6.1.23`; `keyv@5.6.0` or `6.0.0-rc.1` |
 | What to do | Pin to clean versions, rebuild any exposed host, rotate every reachable credential |
+
+## Related tools
+
+To see which install scripts a package would run before you install it, paste its `package.json` into the [package.json Script Inspector](/tools/package-json-inspector). If you think tokens were exposed, the [Secret Scanner](/tools/secret-scanner) helps find credentials that were sitting in files on the affected machine so you know what to rotate.
 
 ---
 

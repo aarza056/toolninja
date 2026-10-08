@@ -7,7 +7,6 @@ date: "2026-05-07"
 author: "ToolNinja"
 coverEmoji: "🌿"
 tags: ["git commands cheat sheet", "git reset vs revert", "git stash tutorial", "git fetch vs pull", "git rebase explained", "git cherry pick", "how to undo git commit", "git branch commands", "essential git commands", "git commands list", "git workflow guide", "git beginner guide"]
-relatedTools: ["git-command-generator"]
 faqs:
   - q: "What is the difference between git reset and git revert?"
     a: "git reset moves the branch pointer backward, rewriting history — only safe for unpushed commits. git revert creates a new commit that undoes a previous one, preserving history and safe for shared branches."
@@ -337,3 +336,8 @@ git worktree remove ../hotfix-branch
 ## Try It: ToolNinja Git Command Generator
 
 Forget syntax for rarely-used commands? The **[ToolNinja Git Command Generator](/tools/git-command-generator)** lets you search across 65+ git commands by keyword or category, with clear descriptions and one-click copy.
+
+
+## Related tools
+
+To keep build output and secrets out of the repository from the first commit, generate a starting file with the [.gitignore Generator](/tools/gitignore-generator).

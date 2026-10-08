@@ -7,7 +7,6 @@ date: "2026-10-03"
 author: "ToolNinja"
 coverEmoji: "🔑"
 tags: ["passkey tutorial", "webauthn tutorial", "how to test passkeys", "webauthn without server", "navigator.credentials.create", "passkey vs security key", "webauthn authenticatorData flags", "passkeys", "security", "authentication"]
-relatedTools: ["passkey-tester", "jwk-thumbprint-calculator", "totp-generator"]
 faqs:
   - q: "Do I need HTTPS to test WebAuthn?"
     a: "Yes — WebAuthn only runs in a secure context, which means HTTPS, or localhost specifically (localhost is special-cased as secure even over plain HTTP for local development). Any other plain-HTTP origin will have navigator.credentials silently unavailable or throw immediately."
@@ -140,6 +139,10 @@ Treat a sandbox like this as step zero: understand the request/response shape, c
 ## Try It Live
 
 **[ToolNinja's Passkey / WebAuthn Playground →](/tools/passkey-tester)** runs exactly the flow above — create a real passkey, authenticate with it, and see every flag, the AAGUID, sign count, and transports decoded in place. No account, no backend, nothing transmitted anywhere.
+
+## Related tools
+
+The ceremony returns the public key in COSE format. If your server converts and stores it as a JWK, the [JWK Thumbprint Calculator](/tools/jwk-thumbprint-calculator) computes its RFC 7638 thumbprint, a stable identifier for that key.
 
 ---
 

@@ -7,7 +7,6 @@ date: "2026-05-09"
 author: "ToolNinja"
 coverEmoji: "🛡️"
 tags: ["password generator", "strong password tips", "password security 2026", "password entropy explained", "bcrypt vs md5 passwords", "password hashing guide", "nist password guidelines", "password manager safe", "random password generator", "how long should password be", "argon2 vs bcrypt", "secure password"]
-relatedTools: ["password-generator"]
 faqs:
   - q: "How long should a password be in 2026?"
     a: "NIST guidelines recommend at least 15 characters, with longer being better. Length matters more than complexity — a 20-character passphrase is stronger than a 10-character symbol mix."
@@ -197,3 +196,8 @@ Even a perfect password can be phished. MFA adds a second factor:
 ## Try It: ToolNinja Password Generator
 
 Generate cryptographically strong passwords and passphrases with the **[ToolNinja Password Generator](/tools/password-generator)**. Configure length, character sets, and exclusions. Runs entirely in your browser — the password is never transmitted anywhere.
+
+
+## Related tools
+
+To see how a specific password holds up, check it in the [Password Strength Checker](/tools/password-strength-checker), which estimates entropy and flags common patterns.

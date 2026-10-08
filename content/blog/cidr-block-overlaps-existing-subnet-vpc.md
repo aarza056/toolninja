@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🌐"
 tags: ["aws", "vpc", "networking", "cidr", "subnets", "devops", "ip addressing", "cidr overlap"]
-relatedTools: ["cidr-calculator"]
 faqs:
   - q: "What does CIDR overlap mean and why is it a problem?"
     a: "Two CIDR blocks overlap when they share one or more IP addresses. Overlapping subnets create routing ambiguity — the network can't determine which subnet to use for a given IP — so AWS prevents creating them."
@@ -141,4 +140,4 @@ subnet_cidrs = ["10.1.1.0/24", "10.1.2.0/24"]
 
 The CIDR Calculator shows the full IP range, number of hosts, and network/broadcast addresses for any CIDR block. Use it to verify non-overlapping ranges before opening the AWS console.
 
-🔧 **[CIDR Calculator — toolninja.io/tools/cidr-calculator](https://toolninja.io/tools/cidr-calculator)**
+🔧 **[CIDR Calculator](/tools/cidr-calculator)**

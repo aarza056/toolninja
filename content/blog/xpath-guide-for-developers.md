@@ -7,7 +7,6 @@ date: "2026-05-18"
 author: "ToolNinja"
 coverEmoji: "🔍"
 tags: ["xpath tester online", "xpath tutorial", "xpath expressions explained", "xpath cheat sheet", "xpath for web scraping", "xpath selenium", "xpath vs css selectors", "xpath predicates", "xpath axes", "xml xpath guide", "xpath evaluator", "html xpath examples"]
-relatedTools: ["xpath-tester"]
 faqs:
   - q: "What is the difference between / and // in XPath?"
     a: "A single / selects a direct child — /root/child means child must be a direct child of root. Double // selects descendants at any depth — //child finds all child elements anywhere in the document tree."
@@ -455,3 +454,8 @@ boolean(//div[@id='error'])
 **Namespace forgetting** — A namespace declaration on the root element affects all descendants. If your XPath finds nothing on namespaced XML, that's almost always the cause.
 
 **Dynamic attributes** — Generated class names or IDs change on every build. Prefer stable semantic attributes like `data-testid`, `name`, `role`, or structural positions over dynamic ones.
+
+
+## Related tools
+
+To try any expression from this guide against your own XML or HTML, use the [XPath Tester](/tools/xpath-tester), and if you already have a CSS selector, the [CSS Selector to XPath Converter](/tools/css-xpath-converter) gives you the equivalent XPath.

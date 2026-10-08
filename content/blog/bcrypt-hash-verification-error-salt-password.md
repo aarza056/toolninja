@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔐"
 tags: ["bcrypt", "password hashing", "nodejs", "security", "hash error", "invalid salt"]
-relatedTools: ["hash-generator"]
 faqs:
   - q: "What does 'Invalid salt version' mean in bcrypt?"
     a: "The stored hash does not start with a recognized bcrypt prefix ($2a$, $2b$, or $2y$). This usually means the hash was truncated, stored incorrectly in the database, or is not a bcrypt hash at all."
@@ -173,4 +172,9 @@ userSchema.methods.comparePassword = async function(candidate) {
 
 The Hash Generator lets you create bcrypt hashes and verify them interactively — useful for testing the correct round count and verifying that a known password matches a stored hash.
 
-🔧 **[Hash Generator — toolninja.io/tools/hash-generator](https://toolninja.io/tools/hash-generator)**
+🔧 **[Hash Generator](/tools/hash-generator)**
+
+
+## Related tools
+
+If you need a fresh test password while reproducing a verification error, the [Password Generator](/tools/password-generator) creates one with the length and character set you choose.

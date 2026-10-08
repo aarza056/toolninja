@@ -7,7 +7,6 @@ date: "2026-08-02"
 author: "ToolNinja"
 coverEmoji: "🚫"
 tags: ["cors error", "no access-control-allow-origin header", "cors error fix", "cross-origin resource sharing error", "cors policy blocked", "access-control-allow-origin missing", "cors preflight error", "how to fix cors error", "javascript", "api", "errors"]
-relatedTools: ["http-request"]
 faqs:
   - q: "Can I fix a CORS error by changing my frontend code?"
     a: "Not in production. CORS is enforced by the browser based on headers the server sends — no amount of frontend JavaScript can make a server that hasn't opted in to your origin suddenly allow the request. Frontend-only 'fixes' like disabling web security in your browser only work for you, locally, and break for every real user."
@@ -108,6 +107,10 @@ The only real fixes are: configure the server's CORS headers correctly, or route
 The fastest way to isolate whether a failure is really CORS or something else: hit the same endpoint from a tool that isn't a browser. If it works there and fails only in the browser console with the specific CORS wording above, you've confirmed it's a CORS header issue, not an auth or network problem.
 
 **[ToolNinja's HTTP Request Builder →](/tools/http-request)** lets you fire the exact same request and inspect the raw response headers directly — useful for checking whether `Access-Control-Allow-Origin` is present at all before you go digging through server config.
+
+## Related tools
+
+To diagnose a specific failure, paste your request details and the response headers into the [CORS Error Debugger](/tools/cors-debugger), which walks through the preflight and actual-request checks a browser makes. To understand any other header in the response, the [HTTP Header Inspector](/tools/http-header-inspector) explains each one.
 
 ---
 

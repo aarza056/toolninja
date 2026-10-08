@@ -7,7 +7,6 @@ date: "2026-10-04"
 author: "ToolNinja"
 coverEmoji: "🧾"
 tags: ["llm api cost", "token counter", "estimate api cost", "openai pricing", "claude api pricing", "gemini pricing", "llm cost estimation", "how to reduce llm costs", "ai", "api"]
-relatedTools: ["ai-token-counter", "hash-generator"]
 faqs:
   - q: "Why do output tokens cost more than input tokens?"
     a: "Generating a token requires a full forward pass through the model, run sequentially — it can't be parallelized across tokens the way processing a long input prompt can be. That computational asymmetry is why every major provider (Anthropic, OpenAI, Google) prices output tokens several times higher than input. In the rate table used by ToolNinja's AI Token Counter, the multiple ranges from about 4x to 8x depending on the model."

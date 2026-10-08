@@ -6,7 +6,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔑"
 tags: ["jwt", "json web token", "nodejs", "security", "jwt error", "invalid key size", "key too short"]
-relatedTools: ["jwt-generator"]
 faqs:
   - q: "What is the minimum key size for HS256?"
     a: "HS256 (HMAC-SHA256) requires a secret of at least 256 bits (32 bytes). HS384 requires 384 bits (48 bytes). HS512 requires 512 bits (64 bytes). Using a shorter secret will cause a 'key too short' error in strict libraries."
@@ -170,4 +169,9 @@ export function verifyToken(token) {
 
 The JWT Generator lets you create and inspect JWTs interactively — useful for verifying token structure and testing signing with different algorithms.
 
-🔧 **[JWT Generator — toolninja.io/tools/jwt-generator](https://toolninja.io/tools/jwt-generator)**
+🔧 **[JWT Generator](/tools/jwt-generator)**
+
+
+## Related tools
+
+For asymmetric algorithms, the [JWT Key Pair Generator](/tools/jwt-keypair-generator) creates RSA and EC keys of a valid size in PEM and JWK format.

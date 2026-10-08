@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔐"
 tags: ["linux", "chmod", "permissions", "shell", "bash", "file permissions", "octal chmod"]
-relatedTools: ["chmod-calculator"]
 faqs:
   - q: "Why does chmod use octal (base-8) instead of decimal?"
     a: "Each permission triplet (read, write, execute) maps perfectly to 3 bits, and 3 bits represent values 0-7 in octal. r=4 (100 binary), w=2 (010 binary), x=1 (001 binary). So rwx=7, rw-=6, r--=4. Three triplets (user, group, other) = three octal digits. It's a compact representation of 9 permission bits."
@@ -146,4 +145,9 @@ RUN chmod 600 /app/private.key
 
 The chmod Calculator lets you select read/write/execute checkboxes for owner, group, and other — then instantly shows both the octal number and symbolic form. No mental arithmetic needed.
 
-🔧 **[Chmod Calculator — toolninja.io/tools/chmod-calculator](https://toolninja.io/tools/chmod-calculator)**
+🔧 **[Chmod Calculator](/tools/chmod-calculator)**
+
+
+## Related tools
+
+Octal digits only run from 0 to 7. To check how a permission value converts between octal, binary and decimal, use the [Number Base Converter](/tools/number-base-converter).

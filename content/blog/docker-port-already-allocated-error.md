@@ -7,7 +7,6 @@ date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🐳"
 tags: ["docker port already allocated", "bind for 0.0.0.0 failed", "cannot connect to the docker daemon", "docker error response from daemon", "docker exit code 137", "docker port conflict fix", "docker daemon not running", "docker errors explained", "docker", "devops", "errors"]
-relatedTools: ["docker-run-to-compose"]
 faqs:
   - q: "How do I find out what's already using the port Docker is complaining about?"
     a: "On Linux/macOS, run lsof -i :PORT (e.g. lsof -i :8080) to see the process holding that port. On Windows, netstat -ano | findstr :PORT gives you the process ID, which you can then look up in Task Manager. Often it's a previous container you forgot was still running — docker ps will show you."

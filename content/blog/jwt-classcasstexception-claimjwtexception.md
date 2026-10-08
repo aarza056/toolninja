@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔑"
 tags: ["jwt", "security", "authentication", "tokens", "timestamp", "jwt expired", "claim validation"]
-relatedTools: ["timestamp-converter", "jwt-decoder"]
 faqs:
   - q: "What is the difference between exp, iat, and nbf JWT claims?"
     a: "exp (expiration time) is the Unix timestamp after which the token is invalid. iat (issued at) is when the token was created. nbf (not before) is the earliest time the token can be used. All three are Unix timestamps in seconds — not milliseconds — per the JWT specification (RFC 7519)."
@@ -166,4 +165,9 @@ async function fetchWithAuth(url) {
 
 The Timestamp Converter lets you instantly convert between Unix timestamps and human-readable dates. Paste the `exp` value from your JWT payload and see if it's in seconds or milliseconds, and when the token actually expires.
 
-🔧 **[Timestamp Converter — toolninja.io/tools/timestamp-converter](https://toolninja.io/tools/timestamp-converter)**
+🔧 **[Timestamp Converter](/tools/timestamp-converter)**
+
+
+## Related tools
+
+To see the exact `exp`, `iat` and `nbf` values in a failing token, paste it into the [JWT Decoder](/tools/jwt-decoder), which shows each claim as a readable date.

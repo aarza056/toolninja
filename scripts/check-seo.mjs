@@ -113,9 +113,28 @@ for (const file of walk(APP_DIR)) {
   if (canonicals.length !== 1) problems.push({ route, issue: `expected 1 canonical, found ${canonicals.length}` });
   else if (canonicals[0] !== expected) problems.push({ route, issue: `canonical ${canonicals[0]} should be ${expected}` });
   checkJsonLd(route, html, problems);
+  if (route.startsWith("/tools/")) {
+    const related = html.match(/<section data-related-tools[^>]*>([\s\S]*?)<\/section>/);
+    const links = related ? (related[1].match(/href="\/tools\//g) ?? []).length : 0;
+    if (links < 3) problems.push({ route, issue: `only ${links} related tool link(s); curate 3-5 in lib/related-tools.ts` });
+  }
   for (const d of descs) {
     if (d.length > DESCRIPTION_MAX) problems.push({ route, issue: `description ${d.length} > ${DESCRIPTION_MAX}: ${d}` });
     if (d.length < 50) problems.push({ route, issue: `description only ${d.length} chars: ${d}` });
+  }
+}
+
+// Every tool a post is mapped to in lib/blog-tool-map.ts must be linked from the post body.
+const mapSrc = fs.readFileSync(path.join(process.cwd(), "lib", "blog-tool-map.ts"), "utf8");
+for (const [, post, list] of mapSrc.matchAll(/^  "([^"]+)": \[(.*)\],$/gm)) {
+  const file = path.join(process.cwd(), "content", "blog", `${post}.md`);
+  if (!fs.existsSync(file)) {
+    problems.push({ route: `/blog/${post}`, issue: "listed in lib/blog-tool-map.ts but has no markdown file" });
+    continue;
+  }
+  const body = fs.readFileSync(file, "utf8").split(/^---$/m).slice(2).join("---");
+  for (const [, tool] of list.matchAll(/"([^"]+)"/g)) {
+    if (!body.includes(`](/tools/${tool})`)) problems.push({ route: `/blog/${post}`, issue: `body doesn't link /tools/${tool}` });
   }
 }
 

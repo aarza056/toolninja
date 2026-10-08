@@ -7,7 +7,6 @@ date: "2026-09-01"
 author: "ToolNinja"
 coverEmoji: "🔑"
 tags: ["ssh permission denied publickey", "ssh permission denied", "ssh key authentication failed", "too many authentication failures ssh", "ssh authorized_keys not working", "ssh-add no identities", "ssh strictmodes", "ssh troubleshooting", "ssh key errors explained", "devops", "linux", "ssh"]
-relatedTools: ["ssh-key-generator"]
 faqs:
   - q: "How do I see exactly which key SSH is trying, instead of just getting the generic denial?"
     a: "Run ssh -v user@host (or -vvv for maximum detail). Verbose mode prints every key SSH offers to the server and the server's response to each one, which is the single most useful piece of information for narrowing down which of the several possible causes you're actually hitting — a permissions problem and a wrong-key problem produce the identical final error message, but look completely different in verbose output."
@@ -174,6 +173,10 @@ Watch this while you attempt to connect — it will usually state the exact reas
 ## Generating a Fresh Key the Right Way
 
 If you're setting up a new key from scratch rather than debugging an existing one, it's worth generating it in the current recommended format from the start — Ed25519 rather than RSA, in genuine OpenSSH format. **[ToolNinja's SSH Key Generator →](/tools/ssh-key-generator)** creates Ed25519 or RSA key pairs directly in your browser, verified byte-for-byte against real `ssh-keygen` output, so the public key you copy into `authorized_keys` is guaranteed to be in exactly the format the server expects.
+
+## Related tools
+
+Permissions on `~/.ssh` and `authorized_keys` are a frequent cause; the [Chmod Calculator](/tools/chmod-calculator) shows what modes like 700 and 600 mean.
 
 ---
 

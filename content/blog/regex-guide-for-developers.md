@@ -7,7 +7,6 @@ date: "2026-05-04"
 author: "ToolNinja"
 coverEmoji: "🔍"
 tags: ["regex tester online", "regex tutorial", "regular expressions explained", "regex patterns cheat sheet", "test regex online", "regex flags javascript", "capture groups regex", "regex email validation", "regex url matching", "regex101 alternative", "regex for beginners", "javascript regex guide"]
-relatedTools: ["regex-tester"]
 faqs:
   - q: "What is the difference between .* and .+ in regex?"
     a: ".* matches zero or more of any character and can match an empty string. .+ matches one or more and requires at least one character."

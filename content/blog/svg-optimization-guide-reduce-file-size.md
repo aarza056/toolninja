@@ -7,7 +7,6 @@ date: "2026-08-11"
 author: "ToolNinja"
 coverEmoji: "🧹"
 tags: ["svg optimization", "reduce svg file size", "svg bloat figma illustrator", "optimize svg export", "svg minify", "inkscape sodipodi metadata", "svg dom nodes performance", "svgo alternative", "design", "svg", "performance"]
-relatedTools: ["svg-optimizer"]
 faqs:
   - q: "Why is my SVG so much bigger than it needs to be?"
     a: "Design tools like Illustrator and Figma optimize their export for editability, not file size — they preserve layer names, tool-specific metadata, and full-precision coordinates from every anchor point adjustment you made while designing, none of which affects how the SVG renders in a browser."
@@ -115,6 +114,10 @@ Gone: the XML declaration (unnecessary for inline/web use), the generator commen
 ## Optimize Without Installing a Build Tool
 
 **[ToolNinja's SVG Optimizer →](/tools/svg-optimizer)** strips exactly this class of bloat — comments, metadata, Inkscape/Sodipodi namespaces, empty groups, and excess coordinate precision — with a live before/after size comparison and visual preview of both versions, so you can confirm nothing changed before shipping it. Drag in a file or paste markup directly; everything runs in your browser, no CLI or build step required for a one-off cleanup.
+
+## Related tools
+
+After optimizing, the [SVG to JSX converter](/tools/svg-to-jsx) turns the cleaned markup into a React component.
 
 ---
 

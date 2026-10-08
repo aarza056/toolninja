@@ -7,7 +7,6 @@ date: "2026-08-03"
 author: "ToolNinja"
 coverEmoji: "🧩"
 tags: ["unexpected token json", "json.parse error", "syntaxerror unexpected token", "unexpected token in json at position", "json parse error fix", "unexpected token < in json", "json trailing comma error", "fix json syntax error", "javascript", "json", "errors"]
-relatedTools: ["json-formatter"]
 faqs:
   - q: "What does 'position N' actually mean in the error message?"
     a: "It's the character offset (not line number) in the string where JSON.parse gave up — counting every character from the very start of the string, including whitespace and newlines. For a large string this is hard to use directly; the fastest approach is usually to paste the string into a JSON formatter/validator, which converts that raw offset into a specific line and column."

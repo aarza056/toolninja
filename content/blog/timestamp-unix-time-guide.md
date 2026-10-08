@@ -7,7 +7,6 @@ date: "2026-05-11"
 author: "ToolNinja"
 coverEmoji: "⏱️"
 tags: ["unix timestamp converter", "epoch time explained", "unix time tutorial", "timestamp to date online", "year 2038 problem", "utc vs gmt difference", "javascript date now", "convert timestamp free", "milliseconds vs seconds timestamp", "unix epoch time", "datetime programming guide"]
-relatedTools: ["timestamp-converter"]
 faqs:
   - q: "What is Unix time / epoch time?"
     a: "Unix time is the number of seconds elapsed since January 1, 1970 at 00:00:00 UTC. It's timezone-independent making it ideal for storing timestamps across distributed systems."

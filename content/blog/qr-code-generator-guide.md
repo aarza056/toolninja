@@ -7,7 +7,6 @@ date: "2026-07-15"
 author: "ToolNinja"
 coverEmoji: "📱"
 tags: ["qr code generator guide", "wifi qr code generator", "vcard qr code", "how to make wifi qr code", "qr code for contact card", "custom qr code generator free", "qr code error correction explained", "qr code for calendar event", "free qr code generator no login", "qr code types explained", "qr-code", "tools", "mobile", "networking"]
-relatedTools: ["qr-code-generator"]
 faqs:
   - q: "How do I make a WiFi QR code?"
     a: "Open the ToolNinja QR Code Generator, switch to the WiFi tab, enter your network name (SSID), password, and encryption type (WPA/WEP/None), and the QR code updates live. Scanning it with a phone camera prompts the user to join the network — no need to say the password out loud or type it on a screen."
@@ -128,3 +127,8 @@ The simplest case, and still the most common: paste any URL or plain text into t
 ## Try It Now
 
 **[Open the QR Code Generator →](/tools/qr-code-generator)** — switch between Text/URL, WiFi, Contact, and Event modes, adjust error correction and colors, and download as PNG. Runs entirely in your browser — no data sent anywhere.
+
+
+## Related tools
+
+To confirm a generated code decodes to exactly the string you intended, upload it to the [QR Code Scanner](/tools/qr-code-scanner).

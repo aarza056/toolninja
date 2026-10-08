@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "📄"
 tags: ["xml", "xpath", "parsing", "xml error", "xpath error", "expression expected"]
-relatedTools: ["xpath-tester"]
 faqs:
   - q: "What causes 'expression expected' in an XPath query?"
     a: "It means the XPath parser hit a position where an expression was required but found something invalid — typically a typo, an unclosed bracket, or a missing axis specifier."
@@ -194,4 +193,9 @@ NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
 The XPath Tester lets you paste XML and test expressions interactively — it highlights matching nodes and shows the exact error position.
 
-🔧 **[XPath Tester — toolninja.io/tools/xpath-tester](https://toolninja.io/tools/xpath-tester)**
+🔧 **[XPath Tester](/tools/xpath-tester)**
+
+
+## Related tools
+
+If the XML itself might be malformed, run it through the [XML Formatter](/tools/xml-formatter) first; its validation catches unclosed and mismatched tags before you debug the XPath.

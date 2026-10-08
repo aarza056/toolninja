@@ -7,7 +7,6 @@ date: "2026-05-01"
 author: "ToolNinja"
 coverEmoji: "🔐"
 tags: ["chmod calculator", "chmod 755", "chmod 777", "chmod 644", "linux file permissions", "rwxr-xr-x", "octal permissions", "unix permissions calculator", "chmod converter", "linux permission calculator", "file permission linux", "chmod explained"]
-relatedTools: ["chmod-calculator"]
 faqs:
   - q: "What does chmod 755 mean?"
     a: "chmod 755 gives the owner full read, write, and execute permissions (7), while group and others get read and execute only (5). It's the standard permission for web server directories and executable scripts."

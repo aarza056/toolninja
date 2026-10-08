@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { toolContent } from "@/lib/tool-content";
 import { tools } from "@/lib/tools";
+import { getRelatedTools } from "@/lib/related-tools";
+import { getPostsForTool } from "@/lib/blog-tool-map";
+import { getPostBySlug } from "@/lib/blog";
 
 interface Props {
   slug: string;
@@ -10,13 +13,12 @@ export default function ToolSeoSection({ slug }: Props) {
   const content = toolContent[slug];
   const tool = tools.find((t) => t.slug === slug);
 
-  const relatedTools = tool
-    ? tools
-        .filter((t) => t.slug !== slug && t.category === tool.category)
-        .slice(0, 3)
-    : [];
+  const relatedTools = tool ? getRelatedTools(slug) : [];
+  const guides = getPostsForTool(slug)
+    .map((postSlug) => getPostBySlug(postSlug))
+    .filter((p): p is NonNullable<typeof p> => p !== null);
 
-  if (!content && !relatedTools.length) return null;
+  if (!content && !relatedTools.length && !guides.length) return null;
 
   return (
     <div className="border-t border-[#1a1a1a] px-6 py-10 space-y-8 max-w-3xl">
@@ -83,9 +85,30 @@ export default function ToolSeoSection({ slug }: Props) {
         </>
       )}
 
+      {/* Guides */}
+      {guides.length > 0 && (
+        <section data-tool-guides>
+          <h2 className="text-xs font-semibold text-[#888888] uppercase tracking-widest mb-3">
+            Guides for this tool
+          </h2>
+          <ul className="space-y-2">
+            {guides.map((post) => (
+              <li key={post.slug}>
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="text-sm text-[#aaaaaa] hover:text-[#c084fc] underline decoration-[#a855f7]/30 hover:decoration-[#a855f7] transition-colors"
+                >
+                  {post.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {/* Related tools */}
       {relatedTools.length > 0 && (
-        <section>
+        <section data-related-tools>
           <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-3">
             Related tools
           </h2>

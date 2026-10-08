@@ -7,7 +7,6 @@ date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🧭"
 tags: ["nxdomain error", "servfail dns error", "dns refused error", "dns resolution failure", "dig troubleshooting", "nslookup errors", "dns propagation myth", "dns error codes explained", "domain not resolving", "dnssec servfail", "networking", "dns"]
-relatedTools: ["url-parser"]
 faqs:
   - q: "I just added a DNS record and it still isn't resolving. Is this just propagation?"
     a: "Often not — 'propagation' gets blamed for what's actually negative caching. When a resolver queries a name that doesn't exist yet, it caches that NXDOMAIN answer for a period defined by the zone's SOA minimum TTL (commonly a few hours), separate from the record's own TTL. If you added the record after a resolver already cached a negative answer, that resolver won't re-check until its cached negative answer expires, no matter how long you wait in the usual sense. Query an authoritative nameserver directly with dig @<authoritative-ns> to confirm the record exists there right now, bypassing every cache in between."

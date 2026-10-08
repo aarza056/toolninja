@@ -7,7 +7,6 @@ date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🗂️"
 tags: ["active directory replication error", "ad replication error 8606", "event id 1058", "event id 1030", "group policy not applying", "account lockout active directory", "dcdiag", "repadmin", "lingering objects", "active directory troubleshooting", "windows server", "sysadmin"]
-relatedTools: []
 faqs:
   - q: "What's the difference between replication error 8606 and 8524?"
     a: "8606 (\"insufficient attributes were given to create an object\") means a source DC is trying to replicate an update for an object that the destination DC has already garbage-collected as a lingering object — it's a data-consistency error. 8524 (\"the DSA operation is unable to proceed because of a DNS lookup failure\") is purely a DNS problem — the destination DC can't resolve the source DC's CNAME record, so replication never even starts. Always rule out 8524's DNS cause before assuming you have lingering objects."

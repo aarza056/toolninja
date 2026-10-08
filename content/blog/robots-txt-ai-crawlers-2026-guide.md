@@ -7,7 +7,6 @@ date: "2026-08-10"
 author: "ToolNinja"
 coverEmoji: "🤖"
 tags: ["robots.txt ai crawlers", "block gptbot", "block claudebot", "google-extended robots.txt", "ai bot blocking 2026", "robots.txt template ai", "ccbot disallow", "cloudflare ai crawler block", "seo", "robots-txt", "ai"]
-relatedTools: ["robots-txt-generator"]
 faqs:
   - q: "Which AI crawler is blocked most often?"
     a: "GPTBot leads, appearing in roughly 5.5% of Disallow rules sitewide as of early 2026, just ahead of CCBot (about 5.1%) and ClaudeBot (about 4.9%). These three account for the majority of AI-crawler-specific blocking rules currently in the wild."
@@ -110,6 +109,10 @@ robots.txt is a voluntary convention, not an enforcement mechanism your server a
 ## Build Your Rules
 
 **[ToolNinja's robots.txt Generator →](/tools/robots-txt-generator)** includes a one-click preset that adds a Disallow group for the common AI training crawlers — GPTBot, Google-Extended, ClaudeBot, CCBot, and others — which you can then edit down to match a selective-blocking policy like the one above, plus per-bot Allow/Disallow rules and sitemap links, all generated and downloadable in your browser.
+
+## Related tools
+
+To check which crawler a request in your logs came from, paste its User-Agent string into the [User-Agent Parser](/tools/user-agent-parser), which flags known bots.
 
 ---
 

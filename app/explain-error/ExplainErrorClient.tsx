@@ -74,14 +74,14 @@ export default function ExplainErrorClient({ articles }: Props) {
                     href={`/blog/${m.slug}`}
                     className="flex items-center gap-1 text-xs text-[#a855f7] hover:text-[#c084fc] transition-colors"
                   >
-                    Open guide <ArrowRight size={12} />
+                    Read the guide<span className="sr-only">: {m.title}</span> <ArrowRight size={12} aria-hidden="true" />
                   </Link>
                   {tool && (
                     <Link
                       href={`/tools/${tool.slug}`}
-                      className="flex items-center gap-1 text-xs text-[#666666] hover:text-[#888888] transition-colors"
+                      className="flex items-center gap-1 text-xs text-[#888888] hover:text-[#aaaaaa] transition-colors"
                     >
-                      <Wrench size={11} /> Try the tool <ArrowRight size={12} />
+                      <Wrench size={11} aria-hidden="true" /> Open {tool.name} <ArrowRight size={12} aria-hidden="true" />
                     </Link>
                   )}
                 </div>

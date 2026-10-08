@@ -7,7 +7,6 @@ date: "2026-05-24"
 author: "ToolNinja"
 coverEmoji: "🔄"
 tags: ["curl", "python", "javascript", "api", "devops"]
-relatedTools: ["curl-to-code"]
 faqs:
   - q: "What does the -X flag do in curl?"
     a: "The -X flag (or --request) sets the HTTP method. Without it, curl defaults to GET. -X POST sends a POST request, -X DELETE sends DELETE, and so on."
@@ -239,6 +238,11 @@ ToolNinja's free cURL to Code Converter handles it instantly:
 2. Select JavaScript (fetch), Node.js (axios), Python (requests), PHP (cURL), or Go (net/http)
 3. Get clean, ready-to-run code with a copy button
 
-🔧 **[cURL to Code Converter — toolninja.io/tools/curl-to-code](https://toolninja.io/tools/curl-to-code)**
+🔧 **[cURL to Code Converter](/tools/curl-to-code)**
 
 No login. The command is parsed in your browser and never uploaded, so API keys and tokens in it stay on your machine.
+
+
+## Related tools
+
+To send the request straight from your browser and inspect the response before converting it, use the [HTTP Request Builder](/tools/http-request).

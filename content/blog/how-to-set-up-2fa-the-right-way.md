@@ -7,7 +7,6 @@ date: "2026-10-05"
 author: "ToolNinja"
 coverEmoji: "🔐"
 tags: ["2fa setup guide", "totp vs hotp", "backup codes best practices", "how to implement 2fa", "otpauth url", "2fa recovery codes", "authenticator app setup", "security", "authentication"]
-relatedTools: ["totp-generator", "hotp-generator", "backup-codes-generator", "qr-code-scanner"]
 faqs:
   - q: "Should I implement TOTP or HOTP for a new 2FA feature?"
     a: "TOTP, in almost every case. It doesn't require your server to track and synchronize a counter with the client — time serves that role automatically, which eliminates an entire category of desync bugs. HOTP exists mainly for hardware tokens without a reliable clock; if you're building a software-based 2FA flow today, TOTP is the near-universal default."

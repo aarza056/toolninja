@@ -7,7 +7,6 @@ date: "2026-08-06"
 author: "ToolNinja"
 coverEmoji: "📐"
 tags: ["mapping values are not allowed in this context", "yaml syntax error", "yaml mapping values error", "yaml bad indentation", "github actions yaml error", "docker compose yaml error", "yaml tab character error", "fix yaml error", "yaml", "devops", "errors"]
-relatedTools: ["config-validator"]
 faqs:
   - q: "Why does my YAML error mention a line number that doesn't seem to be the problem?"
     a: "YAML parsers report the line where they finally realized something was wrong, which is often a few lines after the actual mistake. A missing quote or bad indentation on one line frequently doesn't become a hard error until the parser reaches the next line and can no longer make sense of the structure — check the reported line and the few lines directly above it, not just the exact line number."
@@ -109,6 +108,10 @@ A frustrating detail about all YAML parser errors: the line number reported is w
 The slow way to find this bug is: push, wait for the pipeline to run, read the failure, fix one thing, push again. The fast way is to validate locally first.
 
 **[ToolNinja's YAML / TOML / JSON Validator →](/tools/config-validator)** parses your YAML in the browser and reports syntax errors immediately, with the same class of detail the error message gives you but without a CI round-trip — paste a `docker-compose.yml`, a GitHub Actions workflow, or a Kubernetes manifest and catch mapping and indentation errors before they cost you a pipeline run.
+
+## Related tools
+
+If you'd rather see the structure without indentation rules getting in the way, convert the file with the [JSON to YAML converter](/tools/json-yaml) and back.
 
 ---
 

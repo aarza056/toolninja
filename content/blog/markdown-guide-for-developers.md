@@ -7,7 +7,6 @@ date: "2026-05-10"
 author: "ToolNinja"
 coverEmoji: "📝"
 tags: ["markdown table generator", "github flavored markdown", "markdown syntax guide", "markdown code blocks", "mdx vs markdown", "markdown to html converter", "markdown cheat sheet", "markdown table syntax", "markdown task list", "markdown tutorial developers", "markdown preview online"]
-relatedTools: ["markdown-preview", "markdown-table-generator"]
 faqs:
   - q: "What is the difference between Markdown and MDX?"
     a: "Markdown is a plain text formatting syntax converting to HTML. MDX extends Markdown to support JSX — you can embed React components directly in Markdown files."
@@ -316,3 +315,8 @@ thing.doStuff();
 ## Try It: ToolNinja Markdown Preview
 
 Write or paste Markdown and see the rendered output instantly with the **[ToolNinja Markdown Preview](/tools/markdown-preview)**. Supports GitHub-Flavored Markdown including tables, task lists, and code blocks with syntax highlighting.
+
+
+## Related tools
+
+To draft and preview Mermaid diagrams before committing them, use the [Mermaid Diagram Editor](/tools/mermaid-editor).

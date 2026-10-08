@@ -7,7 +7,6 @@ date: "2026-08-01"
 author: "ToolNinja"
 coverEmoji: "📊"
 tags: ["csv vs json", "csv to json converter", "json to csv converter", "when to use csv", "when to use json", "csv json conversion pitfalls", "import csv to mongodb", "convert spreadsheet to json", "data", "api", "conversion"]
-relatedTools: ["csv-json", "json-formatter"]
 faqs:
   - q: "Should I store my data as CSV or JSON?"
     a: "Use CSV when your data is genuinely tabular — every record has the same flat set of fields — and the consumer is a spreadsheet, a data analyst, or a bulk import tool. Use JSON when your data has hierarchy (nested objects, arrays of varying length) or the consumer is a REST API, since JSON is the standard format for both."

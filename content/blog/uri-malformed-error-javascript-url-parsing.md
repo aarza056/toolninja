@@ -7,7 +7,6 @@ date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔗"
 tags: ["javascript", "url", "uri", "encoding", "uriError", "malformed uri", "decodeURIComponent"]
-relatedTools: ["url-encoder"]
 faqs:
   - q: "What is the difference between decodeURI and decodeURIComponent?"
     a: "decodeURI() decodes a complete URI and leaves reserved characters (; , / — : @ & = + $ #) encoded. decodeURIComponent() decodes every percent-encoded character including reserved ones. Use decodeURIComponent for query parameter values."
@@ -169,4 +168,9 @@ app.get('/redirect', (req, res) => {
 
 The URL Encoder lets you encode and decode URL components interactively — paste any string to see the correct percent-encoded form or decode a malformed URL fragment.
 
-🔧 **[URL Encoder — toolninja.io/tools/url-encoder](https://toolninja.io/tools/url-encoder)**
+🔧 **[URL Encoder](/tools/url-encoder)**
+
+
+## Related tools
+
+To see how a full URL breaks into components and which parts are percent-encoded, paste it into the [URL Parser](/tools/url-parser).
