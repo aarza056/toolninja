@@ -20,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 SyntaxError: Invalid regular expression: /+test/: Nothing to repeat
 ```
 
 Or:
-```
+```text
 SyntaxError: Invalid regular expression: /?pattern/: Nothing to repeat
 SyntaxError: Invalid regular expression: /*/: Nothing to repeat
 ```

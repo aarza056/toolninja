@@ -20,7 +20,7 @@ faqs:
 
 ## Most 2FA Bugs Aren't Cryptography Bugs
 
-The HMAC-based algorithm underneath TOTP and HOTP is simple, well-specified, and essentially impossible to get wrong if you follow RFC 6238 or RFC 4226 directly. Almost every real 2FA bug report traces back to something else entirely: which algorithm variant was chosen, how backup codes are stored, or a clock that's drifted by more than the verification window tolerates.
+The HMAC-based algorithm underneath TOTP and HOTP is simple, well-specified, and essentially impossible to get wrong if you follow [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238) or [RFC 4226](https://www.rfc-editor.org/rfc/rfc4226) directly. Almost every real 2FA bug report traces back to something else entirely: which algorithm variant was chosen, how backup codes are stored, or a clock that's drifted by more than the verification window tolerates.
 
 ---
 

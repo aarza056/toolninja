@@ -26,7 +26,7 @@ Most Docker errors that eat real debugging time aren't exotic — they're one of
 
 ## "Port Is Already Allocated"
 
-```
+```text
 Error response from daemon: driver failed programming external connectivity
 on endpoint myapp: Bind for 0.0.0.0:8080 failed: port is already allocated
 ```
@@ -65,7 +65,7 @@ docker run -p 8081:8080 myapp
 
 ## "Cannot Connect to the Docker Daemon"
 
-```
+```text
 Cannot connect to the Docker daemon at unix:///var/run/docker.sock.
 Is the docker daemon running?
 ```

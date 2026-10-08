@@ -8,6 +8,7 @@ import BlogContent from "./BlogContent";
 import ShareButtons from "@/components/ShareButtons";
 import RelatedArticles from "@/components/RelatedArticles";
 import { getAuthor } from "@/lib/authors";
+import AuthorBio from "@/components/AuthorBio";
 import { blogPostGraph, jsonLdString } from "@/lib/structured-data";
 
 interface Props {
@@ -51,6 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-US", {
+    timeZone: "UTC",
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -68,6 +70,7 @@ export default function BlogPostPage({ params }: Props) {
     .filter(Boolean);
 
   const jsonLd = blogPostGraph(post);
+  const author = getAuthor(post.author);
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
@@ -111,21 +114,31 @@ export default function BlogPostPage({ params }: Props) {
         <p className="text-[#888888] text-base leading-relaxed mb-4">
           {post.description}
         </p>
-        <div className="flex items-center gap-4 text-xs text-[#555555] border-t border-[#1e1e1e] pt-4">
-          <span className="flex items-center gap-1.5">
-            <Calendar size={12} />
-            {formatDate(post.date)}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#888888] border-t border-[#1e1e1e] pt-4">
+          <span>
+            By{" "}
+            <Link href={`/authors/${author.id}`} rel="author" className="text-[#c084fc] hover:underline">
+              {author.name}
+            </Link>
           </span>
           <span className="flex items-center gap-1.5">
-            <Clock size={12} />
+            <Calendar size={12} aria-hidden="true" />
+            Published <time dateTime={post.date}>{formatDate(post.date)}</time>
+          </span>
+          <span>
+            Last updated <time dateTime={post.updated ?? post.date}>{formatDate(post.updated ?? post.date)}</time>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Clock size={12} aria-hidden="true" />
             {post.readingTime} min read
           </span>
-          <span className="text-[#888888]">by {getAuthor(post.author).name}</span>
         </div>
       </header>
 
       {/* 1. Article content */}
       <BlogContent content={post.content} />
+
+      <AuthorBio author={author} />
 
       {/* 2. Share buttons */}
       <ShareButtons

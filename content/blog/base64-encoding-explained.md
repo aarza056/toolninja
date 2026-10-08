@@ -22,7 +22,7 @@ faqs:
 
 Base64 is a binary-to-text encoding scheme that represents binary data as ASCII characters. It converts every 3 bytes of input into 4 printable characters from a 64-character alphabet:
 
-```
+```text
 A–Z  (26)
 a–z  (26)
 0–9  (10)
@@ -39,7 +39,7 @@ The result is about **33% larger** than the original but is guaranteed to be saf
 
 Base64 processes input 3 bytes at a time, converting each group into 4 characters:
 
-```
+```text
 Input:   M    a    n
 Binary:  01001101 01100001 01101110
 Groups:  010011 010110 000101 101110
@@ -96,7 +96,7 @@ btoa("hello+world")
 ```
 
 **HTTP Basic Authentication:**
-```
+```http
 Authorization: Basic dXNlcjpwYXNzd29yZA==
 ```
 (This is `user:password` Base64-encoded — note: **not encrypted**, just encoded)

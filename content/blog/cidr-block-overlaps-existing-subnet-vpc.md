@@ -20,17 +20,17 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 The CIDR '10.0.1.0/24' conflicts with another subnet
 ```
 
 Or in Terraform:
-```
+```text
 Error: creating EC2 Subnet: InvalidSubnet.Conflict: The CIDR '10.0.0.0/24' conflicts with another subnet.
 ```
 
 Or for VPC peering:
-```
+```text
 InvalidVpcPeeringConnectionState: Cannot create a peering connection between VPCs with overlapping CIDR blocks
 ```
 
@@ -48,7 +48,7 @@ Four root causes:
 
 **2. VPC peering with overlapping ranges** — Both VPCs use `10.0.0.0/16` — peering is impossible.
 
-**3. On-premises network conflict** — VPC connected to corporate network via VPN when both use the same RFC 1918 range.
+**3. On-premises network conflict** — VPC connected to corporate network via VPN when both use the same [RFC 1918](https://www.rfc-editor.org/rfc/rfc1918) range.
 
 **4. Copy-paste from a template** — Reusing the same Terraform template without updating CIDR blocks per environment.
 

@@ -28,7 +28,7 @@ Here are the five that come up constantly, explained properly.
 
 ## 1. "error: failed to push some refs"
 
-```
+```text
 error: failed to push some refs to 'https://github.com/you/repo.git'
 hint: Updates were rejected because the remote contains work that you do not
 hint: have locally.
@@ -51,7 +51,7 @@ If `git pull` produces a merge conflict, resolve it (see below) before pushing. 
 
 ## 2. Merge Conflict
 
-```
+```text
 Auto-merging src/app.js
 CONFLICT (content): Merge conflict in src/app.js
 Automatic merge failed; fix conflicts and then commit the result.
@@ -61,7 +61,7 @@ Automatic merge failed; fix conflicts and then commit the result.
 
 **Fix:** open the conflicting file — Git marks the conflicting sections directly in the file:
 
-```
+```text
 <<<<<<< HEAD
 your version of the line
 =======
@@ -82,7 +82,7 @@ For conflicts in generated or binary files where you know which side should simp
 
 ## 3. "fatal: refusing to merge unrelated histories"
 
-```
+```text
 fatal: refusing to merge unrelated histories
 ```
 
@@ -100,7 +100,7 @@ Expect a genuine merge conflict resolution step afterward, since Git now has to 
 
 ## 4. Detached HEAD State
 
-```
+```text
 Note: switching to '3f2a1b9'.
 
 You are in 'detached HEAD' state...

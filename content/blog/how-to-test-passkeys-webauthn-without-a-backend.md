@@ -142,7 +142,7 @@ Treat a sandbox like this as step zero: understand the request/response shape, c
 
 ## Related tools
 
-The ceremony returns the public key in COSE format. If your server converts and stores it as a JWK, the [JWK Thumbprint Calculator](/tools/jwk-thumbprint-calculator) computes its RFC 7638 thumbprint, a stable identifier for that key.
+The ceremony returns the public key in COSE format. If your server converts and stores it as a JWK, the [JWK Thumbprint Calculator](/tools/jwk-thumbprint-calculator) computes its [RFC 7638](https://www.rfc-editor.org/rfc/rfc7638) thumbprint, a stable identifier for that key.
 
 ---
 

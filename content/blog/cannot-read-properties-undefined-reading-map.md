@@ -20,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 TypeError: Cannot read properties of undefined (reading 'map')
 ```
 
 Or in older JavaScript:
-```
+```text
 TypeError: Cannot read property 'map' of undefined
 TypeError: Cannot read property 'map' of null
 ```

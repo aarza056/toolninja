@@ -20,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order' at line 1
 ```
 
 Or in other databases:
-```
+```text
 ERROR: syntax error at or near "order"
 Incorrect syntax near the keyword 'user'
 ```

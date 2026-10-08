@@ -36,7 +36,7 @@ Once you know this, "how do I make a WiFi QR code" stops being a mystery — you
 
 The format standardized across Android and iOS camera apps is:
 
-```
+```text
 WIFI:T:WPA;S:mynetwork;P:mypassword;;
 ```
 
@@ -57,9 +57,9 @@ Use the **[WiFi tab in the QR Code Generator](/tools/qr-code-generator)** — en
 
 ## vCard QR Codes — Digital Business Cards
 
-A vCard is a plain-text contact card format (RFC 6350). The minimal structure looks like:
+A vCard is a plain-text contact card format ([RFC 6350](https://www.rfc-editor.org/rfc/rfc6350)). The minimal structure looks like:
 
-```
+```text
 BEGIN:VCARD
 VERSION:3.0
 N:Doe;Jane;;;
@@ -87,7 +87,7 @@ Use the **Contact tab** in the QR Code Generator to fill in the fields — first
 
 Calendar QR codes use the iCal `VEVENT` format:
 
-```
+```text
 BEGIN:VEVENT
 SUMMARY:Product Launch Call
 DTSTART:20260901T140000Z

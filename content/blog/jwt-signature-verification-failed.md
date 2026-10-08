@@ -20,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 SignatureVerificationException: Signature verification failed
 ```
 
 Or in various libraries:
-```
+```text
 JsonWebTokenError: invalid signature
 io.jsonwebtoken.SignatureException: JWT signature does not match locally computed signature
 jwt.exceptions.InvalidSignatureError: Signature verification failed

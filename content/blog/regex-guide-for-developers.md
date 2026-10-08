@@ -75,7 +75,7 @@ Regular expressions are a mini-language for pattern matching. Mastering a handfu
 
 Lookarounds match a position without consuming characters — they're **zero-width assertions**.
 
-```
+```text
 (?=...)   Positive lookahead   — followed by
 (?!...)   Negative lookahead   — not followed by
 (?<=...)  Positive lookbehind  — preceded by
@@ -99,7 +99,7 @@ Matches `14` in `14px` but not in `14em`.
 
 ### Validation
 
-**Email address** (pragmatic, not RFC 5321 complete):
+**Email address** (pragmatic, not [RFC 5321](https://www.rfc-editor.org/rfc/rfc5321) complete):
 ```regex
 ^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$
 ```

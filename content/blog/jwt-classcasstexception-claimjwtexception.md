@@ -20,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 io.jsonwebtoken.ExpiredJwtException: JWT expired at 2024-01-15T10:00:00Z. Current time: 2024-01-15T11:00:00Z
 ```
 
 Or:
-```
+```text
 ClaimJwtException: JWT claim validation failed
 JsonWebTokenError: jwt expired
 jwt.exceptions.ExpiredSignatureError: Signature has expired
@@ -37,7 +37,7 @@ jwt.exceptions.ExpiredSignatureError: Signature has expired
 
 ## Why This Error Happens
 
-JWT timestamps (`exp`, `iat`, `nbf`) are Unix timestamps measured in **seconds** since January 1, 1970 (RFC 7519).
+JWT timestamps (`exp`, `iat`, `nbf`) are Unix timestamps measured in **seconds** since January 1, 1970 ([RFC 7519](https://www.rfc-editor.org/rfc/rfc7519)).
 
 Four root causes:
 

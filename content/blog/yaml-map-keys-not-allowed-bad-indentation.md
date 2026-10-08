@@ -20,14 +20,14 @@ faqs:
 
 ## The Error
 
-```
+```text
 yaml.scanner.ScannerError: mapping values are not allowed here
   in "config.yml", line 4, column 12
 ```
 
 Or, from a different parser:
 
-```
+```text
 Error: (<unknown>): mapping values are not allowed in this context at line 2 column 15
 ```
 

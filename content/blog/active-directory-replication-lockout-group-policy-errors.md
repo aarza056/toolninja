@@ -26,7 +26,7 @@ Every Active Directory environment eventually generates the same three categorie
 
 ## Replication Error 8606: Lingering Objects
 
-```
+```text
 DC=example,DC=com
 Naming Context: CN=Configuration,DC=example,DC=com
 Source DC: CN=NTDS Settings,CN=DC02,CN=Servers,...
@@ -65,7 +65,7 @@ If that fails, fix DNS (a missing `_msdcs` zone, a stale record, or a DC pointin
 
 ## Group Policy That "Applied" But Didn't (Event ID 1058 / 1030)
 
-```
+```text
 Event ID: 1058
 Source: Group Policy
 The processing of Group Policy failed. Windows attempted to read the file
@@ -73,7 +73,7 @@ The processing of Group Policy failed. Windows attempted to read the file
 from a domain controller and was not successful.
 ```
 
-```
+```text
 Event ID: 1030
 Source: Group Policy
 Windows cannot query for the list of Group Policy objects. Check the event

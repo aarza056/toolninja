@@ -24,7 +24,7 @@ The key metric is **entropy** — the measure of unpredictability. A password wi
 
 Entropy is calculated as:
 
-```
+```text
 H = L × log₂(N)
 ```
 
@@ -67,7 +67,7 @@ The xkcd comic from 2011 was right: four random common words is more secure and 
 
 For accounts accessed via a password manager:
 
-```
+```text
 Random 20-character: T7$kN#m2Qp!vZe9xRw3Y
 ```
 
@@ -77,7 +77,7 @@ You never type this — the manager fills it in. Maximize entropy and length.
 
 For accounts you type frequently (system login, password manager master password):
 
-```
+```text
 correct-horse-battery-staple
 purple-cloud-eleven-dragon
 ```
@@ -112,7 +112,7 @@ Understanding attacks helps you design better passwords:
 ### Dictionary attacks
 
 Crackers don't try random characters — they start with known passwords and common patterns:
-```
+```text
 password, password1, Password1, P@ssword1, p@$$w0rd
 ```
 Any password that follows a predictable substitution pattern (a→@, o→0, e→3) is vulnerable.

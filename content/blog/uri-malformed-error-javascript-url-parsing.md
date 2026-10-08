@@ -18,7 +18,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 URIError: URI malformed
 URIError: malformed URI sequence
 URIError: The URI to be decoded is not a valid encoding

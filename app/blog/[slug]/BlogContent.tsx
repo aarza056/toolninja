@@ -43,7 +43,7 @@ const components: Components = {
     const isBlock = className?.startsWith("language-");
     if (isBlock) {
       return (
-        <code className="text-[#c9d1d9] font-mono text-[13px] leading-relaxed">
+        <code className={`${className} text-[#c9d1d9] font-mono text-[13px] leading-relaxed`}>
           {children}
         </code>
       );

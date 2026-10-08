@@ -20,7 +20,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 DOMException: Failed to execute 'btoa' on 'Window': The string to be encoded contains characters outside of the Latin1 range.
 ```
 

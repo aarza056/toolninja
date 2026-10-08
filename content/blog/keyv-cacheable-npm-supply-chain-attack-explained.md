@@ -30,7 +30,7 @@ The attacker used that access to publish malicious versions across the family, a
 
 The malicious versions add a **preinstall** lifecycle script — meaning it runs automatically the moment `npm install` starts, before your application code, your test suite, or any conventional security scan gets a chance to look at anything.
 
-```
+```text
 package.json
 {
   "scripts": {
@@ -52,7 +52,7 @@ One detail worth knowing if you use AI coding assistants: multiple researchers r
 
 ## Confirmed Bad Versions (Check Your Lockfile Against These)
 
-```
+```text
 keyv                → 6.0.0
 flat-cache          → 6.1.24
 file-entry-cache    → 11.1.6

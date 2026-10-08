@@ -20,7 +20,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 error: pathspec 'feature/my-branch' did not match any file(s) known to git
 ```
 

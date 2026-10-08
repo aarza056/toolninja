@@ -20,7 +20,7 @@ faqs:
 
 ## Why Markdown Matters for Developers
 
-Markdown is the lingua franca of developer documentation: READMEs, pull requests, issue comments, wikis, changelogs, blog posts, and technical documentation all use it. Knowing its full feature set — especially GitHub-Flavored Markdown (GFM) — makes you a noticeably better communicator.
+Markdown is the lingua franca of developer documentation: READMEs, pull requests, issue comments, wikis, changelogs, blog posts, and technical documentation all use it. Knowing its full feature set — especially [GitHub-Flavored Markdown](https://github.github.com/gfm/) (GFM) — makes you a noticeably better communicator.
 
 ---
 

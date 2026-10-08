@@ -22,7 +22,7 @@ faqs:
 
 `Permission denied (publickey)` is one of the most-searched SSH errors that exists, and the frustrating part is that the message itself gives you almost no information about *which* of several unrelated problems you're actually facing. A permissions issue, a wrong key, an unloaded agent, and a server-side config restriction all produce the exact same line. Here's how to tell them apart and fix each one.
 
-```
+```text
 user@host: Permission denied (publickey).
 ```
 
@@ -42,7 +42,7 @@ This prints every key `ssh` offers and the server's response to each — it's th
 
 ## Cause 1: Server-Side Directory/File Permissions (StrictModes)
 
-```
+```text
 # in the server's auth log, not on your client:
 Authentication refused: bad ownership or modes for directory /home/user
 ```
@@ -75,7 +75,7 @@ Confirm it's a single unbroken line starting with `ssh-ed25519` or `ssh-rsa`, ma
 
 ## Cause 3: SSH Is Offering the Wrong Key
 
-```
+```text
 debug1: Offering public key: /home/user/.ssh/id_rsa_old RSA SHA256:...
 debug1: Authentications that can continue: publickey
 ...
@@ -92,7 +92,7 @@ ssh -i ~/.ssh/id_ed25519 user@host
 
 Or make it permanent for that host in `~/.ssh/config`:
 
-```
+```text
 Host myserver
     HostName host.example.com
     User user
@@ -126,7 +126,7 @@ ssh-add ~/.ssh/id_ed25519
 
 Even a perfectly valid key fails if the server itself is configured to reject it — check `/etc/ssh/sshd_config` for:
 
-```
+```text
 PubkeyAuthentication no
 ```
 

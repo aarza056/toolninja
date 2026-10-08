@@ -20,7 +20,7 @@ faqs:
 
 ## Why This Matters Now, Not Eventually
 
-The European Accessibility Act (EAA) stopped being a "someday" compliance item a while ago. It became enforceable across all EU member states on **June 28, 2025**, which makes 2026 the first full calendar year that national authorities are actively supervising against it. The first EAA lawsuits were filed in France in November 2025, and other member states — the Netherlands among them — have enforcement activity planned through 2026.
+The [European Accessibility Act](https://eur-lex.europa.eu/eli/dir/2019/882/oj) (EAA) stopped being a "someday" compliance item a while ago. It became enforceable across all EU member states on **June 28, 2025**, which makes 2026 the first full calendar year that national authorities are actively supervising against it. The first EAA lawsuits were filed in France in November 2025, and other member states — the Netherlands among them — have enforcement activity planned through 2026.
 
 If your product has EU customers, this isn't a hypothetical legal risk anymore. It's active.
 
@@ -41,7 +41,7 @@ That five-year window sounds comfortable until you consider that a website redes
 
 ## What the EAA Actually Requires
 
-The EAA doesn't invent its own accessibility checklist — it points to **WCAG 2.1 Level AA** as the applicable standard. In practice, that means:
+The EAA doesn't invent its own accessibility checklist — it points to **[WCAG 2.1](https://www.w3.org/TR/WCAG21/) Level AA** as the applicable standard. In practice, that means:
 
 - Meaningful alt text on images
 - Full keyboard operability (nothing that only works with a mouse)

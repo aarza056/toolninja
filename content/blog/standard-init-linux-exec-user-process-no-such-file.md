@@ -20,13 +20,13 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 standard_init_linux.go:211: exec user process caused: no such file or directory
 ```
 
 Or in newer Docker versions:
 
-```
+```text
 exec /app/entrypoint.sh: no such file or directory
 ```
 
@@ -94,7 +94,7 @@ Click `CRLF` in the bottom-right status bar and select `LF`. Save.
 
 ### Solution 4 — Fix permanently with .gitattributes
 
-```
+```text
 *.sh text eol=lf
 Dockerfile text eol=lf
 docker-compose.yml text eol=lf

@@ -17,7 +17,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```http
 HTTP/1.1 415 Unsupported Media Type
 {
   "error": "Unsupported Media Type",
@@ -26,7 +26,7 @@ HTTP/1.1 415 Unsupported Media Type
 ```
 
 Or in frameworks:
-```
+```text
 org.springframework.web.HttpMediaTypeNotSupportedException: Content type 'application/x-www-form-urlencoded' not supported
 ```
 

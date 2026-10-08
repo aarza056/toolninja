@@ -22,7 +22,7 @@ faqs:
 
 A **UUID** (Universally Unique Identifier) is a 128-bit value, formatted as 32 hex digits in groups of 8-4-4-4-12:
 
-```
+```text
 550e8400-e29b-41d4-a716-446655440000
 xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
 ```
@@ -30,7 +30,7 @@ xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
 - `M` = version digit
 - `N` = variant bits (always 8, 9, a, or b in standard UUIDs)
 
-The RFC 4122 standard defines several versions. Each serves a different purpose.
+The [RFC 4122](https://www.rfc-editor.org/rfc/rfc4122) standard defines several versions. Each serves a different purpose.
 
 ---
 
@@ -38,7 +38,7 @@ The RFC 4122 standard defines several versions. Each serves a different purpose.
 
 ### v1 — Time + MAC Address
 
-```
+```text
 6ba7b810-9dad-11d1-80b4-00c04fd430c8
          ^^^^  Version 1
 ```
@@ -56,7 +56,7 @@ Generated from the current timestamp (100-nanosecond intervals since Oct 15, 158
 
 ### v4 — Random
 
-```
+```text
 550e8400-e29b-41d4-a716-446655440000
                ^ Version 4
 ```
@@ -87,7 +87,7 @@ uuidv5("example.com", uuidv5.DNS) // deterministic
 
 ### v7 — Unix Time-Ordered (New in 2022)
 
-```
+```text
 018c4b5c-e3a0-7000-a8b4-c8a6b9d51b8e
          ^^^^  Version 7
 ```
@@ -134,12 +134,12 @@ CREATE TABLE orders (
 ```
 
 **ULID** — 26-character base32 string, sortable, URL-safe:
-```
+```text
 01ARZ3NDEKTSV4RRFFQ69G5FAV
 ```
 
 **NanoID** — configurable length, URL-safe, 21 chars by default:
-```
+```text
 V1StGXR8_Z5jdHi6B-myT
 ```
 

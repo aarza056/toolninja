@@ -67,7 +67,7 @@ The useful split is between bots that harvest your content to train a model some
 
 A robots.txt reflecting that split looks roughly like this:
 
-```
+```text
 # Block training-only crawlers
 User-agent: GPTBot
 User-agent: CCBot
@@ -93,7 +93,7 @@ This isn't a universal answer — a publisher whose entire business model is lic
 
 Worth calling out separately: `Google-Extended` doesn't control whether Googlebot indexes your site for regular search — that's a completely separate crawler and separate rule. `Google-Extended` specifically controls whether Google can use your content to train Gemini and improve AI Overviews. Blocking it has no effect on your regular Google search rankings, which makes it one of the lower-risk blocks available if training-data use is your specific concern, independent of your broader AI-crawler stance.
 
-```
+```text
 User-agent: Google-Extended
 Disallow: /
 ```

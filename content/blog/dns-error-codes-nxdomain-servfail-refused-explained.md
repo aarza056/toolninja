@@ -26,7 +26,7 @@ When a domain won't resolve, "check DNS propagation" is the reflexive answer —
 
 ## NXDOMAIN — "This Name Does Not Exist"
 
-```
+```bash
 $ dig app.example.com
 
 ;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 41230
@@ -52,7 +52,7 @@ If that returns a real answer while your normal resolver still returns NXDOMAIN,
 
 ## SERVFAIL — "Something Failed While I Was Trying to Answer"
 
-```
+```bash
 $ dig broken.example.com
 
 ;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 58821
@@ -80,7 +80,7 @@ dig +cd broken.example.com
 
 ## REFUSED — "I Won't Answer That"
 
-```
+```bash
 $ dig internal.corp.local @10.0.0.53
 
 ;; ->>HEADER<<- opcode: QUERY, status: REFUSED, id: 9012

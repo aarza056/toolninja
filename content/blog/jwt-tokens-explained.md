@@ -30,7 +30,7 @@ You've seen them: that long `eyJ...` string in an `Authorization: Bearer` header
 
 A JWT is three Base64URL-encoded JSON objects joined by dots:
 
-```
+```text
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
 .eyJzdWIiOiJ1c2VyXzEyMyIsImVtYWlsIjoiYWxpY2VAZXhhbXBsZS5jb20iLCJpYXQiOjE3MzAwMDAwMDAsImV4cCI6MTczMDA4NjQwMH0
 .SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
@@ -55,7 +55,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
 ```
 
 **Signature** — proof of integrity:
-```
+```text
 HMACSHA256(
   base64UrlEncode(header) + "." + base64UrlEncode(payload),
   secret
@@ -150,7 +150,7 @@ Attackers sometimes switch a token from RS256 to HS256 and sign with the **publi
 
 Short-lived access tokens + long-lived refresh tokens is the standard pattern:
 
-```
+```text
 Access token:  15 minutes  (stored in memory, not localStorage)
 Refresh token: 7–30 days   (stored in httpOnly cookie)
 ```

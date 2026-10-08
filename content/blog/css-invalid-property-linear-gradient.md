@@ -20,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 Invalid property value — background: linear-gradient(top, #fff, #000)
 ```
 
 Or in DevTools:
-```
+```text
 Property ignored — invalid value (background-image)
 ```
 

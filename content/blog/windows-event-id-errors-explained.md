@@ -28,7 +28,7 @@ Windows logs an enormous volume of routine noise by default, and the temptation 
 
 **Log:** Security
 
-```
+```text
 An account failed to log on.
 
 Subject:
@@ -60,7 +60,7 @@ Network Information:
 
 **Log:** Application
 
-```
+```text
 Faulting application name: myapp.exe, version: 2.4.1.0
 Faulting module name: KERNELBASE.dll, version: 10.0.19041.1
 Exception code: 0xc0000005
@@ -83,12 +83,12 @@ Faulting process id: 0x1a3c
 
 **Log:** System
 
-```
+```text
 The MyCompanyService service failed to start due to the following error:
 The service did not respond to the start or control request in a timely fashion.
 ```
 
-```
+```text
 Error 1069: The service did not start due to a logon failure.
 ```
 
@@ -108,7 +108,7 @@ Error 1069: The service did not start due to a logon failure.
 
 **Log:** System
 
-```
+```text
 The system has rebooted without cleanly shutting down first. This error could
 be caused if the system stopped responding, crashed, or lost power unexpectedly.
 ```

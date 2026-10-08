@@ -32,12 +32,12 @@ Here's what actually causes each one, with the fastest real fix.
 
 ## 502 Bad Gateway
 
-```
+```text
 502 Bad Gateway
 nginx/1.25.3
 ```
 
-```
+```text
 [error] 12345#0: *1 connect() failed (111: Connection refused) while connecting
 to upstream, client: 203.0.113.7, server: example.com,
 upstream: "fastcgi://unix:/run/php/php8.3-fpm.sock:"
@@ -69,12 +69,12 @@ A mismatched port after a config change (app moved from 3000 to 3001, nginx conf
 
 ## 504 Gateway Timeout
 
-```
+```text
 504 Gateway Time-out
 nginx/1.25.3
 ```
 
-```
+```text
 [error] 12345#0: *1 upstream timed out (110: Connection timed out) while reading
 response header from upstream, client: 203.0.113.7,
 upstream: "http://127.0.0.1:3000/api/report"
@@ -103,7 +103,7 @@ Check the upstream's own logs for how long it actually took to respond — if it
 
 ## 403 Forbidden (Straight From nginx)
 
-```
+```text
 403 Forbidden
 nginx/1.25.3
 ```

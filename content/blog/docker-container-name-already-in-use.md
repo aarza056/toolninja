@@ -20,7 +20,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 docker: Error response from daemon: Conflict. The container name "/myapp" is already in use
 by container "a3f8b2c1d4e5f6...". You have to remove (or rename) that container to be able
 to reuse that name.

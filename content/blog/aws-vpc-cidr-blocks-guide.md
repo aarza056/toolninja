@@ -62,9 +62,9 @@ Always factor AWS's 5 reserved addresses into your subnet sizing calculations.
 
 ### The RFC 1918 Private Ranges
 
-AWS strongly recommends using the RFC 1918 private address ranges:
+AWS strongly recommends using the [RFC 1918](https://www.rfc-editor.org/rfc/rfc1918) private address ranges:
 
-```
+```text
 10.0.0.0/8      — 10.x.x.x addresses (largest range)
 172.16.0.0/12   — 172.16.x.x to 172.31.x.x
 192.168.0.0/16  — 192.168.x.x (smallest, avoid for AWS)
@@ -112,7 +112,7 @@ Typical size: /24 per Availability Zone (251 usable IPs)
 
 Starting CIDR: `10.0.0.0/16`
 
-```
+```text
 Public Subnets:
   us-east-1a — 10.0.0.0/24   (public)
   us-east-1b — 10.0.1.0/24   (public)
@@ -139,7 +139,7 @@ Always deploy subnets across at least 3 Availability Zones for production worklo
 
 This means your VPC needs enough CIDR space for at least:
 
-```
+```text
 3 AZs × 3 subnet tiers = 9 subnets minimum for production
 ```
 
@@ -155,7 +155,7 @@ Overlapping CIDR blocks between peered VPCs cannot be resolved without destroyin
 
 ### Recommended Multi-VPC CIDR Allocation
 
-```
+```text
 Production VPC:     10.0.0.0/16
 Staging VPC:        10.1.0.0/16
 Development VPC:    10.2.0.0/16
@@ -193,7 +193,7 @@ AWS allows up to 5 secondary CIDR blocks per VPC. If you're running out of IP ad
 
 ## Quick Reference — Common VPC CIDR Patterns
 
-```
+```text
 Small SaaS startup:
   VPC: 10.0.0.0/20 (4,096 IPs)
   3 public /24 subnets

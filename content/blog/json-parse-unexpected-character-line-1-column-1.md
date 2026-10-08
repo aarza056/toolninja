@@ -20,7 +20,7 @@ faqs:
 
 ## The Most Common JSON Error, by a Wide Margin
 
-```
+```text
 SyntaxError: Unexpected token < in JSON at position 0
 SyntaxError: Unexpected token } in JSON at position 47
 SyntaxError: Unexpected non-whitespace character after JSON at position 128
@@ -32,7 +32,7 @@ If you write JavaScript that talks to an API, you will see some variant of this 
 
 ## Cause 1: You Parsed HTML, Not JSON (the #1 cause of position 0)
 
-```
+```text
 SyntaxError: Unexpected token < in JSON at position 0
 ```
 

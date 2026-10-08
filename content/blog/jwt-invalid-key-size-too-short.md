@@ -17,7 +17,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 Error: secretOrPrivateKey must have a value
 JsonWebTokenError: invalid key size
 Error: The secret length must be >= 32 bytes for HS256
@@ -30,7 +30,7 @@ io.jsonwebtoken.security.WeakKeyException: The signing key's size is 120 bits wh
 
 ## Why This Error Happens
 
-HMAC-based JWT algorithms have minimum key size requirements defined in RFC 7518:
+HMAC-based JWT algorithms have minimum key size requirements defined in [RFC 7518](https://www.rfc-editor.org/rfc/rfc7518):
 
 | Algorithm | Minimum key length |
 |---|---|
@@ -89,7 +89,7 @@ node -e "console.log(require('crypto').randomBytes(64).toString('base64'))"
 ```
 
 Add to `.env`:
-```
+```text
 JWT_SECRET=your-generated-64-byte-hex-string-here
 ```
 

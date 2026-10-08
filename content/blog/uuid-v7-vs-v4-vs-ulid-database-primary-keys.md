@@ -40,7 +40,7 @@ None of this is theoretical — it's the standard explanation database vendors t
 
 UUIDv7 (standardized in [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562.html), May 2024) and ULID both solve this the same way: put a millisecond-precision timestamp in the **most significant bits**, and fill the rest with randomness.
 
-```
+```text
 UUIDv7:  018f4d2e-7b3a-7c21-8a4f-1e2d3c4b5a69
          └────┬────┘└─┬─┘
           48-bit ms    version + 74 bits of randomness

@@ -18,7 +18,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 Error: Invalid salt version
 Error: data and hash arguments required
 Error: Invalid hash provided to bcrypt

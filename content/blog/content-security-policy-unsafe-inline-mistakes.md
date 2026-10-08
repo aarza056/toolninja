@@ -32,7 +32,7 @@ CSP works by restricting scripts to an explicit allowlist of trusted sources. By
 
 The problem is that a lot of real codebases — especially older ones, or ones using certain templating patterns — genuinely have inline scripts and inline event handlers scattered throughout their HTML. Turning on a strict CSP against that codebase breaks the page immediately, in the browser console, with a wall of blocked-script errors. The fast fix that makes the errors go away is adding `'unsafe-inline'` to `script-src`. It works, in the sense that the errors disappear — but it also means the CSP is no longer actually restricting inline scripts at all, which was the entire point.
 
-```
+```text
 # Looks like a real security header:
 Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'
 
@@ -55,7 +55,7 @@ The point of restricting inline scripts is to distinguish scripts *you* wrote fr
 </script>
 ```
 
-```
+```http
 Content-Security-Policy: script-src 'self' 'nonce-8fZ2mK9x...'
 ```
 
@@ -63,7 +63,7 @@ An attacker injecting a script into your page has no way to know the nonce for t
 
 **Hashes** — for scripts with fixed, unchanging content, CSP can allow them by their SHA hash instead:
 
-```
+```http
 Content-Security-Policy: script-src 'self' 'sha256-<base64-hash-of-exact-script-content>'
 ```
 
@@ -77,7 +77,7 @@ Neither approach is free — both require actual engineering work to wire nonces
 
 Less dramatic than `unsafe-inline`, but still worth fixing deliberately: **explicitly set `object-src 'none'`** unless you have a specific, current reason not to. `<object>`, `<embed>`, and `<applet>` are legacy HTML elements that most sites built in 2026 have no legitimate use for at all, and they've historically been a vector for CSP bypass techniques that specifically target plugin content. Since the vast majority of sites don't need them, blocking them outright costs nothing:
 
-```
+```http
 Content-Security-Policy: object-src 'none'
 ```
 
@@ -87,7 +87,7 @@ Content-Security-Policy: object-src 'none'
 
 Putting the fixes together, a reasonably strong baseline CSP for a modern site looks like:
 
-```
+```http
 Content-Security-Policy:
   default-src 'self';
   script-src 'self' 'nonce-<per-request-value>';

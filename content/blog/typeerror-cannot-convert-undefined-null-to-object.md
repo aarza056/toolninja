@@ -20,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 TypeError: Cannot convert undefined or null to object
 ```
 
 Or:
-```
+```text
 TypeError: Cannot convert undefined to object (Object.keys called on non-object)
 TypeError: null is not an object (evaluating 'Object.keys(data)')
 ```

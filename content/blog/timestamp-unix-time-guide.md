@@ -22,7 +22,7 @@ faqs:
 
 A Unix timestamp (also called epoch time) is the number of **seconds since January 1, 1970 00:00:00 UTC**. This "epoch" was chosen somewhat arbitrarily when Unix was designed.
 
-```
+```text
 1730000000   →   2024-10-27 07:33:20 UTC
 0            →   1970-01-01 00:00:00 UTC
 -86400       →   1969-12-31 00:00:00 UTC (negative timestamps are valid)
@@ -52,7 +52,7 @@ new Date(1730000000000)       // 2024-10-27... (also correct)
 
 ISO 8601 is the international standard for date/time strings:
 
-```
+```text
 2024-10-27T07:33:20Z          UTC (Z = Zulu = UTC)
 2024-10-27T07:33:20+00:00     UTC with explicit offset
 2024-10-27T10:33:20+03:00     UTC+3 (same moment)

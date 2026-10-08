@@ -18,14 +18,14 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 XPathException: expression expected
 XPathResult Error: Invalid XPath expression
 Error: Failed to execute 'evaluate' on 'Document': The string '//div[@class=active]' is not a valid XPath expression.
 ```
 
 Or in Java:
-```
+```text
 javax.xml.xpath.XPathExpressionException: Invalid XPath expression
 ```
 

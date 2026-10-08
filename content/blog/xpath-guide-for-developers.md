@@ -127,7 +127,7 @@ Predicates narrow down which nodes to select. They appear in square brackets aft
 
 ## XPath Functions Reference
 
-XPath 1.0 includes a set of built-in functions for strings, numbers, and node sets.
+[XPath 1.0](https://www.w3.org/TR/xpath-10/) includes a set of built-in functions for strings, numbers, and node sets.
 
 ### String Functions
 

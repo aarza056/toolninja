@@ -20,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 chmod: invalid octal value '898'
 ```
 
 Or:
-```
+```text
 chmod: invalid mode: '0892'
 chmod: invalid mode: '9'
 ```
@@ -62,7 +62,7 @@ chmod 898  # INVALID: 8 and 9
 
 ### Step 2 — Map permissions to octal
 
-```
+```text
 Position: [special][user][group][other]
 
 7 = rwx    6 = rw-    5 = r-x    4 = r--

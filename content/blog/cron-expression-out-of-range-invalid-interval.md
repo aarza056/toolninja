@@ -20,12 +20,12 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 Error: value 60 out of range [0..59] for minutes field
 ```
 
 Or:
-```
+```text
 Invalid cron expression: '0 25 * * *'
 QuartzException: '8' is not a valid value for hour
 ```
@@ -54,7 +54,7 @@ Common causes:
 
 ### Step 1 — Map fields to positions
 
-```
+```text
 Standard cron (5 fields):
 
 *  *  *  *  *

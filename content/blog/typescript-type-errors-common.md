@@ -30,7 +30,7 @@ For each one: the exact error, the root cause, how to diagnose it, the fix, and 
 
 **The exact error:**
 
-```
+```text
 Type 'string' is not assignable to type 'number'.
 ```
 
@@ -69,7 +69,7 @@ const user: User = {
 
 **The exact error:**
 
-```
+```text
 Property 'firstName' does not exist on type 'User'.
 ```
 
@@ -123,7 +123,7 @@ function area(s: Shape) {
 
 **The exact error:**
 
-```
+```text
 Argument of type 'string' is not assignable to parameter of type 'number'.
 ```
 
@@ -158,7 +158,7 @@ function double(n: number | string): number {
 
 **The exact error:**
 
-```
+```text
 Object is possibly 'undefined'.
 ```
 
@@ -223,7 +223,7 @@ function process(config: Config) {
 
 **The exact error:**
 
-```
+```text
 Cannot find name 'useState'.
 ```
 

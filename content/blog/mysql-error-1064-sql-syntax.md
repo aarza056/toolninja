@@ -18,7 +18,7 @@ faqs:
 
 ## The Exact Error
 
-```
+```text
 ERROR 1064 (42000): You have an error in your SQL syntax;
 check the manual that corresponds to your MySQL server version
 for the right syntax to use near 'order FROM users WHERE id = 1' at line 1
@@ -46,7 +46,7 @@ for the right syntax to use near 'order FROM users WHERE id = 1' at line 1
 
 ### Step 1 — Read what's in `near '...'`
 
-```
+```text
 near 'order FROM users' at line 1
 ```
 

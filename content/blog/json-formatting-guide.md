@@ -199,7 +199,7 @@ Validation libraries:
 
 JSONPath is the XPath for JSON — a query language for extracting data:
 
-```
+```text
 $.store.book[*].author        All book authors
 $.store.book[0].title         First book title
 $.store.book[-1].title        Last book title

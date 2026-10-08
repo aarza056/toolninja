@@ -35,7 +35,7 @@ An IPv4 address is 32 bits. If the prefix is `/24`, then:
 - **8 bits** = host addresses (variable)
 - **2⁸ = 256** total addresses, **254 usable** (first = network, last = broadcast)
 
-```
+```text
 192.168.1.0/24
 │           │
 │           └─ 24 network bits, 8 host bits
@@ -79,7 +79,7 @@ These ranges are reserved for private networks and will never be routed on the p
 
 When you have a `/24` (256 IPs) and need 4 separate subnets for different teams or security zones, you **subnet** it by borrowing host bits:
 
-```
+```text
 192.168.1.0/24  →  split into 4 × /26 subnets
 
 192.168.1.0/26    (0–63)    Hosts: 192.168.1.1–62
@@ -102,7 +102,7 @@ AWS is where most developers encounter CIDR in practice. Key rules:
 
 A typical 3-AZ production setup:
 
-```
+```text
 VPC: 10.0.0.0/16
 
 Public subnets (one per AZ):
@@ -154,7 +154,7 @@ Fix by specifying a custom range in `/etc/docker/daemon.json`:
 
 The reverse of subnetting — combining multiple networks into one summary route:
 
-```
+```text
 192.168.0.0/24
 192.168.1.0/24
 192.168.2.0/24
