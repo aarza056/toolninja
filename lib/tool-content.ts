@@ -15,7 +15,7 @@ export interface ToolContent {
 export const toolContent: Record<string, ToolContent> = {
   "json-formatter": {
     about:
-      "The ToolNinja JSON Formatter is a free online JSON formatter, validator and beautifier. Paste any JSON string and instantly format it with proper indentation, syntax highlighting, and clear error messages if your JSON is invalid.\n\nUse it as a JSON beautifier to make minified API responses readable, as a JSON validator to catch syntax errors like trailing commas, unquoted keys, or mismatched brackets, or as a JSON minifier to compress formatted JSON for production use. The tree view mode lets you explore deeply nested structures visually, and JSONPath query support lets you extract specific values without writing any code.\n\nThe Flatten tab converts nested JSON into single-level dot-notation keys (e.g. `user.address.city`) — useful for CSV export, spreadsheet import, or flat key-value config formats — and Unflatten does the reverse, rebuilding a nested object (including arrays) from flat dot-notation keys.\n\nWhether you're debugging an API response, validating config files, or pretty printing JSON for documentation — the ToolNinja JSON formatter handles it instantly with no page reloads.\n\nAll processing runs in your browser. Your JSON data — including any sensitive API keys, tokens or private data — never leaves your machine. No login required.",
+      "The ToolNinja JSON Formatter is a free online JSON formatter, validator and beautifier. Paste any JSON string and instantly format it with proper indentation, syntax highlighting, and clear error messages if your JSON is invalid.\n\nUse it as a JSON beautifier to make minified API responses readable, as a JSON validator to catch syntax errors like trailing commas, unquoted keys, or mismatched brackets, or as a JSON minifier to compress formatted JSON for production use. The tree view mode lets you explore deeply nested structures visually, and JSONPath query support lets you extract specific values without writing any code.\n\nThe Flatten / Unflatten tab has two modes. Flatten converts nested JSON into single-level dot-notation keys (e.g. `user.address.city`), which is useful for CSV export, spreadsheet import, or flat key-value config formats. Unflatten does the reverse, rebuilding a nested object (including arrays) from flat dot-notation keys. Copy buttons are available for the formatted, minified and flattened output.\n\nWhether you're debugging an API response, validating config files, or pretty printing JSON for documentation — the ToolNinja JSON formatter handles it instantly with no page reloads.\n\nAll processing runs in your browser. Your JSON data — including any sensitive API keys, tokens or private data — never leaves your machine. No login required.",
     useCases: [
       "Inspecting API responses from Postman, curl, or browser DevTools",
       "Formatting config files (package.json, tsconfig.json) before committing",
@@ -369,13 +369,13 @@ export const toolContent: Record<string, ToolContent> = {
     tips: [
       "16+ characters with all character types is sufficient for most accounts.",
       "For master passwords (password managers, disk encryption), use 24+ characters.",
-      "A random 16-character password with full character set has ~95 bits of entropy — essentially uncrackable by brute force.",
-      "Switch to Passphrase mode for a password you actually need to type or remember — NIST SP 800-63B (2025) recommends passphrases as a practical alternative to complex random strings.",
+      "A random 16-character password drawn from all four character sets (88 characters) has about 103 bits of entropy; letters and digits only (62 characters) gives about 95 bits. Either is far beyond brute force.",
+      "Switch to Passphrase mode for a password you actually need to type or remember. NIST SP 800-63B favors length over composition rules, which makes passphrases a practical option; use more words for anything that can be attacked offline.",
     ],
     faq: [
       {
         q: "How random are these passwords?",
-        a: "They use crypto.getRandomValues(), the browser's cryptographically secure pseudorandom number generator (CSPRNG). This is the same entropy source used by TLS, SSH key generation, and operating system security functions — suitable for any security purpose.",
+        a: "They use crypto.getRandomValues(), the browser's cryptographically secure pseudorandom number generator (CSPRNG), which is seeded by the operating system's secure random source and is suitable for generating secrets.",
       },
       {
         q: "What makes a password 'strong'?",
@@ -416,7 +416,7 @@ export const toolContent: Record<string, ToolContent> = {
       },
       {
         q: "What's the difference between UUID v1, v4, v5, and v7?",
-        a: "V1 is time-based and includes the machine's MAC address — deterministic but leaks information. V4 is fully random — historically the most widely used version. V5 is deterministic from a namespace + name (SHA-1-based) — same input always gives the same UUID, useful for idempotency keys. V7 encodes a millisecond timestamp in the first 48 bits, so generated IDs sort chronologically, which avoids the random-insert performance penalty v4 causes on database indexes — it's now the recommended default for new database primary keys.",
+        a: "V1 is time-based and includes the machine's MAC address, so it leaks when and where it was created. V4 is fully random — historically the most widely used version. V5 is deterministic from a namespace + name (SHA-1-based) — same input always gives the same UUID, useful for idempotency keys. V7 encodes a millisecond timestamp in the first 48 bits, so generated IDs sort chronologically, which avoids the random-insert performance penalty v4 causes on database indexes — it's now the recommended default for new database primary keys.",
       },
       {
         q: "What is UUID v5 actually useful for, if it's not random?",
@@ -801,7 +801,7 @@ export const toolContent: Record<string, ToolContent> = {
       },
       {
         q: "What is the difference between @daily, @weekly, and a manual expression?",
-        a: "@daily is shorthand for 0 0 * * * (midnight every day). @weekly is 0 0 * * 0 (midnight every Sunday). @hourly is 0 * * * * (top of every hour). @monthly is 0 0 1 * * (midnight on the 1st). These named schedules are more readable than manual expressions and are supported by most modern cron implementations.",
+        a: "@daily is shorthand for 0 0 * * * (midnight every day). @weekly is 0 0 * * 0 (midnight every Sunday). @hourly is 0 * * * * (top of every hour). @monthly is 0 0 1 * * (midnight on the 1st). These named schedules are more readable than manual expressions and are supported by most modern cron implementations. This tester accepts only the 5-field form, so type the equivalent expression (for example 0 0 * * * for @daily) to preview it.",
       },
       {
         q: "Does cron run in UTC or local time?",

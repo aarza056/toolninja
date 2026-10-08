@@ -25,6 +25,11 @@ const REQUIRED = {
 };
 // Types that must appear at most once per page.
 const SINGLETON = ["WebSite", "Organization", "SoftwareApplication", "BlogPosting", "BreadcrumbList", "FAQPage"];
+// Tools whose pages must carry the full guide (lib/tool-guides.ts) and a 4-6 question FAQ.
+const GUIDED_TOOLS = [
+  "json-formatter", "jwt-decoder", "regex-tester", "base64", "uuid-generator",
+  "cron-tester", "cidr-calculator", "timestamp-converter", "diff-checker", "password-generator",
+];
 
 function checkJsonLd(route, html, problems) {
   const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
@@ -117,6 +122,16 @@ for (const file of walk(APP_DIR)) {
     const related = html.match(/<section data-related-tools[^>]*>([\s\S]*?)<\/section>/);
     const links = related ? (related[1].match(/href="\/tools\//g) ?? []).length : 0;
     if (links < 3) problems.push({ route, issue: `only ${links} related tool link(s); curate 3-5 in lib/related-tools.ts` });
+    if (GUIDED_TOOLS.includes(route.slice("/tools/".length))) {
+      for (const part of ["intro", "howto", "examples", "limitations"]) {
+        if (!html.includes(`data-tool-${part}`)) problems.push({ route, issue: `missing ${part} section (lib/tool-guides.ts)` });
+      }
+      const examples = (html.match(/<section data-tool-examples[^>]*>([\s\S]*?)<\/section>/)?.[1].match(/<h3/g) ?? []).length;
+      if (examples < 2 || examples > 3) problems.push({ route, issue: `${examples} examples; expected 2-3` });
+      const faqLd = html.match(/"@type":"FAQPage","mainEntity":\[([\s\S]*?)\]\}/);
+      const faqs = faqLd ? (faqLd[1].match(/"@type":"Question"/g) ?? []).length : 0;
+      if (faqs < 4 || faqs > 6) problems.push({ route, issue: `${faqs} FAQ questions; expected 4-6` });
+    }
   }
   for (const d of descs) {
     if (d.length > DESCRIPTION_MAX) problems.push({ route, issue: `description ${d.length} > ${DESCRIPTION_MAX}: ${d}` });

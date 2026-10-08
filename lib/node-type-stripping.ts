@@ -1,3 +1,9 @@
+// The date the unsupported-syntax rules below were last checked against Node's type-stripping
+// documentation. Shown on the tool page as "Last reviewed". Bump it whenever the rules are re-checked.
+// TODO(owner): this is the date the rules were written (git history); re-check them against the
+// current Node.js docs and update the date.
+export const TYPE_STRIPPING_RULES_LAST_REVIEWED = "2026-09-16";
+
 export interface StrippingFinding {
   kind: "enum" | "parameter-property" | "namespace" | "decorator";
   snippet: string;

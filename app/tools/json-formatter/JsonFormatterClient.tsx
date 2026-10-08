@@ -211,7 +211,7 @@ export default function JsonFormatterClient() {
     { id: "formatted", label: "Formatted" },
     { id: "tree", label: "Tree" },
     { id: "jsonpath", label: "JSONPath" },
-    { id: "flatten", label: "Flatten" },
+    { id: "flatten", label: "Flatten / Unflatten" },
   ];
 
   const flattenOutput = (() => {

@@ -43,6 +43,8 @@ export default function AiTokenCounterClient() {
     <ToolLayout
       title="AI Token Counter & Cost Estimator"
       description="Estimate how many tokens your prompt costs, and what it'd run across Claude, GPT, and Gemini"
+      lastReviewed={PRICES_LAST_VERIFIED}
+      lastReviewedWhat="model prices"
     >
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
         <div>

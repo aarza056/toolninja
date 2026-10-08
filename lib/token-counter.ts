@@ -7,7 +7,7 @@ export interface ModelPricing {
 }
 
 // The date the rates in MODEL_PRICING were last checked against each provider's pricing page.
-// Shown on the page as "Prices last verified: …"; update it whenever the table is re-checked.
+// Shown on the page as "Last reviewed" and "Prices last verified"; update it whenever the table is re-checked.
 // TODO(owner): re-verify every rate below against the providers' official pricing pages, then
 // update this date. The current values were not verified as part of the October 2026 review.
 export const PRICES_LAST_VERIFIED = "2026-10-07";
