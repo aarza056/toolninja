@@ -1,6 +1,8 @@
 ---
 title: "CIDR Block Overlaps with Existing Subnet — AWS VPC Fix Guide"
 description: "CIDR overlap errors in AWS VPC happen when two subnets or VPCs share IP address ranges. Learn how to calculate non-overlapping CIDR blocks, detect conflicts, and plan your IP space."
+metaTitle: "Fix \"CIDR Block Overlaps\" in AWS VPC"
+metaDescription: "Why AWS rejects overlapping CIDR blocks for subnets and VPCs, how to find the conflict, and how to plan non-overlapping IP ranges."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🌐"

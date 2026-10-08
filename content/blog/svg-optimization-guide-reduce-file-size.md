@@ -1,6 +1,8 @@
 ---
 title: "Why Your SVG Exports Are 6× Bigger Than They Need to Be"
 description: "A 500-byte icon can leave Figma or Illustrator as 3KB of editor metadata, redundant precision, and XML cruft. Most exported SVGs can shrink 40-80% with zero visible difference."
+metaTitle: "SVG Optimization: Cut Exported File Size"
+metaDescription: "Why SVGs exported from design tools carry metadata, excess precision and XML cruft, and how to strip it without visible changes."
 date: "2026-08-11"
 author: "ToolNinja"
 coverEmoji: "🧹"

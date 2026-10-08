@@ -1,6 +1,8 @@
 ---
 title: "TypeScript Type Errors: The Ones Every Developer Hits"
 description: "A deep dive into the five TypeScript type errors every developer runs into — TS2322, TS2339, TS2345, TS2532, and TS2304 — with root causes, diagnosis steps, fixes, and when to use a type assertion instead."
+metaTitle: "Common TypeScript Type Errors Explained"
+metaDescription: "TS2322, TS2339, TS2345, TS2532 and TS2304 explained: root causes, how to diagnose them, the fixes, and when an assertion is fine."
 date: "2026-07-17"
 author: "ToolNinja"
 coverEmoji: "🔷"

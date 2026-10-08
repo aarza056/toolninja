@@ -1,6 +1,8 @@
 ---
 title: "MySQL Error 1064: You Have an Error in Your SQL Syntax Fix"
 description: "MySQL Error 1064 means the SQL parser hit something it didn't expect. Learn the most common causes — reserved words, quoting mistakes, missing commas — and how to fix them fast."
+metaTitle: "MySQL Error 1064: SQL Syntax Error Fix"
+metaDescription: "What MySQL error 1064 means and its usual causes, from reserved words and quoting mistakes to missing commas, with fixes."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🗄️"

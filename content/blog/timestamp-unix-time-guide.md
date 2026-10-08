@@ -1,6 +1,8 @@
 ---
 title: "Unix Timestamps and Time Zones: A Developer's Reference"
 description: "Everything you need to know about Unix timestamps, UTC vs local time, ISO 8601 format, daylight saving pitfalls, and how to work with dates correctly in JavaScript, Python, and Go."
+metaTitle: "Unix Timestamps & Time Zones Reference"
+metaDescription: "Unix timestamps, UTC vs local time, ISO 8601, daylight saving pitfalls, and working with dates in JavaScript, Python and Go."
 date: "2026-05-11"
 author: "ToolNinja"
 coverEmoji: "⏱️"

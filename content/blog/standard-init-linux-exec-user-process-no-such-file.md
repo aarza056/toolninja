@@ -1,6 +1,8 @@
 ---
 title: "standard_init_linux.go:211: exec user process caused: no such file or directory — Docker Fix"
 description: "The most common cause of this Docker error is Windows CRLF line endings in shell scripts. Learn how to detect, fix, and prevent it with .gitattributes and Dockerfile workarounds."
+metaTitle: "Docker \"exec user process\" No Such File Fix"
+metaDescription: "Why Docker fails with \"exec user process caused: no such file or directory\", usually CRLF line endings, and how to fix and prevent it."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🐳"

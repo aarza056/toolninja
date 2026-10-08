@@ -13,6 +13,7 @@ const PRIVACY_LAST_UPDATED = "8 October 2026";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "How ToolNinja handles data: tool input stays in your browser, plus server logs, consent-based analytics and ads, and your GDPR and CCPA rights.",
+  alternates: { canonical: "https://toolninja.io/privacy" },
 };
 
 export default function PrivacyPage() {

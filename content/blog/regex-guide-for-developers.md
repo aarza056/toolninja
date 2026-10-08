@@ -1,6 +1,8 @@
 ---
 title: "Regex for Developers: Practical Patterns You'll Actually Use"
 description: "A practical regex guide covering anchors, quantifiers, groups, lookaheads, and 20+ real-world patterns for emails, URLs, dates, IDs, and more. Includes JavaScript, Python, and Go examples."
+metaTitle: "Regex Guide: Patterns You'll Actually Use"
+metaDescription: "Regex anchors, quantifiers, groups and lookaheads, plus real patterns for emails, URLs, dates and IDs, with JavaScript, Python and Go."
 date: "2026-05-04"
 author: "ToolNinja"
 coverEmoji: "🔍"

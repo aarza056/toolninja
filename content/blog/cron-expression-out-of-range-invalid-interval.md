@@ -1,6 +1,8 @@
 ---
 title: "Cron Expression Out of Range / Invalid Interval — Fix Guide"
 description: "Cron expression errors happen when field values fall outside allowed ranges or use invalid syntax. Learn the exact ranges for each field, common mistakes with day-of-week numbering, and how to validate before deploying."
+metaTitle: "Cron Expression \"Out of Range\" Errors Fixed"
+metaDescription: "The allowed range for every cron field, the day-of-week numbering mistakes that cause invalid intervals, and how to validate before deploying."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "⏰"

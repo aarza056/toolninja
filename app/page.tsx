@@ -1,44 +1,11 @@
+import type { Metadata } from "next";
 import HomeClient from "./HomeClient";
 
-const websiteJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "ToolNinja",
-  url: "https://toolninja.io",
-  description:
-    "Free online developer tools. No login. Your input is processed in your browser and never uploaded.",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: "https://toolninja.io/?q={search_term_string}",
-    },
-    "query-input": "required name=search_term_string",
-  },
+export const metadata: Metadata = {
+  alternates: { canonical: "https://toolninja.io" },
 };
 
-const orgJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "ToolNinja",
-  url: "https://toolninja.io",
-  logo: "https://toolninja.io/icon.svg",
-  description:
-    "Fast, free developer tools. No login. Your input is processed in your browser and never uploaded.",
-};
-
+// WebSite and Organization JSON-LD come from the root layout.
 export default function HomePage() {
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
-      />
-      <HomeClient />
-    </>
-  );
+  return <HomeClient />;
 }

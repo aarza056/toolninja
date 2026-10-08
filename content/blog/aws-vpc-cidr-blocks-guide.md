@@ -1,6 +1,8 @@
 ---
 title: "AWS VPC CIDR Blocks Explained: A Practical Guide for Cloud Engineers"
 description: "Learn how to plan AWS VPC CIDR blocks and subnets correctly. Covers VPC sizing, subnet tiers, reserved IPs, multi-AZ design, and common mistakes. Includes a free CIDR calculator."
+metaTitle: "AWS VPC CIDR Blocks: A Practical Guide"
+metaDescription: "Plan AWS VPC CIDR blocks and subnets: VPC sizing, subnet tiers, reserved IPs, multi-AZ layouts and the common mistakes to avoid."
 date: "2026-05-20"
 author: "ToolNinja"
 coverEmoji: "☁️"

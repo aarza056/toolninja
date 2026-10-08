@@ -1,6 +1,8 @@
 ---
 title: "Active Directory Errors Explained: Replication Failures, Account Lockouts, and Group Policy Not Applying"
 description: "Replication error 8606, Group Policy silently failing to apply, and accounts that keep locking out for no visible reason — these three account for most of the AD tickets that eat a sysadmin's week. Here's what's really going on and the exact commands to fix them."
+metaTitle: "Active Directory Replication & Lockout Errors"
+metaDescription: "Fix AD replication error 8606, Group Policy that silently fails to apply, and accounts that keep locking out, with the exact commands to diagnose each."
 date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🗂️"

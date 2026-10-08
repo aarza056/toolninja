@@ -1,6 +1,8 @@
 ---
 title: "DOMException: btoa() — The string contains characters outside of the Latin1 range"
 description: "btoa() only handles Latin-1 characters. This error appears when you try to encode Unicode strings. Learn the correct two-step approach using encodeURIComponent + btoa(), and why you need it."
+metaTitle: "Fix btoa() \"Outside of the Latin1 Range\""
+metaDescription: "Why btoa() throws on Unicode strings and how to Base64-encode UTF-8 text correctly in the browser with TextEncoder."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔤"

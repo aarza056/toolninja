@@ -1,6 +1,8 @@
 ---
 title: "QR Code Generator Guide: WiFi, vCard, and Custom QR Codes"
 description: "How QR codes actually encode data, the exact WiFi and vCard string formats, calendar event QR codes, and how to choose an error correction level — with a free browser-based generator for each type."
+metaTitle: "QR Code Guide: WiFi, vCard and Events"
+metaDescription: "How QR codes encode data, the exact WiFi, vCard and calendar event formats, and how to pick an error correction level."
 date: "2026-07-15"
 author: "ToolNinja"
 coverEmoji: "📱"

@@ -1,6 +1,7 @@
 ---
 title: "Common CSS Grid Mistakes and How to Fix Them"
 description: "The most common CSS Grid mistakes developers make — forgetting display: grid, sizing unit confusion, overflow bugs, typo'd grid-template-areas, and more — each with broken and fixed code."
+metaDescription: "The CSS Grid mistakes developers make most, from missing display: grid to unit confusion, overflow and typo'd template areas, with fixed code."
 date: "2026-07-13"
 author: "ToolNinja"
 coverEmoji: "🎨"

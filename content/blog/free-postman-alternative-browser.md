@@ -1,6 +1,8 @@
 ---
 title: "Free Postman Alternative: Test APIs in the Browser"
 description: "Why developers look for a Postman alternative, what you actually need for most API testing, and how ToolNinja's HTTP Request Builder compares — honestly, including where Postman still wins."
+metaTitle: "Free Postman Alternative in the Browser"
+metaDescription: "What most API testing really needs, and how a browser-based request builder compares with Postman, including where Postman still wins."
 date: "2026-07-14"
 author: "ToolNinja"
 coverEmoji: "🚀"

@@ -1,6 +1,8 @@
 ---
 title: "bcrypt Hash Verification Error: Invalid Salt / Password Fix"
 description: "bcrypt errors like 'Invalid salt version', 'data and hash arguments required', and 'Invalid hash provided' happen for specific reasons. Learn exactly why and how to fix them."
+metaTitle: "bcrypt \"Invalid Salt\" & Hash Errors Fixed"
+metaDescription: "Why bcrypt throws \"Invalid salt version\", \"data and hash arguments required\" and \"Invalid hash provided\", and how to fix each one."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔐"

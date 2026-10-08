@@ -1,6 +1,8 @@
 ---
 title: "How to Estimate Your LLM API Costs Before You Get the Bill"
 description: "A practical walkthrough of how LLM API pricing actually works — tokens, input vs output cost, why a long system prompt costs more than you think — so you can estimate spend before you ship, not after."
+metaTitle: "How to Estimate LLM API Costs Up Front"
+metaDescription: "How LLM API pricing works: tokens, input vs output rates and system prompt overhead, so you can estimate spend before you ship."
 date: "2026-10-04"
 author: "ToolNinja"
 coverEmoji: "🧾"

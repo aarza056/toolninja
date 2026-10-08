@@ -1,6 +1,8 @@
 ---
 title: "JSON Formatting and Validation: A Developer's Guide"
 description: "Learn JSON syntax rules, common parsing errors, formatting best practices, JSON Schema validation, JSONPath queries, and tools for working with JSON in APIs, configs, and data pipelines."
+metaTitle: "JSON Formatting & Validation Guide"
+metaDescription: "JSON syntax rules, common parse errors, formatting conventions, JSON Schema validation and JSONPath queries for APIs and configs."
 date: "2026-05-08"
 author: "ToolNinja"
 coverEmoji: "📋"

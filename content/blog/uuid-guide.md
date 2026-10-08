@@ -1,6 +1,8 @@
 ---
 title: "UUIDs Explained: v1 vs v4 vs v7 and When to Use Each"
 description: "Understand UUID versions — v1 (time + MAC), v4 (random), v5 (name + hash), and the new v7 (sortable). When to use each, database implications, and alternatives like NanoID and ULID."
+metaTitle: "UUID Versions Explained: v1, v4, v5, v7"
+metaDescription: "UUID v1, v4, v5 and v7 compared: how each is built, when to use which, database implications, and alternatives like NanoID and ULID."
 date: "2026-05-06"
 author: "ToolNinja"
 coverEmoji: "🎲"

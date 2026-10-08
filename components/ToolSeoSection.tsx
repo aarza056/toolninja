@@ -6,8 +6,6 @@ interface Props {
   slug: string;
 }
 
-const BASE_URL = "https://toolninja.io";
-
 export default function ToolSeoSection({ slug }: Props) {
   const content = toolContent[slug];
   const tool = tools.find((t) => t.slug === slug);
@@ -18,66 +16,10 @@ export default function ToolSeoSection({ slug }: Props) {
         .slice(0, 3)
     : [];
 
-  const breadcrumbJsonLd = tool
-    ? {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "ToolNinja",
-            item: BASE_URL,
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: tool.category,
-            item: `${BASE_URL}/#${tool.category.toLowerCase()}`,
-          },
-          {
-            "@type": "ListItem",
-            position: 3,
-            name: tool.name,
-            item: `${BASE_URL}/tools/${slug}`,
-          },
-        ],
-      }
-    : null;
-
-  const faqJsonLd =
-    content?.faq
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: content.faq.map((item) => ({
-            "@type": "Question",
-            name: item.q,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: item.a,
-            },
-          })),
-        }
-      : null;
-
   if (!content && !relatedTools.length) return null;
 
   return (
     <div className="border-t border-[#1a1a1a] px-6 py-10 space-y-8 max-w-3xl">
-      {breadcrumbJsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-        />
-      )}
-      {faqJsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-        />
-      )}
-
       {content && (
         <>
           {/* About */}

@@ -1,6 +1,8 @@
 ---
 title: "SSH \"Permission Denied (publickey)\": The Real Causes and How to Fix Each One"
 description: "This error hides at least six different root causes behind one generic message. Here's how to tell which one you're actually looking at, with the exact commands to diagnose and fix each."
+metaTitle: "SSH \"Permission Denied (publickey)\" Fixes"
+metaDescription: "The real causes behind SSH \"Permission denied (publickey)\", how to tell which one you have, and the commands to fix each."
 date: "2026-09-01"
 author: "ToolNinja"
 coverEmoji: "🔑"

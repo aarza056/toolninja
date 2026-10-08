@@ -1,6 +1,8 @@
 ---
 title: "Linux 'No Space Left on Device' and 'Permission Denied': The Errors That Lie to You"
 description: "df -h says you have gigabytes free but writes still fail. chmod 777 doesn't fix a permission error that isn't actually about Unix permissions. Here's what's really going on and the exact commands to find it."
+metaTitle: "Linux \"No Space Left\" & \"Permission Denied\""
+metaDescription: "Why writes fail when df shows free space, why chmod 777 doesn't fix some permission errors, and the commands to find the real cause."
 date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "💾"

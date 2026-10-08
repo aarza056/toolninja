@@ -1,6 +1,8 @@
 ---
 title: "DNS Error Codes Explained: NXDOMAIN, SERVFAIL, and REFUSED"
 description: "\"It's probably still propagating\" is wrong more often than it's right. NXDOMAIN, SERVFAIL, and REFUSED each mean something specific and diagnosable — here's how to tell them apart with dig and fix the actual cause."
+metaTitle: "DNS Errors: NXDOMAIN, SERVFAIL, REFUSED"
+metaDescription: "What NXDOMAIN, SERVFAIL and REFUSED each mean, how to tell them apart with dig, and how to fix the actual cause instead of waiting."
 date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🧭"

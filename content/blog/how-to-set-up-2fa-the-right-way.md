@@ -1,6 +1,8 @@
 ---
 title: "How to Set Up 2FA the Right Way: TOTP, Backup Codes, and What Actually Breaks"
 description: "A practical guide to implementing two-factor authentication correctly — why TOTP beats HOTP for most cases, how backup codes should actually be stored, and the handful of mistakes that account for nearly every real-world 2FA bug report."
+metaTitle: "How to Set Up 2FA the Right Way"
+metaDescription: "Implement two-factor auth correctly: TOTP vs HOTP, how to store backup codes, and the mistakes behind most real-world 2FA bugs."
 date: "2026-10-05"
 author: "ToolNinja"
 coverEmoji: "🔐"

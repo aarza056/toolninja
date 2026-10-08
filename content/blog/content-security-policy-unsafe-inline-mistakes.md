@@ -1,6 +1,8 @@
 ---
 title: "Content-Security-Policy: The 'unsafe-inline' Mistake 87% of Sites Make"
 description: "Most CSP headers in the wild include 'unsafe-inline' in script-src — which quietly disables the exact XSS protection CSP exists to provide. Here's why it happens and what to do instead."
+metaTitle: "CSP 'unsafe-inline': Why It Breaks XSS Defense"
+metaDescription: "Why 'unsafe-inline' in script-src quietly disables the XSS protection CSP is for, why it ends up there, and what to use instead (nonces, hashes)."
 date: "2026-08-09"
 author: "ToolNinja"
 coverEmoji: "🛡️"

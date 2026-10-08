@@ -1,6 +1,8 @@
 ---
 title: "TypeScript 7 Migration Guide: What Actually Breaks, and How to Fix It"
 description: "TypeScript 7's Go-based compiler shipped in mid-2026 turning years of 6.0 deprecation warnings into hard errors. Here's exactly which compilerOptions get removed, which tools break, and the migration order that avoids debugging blind."
+metaTitle: "TypeScript 7 Migration: What Breaks"
+metaDescription: "Which compilerOptions TypeScript 7's Go-based compiler removes, which tools break, and a migration order that avoids debugging blind."
 date: "2026-09-16"
 author: "ToolNinja"
 coverEmoji: "🟦"

@@ -1,6 +1,8 @@
 ---
 title: "The Favicon Guide for 2026: Which Files You Actually Need"
 description: "Favicon requirements have quietly simplified — SVG is now the primary format, several old PNG sizes are obsolete, and Android manifests still need raster icons. Here's the current, minimal setup."
+metaTitle: "Favicon Guide 2026: The Files You Need"
+metaDescription: "The minimal favicon setup today: SVG first, which PNG sizes are obsolete, and why Android web app manifests still need raster icons."
 date: "2026-07-30"
 author: "ToolNinja"
 coverEmoji: "🖼️"

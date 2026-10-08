@@ -1,6 +1,8 @@
 ---
 title: "How to Test Passkeys (WebAuthn) Without Building a Backend First"
 description: "A practical, step-by-step guide to running real WebAuthn registration and authentication ceremonies in your browser — no relying-party server required — plus what the flags in the response actually mean."
+metaTitle: "Test Passkeys (WebAuthn) Without a Backend"
+metaDescription: "Run real WebAuthn registration and sign-in ceremonies in your browser without a server, and learn what each response flag means."
 date: "2026-10-03"
 author: "ToolNinja"
 coverEmoji: "🔑"

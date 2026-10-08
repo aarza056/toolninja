@@ -1,6 +1,8 @@
 ---
 title: "Essential Git Commands Every Developer Should Know"
 description: "A practical Git reference covering branching, stashing, rebasing, undoing mistakes, and advanced commands like bisect, reflog, and worktrees. With real-world workflows and examples."
+metaTitle: "Essential Git Commands Reference"
+metaDescription: "A practical Git reference: branching, stashing, rebasing, undoing mistakes, and bisect, reflog and worktrees, with real workflows."
 date: "2026-05-07"
 author: "ToolNinja"
 coverEmoji: "🌿"

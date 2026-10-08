@@ -1,6 +1,8 @@
 ---
 title: "Docker 'Port Is Already Allocated' (and Other Common Docker Errors), Explained"
 description: "Port conflicts, a daemon that won't connect, and container exit codes are the errors that eat the most Docker debugging time. Here's what causes each and the fastest way to fix them."
+metaTitle: "Docker \"Port Is Already Allocated\" Fix"
+metaDescription: "What causes Docker's \"port is already allocated\", a daemon that won't connect, and confusing exit codes, and the fastest fix for each."
 date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🐳"

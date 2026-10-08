@@ -1,6 +1,8 @@
 ---
 title: "How to Generate and Apply a JSON Patch (RFC 6902) — With Real Examples"
 description: "A practical guide to JSON Patch: what the six operations actually do, how to write a real HTTP PATCH request body, and the mistakes that cause a patch to fail against a document that looks like it should accept it."
+metaTitle: "JSON Patch (RFC 6902) with Real Examples"
+metaDescription: "What the six JSON Patch operations do, how to write an HTTP PATCH body, and why a patch fails against a document that looks right."
 date: "2026-10-07"
 author: "ToolNinja"
 coverEmoji: "🩹"

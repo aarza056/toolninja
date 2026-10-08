@@ -1,6 +1,8 @@
 ---
 title: "How to Compare JSON API Responses (and Actually Find What Changed)"
 description: "Manually scanning two JSON blobs for differences doesn't scale. Here's how to compare API responses properly — for incident response, API version upgrades, and staging-vs-production debugging."
+metaTitle: "How to Compare JSON API Responses"
+metaDescription: "Compare two JSON API responses properly for incident response, version upgrades and staging-vs-production debugging."
 date: "2026-07-29"
 author: "ToolNinja"
 coverEmoji: "🔍"

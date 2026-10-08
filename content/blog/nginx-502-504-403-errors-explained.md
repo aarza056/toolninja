@@ -1,6 +1,8 @@
 ---
 title: "nginx 502, 504, and 403 Errors Explained (and How to Actually Fix Them)"
 description: "502 means nginx never got a valid response. 504 means it got one too slowly. 403 means nginx itself is blocking you before your app ever sees the request. Here's how to tell them apart and fix the real cause of each."
+metaTitle: "nginx 502, 504 and 403 Errors Explained"
+metaDescription: "How to tell nginx 502, 504 and 403 errors apart and fix the real cause: a bad upstream response, a slow one, or nginx blocking the request."
 date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🌐"

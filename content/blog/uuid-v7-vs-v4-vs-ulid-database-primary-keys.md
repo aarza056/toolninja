@@ -1,6 +1,8 @@
 ---
 title: "UUID v7 vs v4 vs ULID: Which One Should Actually Be Your Database Primary Key"
 description: "Random UUIDv4 primary keys quietly wreck your index performance as tables grow. Here's why, and how UUIDv7 and ULID fix it without giving up the properties that made you choose a UUID in the first place."
+metaTitle: "UUID v7 vs v4 vs ULID for Primary Keys"
+metaDescription: "Why random UUIDv4 keys hurt index performance as tables grow, and how UUIDv7 and ULID fix it while keeping the benefits of UUIDs."
 date: "2026-09-15"
 author: "ToolNinja"
 coverEmoji: "🆔"

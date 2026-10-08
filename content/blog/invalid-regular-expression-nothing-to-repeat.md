@@ -1,6 +1,8 @@
 ---
 title: "Invalid Regular Expression: Nothing to Repeat — Regex Fix Guide"
 description: "The 'nothing to repeat' regex error happens when a quantifier like *, +, or — has nothing to apply to. Learn the exact triggers, how to escape metacharacters, and how to write valid regex."
+metaTitle: "Regex \"Nothing to Repeat\" Error Fixed"
+metaDescription: "Why a regex throws \"nothing to repeat\" when a quantifier like *, + or ? has nothing before it, and how to escape metacharacters."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔍"

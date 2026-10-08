@@ -1,6 +1,8 @@
 ---
 title: "XPath for Developers: The Complete Guide to XML and HTML Selection"
 description: "Master XPath expressions for web scraping, browser automation, and XML parsing. Covers axes, predicates, functions, and real-world patterns with examples for Selenium, Python, and XSLT."
+metaTitle: "XPath Guide for XML and HTML"
+metaDescription: "XPath for scraping, browser automation and XML: axes, predicates, functions and real patterns for Selenium, Python and XSLT."
 date: "2026-05-18"
 author: "ToolNinja"
 coverEmoji: "🔍"

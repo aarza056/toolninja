@@ -1,6 +1,8 @@
 ---
 title: "robots.txt for AI Crawlers in 2026: What to Actually Block"
 description: "GPTBot, ClaudeBot, CCBot and others can eat 40% of your bandwidth during a deep crawl. Here's the selective-blocking approach more site owners are taking instead of an all-or-nothing rule."
+metaTitle: "robots.txt for AI Crawlers: What to Block"
+metaDescription: "How to selectively allow or block GPTBot, ClaudeBot, CCBot and other AI crawlers in robots.txt instead of an all-or-nothing rule."
 date: "2026-08-10"
 author: "ToolNinja"
 coverEmoji: "🤖"

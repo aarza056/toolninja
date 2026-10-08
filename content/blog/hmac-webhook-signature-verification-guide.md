@@ -1,6 +1,8 @@
 ---
 title: "HMAC Webhook Signature Verification: The Two Bugs Everyone Hits"
 description: "Stripe, GitHub, and Shopify all sign webhooks with HMAC-SHA256 — and almost everyone trips on the same two mistakes: verifying against the parsed body instead of the raw one, and comparing signatures with ==."
+metaTitle: "HMAC Webhook Signature Verification Guide"
+metaDescription: "Verify Stripe, GitHub and Shopify webhook signatures without the two classic bugs: hashing the parsed body and comparing with ==."
 date: "2026-08-07"
 author: "ToolNinja"
 coverEmoji: "🔏"

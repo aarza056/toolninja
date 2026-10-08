@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
+import { graph, breadcrumbNode, jsonLdString, ORGANIZATION_ID, WEBSITE_ID } from "@/lib/structured-data";
 import { Calendar, Clock, ArrowRight, Search } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -31,18 +32,23 @@ export default function BlogIndexPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Blog",
-            name: "ToolNinja Blog",
-            description: "Developer guides and tutorials from ToolNinja",
-            url: "https://toolninja.io/blog",
-            publisher: {
-              "@type": "Organization",
-              name: "ToolNinja",
-              url: "https://toolninja.io",
-            },
-          }),
+          __html: jsonLdString(
+            graph(
+              {
+                "@type": "Blog",
+                "@id": "https://toolninja.io/blog#blog",
+                name: "ToolNinja Blog",
+                description: "Developer guides and tutorials from ToolNinja",
+                url: "https://toolninja.io/blog",
+                publisher: { "@id": ORGANIZATION_ID },
+                isPartOf: { "@id": WEBSITE_ID },
+              },
+              breadcrumbNode([
+                { name: "Home", url: "https://toolninja.io" },
+                { name: "Blog", url: "https://toolninja.io/blog" },
+              ])
+            )
+          ),
         }}
       />
 

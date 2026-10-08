@@ -1,6 +1,8 @@
 ---
 title: "Unexpected Token in JSON: Every Cause and How to Fix It"
 description: "SyntaxError: Unexpected token in JSON at position N is the most common JSON error in JavaScript. Here's every real-world cause — from HTML error pages to trailing commas to BOM characters — and the fix for each."
+metaTitle: "Unexpected Token in JSON: Causes & Fixes"
+metaDescription: "Every common cause of \"Unexpected token in JSON at position N\", from HTML error pages to trailing commas and BOMs, with the fix for each."
 date: "2026-08-03"
 author: "ToolNinja"
 coverEmoji: "🧩"

@@ -1,6 +1,8 @@
 ---
 title: "Password Security: Entropy, Strength, and Best Practices"
 description: "Understand password entropy and why length beats complexity. Learn the difference between random and memorable passwords, how password managers work, and current NIST guidelines."
+metaTitle: "Password Security: Entropy & Best Practices"
+metaDescription: "Password entropy and why length beats complexity, random vs memorable passwords, password managers, and current NIST guidance."
 date: "2026-05-09"
 author: "ToolNinja"
 coverEmoji: "🛡️"

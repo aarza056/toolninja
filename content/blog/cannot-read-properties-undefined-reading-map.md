@@ -1,6 +1,8 @@
 ---
 title: "Cannot read properties of undefined (reading 'map') — React/JS Fix Guide"
 description: "This error means .map() was called on a value that isn't an array. Learn the five root causes — async timing, API shape mismatches, null returns — and the guards that fix each one."
+metaTitle: "Cannot Read Properties of Undefined ('map')"
+metaDescription: "Why .map() fails on undefined in React and JavaScript: async timing, API shape mismatches and null returns, with the guard that fixes each."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🧩"

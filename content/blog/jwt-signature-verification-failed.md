@@ -1,6 +1,8 @@
 ---
 title: "SignatureVerificationException: Signature verification failed — JWT Fix Guide"
 description: "JWT signature verification failures are almost always caused by key mismatches, algorithm mismatches, or encoding differences. Learn to diagnose and fix every case with step-by-step examples."
+metaTitle: "JWT \"Signature Verification Failed\" Fix"
+metaDescription: "Why JWT signature verification fails: key mismatch, algorithm mismatch or encoding differences, with steps to diagnose each case."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔑"

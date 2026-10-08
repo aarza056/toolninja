@@ -1,6 +1,8 @@
 ---
 title: "YAML Error: 'Mapping Values Are Not Allowed in This Context' Explained"
 description: "This cryptic YAML parser error almost always comes down to one of three things: an unquoted colon, a stray tab character, or inconsistent indentation. Here's how to spot which one you have."
+metaTitle: "YAML \"Mapping Values Are Not Allowed\" Fix"
+metaDescription: "Why YAML says mapping values are not allowed in this context: an unquoted colon, a tab or bad indentation, and how to spot which."
 date: "2026-08-06"
 author: "ToolNinja"
 coverEmoji: "📐"

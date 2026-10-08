@@ -1,6 +1,8 @@
 ---
 title: "The keyv / cacheable npm Supply Chain Attack: Am I Affected, and How Do I Fix It?"
 description: "On August 4, 2026, a compromised maintainer account turned keyv, flat-cache, file-entry-cache and a dozen related packages — over 500 million weekly downloads combined — into a credential-stealing worm. Here's exactly how to check if you pulled a bad version and what to do next."
+metaTitle: "keyv / cacheable npm Attack: Are You Affected?"
+metaDescription: "How the compromised keyv, flat-cache and file-entry-cache releases worked, how to check whether you installed a bad version, and what to do."
 date: "2026-08-11"
 author: "ToolNinja"
 coverEmoji: "🪱"

@@ -1,6 +1,8 @@
 ---
 title: "error: pathspec did not match any file(s) known to git — Fix Guide"
 description: "This Git error means the branch, file, or path you specified doesn't exist or isn't tracked. Learn how to detect the exact cause — wrong branch name, unstaged file, detached HEAD — and fix each case."
+metaTitle: "Git \"pathspec did not match any files\" Fix"
+metaDescription: "Why git says pathspec did not match any files: a wrong branch name, an untracked file or a typo'd path, and how to fix each case."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔧"

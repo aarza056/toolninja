@@ -1,6 +1,8 @@
 ---
 title: "CIDR Notation & Subnetting: A Practical Guide for Developers"
 description: "Understand CIDR notation, subnet masks, and IP ranges. Learn how /24, /16, /8 networks work, when to use private ranges, and how to subnet for cloud and on-prem infrastructure."
+metaTitle: "CIDR Notation & Subnetting Guide"
+metaDescription: "CIDR notation, subnet masks and IP ranges explained: how /24, /16 and /8 work, private ranges, and subnetting for cloud and on-prem networks."
 date: "2026-05-02"
 author: "ToolNinja"
 coverEmoji: "🌐"

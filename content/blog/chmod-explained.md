@@ -1,6 +1,8 @@
 ---
 title: "chmod Explained: Linux File Permissions for Developers"
 description: "Master Linux file permissions with chmod. Understand octal notation, symbolic mode, chmod 755 vs 777 vs 644, and real-world examples for web servers and scripts."
+metaTitle: "chmod Explained: Linux File Permissions"
+metaDescription: "Linux file permissions with chmod: octal and symbolic modes, 755 vs 644 vs 777, and real examples for web servers and scripts."
 date: "2026-05-01"
 author: "ToolNinja"
 coverEmoji: "🔐"

@@ -7,6 +7,8 @@ import { tools } from "@/lib/tools";
 import BlogContent from "./BlogContent";
 import ShareButtons from "@/components/ShareButtons";
 import RelatedArticles from "@/components/RelatedArticles";
+import { getAuthor } from "@/lib/authors";
+import { blogPostGraph, jsonLdString } from "@/lib/structured-data";
 
 interface Props {
   params: { slug: string };
@@ -20,26 +22,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPostBySlug(params.slug);
   if (!post) return {};
 
+  const url = `https://toolninja.io/blog/${post.slug}`;
+  const description = post.metaDescription ?? post.description;
+  const author = getAuthor(post.author);
+
   return {
-    title: post.title,
-    description: post.description,
-    keywords: post.tags,
-    authors: [{ name: post.author, url: "https://toolninja.io" }],
+    title: post.metaTitle ?? post.title,
+    description,
+    authors: [{ name: author.name, url: `https://toolninja.io/authors/${author.id}` }],
     openGraph: {
       title: post.title,
-      description: post.description,
-      url: `https://toolninja.io/blog/${post.slug}`,
+      description,
+      url,
       type: "article",
       publishedTime: post.date,
-      authors: ["ToolNinja"],
+      modifiedTime: post.updated ?? post.date,
+      authors: [author.name],
       tags: post.tags,
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.description,
+      description,
     },
-    alternates: { canonical: `https://toolninja.io/blog/${post.slug}` },
+    alternates: { canonical: url },
   };
 }
 
@@ -61,76 +67,14 @@ export default function BlogPostPage({ params }: Props) {
     .map((slug) => tools.find((t) => t.slug === slug))
     .filter(Boolean);
 
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.description,
-    datePublished: post.date,
-    dateModified: post.date,
-    author: {
-      "@type": "Organization",
-      name: "ToolNinja",
-      url: "https://toolninja.io",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "ToolNinja",
-      url: "https://toolninja.io",
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://toolninja.io/blog/${post.slug}`,
-    },
-  };
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://toolninja.io" },
-      { "@type": "ListItem", position: 2, name: "Blog", item: "https://toolninja.io/blog" },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: post.title,
-        item: `https://toolninja.io/blog/${post.slug}`,
-      },
-    ],
-  };
-
-  const faqSchema =
-    post.faqs.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: post.faqs.map((faq) => ({
-            "@type": "Question",
-            name: faq.q,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: faq.a,
-            },
-          })),
-        }
-      : null;
+  const jsonLd = blogPostGraph(post);
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      {faqSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      )}
 
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-[#555555] mb-8">
@@ -176,7 +120,7 @@ export default function BlogPostPage({ params }: Props) {
             <Clock size={12} />
             {post.readingTime} min read
           </span>
-          <span className="text-[#333333]">by {post.author}</span>
+          <span className="text-[#888888]">by {getAuthor(post.author).name}</span>
         </div>
       </header>
 

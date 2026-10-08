@@ -1,6 +1,8 @@
 ---
 title: "URIError: URI Malformed — JavaScript URL Parsing Fix"
 description: "The 'URI malformed' error in JavaScript happens when decodeURIComponent() or decodeURI() receives a string with invalid percent-encoding. Learn the exact causes and safe decoding patterns."
+metaTitle: "Fix \"URIError: URI Malformed\" in JavaScript"
+metaDescription: "Why decodeURIComponent() throws \"URI malformed\" on invalid percent-encoding, and safe decoding patterns for URLs and query strings."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔗"

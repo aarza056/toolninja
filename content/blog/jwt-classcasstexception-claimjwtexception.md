@@ -1,6 +1,8 @@
 ---
 title: "ClaimJwtException: JWT Claim Validation Failed — Timestamp and Expiry Fix Guide"
 description: "JWT claim validation errors are almost always caused by milliseconds vs seconds confusion or clock skew between services. Learn to diagnose expired tokens, iat-in-the-future errors, and fix each case."
+metaTitle: "ClaimJwtException: Fix JWT Expiry Errors"
+metaDescription: "JWT claim errors usually come from seconds vs milliseconds or clock skew. Diagnose expired tokens and \"iat in the future\" errors."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔑"

@@ -1,6 +1,8 @@
 ---
 title: "SQL Incorrect Syntax Near — Complete Fix Guide for Reserved Word Errors"
 description: "SQL syntax errors near keywords are almost always caused by using SQL reserved words as column or table names without quoting them. Learn how to identify reserved words, quote them correctly, and fix the most common cases."
+metaTitle: "SQL \"Incorrect Syntax Near\" Keyword Fix"
+metaDescription: "Why SQL reports incorrect syntax near a keyword: reserved words used as names. How to spot them and quote them correctly per database."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🗄️"

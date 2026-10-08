@@ -1,6 +1,8 @@
 ---
 title: "CSS Invalid Property Value: linear-gradient — Fix Guide"
 description: "CSS gradient errors happen from missing direction keywords, wrong color-stop syntax, or vendor prefix issues. Learn the correct modern gradient syntax and how to fix the most common mistakes."
+metaTitle: "Fix CSS \"Invalid Property Value\" Gradients"
+metaDescription: "Why browsers reject a linear-gradient: missing direction keywords, wrong color-stop syntax or old prefixes, and the correct modern syntax."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🎨"

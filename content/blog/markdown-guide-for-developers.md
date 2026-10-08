@@ -1,6 +1,8 @@
 ---
 title: "Markdown Guide for Developers: Tables, Code Blocks, and More"
 description: "A complete Markdown reference for developers covering tables, code blocks with syntax highlighting, task lists, footnotes, GitHub-Flavored Markdown, and Mermaid diagrams."
+metaTitle: "Markdown Guide for Developers"
+metaDescription: "A Markdown reference for developers: tables, code blocks, task lists, footnotes, GitHub Flavored Markdown and Mermaid diagrams."
 date: "2026-05-10"
 author: "ToolNinja"
 coverEmoji: "📝"

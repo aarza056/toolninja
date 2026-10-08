@@ -1,6 +1,8 @@
 ---
 title: "Why Hardcoded Secrets Still End Up in Git — and How to Actually Catch Them"
 description: "Hardcoded API keys and credentials remain one of the most common security findings in real codebases. Here's what the common secret formats actually look like, why regex-based scanning works (and where it doesn't), and how to stop a leak before it's committed."
+metaTitle: "How to Catch Hardcoded Secrets Before Git"
+metaDescription: "What common API key formats look like, where regex-based secret scanning works and fails, and how to stop a leak before it's committed."
 date: "2026-10-02"
 author: "ToolNinja"
 coverEmoji: "🔑"

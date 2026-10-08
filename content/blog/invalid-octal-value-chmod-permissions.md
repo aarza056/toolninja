@@ -1,6 +1,8 @@
 ---
 title: "chmod: invalid octal value — Permission Fix Guide"
 description: "Invalid octal value errors in chmod happen when you use 8 or 9 in an octal number, or miscount the digits. Learn the full octal permission system and how to fix each case."
+metaTitle: "chmod \"Invalid Octal Value\" Fix"
+metaDescription: "Why chmod rejects a mode: an 8 or 9 in an octal number or the wrong digit count. How octal permissions work and how to fix each case."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔐"

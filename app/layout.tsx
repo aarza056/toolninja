@@ -10,6 +10,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieBanner from "@/components/CookieBanner";
 import WhatsNewModal from "@/components/WhatsNewModal";
 import { INPUT_PRIVACY_CLAIM } from "@/lib/site";
+import { graph, organizationNode, websiteNode, jsonLdString } from "@/lib/structured-data";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,6 +27,12 @@ const geistMono = localFont({
 // single tool is added — matches the "NN+" convention already used in TrustBar.
 const TOOL_COUNT_LABEL = `${Math.floor(tools.length / 10) * 10}+`;
 
+// Site-wide WebSite + Organization, emitted once per page from the root layout.
+const SITE_JSON_LD = graph(
+  websiteNode(`Free online developer tools. No login. ${INPUT_PRIVACY_CLAIM}`),
+  organizationNode()
+);
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://toolninja.io"),
   title: {
@@ -34,13 +41,6 @@ export const metadata: Metadata = {
   },
   description:
     `${TOOL_COUNT_LABEL} free developer tools: JSON, JWT, regex, Base64, UUID and more. No login. ${INPUT_PRIVACY_CLAIM}`,
-  keywords: [
-    "developer tools", "json formatter", "base64 encoder", "jwt decoder",
-    "regex tester", "url encoder", "uuid generator", "password generator",
-    "timestamp converter", "color converter", "markdown preview", "hash generator",
-    "chmod calculator", "cron expression", "qr code generator", "diff checker",
-    "css gradient generator", "free online tools", "browser dev tools", "toolninja",
-  ],
   authors: [{ name: "ToolNinja", url: "https://toolninja.io" }],
   creator: "ToolNinja",
   openGraph: {
@@ -77,9 +77,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  alternates: {
-    canonical: "https://toolninja.io",
-  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "48x48" },
@@ -100,7 +97,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        <meta name="keywords" content="developer tools, json formatter, base64 decoder, jwt decoder, regex tester, uuid generator, hash generator, chmod calculator, cidr calculator, css gradient generator, online developer tools, free developer tools, browser tools no login" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png" />
         <link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png" />
@@ -110,13 +106,15 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://va.vercel-scripts.com" />
         <link rel="search" type="application/opensearchdescription+xml" title="ToolNinja" href="/opensearch.xml" />
-        <link rel="alternate" hrefLang="en" href="https://toolninja.io" />
-        <link rel="alternate" hrefLang="x-default" href="https://toolninja.io" />
         {/* Account verification only. The AdSense script itself is loaded by CookieBanner after
             the visitor accepts cookies, never before. */}
         <meta name="google-adsense-account" content="ca-pub-3459524040712269" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0a0a0a] text-[#f5f5f5]`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdString(SITE_JSON_LD) }}
+        />
         <ParticleBackground />
         <div className="relative z-[1] flex min-h-screen">
           <Sidebar />

@@ -1,6 +1,8 @@
 ---
 title: "docker: Error response from daemon: Conflict. The container name is already in use — Fix Guide"
 description: "This Docker error means a stopped container still owns the name you want. Learn how to remove it, prevent it with --rm, and migrate to Docker Compose to eliminate the problem entirely."
+metaTitle: "Docker \"Container Name Already in Use\" Fix"
+metaDescription: "Why Docker says the container name is already in use, how to remove the stopped container, and how --rm or Compose prevents it."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🐳"

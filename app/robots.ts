@@ -25,6 +25,5 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: "https://toolninja.io/sitemap.xml",
-    host: "https://toolninja.io",
   };
 }

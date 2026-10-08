@@ -1,6 +1,8 @@
 ---
 title: "Mock Data for API Testing: How to Generate Realistic Test Data Without a Real Backend"
 description: "Waiting on a backend, real data, or production access shouldn't block frontend work or test coverage. Here's how and when to use generated mock data — and where it falls short."
+metaTitle: "Mock Data for API Testing"
+metaDescription: "How and when to use generated mock data so a missing backend doesn't block frontend work or tests, and where mock data falls short."
 date: "2026-07-31"
 author: "ToolNinja"
 coverEmoji: "🎲"

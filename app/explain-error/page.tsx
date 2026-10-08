@@ -2,18 +2,12 @@ import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/blog";
 import { buildErrorIndex } from "@/lib/error-matcher";
 import ExplainErrorClient from "./ExplainErrorClient";
+import { webPageGraph, jsonLdString } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
-  title: "Explain This Error — Paste an Error, Get a Solution",
+  title: "Explain This Error: Paste an Error, Find a Fix",
   description:
-    "Paste any error message and get matched to the closest ToolNinja developer guide and relevant tool. A simple error message lookup tool — no AI, no login required.",
-  keywords: [
-    "paste error get solution",
-    "error message lookup tool",
-    "developer error explainer",
-    "explain this error",
-    "error message search",
-  ],
+    "Paste an error message to find the closest ToolNinja guide and tool for it. Simple keyword matching in your browser, no AI and no login.",
   openGraph: {
     title: "Explain This Error — ToolNinja",
     description: "Paste any error message and get matched to the closest developer guide.",
@@ -31,18 +25,17 @@ export default function ExplainErrorPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebPage",
-            name: "Explain This Error",
-            description: "Paste any error message and get matched to the closest developer guide.",
-            url: "https://toolninja.io/explain-error",
-            isPartOf: {
-              "@type": "WebSite",
-              name: "ToolNinja",
-              url: "https://toolninja.io",
-            },
-          }),
+          __html: jsonLdString(
+            webPageGraph({
+              url: "https://toolninja.io/explain-error",
+              name: "Explain This Error",
+              description: "Paste any error message and get matched to the closest developer guide.",
+              breadcrumb: [
+                { name: "Home", url: "https://toolninja.io" },
+                { name: "Explain This Error", url: "https://toolninja.io/explain-error" },
+              ],
+            })
+          ),
         }}
       />
       <ExplainErrorClient articles={articles} />

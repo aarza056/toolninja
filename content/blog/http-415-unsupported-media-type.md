@@ -1,6 +1,7 @@
 ---
 title: "HTTP 415 Unsupported Media Type: Causes and Fix"
 description: "HTTP 415 Unsupported Media Type means the server rejected the request body because the Content-Type header doesn't match what it accepts. Learn how to diagnose and fix it."
+metaDescription: "HTTP 415 means the server rejected the body because its Content-Type doesn't match what it accepts. How to diagnose and fix it."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "📡"

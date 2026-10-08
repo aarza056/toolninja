@@ -1,6 +1,8 @@
 ---
 title: "JWT Tokens Explained: Structure, Signing, and Security"
 description: "Learn how JSON Web Tokens (JWT) work, how to decode and verify them, common vulnerabilities like the 'alg:none' attack, and best practices for using JWTs securely in your applications."
+metaTitle: "JWT Explained: Structure, Signing, Security"
+metaDescription: "How JSON Web Tokens work, how to decode and verify them, attacks like alg:none, and how to use JWTs securely."
 date: "2026-05-03"
 author: "ToolNinja"
 coverEmoji: "🔑"

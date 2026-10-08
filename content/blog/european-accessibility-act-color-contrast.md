@@ -1,6 +1,8 @@
 ---
 title: "European Accessibility Act: What Website Owners Need to Know About Color Contrast"
 description: "The EAA has been enforceable since June 2025, and 2026 is the first full year of active enforcement. Here's what the color contrast requirement actually means and how to check your site."
+metaTitle: "European Accessibility Act: Color Contrast"
+metaDescription: "What the European Accessibility Act means for color contrast on websites, which WCAG ratios apply, and how to check your site."
 date: "2026-07-28"
 author: "ToolNinja"
 coverEmoji: "⚖️"

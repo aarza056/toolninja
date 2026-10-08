@@ -1,6 +1,7 @@
 ---
 title: "JWT Error: Invalid Key Size / Key Too Short Fix"
 description: "The 'invalid key size' JWT error appears when the secret used to sign or verify a token is shorter than the algorithm requires. Learn the minimum key sizes and how to fix them."
+metaDescription: "Why JWT libraries reject a signing key as too short, the minimum key size for each algorithm, and how to generate a key that fits."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🔑"

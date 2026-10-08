@@ -1,6 +1,8 @@
 ---
 title: "Base64 Encoding Explained: What It Is, When to Use It"
 description: "Understand how Base64 encoding works, the difference between Base64 and Base64URL, when to encode vs encrypt, and practical use cases in web development, APIs, and data transfer."
+metaTitle: "Base64 Encoding Explained"
+metaDescription: "How Base64 works, how it differs from Base64URL, why encoding is not encryption, and where it is used in web development and APIs."
 date: "2026-05-05"
 author: "ToolNinja"
 coverEmoji: "🔢"

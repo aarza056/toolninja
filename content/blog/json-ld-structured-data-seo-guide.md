@@ -1,6 +1,8 @@
 ---
 title: "JSON-LD Structured Data: Why It Matters More in 2026 Than It Used To"
 description: "Structured data used to be a minor rich-results nice-to-have. In 2026 it's also how AI Overviews and answer engines decide what to cite — and pages without it are being left out."
+metaTitle: "JSON-LD Structured Data: An SEO Guide"
+metaDescription: "Why JSON-LD structured data matters for rich results and for how AI answer engines pick what to cite, and which schema types to add."
 date: "2026-08-08"
 author: "ToolNinja"
 coverEmoji: "🏷️"

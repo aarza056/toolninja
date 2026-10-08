@@ -1,6 +1,8 @@
 ---
 title: "TypeError: Cannot convert undefined or null to object — JS Fix Guide"
 description: "This error is thrown by Object.keys(), Object.values(), and Object.entries() when called on null or undefined. Learn the five root causes and the guards that fix each one."
+metaTitle: "Cannot Convert Undefined or Null to Object"
+metaDescription: "Why Object.keys(), values() and entries() throw on null or undefined, the common root causes, and the guard that fixes each one."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🧩"

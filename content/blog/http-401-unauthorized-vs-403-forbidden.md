@@ -1,6 +1,7 @@
 ---
 title: "HTTP 401 vs 403: Unauthorized vs Forbidden Explained"
 description: "HTTP 401 Unauthorized and 403 Forbidden are both auth-related errors but mean different things. Learn the exact difference and how to fix each one."
+metaTitle: "HTTP 401 vs 403: What's the Difference?"
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "🚫"
