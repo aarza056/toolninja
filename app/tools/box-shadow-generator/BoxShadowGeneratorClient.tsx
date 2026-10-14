@@ -30,17 +30,24 @@ function hexToRgba(hex: string, alphaPercent: number): string {
   return `rgba(${r}, ${g}, ${b}, ${(alphaPercent / 100).toFixed(2)})`;
 }
 
-function buildShadowValue(layer: ShadowLayer): string {
+type ShadowType = "box" | "text";
+
+function buildShadowValue(layer: ShadowLayer, type: ShadowType): string {
   const color = hexToRgba(layer.color, layer.alpha);
+  if (type === "text") {
+    // text-shadow has no spread or inset — only offset-x, offset-y, blur, and color.
+    return `${layer.x}px ${layer.y}px ${layer.blur}px ${color}`;
+  }
   return `${layer.inset ? "inset " : ""}${layer.x}px ${layer.y}px ${layer.blur}px ${layer.spread}px ${color}`;
 }
 
 export default function BoxShadowGeneratorClient() {
   const [layers, setLayers] = useState<ShadowLayer[]>(INITIAL_LAYERS);
   const [boxColor, setBoxColor] = useState("#1a1a1a");
+  const [shadowType, setShadowType] = useState<ShadowType>("box");
 
-  const shadowValue = layers.map(buildShadowValue).join(",\n    ");
-  const cssOutput = `box-shadow: ${shadowValue};`;
+  const shadowValue = layers.map((l) => buildShadowValue(l, shadowType)).join(",\n    ");
+  const cssOutput = `${shadowType === "box" ? "box-shadow" : "text-shadow"}: ${shadowValue};`;
 
   const addLayer = () => {
     if (layers.length >= 6) return;
@@ -63,6 +70,21 @@ export default function BoxShadowGeneratorClient() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         {/* Left: layer controls */}
         <div className="space-y-4">
+          <div className="flex rounded-[6px] border border-[#222222] overflow-hidden w-fit">
+            <button
+              onClick={() => setShadowType("box")}
+              className={`px-3 py-1.5 text-sm transition-colors ${shadowType === "box" ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
+            >
+              box-shadow
+            </button>
+            <button
+              onClick={() => setShadowType("text")}
+              className={`px-3 py-1.5 text-sm border-l border-[#222222] transition-colors ${shadowType === "text" ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
+            >
+              text-shadow
+            </button>
+          </div>
+
           <div className="flex items-center justify-between">
             <label className="text-xs text-[#888888] font-medium">
               Shadow Layers ({layers.length}/6)
@@ -82,15 +104,17 @@ export default function BoxShadowGeneratorClient() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono text-[#555555]">Layer {idx + 1}</span>
                   <div className="flex items-center gap-3">
-                    <label className="flex items-center gap-1.5 text-xs text-[#888888]">
-                      <input
-                        type="checkbox"
-                        checked={layer.inset}
-                        onChange={(e) => updateLayer(layer.id, "inset", e.target.checked)}
-                        className="accent-[#a855f7]"
-                      />
-                      Inset
-                    </label>
+                    {shadowType === "box" && (
+                      <label className="flex items-center gap-1.5 text-xs text-[#888888]">
+                        <input
+                          type="checkbox"
+                          checked={layer.inset}
+                          onChange={(e) => updateLayer(layer.id, "inset", e.target.checked)}
+                          className="accent-[#a855f7]"
+                        />
+                        Inset
+                      </label>
+                    )}
                     {layers.length > 1 && (
                       <button
                         onClick={() => removeLayer(layer.id)}
@@ -103,7 +127,7 @@ export default function BoxShadowGeneratorClient() {
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {(["x", "y", "blur", "spread"] as const).map((field) => (
+                  {(shadowType === "box" ? (["x", "y", "blur", "spread"] as const) : (["x", "y", "blur"] as const)).map((field) => (
                     <div key={field}>
                       <div className="flex items-center justify-between mb-1">
                         <label className="text-[10px] text-[#666666] uppercase tracking-wide">{field}</label>
@@ -166,13 +190,19 @@ export default function BoxShadowGeneratorClient() {
             className="rounded-[8px] p-12 flex items-center justify-center"
             style={{ background: "repeating-conic-gradient(#151515 0% 25%, #0a0a0a 0% 50%) 50% / 20px 20px" }}
           >
-            <div
-              className="w-32 h-32 rounded-[12px]"
-              style={{ background: boxColor, boxShadow: shadowValue }}
-            />
+            {shadowType === "box" ? (
+              <div
+                className="w-32 h-32 rounded-[12px]"
+                style={{ background: boxColor, boxShadow: shadowValue }}
+              />
+            ) : (
+              <span className="text-4xl font-bold" style={{ color: boxColor, textShadow: shadowValue }}>
+                Aa
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2">
-            <label className="text-xs text-[#888888]">Box color</label>
+            <label className="text-xs text-[#888888]">{shadowType === "box" ? "Box color" : "Text color"}</label>
             <input
               type="color"
               value={boxColor}

@@ -63,6 +63,18 @@ export default function ContrastCheckerClient() {
     return null;
   }, [fgRgb, bgRgb, results]);
 
+  const bgSuggestion = useMemo(() => {
+    if (!fgRgb || !bgRgb || !results || results.aaNormal) return null;
+    const fgLum = fgRgb.r * 0.2126 + fgRgb.g * 0.7152 + fgRgb.b * 0.0722;
+    // Move the background away from the foreground's own brightness, in whichever direction it's already closer to.
+    const goDarker = fgLum > 128;
+    for (let step = 1; step <= 20; step++) {
+      const candidate = adjustLightness(bgRgb, goDarker ? -step / 20 : step / 20);
+      if (contrastRatio(fgRgb, candidate) >= 4.5) return toHex(candidate);
+    }
+    return null;
+  }, [fgRgb, bgRgb, results]);
+
   const swapColors = () => {
     setFg(bg);
     setBg(fg);
@@ -129,15 +141,33 @@ export default function ContrastCheckerClient() {
                 <CheckRow label="AAA — Large text" pass={results!.aaaLarge} detail="min 4.5:1" />
               </div>
 
-              {suggestion && (
-                <div className="p-3 bg-[#a855f7]/10 border border-[#a855f7]/30 rounded-[8px] text-sm">
-                  <span className="text-[#888888]">Suggested foreground to pass AA normal text: </span>
-                  <button
-                    onClick={() => setFg(suggestion)}
-                    className="font-mono text-[#a855f7] hover:underline"
-                  >
-                    {suggestion}
-                  </button>
+              {(suggestion || bgSuggestion) && (
+                <div className="space-y-2">
+                  {suggestion && (
+                    <div className="p-3 bg-[#a855f7]/10 border border-[#a855f7]/30 rounded-[8px] text-sm">
+                      <span className="text-[#888888]">Fix by changing foreground to: </span>
+                      <button
+                        onClick={() => setFg(suggestion)}
+                        className="font-mono text-[#a855f7] hover:underline"
+                      >
+                        {suggestion}
+                      </button>
+                    </div>
+                  )}
+                  {bgSuggestion && (
+                    <div className="p-3 bg-[#a855f7]/10 border border-[#a855f7]/30 rounded-[8px] text-sm">
+                      <span className="text-[#888888]">Or fix by changing background to: </span>
+                      <button
+                        onClick={() => setBg(bgSuggestion)}
+                        className="font-mono text-[#a855f7] hover:underline"
+                      >
+                        {bgSuggestion}
+                      </button>
+                    </div>
+                  )}
+                  <p className="text-[10px] text-[#555555]">
+                    Both target AA normal text (4.5:1) — useful as two separate options when one color (often a brand color) isn&apos;t yours to change.
+                  </p>
                 </div>
               )}
             </>

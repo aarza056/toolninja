@@ -45,6 +45,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online image compressor. Compress and resize JPEG, PNG and WebP images with adjustable quality, right in your browser. See before/after size comparison instantly. No upload to a server — images never leave your device.",
   },
+  "exif-viewer": {
+    title: "EXIF Viewer & Remover Online — Check & Strip Photo Metadata | ToolNinja",
+    description:
+      "Free online EXIF viewer and remover. See a JPEG's embedded camera info, timestamp, and GPS location, then strip it before sharing. No upload to a server — the photo never leaves your device.",
+  },
   "graphql-formatter": {
     title: "GraphQL Formatter Online — Beautify & Minify GraphQL Queries | ToolNinja",
     description:
@@ -420,6 +425,26 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "CSS clamp() / Fluid Typography Calculator Online | ToolNinja",
     description:
       "Free online CSS clamp() and fluid typography calculator. Build a font-size that scales smoothly between a min and max viewport width, with a live type-scale preview. No login, browser-only.",
+  },
+  "css-unit-converter": {
+    title: "CSS Unit Converter Online — px, rem, em, pt, % | ToolNinja",
+    description:
+      "Free online CSS unit converter. Convert between px, rem, em, pt, and percent with a configurable base font size, instantly. No login, 100% browser-based.",
+  },
+  "aspect-ratio-calculator": {
+    title: "Aspect Ratio Calculator Online — Simplify or Solve a Ratio | ToolNinja",
+    description:
+      "Free online aspect ratio calculator. Simplify a width/height into a clean ratio, or solve for a missing dimension given a ratio — with common presets like 16:9 and 4:3. No login, browser-only.",
+  },
+  "svg-path-visualizer": {
+    title: "SVG Path Visualizer Online — Render & Inspect a Path d | ToolNinja",
+    description:
+      "Free online SVG path visualizer. Paste a path d attribute and see it rendered live, with its bounding box and a per-command breakdown. No login, 100% browser-based.",
+  },
+  "css-variables-auditor": {
+    title: "CSS Custom Properties Auditor Online — Find Unused Tokens | ToolNinja",
+    description:
+      "Free online CSS custom properties auditor. Paste CSS and find every --token, its usage count, duplicate declarations, and unused or undefined variables. No login, browser-only.",
   },
   "css-gradient": {
     title: "CSS Gradient Generator — Linear, Radial & Mesh Gradients | ToolNinja",

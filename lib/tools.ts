@@ -116,6 +116,19 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "exif-viewer",
+    name: "Image EXIF Viewer & Remover",
+    description: "See exactly what metadata is embedded in a photo — camera info, timestamp, GPS location — and strip it before sharing",
+    icon: "Camera",
+    category: "Format",
+    keywords: [
+      "exif viewer online", "remove exif data", "strip exif metadata",
+      "view photo metadata online", "exif data remover", "gps location in photo",
+      "jpeg metadata viewer", "exif stripper free", "remove gps from photo",
+      "photo metadata checker",
+    ],
+  },
+  {
     slug: "graphql-formatter",
     name: "GraphQL Query Formatter",
     description: "Format and minify GraphQL queries, mutations, and fragments",
@@ -1087,6 +1100,54 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "css-unit-converter",
+    name: "CSS Unit Converter",
+    description: "Convert between px, rem, em, pt, and % — with a configurable base font size",
+    icon: "Scale",
+    category: "Design",
+    keywords: [
+      "css unit converter", "px to rem converter", "rem to px converter",
+      "em to px converter", "pt to px converter", "css unit calculator",
+      "px rem em converter online", "font size unit converter",
+    ],
+  },
+  {
+    slug: "aspect-ratio-calculator",
+    name: "Aspect Ratio Calculator",
+    description: "Simplify a width/height into a ratio, or solve for a missing dimension given a ratio",
+    icon: "Proportions",
+    category: "Design",
+    keywords: [
+      "aspect ratio calculator", "aspect ratio calculator online", "16:9 calculator",
+      "image aspect ratio calculator", "video aspect ratio calculator", "ratio calculator free",
+      "calculate aspect ratio", "aspect ratio resizer",
+    ],
+  },
+  {
+    slug: "svg-path-visualizer",
+    name: "SVG Path Visualizer",
+    description: "Paste a path d attribute and see it rendered live, with its bounding box and command breakdown",
+    icon: "Spline",
+    category: "Design",
+    keywords: [
+      "svg path visualizer", "svg path viewer online", "svg d attribute viewer",
+      "svg path tester", "visualize svg path", "svg path debugger",
+      "svg path bounding box", "svg path online tool",
+    ],
+  },
+  {
+    slug: "css-variables-auditor",
+    name: "CSS Custom Properties Auditor",
+    description: "Paste CSS and find every --token, its usage count, duplicates, and unused or undefined variables",
+    icon: "SearchCheck",
+    category: "Design",
+    keywords: [
+      "css custom properties auditor", "css variables checker", "find unused css variables",
+      "css custom properties analyzer", "css design tokens checker", "css var() usage finder",
+      "unused css custom properties", "css variables audit tool",
+    ],
+  },
+  {
     slug: "css-gradient",
     name: "CSS Gradient Generator",
     description: "Build linear, radial, and conic CSS gradients visually",
@@ -1482,9 +1543,9 @@ export type Category = (typeof categories)[number];
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 export const LATEST_TOOL_SLUGS = [
-  "ulid-generator",
-  "json-patch-tool",
-  "fluid-typography-calculator",
-  "ndjson-formatter",
-  "sitemap-generator",
+  "css-unit-converter",
+  "aspect-ratio-calculator",
+  "svg-path-visualizer",
+  "css-variables-auditor",
+  "exif-viewer",
 ];

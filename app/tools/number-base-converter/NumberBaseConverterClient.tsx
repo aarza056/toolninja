@@ -106,6 +106,37 @@ export default function NumberBaseConverterClient() {
   const [operandB, setOperandB] = useState("0");
   const [bitWidth, setBitWidth] = useState<(typeof BIT_WIDTHS)[number]>(32);
 
+  const [floatValue, setFloatValue] = useState("3.14");
+  const [floatPrecision, setFloatPrecision] = useState<32 | 64>(32);
+
+  const floatResult = (() => {
+    const num = Number(floatValue);
+    if (floatValue.trim() === "" || Number.isNaN(num)) return null;
+
+    const buf = new ArrayBuffer(floatPrecision === 32 ? 4 : 8);
+    const view = new DataView(buf);
+    if (floatPrecision === 32) view.setFloat32(0, num, false);
+    else view.setFloat64(0, num, false);
+
+    let hex = "";
+    let binary = "";
+    for (let i = 0; i < buf.byteLength; i++) {
+      const byte = view.getUint8(i);
+      hex += byte.toString(16).padStart(2, "0");
+      binary += byte.toString(2).padStart(8, "0");
+    }
+
+    const expBits = floatPrecision === 32 ? 8 : 11;
+    return {
+      hex: "0x" + hex,
+      binary,
+      sign: binary[0],
+      exponent: binary.slice(1, 1 + expBits),
+      mantissa: binary.slice(1 + expBits),
+      roundTrip: floatPrecision === 32 ? view.getFloat32(0, false) : view.getFloat64(0, false),
+    };
+  })();
+
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -316,6 +347,74 @@ export default function NumberBaseConverterClient() {
                 </code>
               </div>
               <CopyButton text={bitwiseResult.value.toString(10)} size="sm" />
+            </div>
+          )}
+        </div>
+
+        {/* IEEE 754 float */}
+        <div className="p-4 bg-[#0a0a0a] border border-[#222222] rounded-[8px]">
+          <h3 className="text-sm font-semibold text-[#f5f5f5] mb-3">IEEE 754 Float ↔ Binary/Hex</h3>
+          <div className="flex flex-wrap items-end gap-3 mb-4">
+            <div>
+              <label className="text-xs text-[#888888] font-medium block mb-1">Decimal value</label>
+              <input
+                type="text"
+                value={floatValue}
+                onChange={(e) => setFloatValue(e.target.value)}
+                placeholder="3.14"
+                spellCheck={false}
+                className="w-40 px-3 py-2 text-sm font-mono bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-[#888888] font-medium block mb-1">Precision</label>
+              <div className="flex">
+                {([32, 64] as const).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setFloatPrecision(p)}
+                    className={`px-3 py-2 text-sm border first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+                      floatPrecision === p ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#0a0a0a] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+                    }`}
+                  >
+                    {p}-bit
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {floatValue.trim() && !floatResult ? (
+            <p className="text-xs text-[#ef4444]">Enter a valid number.</p>
+          ) : floatResult && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-[#555555]">Hex</span>
+                <div className="flex items-center gap-2">
+                  <code className="text-sm font-mono text-[#f5f5f5]">{floatResult.hex}</code>
+                  <CopyButton text={floatResult.hex} size="sm" />
+                </div>
+              </div>
+              <div className="flex items-start justify-between gap-3">
+                <span className="text-xs text-[#555555] shrink-0 pt-0.5">Binary</span>
+                <div className="text-right">
+                  <code className="text-xs font-mono break-all">
+                    <span className="text-[#ef4444]">{floatResult.sign}</span>{" "}
+                    <span className="text-[#f59e0b]">{floatResult.exponent}</span>{" "}
+                    <span className="text-[#22c55e]">{floatResult.mantissa}</span>
+                  </code>
+                </div>
+              </div>
+              <div className="flex gap-4 text-[10px] text-[#555555] justify-end">
+                <span><span className="text-[#ef4444]">■</span> sign</span>
+                <span><span className="text-[#f59e0b]">■</span> exponent</span>
+                <span><span className="text-[#22c55e]">■</span> mantissa</span>
+              </div>
+              {floatResult.roundTrip !== Number(floatValue) && (
+                <p className="text-[10px] text-[#f59e0b] text-right">
+                  Rounds to {floatResult.roundTrip} at {floatPrecision}-bit precision — this is expected, not an error; most decimals aren&apos;t exactly representable in binary floating point.
+                </p>
+              )}
             </div>
           )}
         </div>

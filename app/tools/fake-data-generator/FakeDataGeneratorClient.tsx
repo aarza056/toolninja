@@ -7,7 +7,22 @@ import { Plus, Trash2, Download, Dices } from "lucide-react";
 import { FIELD_TYPES, generateRows, type FieldSpec, type FieldType } from "@/lib/fake-data";
 import { jsonToCsv } from "@/lib/csv-json";
 
-type OutputFormat = "json" | "csv";
+type OutputFormat = "json" | "csv" | "sql";
+
+function sqlEscape(value: unknown): string {
+  if (value === null || value === undefined) return "NULL";
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  return `'${String(value).replace(/'/g, "''")}'`;
+}
+
+function buildSqlInserts(rows: Record<string, unknown>[], tableName: string): string {
+  if (rows.length === 0) return "";
+  const columns = Object.keys(rows[0]);
+  const safeTable = tableName.trim() || "mock_data";
+  return rows
+    .map((row) => `INSERT INTO ${safeTable} (${columns.join(", ")}) VALUES (${columns.map((c) => sqlEscape(row[c])).join(", ")});`)
+    .join("\n");
+}
 
 let fieldIdCounter = 3;
 
@@ -32,6 +47,7 @@ export default function FakeDataGeneratorClient() {
   const [seed, setSeed] = useState("");
   const [format, setFormat] = useState<OutputFormat>("json");
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
+  const [tableName, setTableName] = useState("users");
 
   const addField = () => {
     fieldIdCounter += 1;
@@ -54,8 +70,10 @@ export default function FakeDataGeneratorClient() {
 
   const output = useMemo(() => {
     if (!rows) return "";
-    return format === "json" ? JSON.stringify(rows, null, 2) : jsonToCsv(rows);
-  }, [rows, format]);
+    if (format === "json") return JSON.stringify(rows, null, 2);
+    if (format === "sql") return buildSqlInserts(rows, tableName);
+    return jsonToCsv(rows);
+  }, [rows, format, tableName]);
 
   const inputClass =
     "px-3 py-2 text-sm bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]";
@@ -130,7 +148,7 @@ export default function FakeDataGeneratorClient() {
         <div>
           <label className="text-xs text-[#888888] font-medium block mb-1">Format</label>
           <div className="flex">
-            {(["json", "csv"] as OutputFormat[]).map((f) => (
+            {(["json", "csv", "sql"] as OutputFormat[]).map((f) => (
               <button
                 key={f}
                 onClick={() => setFormat(f)}
@@ -145,6 +163,19 @@ export default function FakeDataGeneratorClient() {
             ))}
           </div>
         </div>
+        {format === "sql" && (
+          <div>
+            <label className="text-xs text-[#888888] font-medium block mb-1">Table name</label>
+            <input
+              type="text"
+              value={tableName}
+              onChange={(e) => setTableName(e.target.value)}
+              placeholder="users"
+              className={`${inputClass} w-32 font-mono`}
+              spellCheck={false}
+            />
+          </div>
+        )}
         <button
           onClick={generate}
           className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-[6px] transition-colors"
@@ -162,7 +193,7 @@ export default function FakeDataGeneratorClient() {
             </label>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => download(`mock-data.${format}`, output, format === "json" ? "application/json" : "text/csv")}
+                onClick={() => download(`mock-data.${format === "sql" ? "sql" : format}`, output, format === "json" ? "application/json" : format === "sql" ? "application/sql" : "text/csv")}
                 className="flex items-center gap-1 text-xs text-[#888888] hover:text-[#f5f5f5] transition-colors"
               >
                 <Download size={12} /> Download

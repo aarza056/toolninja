@@ -569,6 +569,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Hex digits A-F represent decimal 10-15. One hex digit = 4 binary bits (a nibble).",
       "Binary inputs can use spaces for readability (1010 1111) — spaces are ignored during conversion.",
       "Match the bit width to your target language's integer type (e.g. 32 for a C int, 64 for a Java long) — AND/OR/XOR/NOT results depend on it, since they're computed within that fixed width rather than arbitrary precision.",
+      "The IEEE 754 panel decodes any decimal into its actual sign/exponent/mantissa bit layout — the same representation every language's 32-bit float or 64-bit double uses under the hood, useful for debugging exact floating-point precision issues.",
     ],
     faq: [
       {
@@ -1578,6 +1579,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Large text (18pt+/24px+, or 14pt/18.66px+ bold) has a lower bar (3:1) because bigger glyphs remain legible at lower contrast.",
       "UI components like button borders, icons, and form field outlines only need to meet the 3:1 threshold, not the stricter text ratios.",
       "Use the swap button to quickly check the reverse combination — useful when deciding between light-on-dark and dark-on-light variants.",
+      "When a pair fails, two separate suggestions appear — one adjusting the foreground, one adjusting the background — since often only one of the two colors is actually yours to change (a brand color, a locked design token).",
     ],
     faq: [
       {
@@ -1685,6 +1687,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Field names become JSON object keys or CSV column headers directly — use camelCase or snake_case to match what your API or database expects.",
       "Generate up to 500 rows per run — for larger datasets, generate in multiple batches or increase the row count and re-download.",
       "Switch to CSV output to get a file you can drag straight into Excel, Google Sheets, or a database import tool.",
+      "Switch to SQL output to get ready-to-run INSERT INTO statements for seeding a database directly — set the table name to match your actual schema.",
     ],
     faq: [
       {
@@ -2370,6 +2373,7 @@ export const toolContent: Record<string, ToolContent> = {
       "EAN-13 and UPC-A both accept the code with or without its check digit — leave it off and the tool computes the correct one automatically.",
       "Code 128 (Subset B) covers printable ASCII, making it the right choice for anything that isn't a pure numeric product code — asset tags, internal SKUs, alphanumeric identifiers.",
       "Increase bar width before printing at small sizes — thin bars are the most common reason a printed barcode fails to scan reliably.",
+      "Download as SVG instead of PNG when the barcode needs to scale for print — vector output stays crisp at any size, where a PNG raster can blur or pixelate when scaled up.",
     ],
     faq: [
       {
@@ -2681,6 +2685,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Real-world soft shadows are usually 2-3 layers: a small, sharp shadow close to the element plus a larger, softer, more transparent one further out — try starting with a tight first layer and an oversized, low-opacity second layer.",
       "Inset shadows render inside the element's border box instead of outside it — combine an inset and a regular shadow on the same element for a pressed or embossed effect.",
       "Keep total opacity modest (under ~30-40% per layer) for shadows meant to look subtle rather than like a hard drop shadow.",
+      "Switch to text-shadow mode for the same layered-shadow workflow applied to type — note that text-shadow has no spread or inset, since neither concept applies to text glyphs the way they do to a box.",
     ],
     faq: [
       {
@@ -3735,6 +3740,156 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Why were some of my pasted URLs rejected?",
         a: "Every sitemap entry must be a complete, absolute URL including the protocol (https://example.com/page, not /page or example.com/page) — the validator flags any line that doesn't parse as a proper absolute http or https URL, since those are the only forms search engines' sitemap parsers accept.",
+      },
+    ],
+  },
+
+  "css-unit-converter": {
+    about:
+      "The ToolNinja CSS Unit Converter converts a value instantly between the five CSS length units developers actually use day to day — px, rem, em, pt, and % — against a configurable base font size, so the conversion matches whatever root font size your project actually uses, not just the browser default of 16px.\n\nThe constant back-and-forth between px (what a design mockup usually specifies) and rem (what a well-built stylesheet actually uses for accessibility and scalability) is one of the most repetitive small calculations in frontend work. This tool treats em the same as rem for simplicity — both relative to the single base value you set — since computing em's true behavior (relative to each element's own parent, which can compound through nested elements) requires knowing the actual DOM context a value will be used in, which a standalone converter has no way to know.\n\nEverything computes instantly in your browser — no page reload, no server round-trip.",
+    useCases: [
+      "Converting a designer's px-based Figma spec into rem values for a stylesheet that uses rem for scalability",
+      "Checking what a given rem or em value resolves to in pixels for a specific base font size",
+      "Converting a legacy pt-based print stylesheet value into a modern screen-appropriate unit",
+      "Quickly sanity-checking a % value's pixel equivalent relative to a known base size",
+    ],
+    tips: [
+      "The base font size defaults to 16px — the universal browser default — but change it if your project sets a different root font-size (a common pattern for globally scaling an entire design system's type).",
+      "rem is almost always the safer choice over em for component sizing, specifically because it doesn't compound through nested elements the way em does — a rem value means the same pixel size everywhere in the page, regardless of nesting depth.",
+      "pt (point) conversion assumes the standard 96px-per-inch, 72pt-per-inch CSS reference — the same fixed ratio (4:3) every browser uses, so pt-to-px is always exact, unlike em's context-dependent behavior.",
+    ],
+    faq: [
+      {
+        q: "Why does 1rem equal 16px by default?",
+        a: "Because every major browser's default root font-size is 16px, and rem (\"root em\") is defined as relative to that root element's font-size specifically — not the default in some arbitrary sense, but because that's literally what the unit is defined to measure. Changing the root font-size (on the <html> element) changes what 1rem equals across the entire page at once.",
+      },
+      {
+        q: "What's the actual difference between rem and em if this tool treats them the same?",
+        a: "In real CSS, em is relative to the computed font-size of the element it's used on (or its parent, for font-size itself) — so the same em value can resolve to different pixel sizes in different parts of a page, depending on nesting. rem is always relative to the single root element, regardless of where it's used. This tool simplifies em to match rem's single-base-value behavior because a standalone converter has no actual DOM context to compute true nested em values against.",
+      },
+      {
+        q: "When should I use % instead of a fixed unit?",
+        a: "% is relative to a parent property's value (which one, specifically, depends on the CSS property — width's percentage is relative to the parent's width, font-size's percentage is relative to the parent's font-size, and so on), making it the right choice for genuinely fluid, parent-relative sizing — but the wrong choice when you want a value to stay consistent regardless of its container, which is where rem or a fixed px value is more predictable.",
+      },
+    ],
+  },
+
+  "aspect-ratio-calculator": {
+    about:
+      "The ToolNinja Aspect Ratio Calculator does the two things people actually need an aspect ratio tool for: simplify a width and height into a clean ratio (1920×1080 becomes 16:9), and solve for a missing dimension when you know a target ratio and only one side (a 16:9 video that needs to be exactly 800px wide needs to be 450px tall).\n\nThe simplification uses the actual greatest-common-divisor reduction, not a lookup table of common ratios — so it correctly simplifies dimensions that don't match a standard preset (837×589 reduces to its own exact lowest terms) as well as ones that do.\n\nEverything computes instantly in your browser, with a live visual preview box showing the resulting shape at a glance.",
+    useCases: [
+      "Figuring out what aspect ratio a specific image or video's dimensions actually reduce to",
+      "Calculating the exact height needed for a fixed-width video embed at a standard ratio like 16:9",
+      "Resizing an image to a target ratio while preserving its proportions",
+      "Checking whether two differently-sized images actually share the same aspect ratio",
+    ],
+    tips: [
+      "The simplified ratio uses true GCD reduction, not a nearest-preset match — an unusual pair of dimensions gets its own exact simplified ratio, not whichever standard ratio happens to be closest.",
+      "Click a preset (16:9, 4:3, 1:1, etc.) to instantly load both the simplify and solve sections with that ratio, ready to adjust.",
+      "The decimal value shown alongside the simplified ratio (e.g. 1.7778 for 16:9) is the same number CSS's aspect-ratio property or an aspect-ratio: 16 / 9 declaration ultimately resolves to.",
+    ],
+    faq: [
+      {
+        q: "Why does 1920×1080 simplify to 16:9 specifically?",
+        a: "1920 and 1080 share a greatest common divisor of 120 — dividing both by 120 gives exactly 16 and 9, which can't be reduced any further since 16 and 9 share no common factors other than 1. That's true simplification, the same way a fraction reduces to its lowest terms.",
+      },
+      {
+        q: "How do I use this to resize an image without distorting it?",
+        a: "Use the 'solve a missing dimension' section: enter the image's current aspect ratio (or simplify its original width/height first to get it), enter your target width or height, and solve for the other dimension. Resizing to those exact calculated dimensions preserves the original proportions exactly.",
+      },
+      {
+        q: "Why do video platforms care so much about specific ratios like 16:9 or 9:16?",
+        a: "Standard ratios let players, thumbnails, and embed containers size predictably across a platform without letterboxing (black bars) or cropping — 16:9 matches virtually all modern displays and TVs, while 9:16 matches a phone held vertically, which is why it's the standard for Reels/Shorts/TikTok-style vertical video.",
+      },
+    ],
+  },
+
+  "svg-path-visualizer": {
+    about:
+      "The ToolNinja SVG Path Visualizer renders a raw path d attribute live — paste any path data and see exactly what shape it draws, its bounding box dimensions, and a readable breakdown of every individual drawing command (M, L, C, Q, A, Z and their lowercase relative variants).\n\nReading a path string like M12 2 L15 8.5 L22 9.3... cold is genuinely difficult — there's no visual feedback in the raw text, and a single wrong coordinate can silently produce a malformed or invisible shape. This tool uses the browser's own native SVG rendering (not a custom path-drawing implementation), so what you see is exactly how every browser will actually render it, with the bounding box computed via the real DOM getBBox() API.\n\nEverything runs 100% in your browser — the path data never leaves your machine.",
+    useCases: [
+      "Debugging why a hand-written or exported SVG path isn't rendering the shape you expect",
+      "Understanding what each command in an unfamiliar path string actually does, command by command",
+      "Checking a path's exact bounding box dimensions before setting a matching viewBox",
+      "Verifying an icon or logo's path data renders correctly before embedding it in code",
+    ],
+    tips: [
+      "The command list breaks a compressed path string (where multiple coordinate pairs follow one letter, like L10 20 30 40 for two line-to commands) into its actual individual commands, exactly as the browser interprets it.",
+      "Mixed-case paths (some uppercase/absolute commands, some lowercase/relative) are flagged explicitly — relative commands are measured from the previous point, not the origin, which is a common source of confusion when hand-editing a path.",
+      "The bounding box values are read directly from the browser's native SVGGeometryElement.getBBox(), the same measurement a real rendering engine uses — not an approximation.",
+    ],
+    faq: [
+      {
+        q: "What's the difference between uppercase and lowercase path commands?",
+        a: "Uppercase commands (M, L, C...) use absolute coordinates — positions in the SVG's own coordinate space. Lowercase commands (m, l, c...) use relative coordinates — an offset from wherever the path currently is. Mixing them is valid and common, but it's also why two paths that look similar on paper can render completely differently if a case got flipped by mistake.",
+      },
+      {
+        q: "Why is my path's bounding box bigger than I expected?",
+        a: "The bounding box reflects the actual rendered geometry, including any curve control points that extend beyond the visible stroke — a Bézier curve's bounding box is based on the mathematical extent of the curve itself, not a rough visual estimate, so it can be wider or taller than the shape appears to need at first glance.",
+      },
+      {
+        q: "Can this tool edit or optimize my path data, not just visualize it?",
+        a: "No — this tool is read-only visualization and analysis. For optimizing or cleaning up SVG markup (including path data) ToolNinja's SVG Optimizer is the right tool; use this one specifically to see and understand what a path actually draws before deciding what to change.",
+      },
+    ],
+  },
+
+  "css-variables-auditor": {
+    about:
+      "The ToolNinja CSS Custom Properties Auditor parses pasted CSS for every --custom-property declaration and var(--name) usage, then cross-references them: which tokens are declared but never actually used anywhere, which are used via var() but never declared at all (a silent bug — an undefined custom property falls back to its initial value or inherits, not an error), and which names get declared more than once with genuinely different values across the stylesheet.\n\nThis is the kind of drift that accumulates naturally in any CSS codebase using design tokens — a color variable renamed in one place but not another, a spacing token added during a refactor and never cleaned up after the old approach was removed, a typo in a var(--nmae) call that silently falls through to nothing instead of erroring loudly the way a JavaScript typo would.\n\nEverything runs 100% in your browser via pattern matching — your CSS never leaves your machine.",
+    useCases: [
+      "Auditing a design system's CSS for custom properties that are declared but no longer referenced anywhere",
+      "Catching a typo'd var(--name) call that silently fails instead of throwing a visible error",
+      "Finding where the same token name got redefined with conflicting values across a large stylesheet",
+      "Getting a quick inventory of every design token a CSS file actually defines, with where each one lives",
+    ],
+    tips: [
+      "A var(--name) used but never declared doesn't throw a CSS error — it just silently falls back to the property's initial value (or a fallback you provided as a second argument to var()), which makes this exact category of bug easy to miss without a tool actively checking for it.",
+      "Selector detection shows the innermost rule only, not the full nesting context — a duplicate declared inside a media query will show the rule's own selector, not the surrounding @media condition, so treat it as a pointer to go looking, not a complete picture.",
+      "A variable flagged as a duplicate isn't necessarily a bug — intentionally overriding a token's value inside a more specific selector (e.g. a dark-mode class) is a completely standard CSS custom property pattern. Review each flagged name with that context in mind.",
+    ],
+    faq: [
+      {
+        q: "Why doesn't a typo in var(--primry-color) throw an error like a JavaScript typo would?",
+        a: "CSS is designed to degrade gracefully rather than halt on an error — an undefined custom property reference is treated as if the property were never set at all, falling back to the declaration's initial value or inheriting from a parent, with no console warning or visual indicator that anything went wrong. That silent-failure behavior is exactly why a dedicated check like this one is useful — the browser genuinely won't tell you.",
+      },
+      {
+        q: "Is a 'declared but unused' variable always safe to delete?",
+        a: "Usually, but double-check first — this tool only detects var(--name) usage within the CSS you pasted. If the variable is referenced from JavaScript (via getComputedStyle or style.setProperty), from an inline style attribute elsewhere in your codebase, or from a separate stylesheet you didn't paste in, it won't show up as 'used' here even though it's genuinely load-bearing.",
+      },
+      {
+        q: "Why would the same custom property be declared with different values on purpose?",
+        a: "This is a standard, intentional CSS pattern — redeclaring --color-primary inside a .dark-mode class or a more specific component selector overrides the value only within that scope, letting the same token name adapt contextually (theme switching, component-level overrides) without renaming it. The duplicates list is meant to prompt a review, not flag every match as automatically wrong.",
+      },
+    ],
+  },
+
+  "exif-viewer": {
+    about:
+      "The ToolNinja EXIF Viewer reads the metadata JPEG cameras and phones embed directly into the image file — camera make and model, the exact capture timestamp, exposure settings, and, often, the precise GPS coordinates the photo was taken at — none of which is visible just by looking at the image itself.\n\nThat GPS data is the specific, concrete privacy risk: a photo shared without stripping it first can reveal exactly where someone lives, works, or was standing at a specific moment, embedded invisibly in a file that looks like nothing more than a picture. The Remove function strips every APP1 metadata segment (which covers both EXIF and XMP data) from the JPEG while leaving the actual image data completely untouched — the photo looks identical, the metadata is simply gone.\n\nEverything runs 100% in your browser, parsing the JPEG's binary structure directly — the image is never uploaded anywhere, which matters especially given exactly what's at stake in this specific tool's data.",
+    useCases: [
+      "Checking whether a photo you're about to share publicly has embedded GPS coordinates",
+      "Stripping metadata from a photo before posting it online or sending it to someone you don't fully trust",
+      "Inspecting a camera's exact settings (exposure, ISO, focal length) recorded for a specific shot",
+      "Verifying a batch-processed or downloaded image genuinely has no leftover metadata before distributing it",
+    ],
+    tips: [
+      "GPS coordinates, when present, are shown with a direct map link — click through to see exactly what location the embedded data actually points to, not just the raw numbers.",
+      "The download button produces a byte-for-byte identical image with metadata segments removed — not a re-encoded or re-compressed copy, so there's no quality loss from stripping.",
+      "Parsing covers JPEG specifically, since that's what the overwhelming majority of camera and phone photos actually are — a PNG or HEIC file won't show EXIF data here even if it technically carries some other metadata format.",
+    ],
+    faq: [
+      {
+        q: "Does a photo with no GPS data mean it's completely safe to share?",
+        a: "Safer, but not automatically risk-free — EXIF can still reveal device model, exact capture timestamp, and camera settings, and the image content itself (recognizable landmarks, reflections, visible signage) can leak location information no metadata stripping can touch. Treat EXIF removal as one layer of privacy hygiene, not a complete guarantee.",
+      },
+      {
+        q: "Why do phones embed GPS location in photos by default?",
+        a: "Mostly for convenience features — photo apps use it to organize pictures by location on a map, and some social platforms use it for location tagging. Most phones let you disable location tagging for the camera specifically in their privacy or camera settings, which avoids the data being embedded in the first place rather than needing to strip it afterward.",
+      },
+      {
+        q: "Does removing EXIF data reduce the photo's visual quality?",
+        a: "No — the metadata segments live in a completely separate part of the file structure from the actual compressed image data. Removing them doesn't touch the pixels at all; the visual result is byte-for-byte identical to the original image, just without the embedded metadata segments.",
       },
     ],
   },

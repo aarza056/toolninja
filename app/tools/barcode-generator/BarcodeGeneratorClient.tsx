@@ -91,6 +91,35 @@ export default function BarcodeGeneratorClient() {
     a.click();
   };
 
+  const downloadSvg = () => {
+    if (!result) return;
+    const quietZone = barWidth * 10;
+    const textHeight = 20;
+    const barsWidth = result.modules.length * barWidth;
+    const width = barsWidth + quietZone * 2;
+    const totalHeight = height + textHeight;
+
+    let rects = "";
+    for (let i = 0; i < result.modules.length; i++) {
+      if (result.modules[i] === "1") {
+        rects += `<rect x="${quietZone + i * barWidth}" y="0" width="${barWidth}" height="${height}" fill="#000"/>`;
+      }
+    }
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${totalHeight}" viewBox="0 0 ${width} ${totalHeight}">` +
+      `<rect width="${width}" height="${totalHeight}" fill="#fff"/>` +
+      rects +
+      `<text x="${width / 2}" y="${height + 16}" font-family="monospace" font-size="14" text-anchor="middle" fill="#000">${result.displayText}</text>` +
+      `</svg>`;
+
+    const blob = new Blob([svg], { type: "image/svg+xml" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `barcode-${format}.svg`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
   const activeFormat = FORMATS.find((f) => f.id === format)!;
 
   return (
@@ -160,13 +189,22 @@ export default function BarcodeGeneratorClient() {
           </div>
 
           {result && (
-            <button
-              onClick={downloadPng}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-[6px] transition-colors"
-            >
-              <Download size={14} />
-              Download PNG
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={downloadPng}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-[6px] transition-colors"
+              >
+                <Download size={14} />
+                PNG
+              </button>
+              <button
+                onClick={downloadSvg}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#f5f5f5] border border-[#222222] rounded-[6px] transition-colors"
+              >
+                <Download size={14} />
+                SVG
+              </button>
+            </div>
           )}
         </div>
 
