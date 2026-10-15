@@ -1,16 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ADSENSE_CLIENT } from "@/lib/ads";
 
 interface AdSlotProps {
+  slot: string;
   minHeight?: number;
   className?: string;
+  format?: string;
 }
 
-// Reserves space for a future ad unit (prevents CLS once one is wired in) and lazy-triggers
-// via IntersectionObserver so below-the-fold slots don't load until near the viewport.
-// Renders nothing outside production. No ad network markup is mounted yet.
-export default function AdSlot({ minHeight = 250, className = "" }: AdSlotProps) {
+declare global {
+  interface Window {
+    adsbygoogle?: Record<string, unknown>[];
+  }
+}
+
+// Reserves space for the ad (prevents CLS) and lazy-loads via IntersectionObserver so
+// below-the-fold slots don't request an ad until they're near the viewport.
+// Renders nothing outside production, and nothing for an unconfigured placeholder slot.
+export default function AdSlot({ slot, minHeight = 250, className = "", format = "auto" }: AdSlotProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
 
@@ -32,17 +41,30 @@ export default function AdSlot({ minHeight = 250, className = "" }: AdSlotProps)
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (!inView) return;
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch {
+      // AdSense script not loaded yet or blocked — safe to ignore
+    }
+  }, [inView]);
+
   if (process.env.NODE_ENV !== "production") return null;
+  if (!slot || /^0+$/.test(slot)) return null;
 
   return (
-    <div
-      ref={containerRef}
-      data-ad-slot=""
-      data-ad-in-view={inView}
-      className={`w-full flex items-center justify-center overflow-hidden ${className}`}
-      style={{ minHeight }}
-    >
-      {/* Ad unit mounts here once a placement is decided */}
+    <div ref={containerRef} className={`w-full flex items-center justify-center overflow-hidden ${className}`} style={{ minHeight }}>
+      {inView && (
+        <ins
+          className="adsbygoogle"
+          style={{ display: "block", width: "100%" }}
+          data-ad-client={ADSENSE_CLIENT}
+          data-ad-slot={slot}
+          data-ad-format={format}
+          data-full-width-responsive="true"
+        />
+      )}
     </div>
   );
 }

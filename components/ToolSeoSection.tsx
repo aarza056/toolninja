@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { toolContent } from "@/lib/tool-content";
 import { tools } from "@/lib/tools";
+import AdSlot from "@/components/AdSlot";
+import { AD_SLOTS } from "@/lib/ads";
 
 interface Props {
   slug: string;
@@ -60,8 +62,6 @@ export default function ToolSeoSection({ slug }: Props) {
           })),
         }
       : null;
-
-  if (!content && !relatedTools.length) return null;
 
   return (
     <div className="border-t border-[#1a1a1a] px-6 py-10 space-y-8 max-w-3xl">
@@ -160,6 +160,8 @@ export default function ToolSeoSection({ slug }: Props) {
           </div>
         </section>
       )}
+
+      <AdSlot slot={AD_SLOTS.toolPageBottom} />
     </div>
   );
 }

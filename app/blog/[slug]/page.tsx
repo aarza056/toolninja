@@ -7,6 +7,8 @@ import { tools } from "@/lib/tools";
 import BlogContent from "./BlogContent";
 import ShareButtons from "@/components/ShareButtons";
 import RelatedArticles from "@/components/RelatedArticles";
+import AdSlot from "@/components/AdSlot";
+import { AD_SLOTS } from "@/lib/ads";
 
 interface Props {
   params: { slug: string };
@@ -43,6 +45,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+// Splits markdown at the "## " heading closest to the midpoint by character count, so
+// the ad lands roughly mid-article at a natural section boundary rather than mid-sentence.
+function splitAtMidpoint(content: string): [string, string | null] {
+  const indices: number[] = [];
+  const headingRegex = /\n(?=## )/g;
+  let match: RegExpExecArray | null;
+  while ((match = headingRegex.exec(content))) {
+    indices.push(match.index + 1);
+  }
+  if (indices.length < 2) return [content, null];
+
+  const target = content.length / 2;
+  let best = indices[0];
+  let bestDist = Math.abs(best - target);
+  for (const idx of indices) {
+    const dist = Math.abs(idx - target);
+    if (dist < bestDist) {
+      best = idx;
+      bestDist = dist;
+    }
+  }
+  return [content.slice(0, best), content.slice(best)];
+}
+
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-US", {
     year: "numeric",
@@ -56,6 +82,8 @@ export default function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   const allPosts = getAllPosts();
+
+  const [contentBefore, contentAfter] = splitAtMidpoint(post.content);
 
   const relatedToolObjects = post.relatedTools
     .map((slug) => tools.find((t) => t.slug === slug))
@@ -181,7 +209,13 @@ export default function BlogPostPage({ params }: Props) {
       </header>
 
       {/* 1. Article content */}
-      <BlogContent content={post.content} />
+      <BlogContent content={contentBefore} />
+      {contentAfter && (
+        <>
+          <AdSlot slot={AD_SLOTS.blogMidArticle} className="my-8" />
+          <BlogContent content={contentAfter} />
+        </>
+      )}
 
       {/* 2. Share buttons */}
       <ShareButtons
