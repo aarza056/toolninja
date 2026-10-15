@@ -4,7 +4,7 @@
 // Ads won't actually render until the AdSense account is approved AND these are real.
 export const AD_SLOTS = {
   toolPageBottom: "0000000000",
-  blogMidArticle: "0000000000",
+  blogMidArticle: "4133239513",
 };
 
 export const ADSENSE_CLIENT = "ca-pub-3459524040712269";

@@ -212,7 +212,7 @@ export default function BlogPostPage({ params }: Props) {
       <BlogContent content={contentBefore} />
       {contentAfter && (
         <>
-          <AdSlot slot={AD_SLOTS.blogMidArticle} className="my-8" />
+          <AdSlot slot={AD_SLOTS.blogMidArticle} layout="in-article" className="my-8" />
           <BlogContent content={contentAfter} />
         </>
       )}
