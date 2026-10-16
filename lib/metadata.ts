@@ -60,6 +60,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online XML formatter and validator. Prettify or minify XML instantly with CDATA-safe formatting and structural validation that catches unclosed and mismatched tags. No login, 100% browser-based.",
   },
+  "js-formatter": {
+    title: "JavaScript & TypeScript Formatter / Minifier Online | ToolNinja",
+    description:
+      "Free online JavaScript and TypeScript formatter and minifier. Beautify messy code with Prettier, or minify it with Terser for production — right in your browser. No login, your code never leaves your device.",
+  },
 
   // ── Encode ───────────────────────────────────────────────────────────────
   "base64": {
@@ -214,6 +219,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online README badge generator. Build custom shields.io badges with any label, message, color and style, or generate live npm/GitHub/PyPI stat badges instantly. No login required — custom badges are built entirely client-side; live badges fetch current data from npm, GitHub, or PyPI.",
   },
+  "license-generator": {
+    title: "Open Source License Generator — MIT, Apache, GPL & More | ToolNinja",
+    description:
+      "Free open source license generator. Pick MIT, Apache 2.0, BSD, ISC, MPL 2.0, GPL 3.0, or Unlicense and get a ready-to-commit LICENSE file with your name and year filled in — canonical text sourced from GitHub's Licenses API. No login required.",
+  },
 
   // ── Convert ──────────────────────────────────────────────────────────────
   "color-converter": {
@@ -251,6 +261,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "Docker Run to Compose Converter — Generate docker-compose.yml Online | ToolNinja",
     description:
       "Free online Docker run to Compose converter. Paste any docker run command and instantly get a ready-to-use docker-compose.yml, or convert a docker-compose.yml back to docker run commands with warnings for anything (depends_on, build) that doesn't translate directly. No login, 100% browser-based.",
+  },
+  "dockerfile-generator": {
+    title: "Dockerfile Generator Online — Node, Python, Go & Static Sites | ToolNinja",
+    description:
+      "Free online Dockerfile generator. Pick Node.js, Python, Go, or a static site and get a sensible, multi-stage-aware Dockerfile plus a matching .dockerignore, ready to copy or download. No login, 100% browser-based.",
   },
   "csv-json": {
     title: "CSV to JSON Converter Online — Convert CSV & JSON Both Ways | ToolNinja",
@@ -301,6 +316,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "SVG to JSX Converter Online — SVG to React Component | ToolNinja",
     description:
       "Free online SVG to JSX converter. Paste raw SVG markup and get a ready-to-use React component — attributes converted to camelCase, props spread onto the root element. No login, 100% browser-based.",
+  },
+  "connection-string-parser": {
+    title: "Database Connection String Parser & Builder Online | ToolNinja",
+    description:
+      "Free online database connection string parser and builder. Break a Postgres, MySQL, MongoDB, or Redis connection URI into user, password, host, port, database, and query params — or build one visually. No login, 100% browser-based.",
   },
 
   // ── Test ─────────────────────────────────────────────────────────────────
@@ -562,6 +582,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "Passkey / WebAuthn Playground Online — Test Passkeys in Your Browser | ToolNinja",
     description:
       "Free online passkey and WebAuthn tester. Create a real passkey and run an authentication ceremony using navigator.credentials, then inspect the decoded authenticator data — flags, sign count, AAGUID. No server, no login.",
+  },
+  "bcrypt-hash-generator": {
+    title: "Bcrypt Hash Generator & Verifier Online | ToolNinja",
+    description:
+      "Free online bcrypt hash generator and verifier. Hash a password with a configurable cost factor, or verify a password against an existing bcrypt hash — using a pure-JavaScript implementation that runs entirely in your browser. No login.",
   },
 
   // ── Accessibility ────────────────────────────────────────────────────────

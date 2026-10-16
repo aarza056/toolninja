@@ -3893,4 +3893,154 @@ export const toolContent: Record<string, ToolContent> = {
       },
     ],
   },
+
+  "js-formatter": {
+    about:
+      "The ToolNinja JavaScript/TypeScript Formatter beautifies or minifies JS and TS code directly in your browser, using the same Prettier engine behind most editor \"format on save\" integrations, plus Terser for minification.\n\nUse Format when you've got code pasted from a Slack message, a Stack Overflow answer, or a minified bundle, and want it readable again — proper indentation, consistent quote style, and semicolon handling, all configurable. Use Minify when you need the opposite: compact, production-sized output with variable names shortened and whitespace stripped.\n\nTypeScript gets its own parser so type annotations, generics, and interfaces format correctly instead of erroring out on a plain JavaScript parser. Minify intentionally targets plain JavaScript only — Terser doesn't understand TypeScript syntax, so format TypeScript down to JS first if you need a minified build.\n\nEverything runs locally in your browser via WebAssembly-free pure JS — your source code is never uploaded anywhere.",
+    useCases: [
+      "Cleaning up minified or poorly formatted JS/TS pasted from elsewhere",
+      "Quickly minifying a small script before inlining it in an HTML page",
+      "Standardizing quote style and semicolon usage across a snippet",
+      "Formatting a TypeScript interface or type definition for readability",
+    ],
+    tips: [
+      "Minify expects plain JavaScript — if you're working in TypeScript, format it first, then strip types in your build tool before minifying.",
+      "Toggling single vs. double quotes only affects string literals Prettier can safely normalize — it won't touch quotes inside template literals.",
+      "The minified output reduction percentage reflects raw byte size, not gzip — real-world transfer savings are usually larger once compression is applied.",
+    ],
+    faq: [
+      {
+        q: "Does this use the real Prettier?",
+        a: "Yes — it loads Prettier's standalone browser build with the Babel/TypeScript and ESTree plugins, the same formatting engine used by Prettier's own online playground and most editor integrations.",
+      },
+      {
+        q: "Why did minify fail on my code?",
+        a: "Terser only parses valid JavaScript. If your input has TypeScript-only syntax (type annotations, interfaces, enums), format it to JS first, or paste the compiled output instead.",
+      },
+      {
+        q: "Is my code sent to a server?",
+        a: "No. Formatting and minification both run entirely client-side in your browser. Nothing you paste here is uploaded or logged.",
+      },
+    ],
+  },
+
+  "license-generator": {
+    about:
+      "The ToolNinja License Generator produces a ready-to-commit LICENSE file for seven of the most common open source licenses — MIT, Apache 2.0, BSD 3-Clause, ISC, Mozilla Public License 2.0, GNU GPL 3.0, and the Unlicense.\n\nEvery license body is sourced verbatim from GitHub's public Licenses API, which mirrors the canonical SPDX reference text — nothing here is paraphrased or hand-typed, so what you copy is the real, legally-recognized license text. For licenses that need a copyright holder name and year (MIT, BSD, ISC, GPL), fill in the two fields on the right and they're substituted into the correct placeholders automatically.\n\nEach license includes a short, plain-English summary of what it actually permits and requires, to help you pick — but for anything where the choice has real business stakes, that's a conversation for a lawyer, not a tool.",
+    useCases: [
+      "Adding a LICENSE file to a brand-new open source repository",
+      "Comparing permissive (MIT/Apache/BSD/ISC) vs. copyleft (GPL/MPL) terms at a glance",
+      "Generating correctly-filled-in copyright text without hunting down the exact placeholder format",
+      "Switching a project's license and needing the new file's exact canonical wording",
+    ],
+    tips: [
+      "MIT, BSD, ISC, and GPL need your name and year — Apache, MPL, and the Unlicense don't require any fields to be filled in.",
+      "The downloaded file is named exactly LICENSE with no extension, the GitHub convention that gets it recognized automatically on a repo's main page.",
+      "If you're not sure which to pick: MIT is the simplest permissive default most projects use; GPL is the right call if you want derivative works to stay open source too.",
+    ],
+    faq: [
+      {
+        q: "Where does the license text come from?",
+        a: "Directly from GitHub's Licenses API (api.github.com/licenses), which serves the canonical SPDX reference text for each license — the same source GitHub itself uses to detect and display a repository's license.",
+      },
+      {
+        q: "Can I change my license after I've already published code under another one?",
+        a: "Generally only with the agreement of every contributor who holds copyright in the existing code, since they licensed their contributions under the original terms. For a solo project it's simpler, but for anything with outside contributors, treat a license change as something to actually get agreement on.",
+      },
+      {
+        q: "Is this legal advice?",
+        a: "No. This tool reproduces official license text accurately, but it doesn't tell you which license is right for your specific situation. If the choice has real stakes for your business, talk to a lawyer.",
+      },
+    ],
+  },
+
+  "bcrypt-hash-generator": {
+    about:
+      "The ToolNinja Bcrypt tool hashes passwords and verifies them against existing hashes using a pure-JavaScript bcrypt implementation, entirely in your browser.\n\nBcrypt is the standard choice for storing passwords server-side specifically because it's deliberately slow — the cost factor (rounds) controls exactly how slow, making brute-force attacks against stolen password hashes impractical even as hardware gets faster. Unlike a plain SHA-256 hash, bcrypt automatically generates and embeds a random salt in every hash it produces, so hashing the same password twice always yields a different result, and there's no separate salt column to manage.\n\nUse Generate to produce a hash for testing an auth flow or seeding a database with known test credentials. Use Verify to check whether a given password actually matches a hash you already have — useful for debugging a login bug or confirming a migrated hash still validates correctly.",
+    useCases: [
+      "Generating a bcrypt hash to seed test or development database records",
+      "Verifying a password actually matches a stored hash while debugging an auth bug",
+      "Checking what cost factor an existing hash was generated with",
+      "Testing how hashing time scales with the cost factor before picking a production value",
+    ],
+    tips: [
+      "A cost factor of 10–12 is the common production default — each +1 roughly doubles the time to compute, which is the entire point.",
+      "The three-character prefix ($2a$, $2b$, or $2y$) identifies which bcrypt variant produced the hash; all three are compatible for verification purposes here.",
+      "Bcrypt silently truncates input at 72 bytes — extremely long passwords beyond that length won't change the resulting hash.",
+    ],
+    faq: [
+      {
+        q: "Why does hashing the same password twice give a different result?",
+        a: "Bcrypt generates a fresh random salt every time it hashes, and embeds that salt directly in the output string. That's by design — it's what makes precomputed rainbow-table attacks against bcrypt hashes infeasible, since every hash of the same password is still unique.",
+      },
+      {
+        q: "What cost factor should I actually use in production?",
+        a: "10–12 is the widely used range in 2026 — high enough to meaningfully slow brute-force attempts, low enough that legitimate logins don't feel slow. If your hardware is fast and login volume is low, 12–14 is reasonable; go lower only if login latency is a measured problem.",
+      },
+      {
+        q: "Is this the same bcrypt my backend uses?",
+        a: "The hash format and verification logic are fully compatible with bcrypt implementations in other languages (Node's bcrypt/bcryptjs, Python's bcrypt, Go's golang.org/x/crypto/bcrypt, Ruby's bcrypt gem) — a hash generated here will verify correctly against those, and vice versa.",
+      },
+    ],
+  },
+
+  "dockerfile-generator": {
+    about:
+      "The ToolNinja Dockerfile Generator builds a working Dockerfile from a few picks — stack, version, package manager, and a couple of commands — rather than starting from a blank file or copy-pasting one from an old project that may not fit.\n\nFor Node.js and static sites, it defaults to a multi-stage build: a builder stage installs dependencies and runs your build step, then a clean runtime stage copies only the built output across, keeping the final image free of devDependencies and build tooling. Go gets a multi-stage build by default too, compiling a static binary in a Go image and running it from a minimal Alpine base. Python uses a single-stage Dockerfile, which is standard for most Python deployments.\n\nEvery option also generates a matching .dockerignore, so node_modules, .git, and other directories that shouldn't be copied into the build context are excluded from the start.",
+    useCases: [
+      "Scaffolding a Dockerfile for a new Node.js, Python, Go, or static-site project",
+      "Getting a correct multi-stage build pattern without copying one from an old repo",
+      "Generating a matching .dockerignore alongside the Dockerfile",
+      "Comparing single-stage vs. multi-stage image size tradeoffs before committing to one",
+    ],
+    tips: [
+      "Multi-stage builds keep your final image free of build tools and devDependencies — meaningfully smaller and with a smaller attack surface in production.",
+      "The alpine base variant produces the smallest images, but if a native dependency fails to install, try slim or full — alpine's musl libc occasionally trips up packages that expect glibc.",
+      "For the Go stack, the compiled binary runs from a bare Alpine runtime image with just ca-certificates added — no language runtime is needed at all for a statically compiled Go binary.",
+    ],
+    faq: [
+      {
+        q: "Why use a multi-stage build instead of one FROM line?",
+        a: "A single-stage image carries every build tool, dev dependency, and intermediate file into the final image, even though none of that is needed at runtime. A multi-stage build throws all of that away after the build step, copying only the compiled output into a clean runtime image — often cutting final image size by more than half.",
+      },
+      {
+        q: "Do I need to edit the generated Dockerfile at all?",
+        a: "Treat it as a correct starting point, not a guaranteed final answer — it covers the common case for each stack, but project-specific needs (extra system packages, a monorepo structure, a non-standard entrypoint) will usually need a small manual tweak.",
+      },
+      {
+        q: "Why is the Python Dockerfile single-stage while Node and Go are multi-stage?",
+        a: "Python doesn't have a separate compile step the way a bundler or Go's compiler does — pip installs land directly in the runtime environment, so there's no intermediate build artifact to copy across stages, making a single stage the standard approach.",
+      },
+    ],
+  },
+
+  "connection-string-parser": {
+    about:
+      "The ToolNinja Connection String Parser breaks a database connection URI into its individual parts — scheme, user, password, host, port, database name, and query parameters — and the Builder does the reverse, assembling a valid connection string from fields you fill in.\n\nConnection strings for Postgres, MySQL, MongoDB, and Redis all follow the same general URI shape (scheme://user:password@host:port/database?params), which means they parse cleanly with the same logic — useful when you're migrating a connection string between tools, debugging why a URL-encoded character is breaking a parser, or just trying to read a long string with a password embedded in the middle of it.\n\nThe password field has a reveal/hide toggle since connection strings routinely get pasted into chat windows, tickets, or screen-shared terminals — easy to accidentally expose a credential while explaining a bug.",
+    useCases: [
+      "Reading a long connection string with the password, host, and params clearly separated",
+      "Building a new connection string field-by-field instead of hand-assembling the URI syntax",
+      "Debugging a connection string that's failing to parse due to an unencoded special character",
+      "Converting a connection string's format when migrating between database tools or ORMs",
+    ],
+    tips: [
+      "Special characters in a password (@, :, /, ?) must be percent-encoded, or they'll be misread as part of the URI structure — the Build tab handles this encoding for you automatically.",
+      "Multi-host strings, like MongoDB replica set URIs listing several hosts separated by commas, aren't supported — parse one host at a time.",
+      "The password reveal toggle defaults to hidden specifically because connection strings get pasted into chats and tickets more often than people expect.",
+    ],
+    faq: [
+      {
+        q: "Why does my connection string fail to parse?",
+        a: "The most common cause is an unencoded special character in the password or database name — an @ or : inside a password that isn't percent-encoded will be misread as a structural delimiter. Try encoding the password (replacing @ with %40, for example) before pasting.",
+      },
+      {
+        q: "Does this tool connect to my actual database?",
+        a: "No — it only parses or builds the connection string text itself. No network connection is ever made, and nothing you paste is sent anywhere.",
+      },
+      {
+        q: "Why isn't my MongoDB replica set connection string supported?",
+        a: "Replica set URIs list multiple comma-separated hosts (mongodb://host1,host2,host3/db), which falls outside standard URI syntax that a single scheme://user:pass@host:port/path parser can handle. Parse one host from the list at a time instead.",
+      },
+    ],
+  },
 };

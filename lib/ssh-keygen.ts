@@ -205,3 +205,108 @@ export async function generateSshKeyPair(type: SshKeyType, opts: { rsaModulusLen
   return generateRsa(opts.rsaModulusLength ?? 2048, comment);
 }
 
+function base64ToBytes(b64: string): Uint8Array {
+  const binary = atob(b64);
+  const out = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
+  return out;
+}
+
+class ByteReader {
+  private pos = 0;
+  constructor(private data: Uint8Array) {}
+  uint32(): number {
+    if (this.pos + 4 > this.data.length) throw new Error("Unexpected end of key data");
+    const v = new DataView(this.data.buffer, this.data.byteOffset + this.pos, 4).getUint32(0, false);
+    this.pos += 4;
+    return v;
+  }
+  bytes(len: number): Uint8Array {
+    if (this.pos + len > this.data.length) throw new Error("Unexpected end of key data");
+    const b = this.data.slice(this.pos, this.pos + len);
+    this.pos += len;
+    return b;
+  }
+  string(): Uint8Array {
+    return this.bytes(this.uint32());
+  }
+  text(): string {
+    return new TextDecoder().decode(this.string());
+  }
+}
+
+export interface InspectedKey {
+  keyType: string;
+  bits: number | null;
+  comment: string;
+  fingerprint: string;
+  randomart: string;
+}
+
+/** Parses a single-line OpenSSH public key ("ssh-ed25519 AAAA... comment") and computes
+ * its SHA256 fingerprint and randomart without generating anything new. */
+export async function inspectPublicKey(input: string): Promise<InspectedKey> {
+  const trimmed = input.trim();
+  const parts = trimmed.split(/\s+/).filter(Boolean);
+  if (parts.length < 2) throw new Error("Expected format: ssh-ed25519 AAAA... [comment]");
+  const [keyType, b64, ...commentParts] = parts;
+
+  let pubBlob: Uint8Array;
+  try {
+    pubBlob = base64ToBytes(b64);
+  } catch {
+    throw new Error("Couldn't decode the Base64 key data");
+  }
+
+  const reader = new ByteReader(pubBlob);
+  let blobType: string;
+  try {
+    blobType = reader.text();
+  } catch {
+    throw new Error("Malformed key data");
+  }
+  if (blobType !== keyType) {
+    throw new Error(`Key type mismatch: header says "${keyType}" but the embedded data says "${blobType}"`);
+  }
+
+  let bits: number | null = null;
+  let label = blobType;
+  try {
+    if (blobType === "ssh-ed25519") {
+      bits = 256;
+      label = "ED25519 256";
+    } else if (blobType === "ssh-rsa") {
+      reader.string(); // exponent
+      const n = reader.string();
+      let i = 0;
+      while (i < n.length - 1 && n[i] === 0) i++;
+      bits = (n.length - i) * 8;
+      label = `RSA ${bits}`;
+    } else if (blobType.startsWith("ecdsa-sha2-")) {
+      const curve = reader.text();
+      bits = curve === "nistp256" ? 256 : curve === "nistp384" ? 384 : curve === "nistp521" ? 521 : null;
+      label = `ECDSA ${bits ?? "?"}`;
+    } else if (blobType === "ssh-dss") {
+      const p = reader.string();
+      let i = 0;
+      while (i < p.length - 1 && p[i] === 0) i++;
+      bits = (p.length - i) * 8;
+      label = `DSA ${bits}`;
+    } else {
+      throw new Error(`Unrecognized key type: ${blobType}`);
+    }
+  } catch (e) {
+    if (e instanceof Error && e.message.startsWith("Unrecognized")) throw e;
+    throw new Error("Malformed key data for this key type");
+  }
+
+  const digest = await sha256Digest(pubBlob);
+  return {
+    keyType: blobType,
+    bits,
+    comment: commentParts.join(" "),
+    fingerprint: fingerprintFromDigest(digest),
+    randomart: buildRandomart(digest, label),
+  };
+}
+

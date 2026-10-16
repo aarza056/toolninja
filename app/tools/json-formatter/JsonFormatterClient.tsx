@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Braces, Minimize2, Trash2, AlertCircle, ChevronRight, ChevronDown } from "lucide-react";
+import { Braces, Minimize2, Trash2, AlertCircle, ChevronRight, ChevronDown, Wrench } from "lucide-react";
 import { flattenJson, unflattenJson } from "@/lib/json-flatten";
 
 const STORAGE_KEY = "toolninja:json-formatter";
@@ -171,6 +171,25 @@ export default function JsonFormatterClient() {
     }
   }, []);
 
+  const [repairing, setRepairing] = useState(false);
+  const [repairError, setRepairError] = useState("");
+
+  const repair = async () => {
+    if (!input.trim()) return;
+    setRepairing(true);
+    setRepairError("");
+    try {
+      const { jsonrepair } = await import("jsonrepair");
+      const repaired = jsonrepair(input);
+      setInput(repaired);
+      format(repaired);
+    } catch (e) {
+      setRepairError(e instanceof Error ? e.message : "Couldn't auto-repair this — it may be too malformed");
+    } finally {
+      setRepairing(false);
+    }
+  };
+
   const minify = () => {
     if (!input.trim()) return;
     try {
@@ -245,6 +264,16 @@ export default function JsonFormatterClient() {
         >
           <Minimize2 size={14} /> Minify
         </button>
+        {error && (
+          <button
+            onClick={repair}
+            disabled={repairing}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#1a1a1a] hover:bg-[#222222] disabled:opacity-50 text-[#f5f5f5] border border-[#222222] rounded-[6px] transition-colors"
+            title="Attempt to fix trailing commas, single quotes, unquoted keys, and JS comments"
+          >
+            <Wrench size={14} /> {repairing ? "Repairing…" : "Repair"}
+          </button>
+        )}
         <button
           onClick={clear}
           className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] border border-[#222222] rounded-[6px] transition-colors"
@@ -274,6 +303,11 @@ export default function JsonFormatterClient() {
           {error && (
             <div className="flex items-center gap-1.5 text-xs text-[#ef4444] mt-1">
               <AlertCircle size={12} /> {error}
+            </div>
+          )}
+          {repairError && (
+            <div className="flex items-center gap-1.5 text-xs text-[#f97316] mt-1">
+              <AlertCircle size={12} /> {repairError}
             </div>
           )}
         </div>

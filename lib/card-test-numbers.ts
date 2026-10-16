@@ -44,6 +44,22 @@ export function generateTestCardNumber(network: CardNetwork): string {
   return body + luhnCheckDigit(body).toString();
 }
 
+export function detectCardNetwork(digits: string): CardNetwork | null {
+  const clean = digits.replace(/\D/g, "");
+  if (!clean) return null;
+  let best: CardNetwork | null = null;
+  let bestPrefixLen = 0;
+  for (const network of CARD_NETWORKS) {
+    for (const prefix of network.prefixes) {
+      if (clean.startsWith(prefix) && prefix.length > bestPrefixLen) {
+        best = network;
+        bestPrefixLen = prefix.length;
+      }
+    }
+  }
+  return best;
+}
+
 export function formatCardNumber(number: string): string {
   if (number.length === 15) {
     // Amex groups as 4-6-5

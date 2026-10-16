@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import QRCode from "qrcode";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { RefreshCw, KeyRound, ScanLine, AlertCircle } from "lucide-react";
+import { RefreshCw, KeyRound, ScanLine, AlertCircle, BookmarkPlus, Trash2, ArrowUpFromLine } from "lucide-react";
 import {
   generateTOTP,
   generateRandomSecret,
@@ -18,9 +18,65 @@ import {
 import { decodeQrFromImage } from "@/lib/qr-decode";
 
 const STORAGE_KEY = "toolninja:totp-generator";
+const ACCOUNTS_KEY = "toolninja:totp-generator:accounts";
 const ALGORITHMS: TotpAlgorithm[] = ["SHA-1", "SHA-256", "SHA-512"];
 const DIGIT_OPTIONS = [6, 8];
 const PERIOD_OPTIONS = [30, 60];
+
+interface SavedAccount {
+  id: string;
+  secret: string;
+  label: string;
+  issuer: string;
+  opts: TotpOptions;
+}
+
+function SavedAccountRow({ account, onLoad, onDelete }: { account: SavedAccount; onLoad: () => void; onDelete: () => void }) {
+  const [code, setCode] = useState("");
+  const [remaining, setRemaining] = useState(account.opts.period);
+
+  useEffect(() => {
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        const c = await generateTOTP(account.secret, account.opts);
+        if (!cancelled) setCode(c);
+      } catch {
+        if (!cancelled) setCode("——————");
+      }
+      if (!cancelled) setRemaining(secondsRemaining(account.opts.period));
+    };
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [account.secret, account.opts]);
+
+  const progress = ((account.opts.period - remaining) / account.opts.period) * 100;
+
+  return (
+    <div className="flex items-center gap-3 p-3 bg-[#111111] border border-[#1a1a1a] rounded-[8px]">
+      <div className="min-w-0 flex-1">
+        <p className="text-sm text-[#f5f5f5] truncate">{account.issuer || "—"}{account.issuer && account.label ? " · " : ""}{account.label}</p>
+        <div className="flex items-center gap-2 mt-1">
+          <span className="font-mono text-base text-[#a855f7] tracking-widest">{code}</span>
+          <div className="flex-1 h-1 bg-[#1a1a1a] rounded-full overflow-hidden max-w-[80px]">
+            <div className="h-full bg-[#a855f7] transition-all duration-1000 ease-linear" style={{ width: `${100 - progress}%` }} />
+          </div>
+        </div>
+      </div>
+      {code && <CopyButton text={code} size="sm" />}
+      <button onClick={onLoad} title="Load into editor" className="p-1.5 text-[#555555] hover:text-[#a855f7] transition-colors">
+        <ArrowUpFromLine size={14} />
+      </button>
+      <button onClick={onDelete} title="Remove" className="p-1.5 text-[#555555] hover:text-[#ef4444] transition-colors">
+        <Trash2 size={14} />
+      </button>
+    </div>
+  );
+}
 
 export default function TotpGeneratorClient() {
   const [secret, setSecret] = useState("");
@@ -35,6 +91,7 @@ export default function TotpGeneratorClient() {
   const [scanError, setScanError] = useState("");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const scanInputRef = useRef<HTMLInputElement>(null);
+  const [accounts, setAccounts] = useState<SavedAccount[]>([]);
 
   useEffect(() => {
     try {
@@ -46,8 +103,43 @@ export default function TotpGeneratorClient() {
         setIssuer(parsed.issuer ?? "");
         if (parsed.opts) setOpts(parsed.opts);
       }
+      const savedAccounts = localStorage.getItem(ACCOUNTS_KEY);
+      if (savedAccounts) setAccounts(JSON.parse(savedAccounts));
     } catch {}
   }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+    } catch {}
+  }, [accounts]);
+
+  const saveToVault = () => {
+    if (!secret.trim()) return;
+    setAccounts((prev) => {
+      const existing = prev.find((a) => a.secret === secret.trim());
+      const next: SavedAccount = {
+        id: existing?.id ?? crypto.randomUUID(),
+        secret: secret.trim(),
+        label,
+        issuer,
+        opts,
+      };
+      if (existing) return prev.map((a) => (a.id === existing.id ? next : a));
+      return [...prev, next];
+    });
+  };
+
+  const loadFromVault = (account: SavedAccount) => {
+    setSecret(account.secret);
+    setLabel(account.label);
+    setIssuer(account.issuer);
+    setOpts(account.opts);
+  };
+
+  const deleteFromVault = (id: string) => {
+    setAccounts((prev) => prev.filter((a) => a.id !== id));
+  };
 
   useEffect(() => {
     try {
@@ -148,12 +240,21 @@ export default function TotpGeneratorClient() {
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="text-xs text-[#888888] font-medium">Secret key (Base32)</label>
-              <button
-                onClick={handleGenerate}
-                className="flex items-center gap-1 text-xs text-[#a855f7] hover:text-[#9333ea] transition-colors"
-              >
-                <RefreshCw size={11} /> Generate random
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleGenerate}
+                  className="flex items-center gap-1 text-xs text-[#a855f7] hover:text-[#9333ea] transition-colors"
+                >
+                  <RefreshCw size={11} /> Generate random
+                </button>
+                <button
+                  onClick={saveToVault}
+                  disabled={!secret.trim()}
+                  className="flex items-center gap-1 text-xs text-[#888888] hover:text-[#f5f5f5] disabled:opacity-40 transition-colors"
+                >
+                  <BookmarkPlus size={11} /> Save to vault
+                </button>
+              </div>
             </div>
             <textarea
               value={secret}
@@ -313,6 +414,24 @@ export default function TotpGeneratorClient() {
           )}
         </div>
       </div>
+
+      {accounts.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-3">
+            Saved accounts ({accounts.length})
+          </h2>
+          <div className="space-y-2">
+            {accounts.map((a) => (
+              <SavedAccountRow
+                key={a.id}
+                account={a}
+                onLoad={() => loadFromVault(a)}
+                onDelete={() => deleteFromVault(a.id)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </ToolLayout>
   );
 }

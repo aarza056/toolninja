@@ -4,18 +4,24 @@ import { useState } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { RefreshCw, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
-import { CARD_NETWORKS, generateTestCardNumber, formatCardNumber, luhnIsValid } from "@/lib/card-test-numbers";
+import { CARD_NETWORKS, generateTestCardNumber, formatCardNumber, luhnIsValid, detectCardNetwork } from "@/lib/card-test-numbers";
 
 export default function CreditCardTestGeneratorClient() {
   const [generated, setGenerated] = useState<{ network: string; number: string }[]>([]);
+  const [perNetwork, setPerNetwork] = useState(1);
   const [validateInput, setValidateInput] = useState("");
 
   const generate = () => {
-    setGenerated(CARD_NETWORKS.map((n) => ({ network: n.name, number: generateTestCardNumber(n) })));
+    setGenerated(
+      CARD_NETWORKS.flatMap((n) =>
+        Array.from({ length: perNetwork }, () => ({ network: n.name, number: generateTestCardNumber(n) }))
+      )
+    );
   };
 
   const cleanInput = validateInput.replace(/\D/g, "");
   const isValid = cleanInput.length >= 2 ? luhnIsValid(cleanInput) : null;
+  const detectedNetwork = cleanInput.length >= 1 ? detectCardNetwork(cleanInput) : null;
 
   return (
     <ToolLayout
@@ -35,18 +41,31 @@ export default function CreditCardTestGeneratorClient() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-[#f5f5f5]">Generate test numbers</h3>
-          <button
-            onClick={generate}
-            className="flex items-center gap-1.5 px-4 py-1.5 text-sm bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-[6px] transition-colors"
-          >
-            <RefreshCw size={14} /> Generate
-          </button>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-1.5 text-xs text-[#888888]">
+              Per network
+              <input
+                type="number"
+                min={1}
+                max={10}
+                value={perNetwork}
+                onChange={(e) => setPerNetwork(Math.max(1, Math.min(10, Number(e.target.value))))}
+                className="w-14 px-2 py-1 text-sm bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+              />
+            </label>
+            <button
+              onClick={generate}
+              className="flex items-center gap-1.5 px-4 py-1.5 text-sm bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-[6px] transition-colors"
+            >
+              <RefreshCw size={14} /> Generate
+            </button>
+          </div>
         </div>
 
         {generated.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {generated.map((g) => (
-              <div key={g.network} className="flex items-center justify-between gap-3 p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
+            {generated.map((g, i) => (
+              <div key={`${g.network}-${i}`} className="flex items-center justify-between gap-3 p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
                 <div className="min-w-0">
                   <div className="text-[10px] text-[#888888] uppercase tracking-wide mb-0.5">{g.network}</div>
                   <code className="text-sm font-mono text-[#f5f5f5]">{formatCardNumber(g.number)}</code>
@@ -72,6 +91,11 @@ export default function CreditCardTestGeneratorClient() {
           spellCheck={false}
           className="w-full max-w-sm px-3 py-2.5 font-mono text-sm bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
         />
+        {detectedNetwork && (
+          <span className="inline-block mt-2 px-2 py-0.5 text-[10px] uppercase tracking-wide bg-[#a855f7]/10 text-[#a855f7] border border-[#a855f7]/20 rounded-full">
+            {detectedNetwork.name}
+          </span>
+        )}
         {isValid !== null && (
           <div
             className={`mt-3 flex items-center gap-2 px-3 py-2 rounded-[6px] text-sm max-w-sm ${

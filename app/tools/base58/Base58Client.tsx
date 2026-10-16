@@ -1,10 +1,17 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { Trash2, AlertCircle } from "lucide-react";
-import { base58EncodeText, base58DecodeToText, base58Encode, base58Decode, bytesToHex, hexToBytes } from "@/lib/base58";
+import {
+  base58Encode,
+  base58Decode,
+  base58CheckEncode,
+  base58CheckDecode,
+  bytesToHex,
+  hexToBytes,
+} from "@/lib/base58";
 
 const STORAGE_KEY = "toolninja:base58";
 
@@ -14,7 +21,10 @@ type Format = "text" | "hex";
 export default function Base58Client() {
   const [mode, setMode] = useState<Mode>("encode");
   const [format, setFormat] = useState<Format>("text");
+  const [checked, setChecked] = useState(false);
   const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     try {
@@ -29,19 +39,42 @@ export default function Base58Client() {
     } catch {}
   }, [input]);
 
-  const { output, error } = useMemo(() => {
-    if (!input.trim()) return { output: "", error: "" };
-    try {
-      if (mode === "encode") {
-        const result = format === "text" ? base58EncodeText(input) : base58Encode(hexToBytes(input));
-        return { output: result, error: "" };
+  useEffect(() => {
+    let cancelled = false;
+    async function run() {
+      if (!input.trim()) {
+        setOutput("");
+        setError("");
+        return;
       }
-      const result = format === "text" ? base58DecodeToText(input.trim()) : bytesToHex(base58Decode(input.trim()));
-      return { output: result, error: "" };
-    } catch (e) {
-      return { output: "", error: e instanceof Error ? e.message : "Conversion failed" };
+      try {
+        if (mode === "encode") {
+          const payload = format === "text" ? new TextEncoder().encode(input) : hexToBytes(input);
+          const result = checked ? await base58CheckEncode(payload) : base58Encode(payload);
+          if (!cancelled) {
+            setOutput(result);
+            setError("");
+          }
+          return;
+        }
+        const payload = checked ? await base58CheckDecode(input.trim()) : base58Decode(input.trim());
+        const result = format === "text" ? new TextDecoder().decode(payload) : bytesToHex(payload);
+        if (!cancelled) {
+          setOutput(result);
+          setError("");
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setOutput("");
+          setError(e instanceof Error ? e.message : "Conversion failed");
+        }
+      }
     }
-  }, [input, mode, format]);
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [input, mode, format, checked]);
 
   const clear = () => setInput("");
 
@@ -85,6 +118,11 @@ export default function Base58Client() {
             </button>
           </div>
         </div>
+
+        <label className="flex items-center gap-1.5 text-xs text-[#888888] cursor-pointer">
+          <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} className="accent-[#a855f7]" />
+          Base58Check (checksummed)
+        </label>
 
         <button
           onClick={clear}

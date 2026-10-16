@@ -167,6 +167,19 @@ export const tools: Tool[] = [
       "dedupe list tool", "sort lines a-z",
     ],
   },
+  {
+    slug: "js-formatter",
+    name: "JavaScript / TypeScript Formatter & Minifier",
+    description: "Beautify or minify JS and TS code instantly — powered by Prettier and Terser",
+    icon: "FileCode2",
+    category: "Format",
+    keywords: [
+      "javascript formatter", "typescript formatter", "js beautifier online",
+      "js minifier online", "format javascript online", "prettier online",
+      "typescript beautifier", "minify javascript online", "js code formatter",
+      "ts formatter online", "beautify typescript",
+    ],
+  },
 
   // ─── Encode ───────────────────────────────────────────────────────────────
   {
@@ -570,6 +583,19 @@ export const tools: Tool[] = [
       "shields.io generator online",
     ],
   },
+  {
+    slug: "license-generator",
+    name: "Open Source License Generator",
+    description: "Pick a license, fill in your name, get a ready-to-commit LICENSE file",
+    icon: "Copyright",
+    category: "Generate",
+    keywords: [
+      "license generator", "open source license generator", "mit license generator",
+      "apache license generator", "gpl license generator", "choose a license",
+      "generate license file", "license.txt generator", "software license generator",
+      "github license generator",
+    ],
+  },
 
   // ─── Convert ──────────────────────────────────────────────────────────────
   {
@@ -671,6 +697,19 @@ export const tools: Tool[] = [
       "convert docker run command", "docker-compose.yml generator", "docker run parser",
       "docker compose online", "docker compose tool", "docker run to yaml",
       "docker compose best practices", "docker run translator",
+    ],
+  },
+  {
+    slug: "dockerfile-generator",
+    name: "Dockerfile Generator",
+    description: "Pick a stack and get a sensible, multi-stage-aware Dockerfile — plus a matching .dockerignore",
+    icon: "Layers3",
+    category: "Convert",
+    keywords: [
+      "dockerfile generator", "dockerfile generator online", "generate dockerfile",
+      "node dockerfile generator", "python dockerfile generator", "go dockerfile generator",
+      "multi-stage dockerfile generator", "dockerfile for nodejs", "create dockerfile online",
+      "dockerignore generator",
     ],
   },
   {
@@ -785,6 +824,18 @@ export const tools: Tool[] = [
       "svg to jsx", "svg to jsx converter", "svg to react component",
       "convert svg to react", "svg react component generator", "svg to tsx",
       "svgr alternative online", "svg jsx attributes converter",
+    ],
+  },
+  {
+    slug: "connection-string-parser",
+    name: "Database Connection String Parser & Builder",
+    description: "Parse a Postgres, MySQL, MongoDB, or Redis connection URI into its parts — or build one visually",
+    icon: "DatabaseZap",
+    category: "Convert",
+    keywords: [
+      "connection string parser", "database connection string builder", "postgres connection string parser",
+      "mysql connection string parser", "mongodb uri parser", "redis connection string parser",
+      "parse database url", "database url builder", "connection string online tool",
     ],
   },
 
@@ -1444,6 +1495,18 @@ export const tools: Tool[] = [
       "passkey ceremony tester",
     ],
   },
+  {
+    slug: "bcrypt-hash-generator",
+    name: "Bcrypt Hash Generator & Verifier",
+    description: "Hash a password with bcrypt, or verify a password against an existing hash — entirely in your browser",
+    icon: "KeyRound",
+    category: "Security",
+    keywords: [
+      "bcrypt hash generator", "bcrypt generator online", "bcrypt verifier",
+      "bcrypt password hash online", "check bcrypt hash", "bcrypt compare online",
+      "generate bcrypt hash", "bcrypt cost factor calculator", "bcrypt hash checker",
+    ],
+  },
 
   // ─── Accessibility ────────────────────────────────────────────────────────
   {
@@ -1543,9 +1606,9 @@ export type Category = (typeof categories)[number];
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 export const LATEST_TOOL_SLUGS = [
-  "css-unit-converter",
-  "aspect-ratio-calculator",
-  "svg-path-visualizer",
-  "css-variables-auditor",
-  "exif-viewer",
+  "js-formatter",
+  "license-generator",
+  "bcrypt-hash-generator",
+  "dockerfile-generator",
+  "connection-string-parser",
 ];

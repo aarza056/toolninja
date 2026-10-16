@@ -63,6 +63,34 @@ export function base58DecodeToText(input: string): string {
   return new TextDecoder().decode(base58Decode(input));
 }
 
+async function sha256(bytes: Uint8Array): Promise<Uint8Array> {
+  return new Uint8Array(await crypto.subtle.digest("SHA-256", bytes as BufferSource));
+}
+
+/** Base58Check (as used by Bitcoin addresses and WIF private keys): appends the first 4 bytes
+ * of double-SHA256(payload) as a checksum before Base58-encoding, catching typos and corruption. */
+export async function base58CheckEncode(payload: Uint8Array): Promise<string> {
+  const checksum = (await sha256(await sha256(payload))).slice(0, 4);
+  const combined = new Uint8Array(payload.length + 4);
+  combined.set(payload, 0);
+  combined.set(checksum, payload.length);
+  return base58Encode(combined);
+}
+
+export async function base58CheckDecode(input: string): Promise<Uint8Array> {
+  const full = base58Decode(input);
+  if (full.length < 4) throw new Error("Too short to contain a 4-byte checksum.");
+  const payload = full.slice(0, -4);
+  const checksum = full.slice(-4);
+  const expected = (await sha256(await sha256(payload))).slice(0, 4);
+  for (let i = 0; i < 4; i++) {
+    if (checksum[i] !== expected[i]) {
+      throw new Error("Checksum mismatch — this isn't valid Base58Check data (or it's corrupted).");
+    }
+  }
+  return payload;
+}
+
 export function bytesToHex(bytes: Uint8Array): string {
   return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
