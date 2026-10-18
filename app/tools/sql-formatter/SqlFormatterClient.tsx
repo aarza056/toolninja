@@ -5,19 +5,29 @@ import { format, type SqlLanguage } from "sql-formatter";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { Database, Trash2 } from "lucide-react";
+import { minifySql } from "@/lib/sql-minify";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Dialect = "sql" | "mysql" | "postgresql" | "sqlite" | "bigquery" | "trino";
+type Dialect = SqlLanguage;
 type KeywordCase = "upper" | "lower" | "preserve";
+type Mode = "format" | "minify";
 
 const DIALECTS: { id: Dialect; label: string }[] = [
   { id: "sql", label: "Standard SQL" },
   { id: "mysql", label: "MySQL" },
   { id: "postgresql", label: "PostgreSQL" },
+  { id: "transactsql", label: "SQL Server (T-SQL)" },
   { id: "sqlite", label: "SQLite" },
+  { id: "mariadb", label: "MariaDB" },
+  { id: "plsql", label: "Oracle PL/SQL" },
   { id: "bigquery", label: "BigQuery" },
-  { id: "trino", label: "Trino" },
+  { id: "snowflake", label: "Snowflake" },
+  { id: "redshift", label: "Amazon Redshift" },
+  { id: "spark", label: "Spark SQL" },
+  { id: "trino", label: "Trino / Presto" },
+  { id: "duckdb", label: "DuckDB" },
+  { id: "clickhouse", label: "ClickHouse" },
 ];
 
 const SAMPLE_SQL = `SELECT u.id, u.name, u.email, o.total, o.created_at FROM users u INNER JOIN orders o ON u.id = o.user_id WHERE u.active = 1 AND o.total > 100 ORDER BY o.created_at DESC LIMIT 50;`;
@@ -91,9 +101,10 @@ export default function SqlFormatterClient() {
   const [dialect, setDialect] = useState<Dialect>("sql");
   const [keywordCase, setKeywordCase] = useState<KeywordCase>("upper");
   const [tabWidth, setTabWidth] = useState<2 | 4>(2);
+  const [mode, setMode] = useState<Mode>("format");
 
   const runFormat = useCallback(
-    (sql: string, d: Dialect, kc: KeywordCase, tw: 2 | 4) => {
+    (sql: string, d: Dialect, kc: KeywordCase, tw: 2 | 4, m: Mode) => {
       if (!sql.trim()) {
         setOutput("");
         setHighlighted("");
@@ -101,11 +112,14 @@ export default function SqlFormatterClient() {
         return;
       }
       try {
-        const result = format(sql, {
-          language: d as SqlLanguage,
-          tabWidth: tw,
-          keywordCase: kc,
-        });
+        const result =
+          m === "minify"
+            ? minifySql(sql)
+            : format(sql, {
+                language: d,
+                tabWidth: tw,
+                keywordCase: kc,
+              });
         setOutput(result);
         setHighlighted(highlightSql(result));
         setError("");
@@ -120,8 +134,8 @@ export default function SqlFormatterClient() {
 
   // Auto-format whenever any option changes
   useEffect(() => {
-    runFormat(input, dialect, keywordCase, tabWidth);
-  }, [input, dialect, keywordCase, tabWidth, runFormat]);
+    runFormat(input, dialect, keywordCase, tabWidth, mode);
+  }, [input, dialect, keywordCase, tabWidth, mode, runFormat]);
 
   const clear = () => {
     setInput("");
@@ -131,31 +145,49 @@ export default function SqlFormatterClient() {
   };
 
   return (
-    <ToolLayout title="SQL Formatter" description="Format and highlight SQL queries across multiple dialects">
-      {/* Toolbar row 1: dialect */}
-      <div className="flex flex-wrap items-center gap-2 mb-3">
-        <Database size={14} className="text-[#888888]" />
+    <ToolLayout title="SQL Formatter" description="Format or minify SQL across 14 dialects, from PostgreSQL and SQL Server to Snowflake and DuckDB">
+      {/* Toolbar row 1: mode + dialect */}
+      <div className="flex flex-wrap items-center gap-3 mb-3">
         <div className="flex rounded-[6px] border border-[#222222] overflow-hidden">
-          {DIALECTS.map((d) => (
+          {(["format", "minify"] as Mode[]).map((m) => (
             <button
-              key={d.id}
-              onClick={() => setDialect(d.id)}
+              key={m}
+              onClick={() => setMode(m)}
               className={`px-3 py-1.5 text-xs border-r last:border-0 border-[#222222] transition-colors ${
-                dialect === d.id
-                  ? "bg-[#a855f7] text-white"
-                  : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"
+                mode === m ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"
               }`}
             >
-              {d.label}
+              {m === "format" ? "Format" : "Minify"}
             </button>
           ))}
         </div>
+        {mode === "format" && (
+          <label className="flex items-center gap-2">
+            <Database size={14} className="text-[#888888]" />
+            <select
+              value={dialect}
+              onChange={(e) => setDialect(e.target.value as Dialect)}
+              className="px-2.5 py-1.5 text-xs bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+            >
+              {DIALECTS.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {mode === "minify" && (
+          <span className="text-xs text-[#555555]">
+            Strips comments and whitespace — keeps strings, quoted identifiers, and optimizer hints intact
+          </span>
+        )}
       </div>
 
       {/* Toolbar row 2: keyword case + indent + clear */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         {/* Keyword case */}
-        <div className="flex items-center gap-1.5">
+        <div className={`flex items-center gap-1.5 ${mode === "minify" ? "hidden" : ""}`}>
           <span className="text-xs text-[#888888]">Keywords:</span>
           <div className="flex rounded-[6px] border border-[#222222] overflow-hidden">
             {(["upper", "lower", "preserve"] as KeywordCase[]).map((kc) => (
@@ -175,7 +207,7 @@ export default function SqlFormatterClient() {
         </div>
 
         {/* Indent */}
-        <div className="flex items-center gap-1.5">
+        <div className={`flex items-center gap-1.5 ${mode === "minify" ? "hidden" : ""}`}>
           <span className="text-xs text-[#888888]">Indent:</span>
           <div className="flex rounded-[6px] border border-[#222222] overflow-hidden">
             {([2, 4] as (2 | 4)[]).map((n) => (
@@ -224,7 +256,9 @@ export default function SqlFormatterClient() {
         {/* Output */}
         <div className="flex flex-col gap-1 min-h-0">
           <div className="flex items-center justify-between">
-            <label className="text-xs text-[#888888] font-medium">Formatted</label>
+            <label className="text-xs text-[#888888] font-medium">
+              {mode === "minify" ? `Minified (${output.length.toLocaleString()} / ${input.length.toLocaleString()} chars)` : "Formatted"}
+            </label>
             {output && <CopyButton text={output} size="sm" />}
           </div>
           <div className="flex-1 overflow-auto bg-[#111111] border border-[#222222] rounded-[8px] p-3 min-h-0">

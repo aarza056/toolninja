@@ -51,7 +51,7 @@ export const tools: Tool[] = [
   {
     slug: "sql-formatter",
     name: "SQL Formatter",
-    description: "Format and beautify SQL queries with dialect support",
+    description: "Format or minify SQL across 14 dialects, including SQL Server, Oracle, and Snowflake",
     icon: "Database",
     category: "Format",
     keywords: [
@@ -227,7 +227,7 @@ export const tools: Tool[] = [
   {
     slug: "hash-generator",
     name: "Hash Generator",
-    description: "Generate SHA-1, SHA-256, SHA-384 and SHA-512 hashes",
+    description: "Generate MD5, SHA-1, SHA-256, SHA-384 and SHA-512 hashes and HMACs",
     icon: "Fingerprint",
     category: "Encode",
     keywords: [
@@ -372,6 +372,18 @@ export const tools: Tool[] = [
       "json to interface typescript", "generate typescript from json",
       "json to type typescript", "json schema to typescript",
       "json to ts types", "typescript interface generator from json",
+    ],
+  },
+  {
+    slug: "json-to-zod",
+    name: "JSON to Zod Schema Generator",
+    description: "Paste sample JSON and get a ready-to-use Zod schema plus its inferred TypeScript type",
+    icon: "FileCheck2",
+    category: "Generate",
+    keywords: [
+      "json to zod", "json to zod schema", "zod schema generator",
+      "generate zod schema from json", "json to zod converter online", "zod schema from json",
+      "zod infer type generator", "typescript zod generator", "json zod online",
     ],
   },
   {
@@ -594,6 +606,18 @@ export const tools: Tool[] = [
       "apache license generator", "gpl license generator", "choose a license",
       "generate license file", "license.txt generator", "software license generator",
       "github license generator",
+    ],
+  },
+  {
+    slug: "github-actions-generator",
+    name: "GitHub Actions Workflow Generator",
+    description: "Pick a stack and triggers, get a ready-to-commit .github/workflows YAML file",
+    icon: "CirclePlay",
+    category: "Generate",
+    keywords: [
+      "github actions generator", "github actions workflow generator", "github actions yaml generator",
+      "ci workflow generator", "github actions node ci", "github actions python workflow",
+      "github actions docker build push", "generate github workflow", "github actions template",
     ],
   },
 
@@ -894,6 +918,30 @@ export const tools: Tool[] = [
       "postman alternative online", "rest client online",
       "http request tester", "api request builder",
       "test api online", "http get post tester",
+    ],
+  },
+  {
+    slug: "websocket-tester",
+    name: "WebSocket Tester",
+    description: "Connect to any ws:// or wss:// endpoint, send messages, and watch a live, timestamped log",
+    icon: "RadioTower",
+    category: "Test",
+    keywords: [
+      "websocket tester", "websocket tester online", "websocket client online",
+      "test websocket connection", "wss tester", "websocket debugger",
+      "websocket echo test", "online websocket client", "socket tester browser",
+    ],
+  },
+  {
+    slug: "semver-calculator",
+    name: "SemVer Calculator & Range Checker",
+    description: "Test versions against npm ranges like ^1.2.3 or ~2.0, compare versions, and preview version bumps",
+    icon: "Milestone",
+    category: "Test",
+    keywords: [
+      "semver calculator", "semver range checker", "npm semver calculator",
+      "caret vs tilde npm", "semver checker online", "npm version range tester",
+      "compare semver versions", "semver bump calculator", "what does ^ mean in package.json",
     ],
   },
   {
@@ -1507,6 +1555,18 @@ export const tools: Tool[] = [
       "generate bcrypt hash", "bcrypt cost factor calculator", "bcrypt hash checker",
     ],
   },
+  {
+    slug: "certificate-decoder",
+    name: "X.509 / PEM Certificate Decoder",
+    description: "Paste a PEM certificate or chain to see subject, issuer, expiry, SANs, key details, and fingerprints",
+    icon: "FileBadge",
+    category: "Security",
+    keywords: [
+      "certificate decoder", "ssl certificate decoder", "pem decoder online",
+      "x509 certificate decoder", "decode ssl certificate", "check certificate expiry",
+      "certificate fingerprint sha256", "pem certificate viewer", "ssl cert checker online",
+    ],
+  },
 
   // ─── Accessibility ────────────────────────────────────────────────────────
   {
@@ -1606,9 +1666,9 @@ export type Category = (typeof categories)[number];
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 export const LATEST_TOOL_SLUGS = [
-  "js-formatter",
-  "license-generator",
-  "bcrypt-hash-generator",
-  "dockerfile-generator",
-  "connection-string-parser",
+  "json-to-zod",
+  "semver-calculator",
+  "certificate-decoder",
+  "websocket-tester",
+  "github-actions-generator",
 ];

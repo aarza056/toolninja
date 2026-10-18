@@ -23,7 +23,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "sql-formatter": {
     title: "SQL Formatter Online — Beautify & Format SQL Queries | ToolNinja",
     description:
-      "Free online SQL formatter and beautifier. Format, indent and pretty print SQL queries instantly. Supports MySQL, PostgreSQL, SQLite, T-SQL and more. Keyword case options included. No login, browser-only.",
+      "Free online SQL formatter, beautifier and minifier. Format or minify SQL instantly across 14 dialects — MySQL, PostgreSQL, SQL Server (T-SQL), Oracle PL/SQL, SQLite, MariaDB, Snowflake, BigQuery, Redshift, DuckDB and more. Keyword case options included. No login, browser-only.",
   },
   "html-formatter": {
     title: "HTML Formatter Online — Beautify & Minify HTML Code | ToolNinja",
@@ -83,9 +83,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online JWT decoder. Decode and inspect JSON Web Token header, payload and signature instantly, and verify the signature against a secret or public key (HS/RS/PS/ES). Check JWT expiry and view claims. Your token never leaves the browser.",
   },
   "hash-generator": {
-    title: "Hash Generator & Verifier Online — SHA256, SHA512, HMAC | ToolNinja",
+    title: "Hash Generator & Verifier Online — MD5, SHA256, SHA512, HMAC | ToolNinja",
     description:
-      "Free online hash generator. Generate SHA1, SHA256, SHA384, SHA512, or HMAC signatures instantly, and verify a hash against an expected value with a constant-time comparison. Perfect for checksums and webhook signature verification. No login required.",
+      "Free online hash generator. Generate MD5, SHA1, SHA256, SHA384, SHA512, or HMAC signatures instantly, for text or files, and verify a hash against an expected value with a constant-time comparison. Perfect for checksums and webhook signature verification. No login required.",
   },
   "html-entity": {
     title: "HTML Entity Encoder & Decoder — Escape & Unescape HTML | ToolNinja",
@@ -139,10 +139,20 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online JSON to TypeScript converter. Paste any JSON and instantly generate TypeScript interfaces and type definitions. Perfect for API response typing. No login, 100% browser-based.",
   },
+  "json-to-zod": {
+    title: "JSON to Zod Schema Generator Online — Zod Schema From JSON | ToolNinja",
+    description:
+      "Free online JSON to Zod converter. Paste sample JSON and get a Zod schema with nested objects, arrays, optional and nullable fields, plus email/URL/UUID/datetime detection and a z.infer TypeScript type. No login, 100% browser-based.",
+  },
+  "github-actions-generator": {
+    title: "GitHub Actions Workflow Generator — CI YAML for Node, Python, Go & Docker | ToolNinja",
+    description:
+      "Free GitHub Actions workflow generator. Pick Node.js, Python, Go, or Docker-to-GHCR, choose triggers and a version matrix, and get a ready-to-commit .github/workflows YAML file using current action versions. No login required.",
+  },
   "qr-code-generator": {
     title: "QR Code Generator Online — Create Free QR Codes Instantly | ToolNinja",
     description:
-      "Free online QR code generator. Create QR codes for URLs, text, emails and more instantly. Download as PNG. No account required, no watermarks, 100% free and browser-based.",
+      "Free online QR code generator. Create QR codes for URLs, text, emails and more instantly. Download as PNG or print-ready vector SVG. No account required, no watermarks, 100% free and browser-based.",
   },
   "qr-code-scanner": {
     title: "QR Code Scanner & Decoder Online — Read Any QR Code | ToolNinja",
@@ -343,6 +353,16 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "HTTP Request Builder — Online API Tester & REST Client | ToolNinja",
     description:
       "Free online HTTP request builder and API tester. Send GET, POST, PUT, DELETE requests with custom headers and body. See response status, headers and formatted JSON. A free Postman alternative. No login required.",
+  },
+  "websocket-tester": {
+    title: "WebSocket Tester Online — Free WebSocket Client in Your Browser | ToolNinja",
+    description:
+      "Free online WebSocket tester. Connect to any ws:// or wss:// endpoint, send text or JSON messages, set subprotocols, and watch a live, timestamped message log with JSON pretty-printing. Connects directly from your browser — no proxy, no login.",
+  },
+  "semver-calculator": {
+    title: "SemVer Calculator & npm Range Checker Online — ^ vs ~ Explained | ToolNinja",
+    description:
+      "Free online semver calculator. Test versions against npm ranges like ^1.2.3, ~2.0 or >=1 <2 and see exactly what each range means, compare two versions, and preview major/minor/patch/prerelease bumps — using npm's own semver logic. No login.",
   },
   "config-validator": {
     title: "YAML & TOML Validator — Config File Validator Online | ToolNinja",
@@ -582,6 +602,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "Passkey / WebAuthn Playground Online — Test Passkeys in Your Browser | ToolNinja",
     description:
       "Free online passkey and WebAuthn tester. Create a real passkey and run an authentication ceremony using navigator.credentials, then inspect the decoded authenticator data — flags, sign count, AAGUID. No server, no login.",
+  },
+  "certificate-decoder": {
+    title: "SSL / X.509 Certificate Decoder Online — Decode PEM Certificates | ToolNinja",
+    description:
+      "Free online X.509 certificate decoder. Paste a PEM certificate or full chain and see subject, issuer, expiry countdown, SANs, key type and size, extensions, and SHA-256/SHA-1 fingerprints. Decoded locally — nothing is uploaded. No login.",
   },
   "bcrypt-hash-generator": {
     title: "Bcrypt Hash Generator & Verifier Online | ToolNinja",

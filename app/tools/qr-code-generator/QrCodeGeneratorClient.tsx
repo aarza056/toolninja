@@ -213,6 +213,39 @@ export default function QrCodeGeneratorClient() {
     a.click();
   };
 
+  const downloadSvg = async () => {
+    if (!qrValue.trim()) return;
+    let svg = await QRCode.toString(qrValue, {
+      type: "svg",
+      errorCorrectionLevel: ecLevel,
+      width: SIZE_MAP[sizeOption],
+      margin: 2,
+      color: { dark: fgColor, light: bgColor },
+    });
+    if (logoDataUrl) {
+      // The SVG is drawn in module units (its viewBox), so size the logo relative to that,
+      // using the same 20% + padding proportions as the PNG render.
+      const vb = Number(svg.match(/viewBox="0 0 (\d+) \d+"/)?.[1] ?? 0);
+      if (vb > 0) {
+        const logoSize = vb * 0.2;
+        const pos = (vb - logoSize) / 2;
+        const pad = logoSize * 0.15;
+        const overlay =
+          `<rect x="${pos - pad}" y="${pos - pad}" width="${logoSize + pad * 2}" height="${logoSize + pad * 2}" fill="${bgColor}"/>` +
+          `<image href="${logoDataUrl}" xlink:href="${logoDataUrl}" x="${pos}" y="${pos}" width="${logoSize}" height="${logoSize}" preserveAspectRatio="none"/>`;
+        svg = svg
+          .replace('xmlns="http://www.w3.org/2000/svg"', 'xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"')
+          .replace("</svg>", `${overlay}</svg>`);
+      }
+    }
+    const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "qrcode.svg";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const copyImage = async () => {
     const canvas = canvasRef.current;
     if (!canvas || !qrValue.trim()) return;
@@ -270,7 +303,7 @@ export default function QrCodeGeneratorClient() {
   return (
     <ToolLayout
       title="QR Code Generator"
-      description="Generate QR codes from any URL, WiFi network, contact card, or calendar event — download as PNG"
+      description="Generate QR codes from any URL, WiFi network, contact card, or calendar event — download as PNG or print-ready SVG"
     >
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left: controls */}
@@ -543,6 +576,14 @@ export default function QrCodeGeneratorClient() {
               >
                 <Download size={14} />
                 Download PNG
+              </button>
+              <button
+                onClick={downloadSvg}
+                title="Vector format — scales to any size without blurring, ideal for print"
+                className="flex items-center gap-1.5 px-4 py-2 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#f5f5f5] border border-[#222222] rounded-[6px] transition-colors"
+              >
+                <Download size={14} />
+                Download SVG
               </button>
               <button
                 onClick={copyImage}

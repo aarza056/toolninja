@@ -545,8 +545,8 @@ export const toolContent: Record<string, ToolContent> = {
         a: "No. SHA-256 is a plain hash function — given the same input, anyone gets the same output. HMAC-SHA256 is a keyed message authentication code that incorporates a secret key into the hash. HMAC output depends on both the message and the key, so only parties with the key can verify the hash. JWT uses HMAC-SHA256 for signature generation.",
       },
       {
-        q: "Why is MD5 not included?",
-        a: "MD5 is cryptographically broken — practical collision attacks exist, meaning two different inputs can be crafted to produce the same hash. It should not be used for security purposes. SHA-256 is the correct replacement. MD5 persists in legacy file checksums, but for any new use case choose SHA-256 or better.",
+        q: "Is MD5 safe to use?",
+        a: "For checksums, yes: verifying a download matches a published MD5 or deduplicating files is fine. For security, no. Practical collision attacks exist, meaning two different inputs can be crafted to produce the same hash, so never use MD5 for passwords, signatures, or integrity checks against an attacker. SHA-256 is the correct replacement there. MD5 is computed by a built-in implementation, since the browser's Web Crypto API deliberately leaves it out.",
       },
       {
         q: "Why does the Verify field use a 'constant-time comparison' instead of just checking if the strings are equal?",
@@ -4040,6 +4040,156 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Why isn't my MongoDB replica set connection string supported?",
         a: "Replica set URIs list multiple comma-separated hosts (mongodb://host1,host2,host3/db), which falls outside standard URI syntax that a single scheme://user:pass@host:port/path parser can handle. Parse one host from the list at a time instead.",
+      },
+    ],
+  },
+
+  "json-to-zod": {
+    about:
+      "The ToolNinja JSON to Zod generator turns a sample JSON payload into a Zod schema you can drop straight into a TypeScript project, plus the matching z.infer type, so runtime validation and static types come from one definition.\n\nIt does more than map each value to a type. Arrays of objects are merged item by item: a key that appears in some items but not others becomes .optional(), and a key that is sometimes null becomes .nullable(). Integers become z.number().int(), and with format detection on, strings that look like emails, URLs, UUIDs, or ISO datetimes get the matching Zod refinement.\n\nThe output is a starting point: a sample can only show what it contains, so tighten anything your real data guarantees (enums, min/max lengths, non-empty arrays) by hand. Everything runs in your browser.",
+    useCases: [
+      "Validating API responses at runtime instead of trusting a type assertion",
+      "Bootstrapping form or request-body validation from an example payload",
+      "Replacing a hand-written TypeScript interface with a schema that also validates",
+      "Typing third-party webhook payloads from a captured example",
+    ],
+    tips: [
+      "Paste an array with several varied items rather than a single object — more samples give more accurate optional/nullable detection.",
+      "Turn off format detection if you don't want .email() or .url() refinements rejecting slightly malformed real-world data.",
+      "Keys that aren't valid JavaScript identifiers (like \"first-name\") are quoted automatically.",
+    ],
+    faq: [
+      {
+        q: "What's the difference between this and JSON to TypeScript?",
+        a: "A TypeScript interface only exists at compile time; it can't stop bad data arriving from an API at runtime. A Zod schema validates the data when it arrives, and z.infer gives you the same static type, so you get both from one definition.",
+      },
+      {
+        q: "Does it work with Zod 4?",
+        a: "Yes. The generated code uses the chained z.string().email() style, which works in Zod 3 and is still supported in Zod 4, so it runs on either version.",
+      },
+      {
+        q: "Why is a field marked optional when it's always present in my real data?",
+        a: "Because it was missing from at least one item in the sample you pasted. Remove .optional() by hand, or paste a sample where every item includes the field.",
+      },
+    ],
+  },
+
+  "semver-calculator": {
+    about:
+      "The ToolNinja SemVer Calculator answers the questions npm version ranges raise: does ^1.2.3 allow 1.10.0? Does ~2.0 allow 2.1? Why didn't npm install the prerelease I published? It uses the semver package npm itself relies on, so results match what npm actually resolves.\n\nThe Range checker tests a list of versions against any range and shows the expanded comparator form (^1.2.3 becomes >=1.2.3 <2.0.0-0), plus the highest and lowest matching versions. Compare tells you which of two versions is newer and whether the change is major, minor, or patch. Bump previews every increment, including prerelease bumps with a custom identifier like beta or rc.\n\nIt's especially useful when you're debugging peer-dependency conflicts, the root cause behind npm's ERESOLVE errors.",
+    useCases: [
+      "Checking whether a dependency range in package.json will pick up a new release",
+      "Understanding the difference between ^ and ~ before choosing one",
+      "Debugging npm ERESOLVE peer-dependency conflicts",
+      "Working out the next version number before tagging a release",
+    ],
+    tips: [
+      "Caret (^) allows minor and patch updates for versions 1.0.0 and up, but for 0.x versions it only allows patch updates. ^0.2.3 means >=0.2.3 <0.3.0.",
+      "Prereleases like 2.0.0-beta.1 don't match ordinary ranges unless the range itself names a prerelease of the same version. Toggle 'Include prereleases' to see npm's --include-prerelease behavior.",
+      "Versions are compared numerically per segment, so 1.10.0 is newer than 1.9.0, even though it sorts earlier as plain text.",
+    ],
+    faq: [
+      {
+        q: "What's the difference between ^1.2.3 and ~1.2.3?",
+        a: "^1.2.3 allows anything below the next major version (>=1.2.3 <2.0.0), so new features and fixes come in. ~1.2.3 allows anything below the next minor version (>=1.2.3 <1.3.0), so only patch fixes come in.",
+      },
+      {
+        q: "Why doesn't my range match a prerelease version?",
+        a: "By design, npm ranges exclude prereleases unless the range explicitly opts in, for example >=2.0.0-beta.1. This stops ^1.0.0 from silently installing an unstable 1.5.0-alpha. Use the prerelease toggle to see how the range behaves with --include-prerelease.",
+      },
+      {
+        q: "Is this the same logic npm uses?",
+        a: "Yes. It runs the semver package that npm uses internally, so range parsing, comparisons, and bump results match npm's behavior.",
+      },
+    ],
+  },
+
+  "certificate-decoder": {
+    about:
+      "The ToolNinja Certificate Decoder reads PEM-encoded X.509 certificates, the format behind every HTTPS site, and shows what's inside: subject and issuer, validity dates with an expiry countdown, Subject Alternative Names, key type and size, signature algorithm, extensions, and SHA-256 and SHA-1 fingerprints.\n\nPaste a whole chain and each certificate is decoded separately and labelled as leaf, intermediate, or root, which makes it easy to spot a missing intermediate or a chain in the wrong order. The decoder parses the ASN.1/DER structure directly in your browser, so certificates and the internal hostnames they often list never leave your machine.\n\nIt has been checked field by field against OpenSSL's own output for both RSA and elliptic-curve certificates.",
+    useCases: [
+      "Checking when a TLS certificate expires before it causes an outage",
+      "Confirming which hostnames a certificate covers (its SANs)",
+      "Inspecting a certificate chain for a missing or wrong intermediate",
+      "Getting a certificate's SHA-256 fingerprint for pinning or comparison",
+    ],
+    tips: [
+      "Run openssl s_client -connect example.com:443 -showcerts </dev/null and paste the whole output; anything outside the BEGIN/END blocks is ignored.",
+      "Modern browsers ignore the Common Name for hostname matching and only check SANs. If a hostname isn't in the SAN list, the certificate won't be trusted for it.",
+      "A certificate whose subject and issuer are identical is self-signed. That's normal for a root CA and a red flag for a leaf certificate.",
+    ],
+    faq: [
+      {
+        q: "Is it safe to paste a certificate here?",
+        a: "Yes. A certificate is public information that a server hands to anyone who connects. It contains only the public key, never the private key. Parsing still happens entirely in your browser regardless.",
+      },
+      {
+        q: "Can it decode a private key or a CSR?",
+        a: "No. It decodes X.509 certificates (-----BEGIN CERTIFICATE----- blocks). Private keys and certificate signing requests use different structures and aren't supported. Never paste a private key into any online tool.",
+      },
+      {
+        q: "Why do the SHA-1 and SHA-256 fingerprints differ?",
+        a: "They're two different hash functions applied to the same certificate bytes, so they produce different outputs. SHA-256 is the modern standard; SHA-1 fingerprints are shown because some older tools and dashboards still display them.",
+      },
+    ],
+  },
+
+  "websocket-tester": {
+    about:
+      "The ToolNinja WebSocket Tester is a lightweight WebSocket client that runs in your browser. Point it at any wss:// endpoint, connect, send text or JSON messages, and watch every sent message, received message, and connection event in a timestamped log.\n\nIt's built for the quick checks that don't justify installing a desktop client: is the server up and accepting connections, does it echo, does it require a specific subprotocol, what close code does it send when it drops you? Close events show the code and reason, binary frames show their size and a hex preview, and JSON messages can be pretty-printed in the log.\n\nThe connection goes straight from your browser to the server with no proxy in between, so it behaves exactly as your own front-end code would.",
+    useCases: [
+      "Checking that a WebSocket server is reachable and accepting connections",
+      "Manually sending test messages to a real-time API or chat backend",
+      "Debugging subprotocol negotiation (e.g. graphql-ws)",
+      "Seeing the exact close code and reason when a server drops the connection",
+    ],
+    tips: [
+      "Close code 1000 is a normal closure, 1006 means the connection dropped without a close frame (usually network or server crash), and 1008/1011 point to a server-side policy or error.",
+      "Browsers can't set custom headers like Authorization on a WebSocket. Pass tokens as a URL query parameter or in the first message instead.",
+      "From an HTTPS page, browsers only allow wss:// connections (plus ws://localhost in most browsers), so plain ws:// to a remote host is blocked as mixed content.",
+    ],
+    faq: [
+      {
+        q: "Why does the error message say so little?",
+        a: "Browsers deliberately hide WebSocket connection-failure details from page scripts, for security reasons. Check the close code in the log and the browser's DevTools Network tab, which shows the full handshake.",
+      },
+      {
+        q: "Can I test a local development server?",
+        a: "Usually yes. Most browsers treat ws://localhost as secure enough to connect to from an HTTPS page. For other hosts, the server needs to be served over wss://.",
+      },
+      {
+        q: "Is my traffic routed through ToolNinja?",
+        a: "No. The WebSocket connection is opened directly from your browser to the endpoint you enter. ToolNinja never sees the messages.",
+      },
+    ],
+  },
+
+  "github-actions-generator": {
+    about:
+      "The ToolNinja GitHub Actions Workflow Generator builds a ready-to-commit CI workflow from a few choices: stack (Node.js, Python, Go, or a Docker image pushed to GitHub Container Registry), triggers, runner, version matrix, and which steps to run.\n\nThe generated YAML pins each action (checkout, setup-node, setup-python, setup-go, and the Docker build actions) to its current major version, so you don't start from a blog post's outdated v2 or v3 snippet. Dependency caching is set up where the setup action supports it, and version numbers in matrices are quoted so YAML doesn't read 3.10 as 3.1.\n\nThe Docker option logs in to GHCR with the built-in GITHUB_TOKEN, tags images by branch, PR, and commit SHA, uses GitHub's build cache, and skips pushing on pull requests.",
+    useCases: [
+      "Adding CI to a new repository without writing workflow YAML from scratch",
+      "Testing a Node or Python project across several runtime versions with a matrix",
+      "Building and pushing a Docker image to GitHub Container Registry on every push",
+      "Updating an old workflow to current action versions",
+    ],
+    tips: [
+      "Save the file under .github/workflows/ in your repository; GitHub picks up any .yml file there automatically.",
+      "Quote version numbers in YAML. Unquoted, 3.10 becomes the number 3.1 and you'll silently test the wrong Python version.",
+      "For pnpm, add a \"packageManager\" field to package.json (for example \"pnpm@10.0.0\") so the pnpm setup action knows which version to install.",
+    ],
+    faq: [
+      {
+        q: "Do I need to add any secrets?",
+        a: "Not for the Node, Python, and Go workflows. The Docker workflow uses the built-in GITHUB_TOKEN to push to GitHub Container Registry, which works without extra setup as long as the workflow has packages: write permission. The generated file includes that permission.",
+      },
+      {
+        q: "Why does the Docker workflow not push on pull requests?",
+        a: "Pull requests from forks don't get write access to your registry, and you usually don't want an image published for unmerged code. The workflow still builds on pull requests, so a broken Dockerfile fails CI before merge.",
+      },
+      {
+        q: "How do I run the workflow manually?",
+        a: "Enable the 'Manual (workflow_dispatch)' trigger. A 'Run workflow' button then appears on the workflow's page in the repository's Actions tab.",
       },
     ],
   },

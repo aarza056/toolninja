@@ -4,10 +4,11 @@ import { useState, useEffect, useRef } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { Hash, Trash2, AlertCircle, Upload, FileIcon, ShieldCheck, ShieldAlert } from "lucide-react";
+import { md5, hmacMd5 } from "@/lib/md5";
 
 const STORAGE_KEY = "toolninja:hash-generator";
 
-type Algorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
+type Algorithm = "MD5" | "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
 type OutputFormat = "hex" | "base64";
 type CaseFormat = "lower" | "upper";
 type Mode = "hash" | "hmac" | "file";
@@ -18,8 +19,18 @@ function formatBytes(n: number): string {
   return `${(n / (1024 * 1024)).toFixed(2)} MB`;
 }
 
+function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+}
+
+async function digest(algorithm: Algorithm, data: ArrayBuffer): Promise<ArrayBuffer> {
+  if (algorithm === "MD5") return toArrayBuffer(md5(new Uint8Array(data)));
+  return crypto.subtle.digest(algorithm, data);
+}
+
 async function computeHmac(message: string, secret: string, algorithm: Algorithm): Promise<ArrayBuffer> {
   const enc = new TextEncoder();
+  if (algorithm === "MD5") return toArrayBuffer(hmacMd5(enc.encode(secret), enc.encode(message)));
   const key = await crypto.subtle.importKey(
     "raw",
     enc.encode(secret),
@@ -30,9 +41,10 @@ async function computeHmac(message: string, secret: string, algorithm: Algorithm
   return crypto.subtle.sign("HMAC", key, enc.encode(message));
 }
 
-const ALGORITHMS: Algorithm[] = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"];
+const ALGORITHMS: Algorithm[] = ["MD5", "SHA-1", "SHA-256", "SHA-384", "SHA-512"];
 
 const BIT_LENGTHS: Record<Algorithm, number> = {
+  MD5: 128,
   "SHA-1": 160,
   "SHA-256": 256,
   "SHA-384": 384,
@@ -113,7 +125,7 @@ export default function HashGeneratorClient() {
       setComputing(true);
       file
         .arrayBuffer()
-        .then((buf) => window.crypto.subtle.digest(algorithm, buf))
+        .then((buf) => digest(algorithm, buf))
         .then((hashBuffer) => {
           if (cancelled) return;
           setHash(outputFormat === "hex" ? bufferToHex(hashBuffer, caseFormat === "upper") : bufferToBase64(hashBuffer));
@@ -150,7 +162,7 @@ export default function HashGeneratorClient() {
         const hashBuffer =
           mode === "hmac"
             ? await computeHmac(input, secret, algorithm)
-            : await window.crypto.subtle.digest(algorithm, new TextEncoder().encode(input));
+            : await digest(algorithm, toArrayBuffer(new TextEncoder().encode(input)));
         if (outputFormat === "hex") {
           setHash(bufferToHex(hashBuffer, caseFormat === "upper"));
         } else {
@@ -251,6 +263,9 @@ export default function HashGeneratorClient() {
                 </button>
               ))}
             </div>
+            {algorithm === "MD5" && (
+              <p className="text-[11px] text-[#f97316] mt-1.5">MD5 is fine for checksums, but never for passwords or signatures.</p>
+            )}
           </div>
 
           {/* Output format */}

@@ -3,8 +3,8 @@
 import { useState } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { RefreshCw, Clock } from "lucide-react";
-import { generateULID, ulidToDate } from "@/lib/ulid";
+import { RefreshCw, Clock, ArrowDownWideNarrow, Shuffle } from "lucide-react";
+import { generateULID, generateMonotonicULIDs, ulidToDate } from "@/lib/ulid";
 
 const BULK_OPTIONS = [1, 5, 10, 25, 100];
 
@@ -12,12 +12,15 @@ export default function UlidGeneratorClient() {
   const [count, setCount] = useState(5);
   const [useCustomTime, setUseCustomTime] = useState(false);
   const [customTime, setCustomTime] = useState("");
+  const [monotonic, setMonotonic] = useState(true);
   const [ids, setIds] = useState<string[]>([]);
 
   const generate = () => {
     const timestamp = useCustomTime && customTime ? new Date(customTime).getTime() : Date.now();
-    setIds(Array.from({ length: count }, () => generateULID(timestamp)));
+    setIds(monotonic ? generateMonotonicULIDs(count, timestamp) : Array.from({ length: count }, () => generateULID(timestamp)));
   };
+
+  const inOrder = ids.every((id, i) => i === 0 || ids[i - 1] < id);
 
   return (
     <ToolLayout title="ULID Generator" description="Generate sortable, URL-safe ULIDs in bulk — a 48-bit timestamp plus 80 bits of randomness">
@@ -55,6 +58,11 @@ export default function UlidGeneratorClient() {
             )}
           </div>
 
+          <label className="flex items-center gap-2 text-sm text-[#888888] mb-1.5 cursor-pointer" title="Within the same millisecond, each ULID's random part is the previous one + 1, so the batch sorts in generation order">
+            <input type="checkbox" checked={monotonic} onChange={(e) => setMonotonic(e.target.checked)} className="accent-[#a855f7]" />
+            Monotonic
+          </label>
+
           <button
             onClick={generate}
             className="flex items-center gap-1.5 px-4 py-1.5 text-sm bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-[6px] transition-colors"
@@ -63,6 +71,15 @@ export default function UlidGeneratorClient() {
           </button>
           {ids.length > 0 && <CopyButton text={ids.join("\n")} />}
         </div>
+
+        {ids.length > 1 && (
+          <p className={`flex items-center gap-1.5 mb-3 text-xs ${inOrder ? "text-[#22c55e]" : "text-[#f97316]"}`}>
+            {inOrder ? <ArrowDownWideNarrow size={13} /> : <Shuffle size={13} />}
+            {inOrder
+              ? "Sorts in generation order — string sort matches insert order"
+              : "Not in generation order — same millisecond, random tails. Turn on Monotonic to fix."}
+          </p>
+        )}
 
         {ids.length > 0 ? (
           <div className="space-y-1.5">
@@ -95,7 +112,8 @@ export default function UlidGeneratorClient() {
           The first <span className="text-[#a855f7]">10 characters</span> (highlighted) encode a
           millisecond-precision timestamp, making ULIDs sort chronologically as plain strings — the
           same database-primary-key benefit as UUID v7, in Crockford Base32 instead of hex. The
-          remaining 16 characters are random. Everything is generated with{" "}
+          remaining 16 characters are random — or, in monotonic mode, random for the first ID and then
+          incremented by one for each ID created in the same millisecond, per the ULID spec. Everything is generated with{" "}
           <code className="text-[#e879f9]">crypto.getRandomValues</code> and never leaves your browser.
         </div>
       </div>

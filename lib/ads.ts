@@ -3,7 +3,7 @@
 // and replace the placeholder below with the "data-ad-slot" value it gives you.
 // Ads won't actually render until the AdSense account is approved AND these are real.
 export const AD_SLOTS = {
-  toolPageBottom: "8940597652",
+  toolPage: "8940597652",
   blogMidArticle: "4133239513",
 };
 

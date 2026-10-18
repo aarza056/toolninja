@@ -31,6 +31,7 @@
     "react-dom": "^18",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
+    "semver": "^7.8.5",
     "sql-formatter": "^15.7.3",
     "terser": "^5.51.2"
   },
@@ -39,6 +40,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/semver": "^7.8.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.35",
     "postcss": "^8",

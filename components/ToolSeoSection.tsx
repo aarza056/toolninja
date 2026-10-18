@@ -78,6 +78,8 @@ export default function ToolSeoSection({ slug }: Props) {
         />
       )}
 
+      <AdSlot slot={AD_SLOTS.toolPage} />
+
       {content && (
         <>
           {/* About */}
@@ -160,8 +162,6 @@ export default function ToolSeoSection({ slug }: Props) {
           </div>
         </section>
       )}
-
-      <AdSlot slot={AD_SLOTS.toolPageBottom} />
     </div>
   );
 }
