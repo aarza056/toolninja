@@ -84,6 +84,12 @@ const nextConfig = {
         destination: 'https://toolninja.io/:path*',
         permanent: true,
       },
+      // URLs that received real traffic but never existed (external links guessing at slugs)
+      { source: '/tools/base64-encoder', destination: '/tools/base64', permanent: true },
+      { source: '/tools/base64-decoder', destination: '/tools/base64', permanent: true },
+      { source: '/tester/:slug', destination: '/tools/:slug', permanent: true },
+      { source: '/tools/color-blind-test', destination: '/tools/color-blindness-simulator', permanent: true },
+      { source: '/tools/tool_regex.php', destination: '/tools/regex-tester', permanent: true },
     ]
   },
 

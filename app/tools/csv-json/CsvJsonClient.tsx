@@ -121,7 +121,7 @@ export default function CsvJsonClient() {
     "w-full h-80 p-3 font-mono text-xs resize-none bg-[#111111] border rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]";
 
   return (
-    <ToolLayout title="CSV ↔ JSON Converter" description="Convert between CSV and JSON instantly, in either direction">
+    <ToolLayout title="CSV to JSON Converter" description="Convert CSV to JSON instantly — or JSON back to CSV — with quoted fields and custom delimiters handled">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="flex items-center gap-2">

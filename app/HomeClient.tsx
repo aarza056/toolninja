@@ -111,6 +111,9 @@ export default function HomeClient() {
     setPhraseIdx(Math.floor(Math.random() * devPhrases.length));
     setRecentSlugs(getRecentTools());
     setFavSlugs(getFavoriteTools());
+    // Browser search integration (public/opensearch.xml) sends queries as /?q=…
+    const q = new URLSearchParams(window.location.search).get("q");
+    if (q) setSearch(q);
   }, []);
 
   const nextPhrase = useCallback(() => {

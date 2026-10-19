@@ -18,12 +18,19 @@ export async function generateStaticParams() {
   return getAllPostSlugs().map((slug) => ({ slug }));
 }
 
+function ogImagePath(title: string, description: string): string {
+  return `/api/og?title=${encodeURIComponent(title)}&desc=${encodeURIComponent(description)}`;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPostBySlug(params.slug);
   if (!post) return {};
+  const ogImage = ogImagePath(post.title, post.description);
 
   return {
-    title: post.title,
+    // Error-message titles are already long; the "| ToolNinja" suffix would only push the
+    // part that matches the searcher's query further toward truncation.
+    title: post.title.length > 50 ? { absolute: post.title } : post.title,
     description: post.description,
     keywords: post.tags,
     authors: [{ name: post.author, url: "https://toolninja.io" }],
@@ -35,11 +42,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.date,
       authors: ["ToolNinja"],
       tags: post.tags,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
+      images: [ogImage],
     },
     alternates: { canonical: `https://toolninja.io/blog/${post.slug}` },
   };
@@ -94,6 +103,7 @@ export default function BlogPostPage({ params }: Props) {
     "@type": "Article",
     headline: post.title,
     description: post.description,
+    image: `https://toolninja.io${ogImagePath(post.title, post.description)}`,
     datePublished: post.date,
     dateModified: post.date,
     author: {
@@ -105,6 +115,7 @@ export default function BlogPostPage({ params }: Props) {
       "@type": "Organization",
       name: "ToolNinja",
       url: "https://toolninja.io",
+      logo: { "@type": "ImageObject", url: "https://toolninja.io/favicon-192.png" },
     },
     mainEntityOfPage: {
       "@type": "WebPage",

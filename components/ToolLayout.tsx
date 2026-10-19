@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import ToolHeaderActions from "./ToolHeaderActions";
+import ToolBreadcrumb from "./ToolBreadcrumb";
 
 interface ToolLayoutProps {
   title: string;
@@ -12,6 +13,7 @@ export default function ToolLayout({ title, description, children }: ToolLayoutP
     <div className="flex flex-col">
       {/* Header */}
       <div className="border-b border-[#222222] px-6 py-5">
+        <ToolBreadcrumb />
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold text-[#f5f5f5]">{title}</h1>
           <ToolHeaderActions />

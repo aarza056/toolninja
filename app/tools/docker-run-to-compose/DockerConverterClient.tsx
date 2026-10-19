@@ -163,7 +163,7 @@ export default function DockerConverterClient() {
 
   return (
     <ToolLayout
-      title="Docker Run to Compose"
+      title="Docker Run to Docker Compose Converter"
       description="Convert docker run commands to docker-compose.yml and back"
     >
       {/* Mode toggle */}

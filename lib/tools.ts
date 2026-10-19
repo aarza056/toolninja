@@ -738,8 +738,8 @@ export const tools: Tool[] = [
   },
   {
     slug: "csv-json",
-    name: "CSV ↔ JSON Converter",
-    description: "Convert between CSV and JSON formats instantly, in either direction",
+    name: "CSV to JSON Converter",
+    description: "Convert CSV to JSON instantly, or JSON back to CSV",
     icon: "FileSpreadsheet",
     category: "Convert",
     keywords: [

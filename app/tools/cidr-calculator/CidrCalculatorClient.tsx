@@ -43,6 +43,60 @@ function isValidIp(ip: string): boolean {
   });
 }
 
+function maskToPrefix(mask: string): number | null {
+  if (!isValidIp(mask)) return null;
+  const bits = ipToNum(mask).toString(2).padStart(32, "0");
+  if (!/^1*0*$/.test(bits)) return null;
+  const firstZero = bits.indexOf("0");
+  return firstZero === -1 ? 32 : firstZero;
+}
+
+/** Smallest list of CIDR blocks that exactly covers start..end (inclusive). */
+function rangeToCidrs(startIp: string, endIp: string): string[] {
+  let cur = ipToNum(startIp);
+  const end = ipToNum(endIp);
+  const out: string[] = [];
+  while (cur <= end && out.length < 64) {
+    let size = 1;
+    while (size < 0x100000000 && cur % (size * 2) === 0 && cur + size * 2 - 1 <= end) size *= 2;
+    out.push(`${numToIp(cur)}/${32 - Math.log2(size)}`);
+    cur += size;
+  }
+  return out;
+}
+
+type InputKind =
+  | { kind: "cidr"; cidr: string; note?: string }
+  | { kind: "range"; start: string; end: string; blocks: string[] }
+  | { kind: "mask"; mask: string; prefix: number }
+  | { kind: "error"; message: string };
+
+const IPV4 = "(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})";
+
+// Accepts the other ways people express an IPv4 network besides a.b.c.d/nn.
+function interpretIpv4Input(raw: string): InputKind | null {
+  const s = raw.trim();
+  const range = s.match(new RegExp(`^${IPV4}\\s*(?:-|–|to)\\s*${IPV4}$`, "i"));
+  if (range) {
+    if (!isValidIp(range[1]) || !isValidIp(range[2])) return { kind: "error", message: "Invalid IP address in range" };
+    if (ipToNum(range[1]) > ipToNum(range[2])) return { kind: "error", message: "Range start must come before range end" };
+    return { kind: "range", start: range[1], end: range[2], blocks: rangeToCidrs(range[1], range[2]) };
+  }
+  const ipMask = s.match(new RegExp(`^${IPV4}(?:\\s+|\\s*/\\s*)${IPV4}$`));
+  if (ipMask) {
+    const prefix = maskToPrefix(ipMask[2]);
+    if (!isValidIp(ipMask[1])) return { kind: "error", message: "Invalid IP address" };
+    if (prefix === null) return { kind: "error", message: `${ipMask[2]} isn't a valid subnet mask (its 1-bits must be contiguous)` };
+    return { kind: "cidr", cidr: `${ipMask[1]}/${prefix}`, note: `Subnet mask ${ipMask[2]} = /${prefix}` };
+  }
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(s) && isValidIp(s)) {
+    const prefix = maskToPrefix(s);
+    if (prefix !== null && s.startsWith("255.")) return { kind: "mask", mask: s, prefix };
+    return { kind: "cidr", cidr: `${s}/32`, note: "No prefix given, so this is a single address (/32). Add /24, /16, or a subnet mask for a network." };
+  }
+  return null;
+}
+
 interface CidrResult {
   network: string;
   broadcast: string;
@@ -307,14 +361,51 @@ export default function CidrCalculatorClient() {
   const [v6Result, setV6Result] = useState<Ipv6Result | null>(null);
   const [error, setError] = useState("");
   const [splitCount, setSplitCount] = useState(4);
+  const [note, setNote] = useState("");
+  const [rangeResult, setRangeResult] = useState<{ start: string; end: string; blocks: string[] } | null>(null);
+  const [maskResult, setMaskResult] = useState<{ mask: string; prefix: number } | null>(null);
 
   const calculate = useCallback((value: string) => {
     const trimmed = value.trim();
+    setNote("");
+    setRangeResult(null);
+    setMaskResult(null);
     if (!trimmed) {
       setResult(null);
       setV6Result(null);
       setError("");
       return;
+    }
+
+    if (!trimmed.includes(":") && !trimmed.match(/\/\d{1,2}$/)) {
+      const interpreted = interpretIpv4Input(trimmed);
+      if (interpreted?.kind === "error") {
+        setResult(null);
+        setV6Result(null);
+        setError(interpreted.message);
+        return;
+      }
+      if (interpreted?.kind === "range") {
+        setResult(null);
+        setV6Result(null);
+        setError("");
+        setRangeResult(interpreted);
+        return;
+      }
+      if (interpreted?.kind === "mask") {
+        setResult(null);
+        setV6Result(null);
+        setError("");
+        setMaskResult(interpreted);
+        return;
+      }
+      if (interpreted?.kind === "cidr") {
+        setNote(interpreted.note ?? "");
+        setResult(calculateCidr(interpreted.cidr));
+        setV6Result(null);
+        setError("");
+        return;
+      }
     }
 
     if (trimmed.includes(":")) {
@@ -339,7 +430,7 @@ export default function CidrCalculatorClient() {
     } else {
       setResult(null);
       setV6Result(null);
-      setError("Invalid CIDR notation. Example: 192.168.1.0/24 or 2001:db8::/32");
+      setError("Couldn't read that. Try 192.168.1.0/24, 10.0.0.0 - 10.0.3.255, 192.168.1.10 255.255.255.0, or 2001:db8::/32");
     }
   }, []);
 
@@ -356,17 +447,17 @@ export default function CidrCalculatorClient() {
   return (
     <ToolLayout
       title="CIDR Calculator"
-      description="Calculate network address, broadcast, subnet mask, host range, and binary representation from any IPv4 or IPv6 CIDR notation."
+      description="Turn CIDR notation into an IP range, subnet mask, and host count — or an IP range or subnet mask back into CIDR. IPv4 and IPv6."
     >
       <div className="space-y-6">
         {/* Input */}
         <div className="space-y-2">
-          <label className="text-xs text-[#888888] font-medium block">CIDR Notation (IPv4 or IPv6)</label>
+          <label className="text-xs text-[#888888] font-medium block">CIDR, IP range, or IP + subnet mask</label>
           <input
             type="text"
             value={input}
             onChange={(e) => handleChange(e.target.value)}
-            placeholder="e.g. 192.168.1.0/24 or 2001:db8::/32"
+            placeholder="192.168.1.0/24 · 10.0.0.0 - 10.0.3.255 · 192.168.1.10 255.255.255.0"
             spellCheck={false}
             className={`w-full max-w-lg px-4 py-3 text-base font-mono bg-[#111111] border rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444] transition-colors ${
               error ? "border-[#ef4444]" : "border-[#222222]"
@@ -378,7 +469,67 @@ export default function CidrCalculatorClient() {
               {error}
             </div>
           )}
+          {note && <p className="text-xs text-[#a855f7]">{note}</p>}
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {["10.0.0.0/16", "172.16.0.0 - 172.16.5.255", "192.168.1.10 255.255.255.0", "255.255.240.0", "2001:db8::/48"].map((ex) => (
+              <button
+                key={ex}
+                onClick={() => handleChange(ex)}
+                className="px-2 py-1 text-[11px] font-mono bg-[#111111] border border-[#222222] rounded text-[#666] hover:text-[#a855f7] hover:border-[#a855f7]/40 transition-colors"
+              >
+                {ex}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* IP range → CIDR blocks */}
+        {rangeResult && (
+          <div className="p-4 bg-[#111111] border border-[#222222] rounded-[8px] space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-xs text-[#888888] font-medium uppercase tracking-wide">
+                {rangeResult.blocks.length === 1 ? "This range is exactly one CIDR block" : `This range needs ${rangeResult.blocks.length} CIDR blocks`}
+              </h3>
+              <CopyButton text={rangeResult.blocks.join("\n")} size="sm" />
+            </div>
+            <p className="text-xs text-[#555555] font-mono">
+              {rangeResult.start} – {rangeResult.end} ·{" "}
+              {formatHostCount(ipToNum(rangeResult.end) - ipToNum(rangeResult.start) + 1)} addresses
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {rangeResult.blocks.map((b) => (
+                <button
+                  key={b}
+                  onClick={() => handleChange(b)}
+                  title="Open this block in the calculator"
+                  className="px-2.5 py-1 text-sm font-mono bg-[#0a0a0a] border border-[#333] rounded text-[#a855f7] hover:border-[#a855f7]/60 transition-colors"
+                >
+                  {b}
+                </button>
+              ))}
+            </div>
+            {rangeResult.blocks.length > 1 && (
+              <p className="text-xs text-[#555555]">
+                A single CIDR block must start on a boundary that&apos;s a multiple of its size, so an arbitrary range is covered by
+                the smallest set of aligned blocks. Click a block to inspect it.
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Subnet mask → prefix */}
+        {maskResult && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <ResultCard label="Subnet Mask" value={maskResult.mask} />
+            <ResultCard label="CIDR Prefix" value={`/${maskResult.prefix}`} accent />
+            <ResultCard label="Wildcard Mask" value={numToIp(~ipToNum(maskResult.mask) >>> 0)} />
+            <ResultCard
+              label="Addresses per Network"
+              value={formatHostCount(Math.pow(2, 32 - maskResult.prefix))}
+              mono={false}
+            />
+          </div>
+        )}
 
         {/* IPv6 results */}
         {v6Result && (

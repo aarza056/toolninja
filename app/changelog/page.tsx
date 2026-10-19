@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 export const metadata: Metadata = {
   title: "Changelog",
   description: "What's new in ToolNinja — updates, new tools, and fixes.",
+  alternates: { canonical: "https://toolninja.io/changelog" },
 };
 
 export default function ChangelogPage() {

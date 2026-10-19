@@ -63,9 +63,15 @@ export default function Sidebar() {
           const catTools = tools.filter((t) => t.category === cat);
           return (
             <div key={cat} className="mb-4">
-              <div className="px-4 py-1 text-xs font-semibold text-[#888888] uppercase tracking-wider">
+              <Link
+                href={`/tools/category/${cat.toLowerCase()}`}
+                onClick={() => setMobileOpen(false)}
+                className={`block px-4 py-1 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                  pathname === `/tools/category/${cat.toLowerCase()}` ? "text-[#a855f7]" : "text-[#888888] hover:text-[#f5f5f5]"
+                }`}
+              >
                 {cat}
-              </div>
+              </Link>
               {catTools.map((tool) => {
                 const isActive = pathname === `/tools/${tool.slug}`;
                 return (
@@ -100,6 +106,9 @@ export default function Sidebar() {
           Your data never leaves the browser 🔒
         </p>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-[#555555]">
+          <Link href="/tools" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+            All tools
+          </Link>
           <Link href="/privacy" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Privacy
           </Link>

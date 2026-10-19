@@ -1,4 +1,9 @@
+import type { Metadata } from "next";
 import HomeClient from "./HomeClient";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "https://toolninja.io" },
+};
 
 const websiteJsonLd = {
   "@context": "https://schema.org",
@@ -7,14 +12,6 @@ const websiteJsonLd = {
   url: "https://toolninja.io",
   description:
     "Free online developer tools that run 100% in your browser. No login. Your data stays in your browser.",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: "https://toolninja.io/?q={search_term_string}",
-    },
-    "query-input": "required name=search_term_string",
-  },
 };
 
 const orgJsonLd = {

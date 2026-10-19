@@ -76,9 +76,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  alternates: {
-    canonical: "https://toolninja.io",
-  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "48x48" },
@@ -99,19 +96,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        <meta name="keywords" content="developer tools, json formatter, base64 decoder, jwt decoder, regex tester, uuid generator, hash generator, chmod calculator, cidr calculator, css gradient generator, online developer tools, free developer tools, browser tools no login" />
-        <meta name="description" content={`${TOOL_COUNT_LABEL} free browser-only developer tools. JSON formatter, Base64 encoder, JWT decoder, Regex tester, UUID generator, Chmod calculator, CIDR calculator, CSS animations and more. No login. Your data stays in your browser.`} />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png" />
-        <link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        {/* Description, keywords, canonical and icons come from the Metadata API, per page. Hardcoding
+            them here duplicates them on every page — the generic copy would win over each page's own. */}
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://va.vercel-scripts.com" />
         <link rel="search" type="application/opensearchdescription+xml" title="ToolNinja" href="/opensearch.xml" />
-        <link rel="alternate" hrefLang="en" href="https://toolninja.io" />
-        <link rel="alternate" hrefLang="x-default" href="https://toolninja.io" />
+        <link rel="alternate" type="application/rss+xml" title="ToolNinja Blog" href="/blog/rss.xml" />
         <meta name="google-adsense-account" content="ca-pub-3459524040712269" />
         <script
           async

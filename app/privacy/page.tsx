@@ -4,6 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "ToolNinja privacy policy. Tool inputs are processed entirely in your browser and never sent to our servers. Learn how we use analytics and advertising cookies.",
+  alternates: { canonical: "https://toolninja.io/privacy" },
 };
 
 export default function PrivacyPage() {
