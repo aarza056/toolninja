@@ -6,6 +6,7 @@ import { AD_SLOTS } from "@/lib/ads";
 import { getAllPosts } from "@/lib/blog";
 import { categorySlug } from "@/lib/categories";
 import { toolReferences } from "@/lib/tool-references";
+import SupportCard from "@/components/support/SupportCard";
 
 interface Props {
   slug: string;
@@ -216,6 +217,8 @@ export default function ToolSeoSection({ slug }: Props) {
           </div>
         </section>
       )}
+
+      <SupportCard placement="tool-page" />
     </div>
   );
 }

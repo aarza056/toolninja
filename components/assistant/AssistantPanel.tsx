@@ -11,6 +11,7 @@ import { scanForSecrets } from "@/lib/secret-scanner";
 import { decodeQrFromImage } from "@/lib/qr-decode";
 import type { ErrorArticleIndex } from "@/lib/error-matcher";
 import type { CloudMode } from "./ParticleCloud";
+import PatreonLink from "@/components/support/PatreonLink";
 
 interface AiResult {
   answer: string;
@@ -25,6 +26,7 @@ interface Turn {
   status: "thinking" | "answered" | "failed";
   result?: AiResult;
   error?: string;
+  reason?: string;
 }
 
 const PLACEHOLDERS = [
@@ -336,7 +338,7 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
         setText(question);
         findLocally(question);
       } else {
-        updateTurn(id, { status: "failed", error: FAIL_MESSAGES[data.reason as string] ?? FAIL_MESSAGES.default });
+        updateTurn(id, { status: "failed", reason: data.reason, error: FAIL_MESSAGES[data.reason as string] ?? FAIL_MESSAGES.default });
       }
     } catch {
       updateTurn(id, { status: "failed", error: FAIL_MESSAGES.default });
@@ -387,6 +389,14 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
                     </div>
                     {t.status === "thinking" && <ThinkingDots line={thinkingLines[thinkingIdx % thinkingLines.length]} />}
                     {t.status === "failed" && <p className="text-sm text-[#f97316]">{t.error}</p>}
+                    {t.status === "failed" && t.reason === "daily_cap" && (
+                      <p className="text-xs text-[#888888]">
+                        Ninja AI is paid for by supporters — more support means a higher daily limit.{" "}
+                        <PatreonLink placement="ninja-daily-cap" className="text-[#ff8a90] hover:text-[#f5f5f5] underline">
+                          Support on Patreon
+                        </PatreonLink>
+                      </p>
+                    )}
                     {t.status === "answered" && t.result && (
                       <>
                         <div className="text-sm text-[#d4d4d4] leading-relaxed [&_code]:text-[#e879f9] [&_code]:bg-[#1a0a2e] [&_code]:px-1 [&_code]:rounded [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-2 [&_strong]:text-[#f5f5f5]">

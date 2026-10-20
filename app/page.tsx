@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import HomeClient from "./HomeClient";
+import { PATREON_URL } from "@/lib/support";
 
 export const metadata: Metadata = {
   alternates: { canonical: "https://toolninja.io" },
@@ -20,6 +21,7 @@ const orgJsonLd = {
   name: "ToolNinja",
   url: "https://toolninja.io",
   logo: "https://toolninja.io/logo.png",
+  sameAs: [PATREON_URL],
   description:
     "Fast, free developer tools. No login. No nonsense. Everything runs in your browser.",
 };

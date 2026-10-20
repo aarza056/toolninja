@@ -39,6 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     { url: `${BASE_URL}/explain-error`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${BASE_URL}/changelog`, changeFrequency: "weekly", priority: 0.4 },
+    { url: `${BASE_URL}/support`, changeFrequency: "monthly", priority: 0.4 },
     { url: `${BASE_URL}/privacy`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE_URL}/terms`, changeFrequency: "yearly", priority: 0.3 },
   ];

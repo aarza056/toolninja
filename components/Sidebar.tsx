@@ -7,6 +7,7 @@ import { tools, categories, LATEST_TOOL_SLUGS } from "@/lib/tools";
 import { Menu, X, Search, Sparkles } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { openAssistant } from "@/lib/showcase";
+import PatreonLink, { PatreonIcon } from "@/components/support/PatreonLink";
 
 const NEW_TOOL_SLUGS = new Set(LATEST_TOOL_SLUGS);
 
@@ -70,6 +71,14 @@ export default function Sidebar() {
           <Sparkles size={12} />
           <span>Ask Ninja — paste anything</span>
         </button>
+        <PatreonLink
+          placement="sidebar"
+          onClick={() => setMobileOpen(false)}
+          className="mt-2 w-full flex items-center gap-2 px-3 py-2 bg-[#ff424d]/[0.08] border border-[#ff424d]/25 rounded-lg text-xs text-[#ff8a90] hover:bg-[#ff424d]/15 hover:text-[#f5f5f5] transition-colors"
+        >
+          <PatreonIcon size={11} />
+          <span>Support us on Patreon</span>
+        </PatreonLink>
       </div>
 
       {/* Tool list */}
@@ -141,6 +150,9 @@ export default function Sidebar() {
           </Link>
           <Link href="/explain-error" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Explain Error
+          </Link>
+          <Link href="/support" onClick={() => setMobileOpen(false)} className="hover:text-[#ff8a90] transition-colors">
+            Support ♥
           </Link>
           {hasConsent && (
             <button

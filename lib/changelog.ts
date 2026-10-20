@@ -40,6 +40,7 @@ export const releases: Release[] = [
       { kind: "feature", text: "Animated particle-cloud assistant that gathers, thinks and speaks" },
       { kind: "feature", text: "Dedicated Ask Ninja page, plus quick access from the sidebar and homepage", href: "/ask" },
       { kind: "feature", text: "New ToolNinja logo" },
+      { kind: "feature", text: "ToolNinja is on Patreon — support the project and keep every tool free", href: "/support" },
       { kind: "feature", text: "Redesigned changelog with filters and an RSS feed", href: "/changelog" },
       { kind: "fix", text: "Ad network telemetry is no longer blocked by the Content Security Policy" },
     ],
