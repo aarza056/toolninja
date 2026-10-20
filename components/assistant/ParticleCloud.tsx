@@ -55,7 +55,10 @@ export default function ParticleCloud({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Reduced motion (an OS accessibility setting — e.g. Windows "Animation effects" off) keeps a calm,
+    // slow drift rather than freezing: no swarm-in, no fast swirl, a third of the movement.
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const motion = reduceMotion ? 0.35 : 1;
     let width = 0;
     let height = 0;
 
@@ -96,26 +99,29 @@ export default function ParticleCloud({
 
       const target =
         m === "thinking"
-          ? { spin: 1.6, glow: 0.75, cyan: 0.55, wobble: 0.16, voice: 0 }
+          ? { spin: 2.4, glow: 0.8, cyan: 0.55, wobble: 0.18, voice: 0 }
           : m === "speaking"
-            ? { spin: 0.45, glow: 0.6, cyan: 0.2, wobble: 0.1, voice: 1 }
-            : { spin: 0.2, glow: 0.35, cyan: 0, wobble: 0.08, voice: 0 };
+            ? { spin: 0.8, glow: 0.65, cyan: 0.2, wobble: 0.12, voice: 1 }
+            : { spin: 0.55, glow: 0.4, cyan: 0, wobble: 0.1, voice: 0 };
       const k = Math.min(dt * 3, 1);
       state.spin += (target.spin - state.spin) * k;
       state.glow += (target.glow - state.glow) * k;
       state.cyan += (target.cyan - state.cyan) * k;
       state.wobble += (target.wobble - state.wobble) * k;
       state.voice += (target.voice - state.voice) * k;
-      spinAngle += state.spin * dt;
+      spinAngle += state.spin * dt * motion;
 
       // An irregular "voice" envelope: layered sines read as speech rhythm rather than a metronome
       const voice =
-        state.voice * (0.5 * Math.abs(Math.sin(t * 7.3)) + 0.3 * Math.abs(Math.sin(t * 11.9 + 1.7)) + 0.2 * Math.abs(Math.sin(t * 3.1)));
-      const breathe = 1 + Math.sin(t * 1.4) * 0.04;
+        motion *
+        state.voice *
+        (0.5 * Math.abs(Math.sin(t * 7.3)) + 0.3 * Math.abs(Math.sin(t * 11.9 + 1.7)) + 0.2 * Math.abs(Math.sin(t * 3.1)));
+      const breathe = 1 + Math.sin(t * 1.4) * 0.06 * motion;
       const scale = breathe + voice * 0.18;
 
-      const cx = width * centerX;
-      const cy = height * centerY;
+      // The whole cloud floats gently, so it reads as alive even while idle
+      const cx = width * centerX + Math.sin(t * 0.6) * 5 * motion;
+      const cy = height * centerY + Math.sin(t * 0.85) * 7 * motion;
       const gatherT = gather && !reduceMotion ? Math.min((now - startedAt) / GATHER_MS, 1) : 1;
       const g = easeOutCubic(gatherT);
 
@@ -141,8 +147,10 @@ export default function ParticleCloud({
         const p = particles[i];
         const a = p.angle + spinAngle * p.speed;
         // Blobby outline: the radius ripples with angle and time so the cloud never looks like a perfect circle
-        const blob = 1 + Math.sin(a * 3 + t * 1.1) * state.wobble + Math.sin(a * 5 - t * 1.7 + p.phase) * state.wobble * 0.6;
-        const r = radius * p.dist * blob * scale * (1 + voice * 0.25 * p.dist);
+        const blob = 1 + (Math.sin(a * 3 + t * 1.1) * state.wobble + Math.sin(a * 5 - t * 1.7 + p.phase) * state.wobble * 0.6) * motion;
+        // Each particle also wanders in and out on its own rhythm
+        const wander = 1 + Math.sin(t * (0.7 + p.speed * 0.5) + p.phase) * 0.12 * motion;
+        const r = radius * p.dist * wander * blob * scale * (1 + voice * 0.25 * p.dist);
         const homeX = cx + Math.cos(a) * r;
         const homeY = cy + Math.sin(a) * r * 0.82;
         const startX = p.startX * width;
@@ -179,7 +187,7 @@ export default function ParticleCloud({
         ctx.fill();
       }
 
-      if (!reduceMotion) raf = requestAnimationFrame(frame);
+      raf = requestAnimationFrame(frame);
     };
 
     raf = requestAnimationFrame(frame);
@@ -187,20 +195,13 @@ export default function ParticleCloud({
     const onVisibility = () => {
       if (document.hidden) {
         cancelAnimationFrame(raf);
-      } else if (!reduceMotion) {
+      } else {
+        cancelAnimationFrame(raf);
         last = performance.now();
         raf = requestAnimationFrame(frame);
       }
     };
-    // Resizing a canvas clears it; with reduced motion there's no animation loop to repaint it
-    const onResize = () => {
-      resize();
-      if (reduceMotion) {
-        cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(frame);
-      }
-    };
-    const observer = new ResizeObserver(onResize);
+    const observer = new ResizeObserver(resize);
     observer.observe(canvas);
     document.addEventListener("visibilitychange", onVisibility);
 

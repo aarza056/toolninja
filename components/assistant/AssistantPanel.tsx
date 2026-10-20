@@ -209,7 +209,8 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
   // Typewriter reveal of the AI answer
   useEffect(() => {
     if (aiState !== "answered" || !aiResult || typed >= aiResult.answer.length) return;
-    const id = setTimeout(() => setTyped((n) => Math.min(n + 3, aiResult.answer.length)), 16);
+    // ~90 chars/s: readable, and long enough for the cloud's "speaking" pulse to register
+    const id = setTimeout(() => setTyped((n) => Math.min(n + 2, aiResult.answer.length)), 22);
     return () => clearTimeout(id);
   }, [aiState, aiResult, typed]);
 
