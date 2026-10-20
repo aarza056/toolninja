@@ -35,12 +35,13 @@ export default function Sidebar() {
   const sidebarContent = (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="px-4 py-5 border-b border-[#222222]">
-        <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
+      <div className="px-4 py-4 border-b border-[#222222]">
+        <Link href="/" aria-label="ToolNinja home" className="flex items-center gap-2.5 min-w-0" onClick={() => setMobileOpen(false)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="" width={37} height={32} className="shrink-0" />
-          <span className="font-bold text-[17px] tracking-tight text-[#f5f5f5]">
-            Tool<span className="text-[#a855f7]">Ninja</span>
+          <img src="/logo.svg" alt="" width={52} height={45} className="shrink-0 w-[52px] h-auto" />
+          <span className="whitespace-nowrap font-extrabold text-[23px] leading-none tracking-tight text-[#f5f5f5]">
+            Tool<span className="text-[#a855f7] [text-shadow:0_0_14px_rgba(168,85,247,0.55)]">Ninja</span>
+            <span className="text-[#71717a] font-bold">.io</span>
           </span>
         </Link>
       </div>
