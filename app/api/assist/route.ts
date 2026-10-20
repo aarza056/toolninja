@@ -10,6 +10,8 @@ export const dynamic = "force-dynamic";
 const MODEL = "claude-haiku-5-5";
 const MAX_QUESTION_CHARS = 3000;
 const MAX_IMAGE_B64_CHARS = 1_400_000; // ~1 MB image; the client downsizes before sending
+const MAX_HISTORY_MESSAGES = 8; // last 4 question/answer pairs
+const MAX_HISTORY_CHARS = 8000;
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
 
 // Best-effort limits. Serverless instances don't share memory, so the hard ceiling on spend is the
@@ -45,6 +47,7 @@ Rules:
 - If the request has nothing to do with software development, say briefly that you help with developer problems and suggest the closest useful tool, if any.
 - If you are not sure, say so rather than guessing.
 - Reply in the visitor's language.
+- The visitor may ask follow-up questions; use the earlier messages in the conversation for context.
 
 TOOL CATALOG (slug — name: what it does)
 ${tools.map((t) => `${t.slug} — ${t.name}: ${t.description}`).join("\n")}
@@ -99,7 +102,12 @@ export async function POST(req: Request) {
   const origin = req.headers.get("origin");
   if (origin && !ALLOWED_ORIGINS.some((re) => re.test(origin))) return json({ ok: false, reason: "forbidden" }, 403);
 
-  let body: { question?: unknown; image?: { mediaType?: unknown; data?: unknown } | null; context?: unknown };
+  let body: {
+    question?: unknown;
+    image?: { mediaType?: unknown; data?: unknown } | null;
+    context?: unknown;
+    history?: unknown;
+  };
   try {
     body = await req.json();
   } catch {
@@ -128,6 +136,22 @@ export async function POST(req: Request) {
   if (context) text += `\n\n(Local detector, for reference: ${context})`;
   content.push({ type: "text", text });
 
+  // Earlier turns of the conversation, text only, newest kept when trimming
+  const history: Anthropic.MessageParam[] = [];
+  if (Array.isArray(body.history)) {
+    let budget = MAX_HISTORY_CHARS;
+    const recent = (body.history as unknown[]).slice(-MAX_HISTORY_MESSAGES).reverse();
+    for (const item of recent) {
+      const m = item as { role?: unknown; text?: unknown };
+      if ((m.role !== "user" && m.role !== "assistant") || typeof m.text !== "string" || !m.text.trim()) continue;
+      const t = m.text.slice(0, MAX_QUESTION_CHARS);
+      if (t.length > budget) break;
+      budget -= t.length;
+      history.unshift({ role: m.role, content: t });
+    }
+    while (history.length && history[0].role !== "user") history.shift();
+  }
+
   try {
     const client = new Anthropic();
     const response = await client.messages.parse({
@@ -135,7 +159,7 @@ export async function POST(req: Request) {
       max_tokens: 2000,
       // 1-hour cache: with light, spread-out traffic a 5-minute cache would expire between most questions
       system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral", ttl: "1h" } }],
-      messages: [{ role: "user", content }],
+      messages: [...history, { role: "user", content }],
       output_config: { effort: "low", format: zodOutputFormat(AssistSchema) },
     });
 

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import { ImagePlus, X, Sparkles, ShieldAlert, ArrowRight, BookOpen, Lock } from "lucide-react";
+import { ImagePlus, X, Sparkles, ShieldAlert, ArrowRight, BookOpen, Lock, RotateCcw } from "lucide-react";
 import { tools } from "@/lib/tools";
 import { detectLocal, looksLikeQuestion, type Detection } from "@/lib/detect";
 import { matchTools } from "@/lib/tool-match";
@@ -18,7 +18,14 @@ interface AiResult {
   guides: string[];
 }
 
-type AiState = "idle" | "thinking" | "answered" | "failed";
+interface Turn {
+  id: number;
+  question: string;
+  imagePreview: string;
+  status: "thinking" | "answered" | "failed";
+  result?: AiResult;
+  error?: string;
+}
 
 const PLACEHOLDERS = [
   "Paste a JWT, a cron expression, a certificate, a cURL command…",
@@ -27,15 +34,16 @@ const PLACEHOLDERS = [
 ];
 
 const FAIL_MESSAGES: Record<string, string> = {
-  rate_limited: "You've asked a lot in a short time — try again in a few minutes. Meanwhile, here's what I found locally.",
-  daily_cap: "Ninja AI has hit its daily limit. It'll be back tomorrow — the local results below still work.",
-  disabled: "Ninja AI isn't switched on right now. The local results below still work.",
+  rate_limited: "You've asked a lot in a short time — try again in a few minutes.",
+  daily_cap: "Ninja AI has hit its daily limit. It'll be back tomorrow — the local detection still works.",
   refusal: "I can't help with that one. Try rephrasing it as a developer question.",
   image_too_large: "That image is too large — try a smaller screenshot.",
-  default: "Ninja AI is unavailable right now. The local results below still work.",
+  default: "Ninja AI is unavailable right now. Try again in a moment.",
 };
 
 const SENSITIVE_IDS = new Set(["jwt", "pem-key", "otpauth", "connection-string", "card"]);
+const TYPE_STEP = 2;
+const TYPE_INTERVAL_MS = 22;
 
 const toolBySlug = new Map(tools.map((t) => [t.slug, t]));
 
@@ -128,6 +136,19 @@ function DetectionCard({ d }: { d: Detection }) {
   );
 }
 
+function ThinkingDots({ line }: { line: string }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="flex gap-1">
+        {[0, 1, 2].map((i) => (
+          <span key={i} className="w-1.5 h-1.5 rounded-full bg-[#a855f7] animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
+        ))}
+      </span>
+      <span className="text-sm text-[#c4a5f7]">{line}</span>
+    </div>
+  );
+}
+
 interface Props {
   variant?: "full" | "compact";
   onCloudMode?: (mode: CloudMode) => void;
@@ -141,20 +162,29 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
   const [qrText, setQrText] = useState("");
   const [detections, setDetections] = useState<Detection[]>([]);
   const [matches, setMatches] = useState<string[]>([]);
+  const [searchedLocally, setSearchedLocally] = useState(false);
   const [articles, setArticles] = useState<ErrorArticleIndex[]>([]);
   // null = not known yet; assume available so the button never flickers from "Find tools" to "Ask"
   const [aiEnabled, setAiEnabled] = useState<boolean | null>(null);
   const aiAvailable = aiEnabled !== false;
-  const [aiState, setAiState] = useState<AiState>("idle");
-  const [aiResult, setAiResult] = useState<AiResult | null>(null);
-  const [aiError, setAiError] = useState("");
-  const [typed, setTyped] = useState(0);
+  const [turns, setTurns] = useState<Turn[]>([]);
+  const [typed, setTyped] = useState(0); // characters revealed of the latest answer
   const [thinkingIdx, setThinkingIdx] = useState(0);
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [secretAck, setSecretAck] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
+  const lastTurnRef = useRef<HTMLDivElement>(null);
+  const nextId = useRef(1);
+
+  const last = turns[turns.length - 1];
+  const lastAnswer = last?.status === "answered" ? last.result?.answer ?? "" : "";
+  const thinking = last?.status === "thinking";
+  const typing = last?.status === "answered" && typed < lastAnswer.length;
+  // The input stays locked from sending a question until its answer has finished typing
+  const busy = thinking || typing;
+  const inConversation = turns.length > 0;
 
   useEffect(() => {
     fetch("/guides-index.json")
@@ -173,7 +203,7 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
     return () => clearInterval(id);
   }, []);
 
-  // Local analysis: runs on every edit (debounced), entirely in the browser
+  // Local analysis of the composer: runs on every edit (debounced), entirely in the browser
   const source = text.trim() || qrText;
   useEffect(() => {
     let cancelled = false;
@@ -187,34 +217,40 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
       if (cancelled) return;
       setDetections(found);
       const strong = found.some((d) => d.confidence === "high" && d.id !== "error");
-      setMatches(!strong && looksLikeQuestion(source) ? matchTools(source, 4).map((t) => t.slug) : []);
+      setMatches(!strong && looksLikeQuestion(source) && !inConversation ? matchTools(source, 4).map((t) => t.slug) : []);
     }, 220);
     return () => {
       cancelled = true;
       clearTimeout(id);
     };
-  }, [source, articles]);
+  }, [source, articles, inConversation]);
 
-  // Cloud mode follows the AI state
   useEffect(() => {
-    if (aiState === "thinking") onCloudMode?.("thinking");
-    else if (aiState === "answered" && aiResult && typed < aiResult.answer.length) onCloudMode?.("speaking");
+    if (thinking) onCloudMode?.("thinking");
+    else if (typing) onCloudMode?.("speaking");
     else onCloudMode?.("idle");
-  }, [aiState, aiResult, typed, onCloudMode]);
+  }, [thinking, typing, onCloudMode]);
 
   useEffect(() => {
-    if (aiState !== "thinking") return;
+    if (!thinking) return;
     const id = setInterval(() => setThinkingIdx((i) => i + 1), 1400);
     return () => clearInterval(id);
-  }, [aiState]);
+  }, [thinking]);
 
-  // Typewriter reveal of the AI answer
+  // Typewriter reveal of the latest answer
   useEffect(() => {
-    if (aiState !== "answered" || !aiResult || typed >= aiResult.answer.length) return;
-    // ~90 chars/s: readable, and long enough for the cloud's "speaking" pulse to register
-    const id = setTimeout(() => setTyped((n) => Math.min(n + 2, aiResult.answer.length)), 22);
+    if (!typing) return;
+    const id = setTimeout(() => setTyped((n) => Math.min(n + TYPE_STEP, lastAnswer.length)), TYPE_INTERVAL_MS);
     return () => clearTimeout(id);
-  }, [aiState, aiResult, typed]);
+  }, [typing, typed, lastAnswer.length]);
+
+  // Bring each new question into view, and hand focus back once its answer has finished
+  useEffect(() => {
+    if (turns.length) lastTurnRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [turns.length]);
+  useEffect(() => {
+    if (inConversation && !busy) textRef.current?.focus();
+  }, [inConversation, busy]);
 
   const setImage = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -232,8 +268,8 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
     }
   }, []);
 
-  const clearImage = () => {
-    if (imagePreview) URL.revokeObjectURL(imagePreview);
+  const clearImage = (revoke = true) => {
+    if (revoke && imagePreview) URL.revokeObjectURL(imagePreview);
     setImageFile(null);
     setImagePreview("");
     setQrText("");
@@ -247,61 +283,76 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
     }
   };
 
-  const sensitive =
-    scanForSecrets(text).length > 0 || detections.some((d) => SENSITIVE_IDS.has(d.id));
+  const sensitive = scanForSecrets(text).length > 0 || detections.some((d) => SENSITIVE_IDS.has(d.id));
   const hasInput = text.trim().length > 0 || imageFile !== null;
-  const canAsk = aiAvailable && hasInput && aiState !== "thinking" && (!sensitive || secretAck);
-  const [searchedLocally, setSearchedLocally] = useState(false);
+  const canAsk = aiAvailable && hasInput && !busy && (!sensitive || secretAck);
 
   // Without AI the button still does something useful: the free tool finder, on any input
-  const findLocally = () => {
-    if (!text.trim()) return;
-    setMatches(matchTools(text, 4).map((t) => t.slug));
+  const findLocally = (query = text) => {
+    if (!query.trim()) return;
+    setMatches(matchTools(query, 4).map((t) => t.slug));
     setSearchedLocally(true);
+  };
+
+  const updateTurn = (id: number, patch: Partial<Turn>) => setTurns((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
+
+  const ask = async () => {
+    if (!canAsk) return;
+    const question = text.trim();
+    const file = imageFile;
+    const preview = imagePreview;
+    const top = detections[0];
+    const context = [top ? `${top.label}: ${top.summary}` : "", qrText ? `QR code text: ${qrText.slice(0, 300)}` : ""].filter(Boolean).join(" | ");
+    const history = turns
+      .filter((t) => t.status === "answered" && t.result)
+      .flatMap((t) => [
+        { role: "user" as const, text: t.question || "(an image)" },
+        { role: "assistant" as const, text: t.result!.answer },
+      ]);
+
+    const id = nextId.current++;
+    setTurns((prev) => [...prev, { id, question, imagePreview: preview, status: "thinking" }]);
+    setTyped(0);
+    setThinkingIdx(0);
+    setText("");
+    setSecretAck(false);
+    setMatches([]);
+    clearImage(false); // the preview URL now belongs to the turn
+
+    try {
+      const image = file ? await downscaleImage(file) : null;
+      const res = await fetch("/api/assist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, image, context, history }),
+      });
+      const data = await res.json().catch(() => ({ ok: false, reason: "default" }));
+      if (data.ok) {
+        updateTurn(id, { status: "answered", result: { answer: data.answer, tools: data.tools ?? [], guides: data.guides ?? [] } });
+      } else if (data.reason === "disabled") {
+        // AI is switched off on this deployment: undo the turn and become the free tool finder
+        setTurns((prev) => prev.filter((t) => t.id !== id));
+        setAiEnabled(false);
+        setText(question);
+        findLocally(question);
+      } else {
+        updateTurn(id, { status: "failed", error: FAIL_MESSAGES[data.reason as string] ?? FAIL_MESSAGES.default });
+      }
+    } catch {
+      updateTurn(id, { status: "failed", error: FAIL_MESSAGES.default });
+    }
   };
 
   const submit = () => (aiAvailable ? ask() : findLocally());
 
-  const ask = async () => {
-    if (!canAsk) return;
-    setAiState("thinking");
-    setAiResult(null);
-    setAiError("");
+  const newConversation = () => {
+    turns.forEach((t) => t.imagePreview && URL.revokeObjectURL(t.imagePreview));
+    setTurns([]);
     setTyped(0);
-    setThinkingIdx(0);
-    try {
-      const image = imageFile ? await downscaleImage(imageFile) : null;
-      const top = detections[0];
-      const res = await fetch("/api/assist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question: text.trim(),
-          image,
-          context: top ? `${top.label}: ${top.summary}${qrText ? ` | QR code text: ${qrText.slice(0, 300)}` : ""}` : qrText ? `QR code text: ${qrText.slice(0, 300)}` : "",
-        }),
-      });
-      const data = await res.json().catch(() => ({ ok: false, reason: "default" }));
-      if (data.ok) {
-        setAiResult({ answer: data.answer, tools: data.tools ?? [], guides: data.guides ?? [] });
-        setAiState("answered");
-      } else if (data.reason === "disabled") {
-        // AI is switched off on this deployment: quietly become the free tool finder
-        setAiEnabled(false);
-        setAiState("idle");
-        findLocally();
-      } else {
-        setAiError(FAIL_MESSAGES[data.reason as string] ?? FAIL_MESSAGES.default);
-        setAiState("failed");
-        if (!matches.length && text.trim()) setMatches(matchTools(text, 4).map((t) => t.slug));
-      }
-    } catch {
-      setAiError(FAIL_MESSAGES.default);
-      setAiState("failed");
-    }
+    textRef.current?.focus();
   };
 
-  const thinkingLines = imageFile
+  const thinkingLines = last?.imagePreview
     ? ["Thinking…", "Looking at your image…", `Checking ${tools.length} tools…`, "Putting it together…"]
     : ["Thinking…", "Reading your input…", `Checking ${tools.length} tools…`, "Putting it together…"];
 
@@ -309,25 +360,97 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
 
   return (
     <div className="space-y-4">
+      {/* Conversation */}
+      {inConversation && (
+        <div className="space-y-5">
+          {turns.map((t, i) => {
+            const isLast = i === turns.length - 1;
+            const answer = t.result?.answer ?? "";
+            const shown = isLast ? answer.slice(0, typed) : answer;
+            const done = !isLast || typed >= answer.length;
+            return (
+              <div key={t.id} ref={isLast ? lastTurnRef : undefined} className="space-y-3 scroll-mt-[calc(17vh+130px)]">
+                <div className="flex justify-end">
+                  <div className="max-w-[85%] px-4 py-2.5 bg-[#a855f7]/15 border border-[#a855f7]/25 rounded-[14px] rounded-br-[4px] space-y-2">
+                    {t.imagePreview && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={t.imagePreview} alt="Your image" className="max-h-40 rounded-[8px] border border-[#2a2a2a]" />
+                    )}
+                    {t.question && <p className="text-sm text-[#f0e7ff] whitespace-pre-wrap break-words">{t.question}</p>}
+                  </div>
+                </div>
+
+                <div className="flex justify-start">
+                  <div className="w-full max-w-[95%] p-4 bg-[#0f0f10] border border-[#a855f7]/25 rounded-[14px] rounded-bl-[4px] space-y-3">
+                    <div className="flex items-center gap-1.5 text-xs text-[#a855f7]">
+                      <Sparkles size={12} /> Ninja
+                    </div>
+                    {t.status === "thinking" && <ThinkingDots line={thinkingLines[thinkingIdx % thinkingLines.length]} />}
+                    {t.status === "failed" && <p className="text-sm text-[#f97316]">{t.error}</p>}
+                    {t.status === "answered" && t.result && (
+                      <>
+                        <div className="text-sm text-[#d4d4d4] leading-relaxed [&_code]:text-[#e879f9] [&_code]:bg-[#1a0a2e] [&_code]:px-1 [&_code]:rounded [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-2 [&_strong]:text-[#f5f5f5]">
+                          <ReactMarkdown>{shown}</ReactMarkdown>
+                        </div>
+                        {done && t.result.tools.length > 0 && (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {t.result.tools.map((tool) => (
+                              <ToolChip key={tool.slug} slug={tool.slug} reason={tool.reason} />
+                            ))}
+                          </div>
+                        )}
+                        {done && t.result.guides.length > 0 && (
+                          <div className="space-y-1">
+                            {t.result.guides.map((slug) => (
+                              <Link key={slug} href={`/blog/${slug}`} className="flex items-start gap-1.5 text-xs text-[#888888] hover:text-[#a855f7]">
+                                <BookOpen size={12} className="mt-0.5 shrink-0" /> {articles.find((a) => a.slug === slug)?.title ?? slug}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          <div className="flex items-center justify-between gap-3 text-[11px] text-[#555555]">
+            <span>AI can make mistakes — the linked tools give exact results.</span>
+            <button onClick={newConversation} disabled={busy} className="flex shrink-0 items-center gap-1 whitespace-nowrap hover:text-[#a855f7] disabled:opacity-40 transition-colors">
+              <RotateCcw size={11} /> New conversation
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Composer */}
       <div
         onDragOver={(e) => {
           e.preventDefault();
-          setDragOver(true);
+          if (!busy) setDragOver(true);
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={(e) => {
           e.preventDefault();
           setDragOver(false);
+          if (busy) return;
           const file = Array.from(e.dataTransfer.files).find((f) => f.type.startsWith("image/"));
           if (file) setImage(file);
         }}
         className={`relative rounded-[14px] border bg-[#0d0d0f]/90 backdrop-blur transition-colors ${
-          dragOver ? "border-[#a855f7] shadow-[0_0_0_4px_rgba(168,85,247,0.15)]" : "border-[#2a2a2e] focus-within:border-[#a855f7]/60"
+          busy
+            ? "border-[#222226] opacity-60"
+            : dragOver
+              ? "border-[#a855f7] shadow-[0_0_0_4px_rgba(168,85,247,0.15)]"
+              : "border-[#2a2a2e] focus-within:border-[#a855f7]/60"
         }`}
       >
         <textarea
           ref={textRef}
           value={text}
+          readOnly={busy}
+          aria-disabled={busy}
           onChange={(e) => {
             setText(e.target.value);
             setSecretAck(false);
@@ -340,11 +463,11 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
               submit();
             }
           }}
-          placeholder={PLACEHOLDERS[placeholderIdx]}
-          rows={compact ? 3 : 6}
+          placeholder={busy ? "Ninja is answering…" : inConversation ? "Ask a follow-up…" : PLACEHOLDERS[placeholderIdx]}
+          rows={inConversation ? 2 : compact ? 3 : 6}
           spellCheck={false}
           aria-label="Paste anything or describe your problem"
-          className="w-full px-4 pt-4 pb-14 bg-transparent text-[15px] text-[#f5f5f5] placeholder:text-[#555555] resize-y focus:outline-none font-mono leading-relaxed"
+          className="w-full px-4 pt-4 pb-14 bg-transparent text-[15px] text-[#f5f5f5] placeholder:text-[#555555] resize-y focus:outline-none font-mono leading-relaxed read-only:cursor-not-allowed"
         />
 
         <div className="absolute left-3 right-3 bottom-3 flex items-center gap-2">
@@ -353,14 +476,15 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={imagePreview} alt="Attached" className="w-7 h-7 object-cover rounded" />
               <span className="text-xs text-[#888888] max-w-[140px] truncate">{imageFile?.name || "image"}</span>
-              <button onClick={clearImage} aria-label="Remove image" className="text-[#666666] hover:text-[#f5f5f5]">
+              <button onClick={() => clearImage()} aria-label="Remove image" className="text-[#666666] hover:text-[#f5f5f5]">
                 <X size={13} />
               </button>
             </span>
           ) : (
             <button
               onClick={() => fileRef.current?.click()}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-[#888888] hover:text-[#f5f5f5] bg-[#1a1a1a] border border-[#2a2a2a] rounded-[8px] transition-colors"
+              disabled={busy}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-[#888888] hover:text-[#f5f5f5] bg-[#1a1a1a] border border-[#2a2a2a] rounded-[8px] disabled:opacity-40 transition-colors"
             >
               <ImagePlus size={13} /> Image
             </button>
@@ -387,7 +511,7 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
           >
             {aiAvailable ? (
               <>
-                <Sparkles size={14} /> {aiState === "thinking" ? "Thinking…" : "Ask Ninja AI"}
+                <Sparkles size={14} /> {thinking ? "Thinking…" : inConversation ? "Send" : "Ask Ninja AI"}
               </>
             ) : (
               <>
@@ -398,7 +522,7 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
         </div>
       </div>
 
-      {sensitive && aiAvailable && (text.trim() || imageFile) && (
+      {!busy && sensitive && aiAvailable && hasInput && (
         <label className="flex items-start gap-2 p-3 text-xs text-[#f97316] bg-[#f97316]/5 border border-[#f97316]/25 rounded-[10px] cursor-pointer">
           <input type="checkbox" checked={secretAck} onChange={(e) => setSecretAck(e.target.checked)} className="mt-0.5 accent-[#f97316]" />
           <span>
@@ -415,57 +539,8 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
         </div>
       )}
 
-      {/* AI answer */}
-      {aiState === "thinking" && (
-        <div className="flex items-center gap-3 p-4 bg-[#0f0f10] border border-[#a855f7]/25 rounded-[10px]">
-          <span className="flex gap-1">
-            {[0, 1, 2].map((i) => (
-              <span key={i} className="w-1.5 h-1.5 rounded-full bg-[#a855f7] animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
-            ))}
-          </span>
-          <span className="text-sm text-[#c4a5f7]">{thinkingLines[thinkingIdx % thinkingLines.length]}</span>
-        </div>
-      )}
-
-      {aiState === "answered" && aiResult && (
-        <div className="p-4 bg-[#0f0f10] border border-[#a855f7]/30 rounded-[10px] space-y-3">
-          <div className="flex items-center gap-1.5 text-xs text-[#a855f7]">
-            <Sparkles size={12} /> Ninja AI
-          </div>
-          <div className="text-sm text-[#d4d4d4] leading-relaxed [&_code]:text-[#e879f9] [&_code]:bg-[#1a0a2e] [&_code]:px-1 [&_code]:rounded [&_ul]:list-disc [&_ul]:pl-5 [&_p]:mb-2 [&_strong]:text-[#f5f5f5]">
-            <ReactMarkdown>{aiResult.answer.slice(0, typed)}</ReactMarkdown>
-          </div>
-          {typed >= aiResult.answer.length && (
-            <>
-              {aiResult.tools.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {aiResult.tools.map((t) => (
-                    <ToolChip key={t.slug} slug={t.slug} reason={t.reason} />
-                  ))}
-                </div>
-              )}
-              {aiResult.guides.length > 0 && (
-                <div className="space-y-1">
-                  {aiResult.guides.map((slug) => {
-                    const g = articles.find((a) => a.slug === slug);
-                    return (
-                      <Link key={slug} href={`/blog/${slug}`} className="flex items-start gap-1.5 text-xs text-[#888888] hover:text-[#a855f7]">
-                        <BookOpen size={12} className="mt-0.5 shrink-0" /> {g?.title ?? slug}
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-              <p className="text-[10px] text-[#555555]">AI can make mistakes — the linked tools give exact results.</p>
-            </>
-          )}
-        </div>
-      )}
-
-      {aiState === "failed" && aiError && <p className="text-xs text-[#f97316]">{aiError}</p>}
-
-      {/* Local results */}
-      {detections.length > 0 && (
+      {/* Local results for what's being composed */}
+      {!busy && detections.length > 0 && (
         <div className="space-y-3">
           {detections.slice(0, compact ? 1 : 3).map((d) => (
             <DetectionCard key={d.id} d={d} />
@@ -473,7 +548,7 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
         </div>
       )}
 
-      {matches.length > 0 && aiState !== "answered" && (
+      {!busy && matches.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs text-[#666666] uppercase tracking-wider">Tools that match</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -484,7 +559,7 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
         </div>
       )}
 
-      {source && !detections.length && !matches.length && aiState === "idle" && (
+      {!inConversation && source && !detections.length && !matches.length && (
         <p className="text-xs text-[#666666]">
           {aiAvailable
             ? "Not sure what this is — ask Ninja AI for a closer look."
