@@ -154,7 +154,8 @@ export default function HomeClient() {
       {/* Hero ─────────────────────────────────────────────────────────────── */}
       <div className="mb-12 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#a855f7]/10 border border-[#a855f7]/20 rounded-full text-xs text-[#a855f7] mb-6 font-medium">
-          <span>🥷</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="" width={18} height={16} />
           <span>{tools.length} tools · 0 accounts · 100% browser</span>
         </div>
 

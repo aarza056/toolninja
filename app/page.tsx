@@ -19,7 +19,7 @@ const orgJsonLd = {
   "@type": "Organization",
   name: "ToolNinja",
   url: "https://toolninja.io",
-  logo: "https://toolninja.io/icon.svg",
+  logo: "https://toolninja.io/logo.png",
   description:
     "Fast, free developer tools. No login. No nonsense. Everything runs in your browser.",
 };

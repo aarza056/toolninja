@@ -11,7 +11,7 @@ const AssistantPanel = dynamic(() => import("./AssistantPanel"), {
   ssr: false,
   loading: () => <div className="h-[180px] rounded-[14px] border border-[#2a2a2e] bg-[#0d0d0f]/90 animate-pulse" />,
 });
-import { isShowcaseActive, SHOWCASE_SEEN_KEY, OPEN_ASSISTANT_EVENT } from "@/lib/showcase";
+import { isShowcaseActive, SHOWCASE_SEEN_KEY, OPEN_ASSISTANT_EVENT, ASSISTANT_VIEW_EVENT } from "@/lib/showcase";
 
 type View = "none" | "overlay" | "corner";
 
@@ -43,6 +43,11 @@ export default function LaunchShowcase({ openOnLoad = false }: { openOnLoad?: bo
     // Only the first page of a visit decides the variant
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Lets the always-visible launcher step aside while the card or overlay is showing
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent(ASSISTANT_VIEW_EVENT, { detail: { open: view !== "none" } }));
+  }, [view]);
 
   const close = useCallback(() => {
     setView("none");

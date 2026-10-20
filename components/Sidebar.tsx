@@ -37,8 +37,11 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="px-4 py-5 border-b border-[#222222]">
         <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-          <span className="text-xl">🥷</span>
-          <span className="font-bold text-[#a855f7] text-base tracking-tight">ToolNinja</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="" width={37} height={32} className="shrink-0" />
+          <span className="font-bold text-[17px] tracking-tight text-[#f5f5f5]">
+            Tool<span className="text-[#a855f7]">Ninja</span>
+          </span>
         </Link>
       </div>
 

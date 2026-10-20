@@ -115,7 +115,7 @@ export default function BlogPostPage({ params }: Props) {
       "@type": "Organization",
       name: "ToolNinja",
       url: "https://toolninja.io",
-      logo: { "@type": "ImageObject", url: "https://toolninja.io/favicon-192.png" },
+      logo: { "@type": "ImageObject", url: "https://toolninja.io/logo.png" },
     },
     mainEntityOfPage: {
       "@type": "WebPage",

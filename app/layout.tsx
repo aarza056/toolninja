@@ -123,8 +123,10 @@ export default function RootLayout({
         <CommandPalette />
         <AssistantRoot />
         {/* Watermark */}
-        <div className="fixed bottom-3 right-4 text-xs text-[#333333] pointer-events-none select-none z-50">
-          🥷 ToolNinja
+        <div className="fixed bottom-3 right-4 flex items-center gap-1.5 text-xs text-[#333333] pointer-events-none select-none z-50">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="" width={16} height={14} className="opacity-25" />
+          ToolNinja
         </div>
         <Analytics />
         <SpeedInsights />
