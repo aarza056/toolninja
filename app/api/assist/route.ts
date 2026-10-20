@@ -130,10 +130,17 @@ export async function POST(req: Request) {
     const response = await client.messages.parse({
       model: MODEL,
       max_tokens: 2000,
-      system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
+      // 1-hour cache: with light, spread-out traffic a 5-minute cache would expire between most questions
+      system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral", ttl: "1h" } }],
       messages: [{ role: "user", content }],
       output_config: { effort: "low", format: zodOutputFormat(AssistSchema) },
     });
+
+    // Token counts only — never the visitor's text. Visible in Vercel's function logs for cost tracking.
+    const u = response.usage;
+    console.info(
+      `assist: model=${response.model} in=${u.input_tokens} cache_read=${u.cache_read_input_tokens ?? 0} cache_write=${u.cache_creation_input_tokens ?? 0} out=${u.output_tokens} image=${image ? "yes" : "no"}`
+    );
 
     if (response.stop_reason === "refusal") return json({ ok: false, reason: "refusal" }, 200);
     const parsed = response.parsed_output;
