@@ -9,6 +9,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieBanner from "@/components/CookieBanner";
 import WhatsNewModal from "@/components/WhatsNewModal";
+import AssistantRoot from "@/components/assistant/AssistantRoot";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -120,6 +121,7 @@ export default function RootLayout({
         </div>
 
         <CommandPalette />
+        <AssistantRoot />
         {/* Watermark */}
         <div className="fixed bottom-3 right-4 text-xs text-[#333333] pointer-events-none select-none z-50">
           🥷 ToolNinja

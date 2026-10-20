@@ -5,6 +5,7 @@ import Link from "next/link";
 import { tools, LATEST_TOOL_SLUGS } from "@/lib/tools";
 import * as LucideIcons from "lucide-react";
 import { X, Sparkles } from "lucide-react";
+import { isShowcaseActive } from "@/lib/showcase";
 
 const SEEN_KEY = "toolninja_whats_new_seen";
 
@@ -20,6 +21,8 @@ export default function WhatsNewModal() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    // The assistant launch showcase is the "what's new" while it runs; two modals would stack
+    if (isShowcaseActive()) return;
     try {
       const currentVersion = LATEST_TOOL_SLUGS.join(",");
       const seenVersion = localStorage.getItem(SEEN_KEY);

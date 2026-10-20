@@ -4,8 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { tools, categories, LATEST_TOOL_SLUGS } from "@/lib/tools";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X, Search, Sparkles } from "lucide-react";
 import * as LucideIcons from "lucide-react";
+import { openAssistant } from "@/lib/showcase";
 
 const NEW_TOOL_SLUGS = new Set(LATEST_TOOL_SLUGS);
 
@@ -54,6 +55,16 @@ export default function Sidebar() {
           <kbd className="text-[10px] bg-[#111111] border border-[#333333] px-1.5 py-0.5 rounded text-[#444444]">
             {isMac ? "⌘K" : "Ctrl+K"}
           </kbd>
+        </button>
+        <button
+          onClick={() => {
+            openAssistant();
+            setMobileOpen(false);
+          }}
+          className="mt-2 w-full flex items-center gap-2 px-3 py-2 bg-[#a855f7]/10 border border-[#a855f7]/30 rounded-lg text-xs text-[#c4a5f7] hover:bg-[#a855f7]/20 hover:text-[#f5f5f5] transition-colors"
+        >
+          <Sparkles size={12} />
+          <span>Ask Ninja — paste anything</span>
         </button>
       </div>
 

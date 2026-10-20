@@ -5,7 +5,8 @@ import Link from "next/link";
 import { tools, categories, LATEST_TOOL_SLUGS } from "@/lib/tools";
 import type { Tool } from "@/lib/tools";
 import * as LucideIcons from "lucide-react";
-import { Search, X, RefreshCw } from "lucide-react";
+import { Search, X, RefreshCw, Sparkles } from "lucide-react";
+import { openAssistant } from "@/lib/showcase";
 import { devPhrases } from "@/lib/phrases";
 import { getRecentTools, getFavoriteTools } from "@/lib/user-prefs";
 import StarButton from "@/components/StarButton";
@@ -208,6 +209,13 @@ export default function HomeClient() {
             </button>
           )}
         </div>
+
+        <button
+          onClick={openAssistant}
+          className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs text-[#c4a5f7] bg-[#a855f7]/10 border border-[#a855f7]/30 rounded-full hover:bg-[#a855f7]/20 hover:text-[#f5f5f5] transition-colors"
+        >
+          <Sparkles size={12} /> New: paste anything — Ninja figures out what it is
+        </button>
       </div>
 
       {/* Category pills ───────────────────────────────────────────────────── */}
