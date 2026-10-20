@@ -87,7 +87,10 @@ function json(body: unknown, status = 200) {
 }
 
 export function GET() {
-  return json({ enabled: enabled() });
+  // "reason" only says which setting is missing — never anything about the key's value
+  if (!process.env.ANTHROPIC_API_KEY) return json({ enabled: false, reason: "no_key" });
+  if (process.env.AI_ASSIST_ENABLED === "false") return json({ enabled: false, reason: "switched_off" });
+  return json({ enabled: true });
 }
 
 export async function POST(req: Request) {
