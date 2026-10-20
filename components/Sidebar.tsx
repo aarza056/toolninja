@@ -120,6 +120,9 @@ export default function Sidebar() {
           <Link href="/tools" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             All tools
           </Link>
+          <Link href="/ask" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+            Ask Ninja
+          </Link>
           <Link href="/privacy" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Privacy
           </Link>

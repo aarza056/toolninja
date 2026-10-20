@@ -38,7 +38,8 @@ export default function LaunchShowcase({ openOnLoad = false }: { openOnLoad?: bo
     } catch {
       return;
     }
-    if (!openOnLoad) setView(pathname === "/" ? "overlay" : "corner");
+    // A visit that starts on /ask is already using Ninja — no need to announce it
+    if (!openOnLoad && pathname !== "/ask") setView(pathname === "/" ? "overlay" : "corner");
     // Only the first page of a visit decides the variant
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

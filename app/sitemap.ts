@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: BASE_URL, changeFrequency: "weekly", priority: 1.0 },
     { url: `${BASE_URL}/tools`, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE_URL}/ask`, changeFrequency: "weekly", priority: 0.9 },
     ...CATEGORY_INFO.map((c) => ({
       url: `${BASE_URL}/tools/category/${c.slug}`,
       changeFrequency: "weekly" as const,
