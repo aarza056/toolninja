@@ -142,7 +142,9 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
   const [detections, setDetections] = useState<Detection[]>([]);
   const [matches, setMatches] = useState<string[]>([]);
   const [articles, setArticles] = useState<ErrorArticleIndex[]>([]);
-  const [aiEnabled, setAiEnabled] = useState(false);
+  // null = not known yet; assume available so the button never flickers from "Find tools" to "Ask"
+  const [aiEnabled, setAiEnabled] = useState<boolean | null>(null);
+  const aiAvailable = aiEnabled !== false;
   const [aiState, setAiState] = useState<AiState>("idle");
   const [aiResult, setAiResult] = useState<AiResult | null>(null);
   const [aiError, setAiError] = useState("");
@@ -247,7 +249,18 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
 
   const sensitive =
     scanForSecrets(text).length > 0 || detections.some((d) => SENSITIVE_IDS.has(d.id));
-  const canAsk = aiEnabled && (text.trim().length > 0 || imageFile !== null) && aiState !== "thinking" && (!sensitive || secretAck);
+  const hasInput = text.trim().length > 0 || imageFile !== null;
+  const canAsk = aiAvailable && hasInput && aiState !== "thinking" && (!sensitive || secretAck);
+  const [searchedLocally, setSearchedLocally] = useState(false);
+
+  // Without AI the button still does something useful: the free tool finder, on any input
+  const findLocally = () => {
+    if (!text.trim()) return;
+    setMatches(matchTools(text, 4).map((t) => t.slug));
+    setSearchedLocally(true);
+  };
+
+  const submit = () => (aiAvailable ? ask() : findLocally());
 
   const ask = async () => {
     if (!canAsk) return;
@@ -272,6 +285,11 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
       if (data.ok) {
         setAiResult({ answer: data.answer, tools: data.tools ?? [], guides: data.guides ?? [] });
         setAiState("answered");
+      } else if (data.reason === "disabled") {
+        // AI is switched off on this deployment: quietly become the free tool finder
+        setAiEnabled(false);
+        setAiState("idle");
+        findLocally();
       } else {
         setAiError(FAIL_MESSAGES[data.reason as string] ?? FAIL_MESSAGES.default);
         setAiState("failed");
@@ -313,12 +331,13 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
           onChange={(e) => {
             setText(e.target.value);
             setSecretAck(false);
+            setSearchedLocally(false);
           }}
           onPaste={onPaste}
           onKeyDown={(e) => {
             if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
               e.preventDefault();
-              ask();
+              submit();
             }
           }}
           placeholder={PLACEHOLDERS[placeholderIdx]}
@@ -360,20 +379,26 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
           <span className="hidden sm:flex items-center gap-1 text-[11px] text-[#555555]">
             <Lock size={11} /> Detection runs in your browser
           </span>
-          {aiEnabled && (
-            <button
-              onClick={ask}
-              disabled={!canAsk}
-              title="Ctrl/⌘ + Enter"
-              className="ml-auto flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-medium bg-[#a855f7] hover:bg-[#9333ea] disabled:opacity-40 text-white rounded-[8px] transition-colors"
-            >
-              <Sparkles size={14} /> {aiState === "thinking" ? "Thinking…" : "Ask Ninja AI"}
-            </button>
-          )}
+          <button
+            onClick={submit}
+            disabled={aiAvailable ? !canAsk : !text.trim()}
+            title="Ctrl/⌘ + Enter"
+            className="ml-auto flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-medium bg-[#a855f7] hover:bg-[#9333ea] disabled:opacity-40 text-white rounded-[8px] transition-colors"
+          >
+            {aiAvailable ? (
+              <>
+                <Sparkles size={14} /> {aiState === "thinking" ? "Thinking…" : "Ask Ninja AI"}
+              </>
+            ) : (
+              <>
+                <ArrowRight size={14} /> Find tools
+              </>
+            )}
+          </button>
         </div>
       </div>
 
-      {sensitive && aiEnabled && (text.trim() || imageFile) && (
+      {sensitive && aiAvailable && (text.trim() || imageFile) && (
         <label className="flex items-start gap-2 p-3 text-xs text-[#f97316] bg-[#f97316]/5 border border-[#f97316]/25 rounded-[10px] cursor-pointer">
           <input type="checkbox" checked={secretAck} onChange={(e) => setSecretAck(e.target.checked)} className="mt-0.5 accent-[#f97316]" />
           <span>
@@ -461,7 +486,11 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
 
       {source && !detections.length && !matches.length && aiState === "idle" && (
         <p className="text-xs text-[#666666]">
-          {aiEnabled ? "Not sure what this is — ask Ninja AI for a closer look." : "Not sure what this is yet — try pasting more of it."}
+          {aiAvailable
+            ? "Not sure what this is — ask Ninja AI for a closer look."
+            : searchedLocally
+              ? "No tool matched that. Describe the task (e.g. “decode a JWT”, “convert CSV to JSON”) or paste the data itself — a token, an error, a timestamp."
+              : "Paste data to identify it instantly, or describe a task and press Find tools."}
         </p>
       )}
     </div>
