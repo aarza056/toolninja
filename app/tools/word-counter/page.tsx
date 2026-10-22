@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { generateToolMetadata, generateToolJsonLd } from "@/lib/metadata";
+import { generateToolMetadata } from "@/lib/metadata";
+import ToolJsonLd from "@/components/ToolJsonLd";
 import WordCounterClient from "./WordCounterClient";
 import ToolSeoSection from "@/components/ToolSeoSection";
 
@@ -8,10 +9,7 @@ export const metadata: Metadata = generateToolMetadata("word-counter");
 export default function WordCounterPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateToolJsonLd("word-counter")) }}
-      />
+      <ToolJsonLd slug="word-counter" />
       <WordCounterClient />
       <ToolSeoSection slug="word-counter" />
     </>

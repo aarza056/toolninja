@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { generateToolMetadata, generateToolJsonLd } from "@/lib/metadata";
+import { generateToolMetadata } from "@/lib/metadata";
+import ToolJsonLd from "@/components/ToolJsonLd";
 import HtaccessToNginxClient from "./HtaccessToNginxClient";
 import ToolSeoSection from "@/components/ToolSeoSection";
 
@@ -8,10 +9,7 @@ export const metadata: Metadata = generateToolMetadata("htaccess-to-nginx");
 export default function HtaccessToNginxPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateToolJsonLd("htaccess-to-nginx")) }}
-      />
+      <ToolJsonLd slug="htaccess-to-nginx" />
       <HtaccessToNginxClient />
       <ToolSeoSection slug="htaccess-to-nginx" />
     </>

@@ -25,7 +25,8 @@ export default function PrivacyPage() {
             Whatever you type into a tool — code, text, keys, tokens, passwords — is processed
             entirely in your browser and never sent to our servers. Separately, the site itself
             uses analytics (only if you consent) and displays ads, both described below. Neither
-            one ever sees what you type into a tool.
+            one ever sees what you type into a tool. The only things that leave your browser are
+            what you deliberately send: a question to Ask Ninja AI, or a rating or comment (section 7).
           </div>
         </section>
 
@@ -139,7 +140,25 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">7. Children&apos;s privacy</h2>
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">7. Ask Ninja, ratings and comments</h2>
+          <p className="mb-3">
+            <strong className="text-[#d4d4d4]">Ask Ninja&apos;s</strong> paste detection runs entirely in your
+            browser. Only when you press <em>Ask Ninja AI</em> is your question (and any image you attached) sent to
+            our AI provider, Anthropic, to generate an answer. We warn you first if it looks like it contains a
+            secret. We don&apos;t store your question: we keep only anonymous counts, a short topic label (such as
+            &quot;jwt&quot;), and — when no tool fits — a one-line summary of the kind of tool you needed, written by
+            the AI without your data.
+          </p>
+          <p>
+            <strong className="text-[#d4d4d4]">Ratings and comments</strong> on tool pages are anonymous: no name,
+            email or account. Comments are checked by an automated filter (including our AI provider) and by a
+            person before they appear, and anything that looks like a token or key is removed before storing. To
+            limit spam we use a hashed visitor identifier that changes every day; we never store your IP address.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">8. Children&apos;s privacy</h2>
           <p>
             ToolNinja does not knowingly collect any information from children under 13, and the tools
             themselves collect no personal information from anyone, of any age. Our advertising and
@@ -149,7 +168,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">8. Changes to this policy</h2>
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">9. Changes to this policy</h2>
           <p>
             If this policy changes materially, we will update the &quot;Last updated&quot; date at the top of
             this page. Continued use of ToolNinja after a policy update constitutes acceptance of the
@@ -158,7 +177,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">9. Contact</h2>
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">10. Contact</h2>
           <p>
             Questions about this policy? Open an issue on our public repository or reach out via the
             contact details listed there.

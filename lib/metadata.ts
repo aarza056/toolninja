@@ -697,7 +697,8 @@ export function generateToolMetadata(slug: string): Metadata {
   };
 }
 
-export function generateToolJsonLd(slug: string) {
+/** `rating` adds aggregateRating — only pass it once the tool has enough real ratings (Google's rules). */
+export function generateToolJsonLd(slug: string, rating?: { avg: number; count: number }) {
   const tool = tools.find((t) => t.slug === slug);
   if (!tool) return null;
 
@@ -722,5 +723,16 @@ export function generateToolJsonLd(slug: string) {
       name: "ToolNinja",
       url: BASE_URL,
     },
+    ...(rating
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: rating.avg.toFixed(1),
+            ratingCount: rating.count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
   };
 }

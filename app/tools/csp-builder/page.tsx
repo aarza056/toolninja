@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { generateToolMetadata, generateToolJsonLd } from "@/lib/metadata";
+import { generateToolMetadata } from "@/lib/metadata";
+import ToolJsonLd from "@/components/ToolJsonLd";
 import CspBuilderClient from "./CspBuilderClient";
 import ToolSeoSection from "@/components/ToolSeoSection";
 
@@ -8,10 +9,7 @@ export const metadata: Metadata = generateToolMetadata("csp-builder");
 export default function CspBuilderPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateToolJsonLd("csp-builder")) }}
-      />
+      <ToolJsonLd slug="csp-builder" />
       <CspBuilderClient />
       <ToolSeoSection slug="csp-builder" />
     </>

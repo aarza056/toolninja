@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { generateToolMetadata, generateToolJsonLd } from "@/lib/metadata";
+import { generateToolMetadata } from "@/lib/metadata";
+import ToolJsonLd from "@/components/ToolJsonLd";
 import ImageColorPickerClient from "./ImageColorPickerClient";
 import ToolSeoSection from "@/components/ToolSeoSection";
 
@@ -8,10 +9,7 @@ export const metadata: Metadata = generateToolMetadata("image-color-picker");
 export default function ImageColorPickerPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateToolJsonLd("image-color-picker")) }}
-      />
+      <ToolJsonLd slug="image-color-picker" />
       <ImageColorPickerClient />
       <ToolSeoSection slug="image-color-picker" />
     </>

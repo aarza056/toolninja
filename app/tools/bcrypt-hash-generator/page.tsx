@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { generateToolMetadata, generateToolJsonLd } from "@/lib/metadata";
+import { generateToolMetadata } from "@/lib/metadata";
+import ToolJsonLd from "@/components/ToolJsonLd";
 import BcryptHashGeneratorClient from "./BcryptHashGeneratorClient";
 import ToolSeoSection from "@/components/ToolSeoSection";
 
@@ -8,10 +9,7 @@ export const metadata: Metadata = generateToolMetadata("bcrypt-hash-generator");
 export default function BcryptHashGeneratorPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateToolJsonLd("bcrypt-hash-generator")) }}
-      />
+      <ToolJsonLd slug="bcrypt-hash-generator" />
       <BcryptHashGeneratorClient />
       <ToolSeoSection slug="bcrypt-hash-generator" />
     </>

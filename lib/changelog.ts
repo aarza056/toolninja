@@ -26,6 +26,18 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    date: "2026-10-23",
+    title: "Rate any tool",
+    summary: "Every tool now has a quick star rating and an optional comment — no account needed. Ratings help other developers pick the right tool and tell us what to improve.",
+    items: [
+      { kind: "feature", text: "Star ratings and short comments at the end of every tool" },
+      { kind: "feature", text: "A tool's average rating appears once it has enough ratings" },
+      { kind: "feature", text: "Comments are spam-filtered and reviewed before they appear; tokens and keys are removed automatically" },
+      { kind: "improved", text: "Ask Ninja's usage limits are now shared across servers, so they're fair for everyone" },
+      { kind: "fix", text: "The Privacy page now explains how Ask Ninja, ratings and comments handle your data", href: "/privacy" },
+    ],
+  },
+  {
     date: "2026-10-20",
     title: "Ask Ninja — paste anything",
     summary:

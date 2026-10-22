@@ -7,6 +7,8 @@ import { getAllPosts } from "@/lib/blog";
 import { categorySlug } from "@/lib/categories";
 import { toolReferences } from "@/lib/tool-references";
 import SupportCard from "@/components/support/SupportCard";
+import ToolReviews from "@/components/reviews/ToolReviews";
+import { getToolReviewData } from "@/lib/reviews";
 
 interface Props {
   slug: string;
@@ -14,7 +16,7 @@ interface Props {
 
 const BASE_URL = "https://toolninja.io";
 
-export default function ToolSeoSection({ slug }: Props) {
+export default async function ToolSeoSection({ slug }: Props) {
   const content = toolContent[slug];
   const tool = tools.find((t) => t.slug === slug);
 
@@ -74,6 +76,8 @@ export default function ToolSeoSection({ slug }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
       )}
+
+      {tool && <ToolReviews slug={slug} toolName={tool.name} initial={await getToolReviewData(slug)} />}
 
       <AdSlot slot={AD_SLOTS.toolPage} />
 

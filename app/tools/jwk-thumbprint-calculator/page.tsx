@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { generateToolMetadata, generateToolJsonLd } from "@/lib/metadata";
+import { generateToolMetadata } from "@/lib/metadata";
+import ToolJsonLd from "@/components/ToolJsonLd";
 import JwkThumbprintClient from "./JwkThumbprintClient";
 import ToolSeoSection from "@/components/ToolSeoSection";
 
@@ -8,10 +9,7 @@ export const metadata: Metadata = generateToolMetadata("jwk-thumbprint-calculato
 export default function JwkThumbprintPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateToolJsonLd("jwk-thumbprint-calculator")) }}
-      />
+      <ToolJsonLd slug="jwk-thumbprint-calculator" />
       <JwkThumbprintClient />
       <ToolSeoSection slug="jwk-thumbprint-calculator" />
     </>

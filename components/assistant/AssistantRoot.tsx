@@ -57,7 +57,9 @@ export default function AssistantRoot() {
   }, [ready]);
 
   // Always-visible launcher, except on /ask (already there) and while the card or overlay is up
-  const showLauncher = pathname !== "/ask" && !assistantOpen;
+  const showLauncher = pathname !== "/ask" && !pathname.startsWith("/admin") && !assistantOpen;
+
+  if (pathname.startsWith("/admin")) return null;
 
   return (
     <>

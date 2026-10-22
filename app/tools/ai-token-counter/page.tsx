@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { generateToolMetadata, generateToolJsonLd } from "@/lib/metadata";
+import { generateToolMetadata } from "@/lib/metadata";
+import ToolJsonLd from "@/components/ToolJsonLd";
 import AiTokenCounterClient from "./AiTokenCounterClient";
 import ToolSeoSection from "@/components/ToolSeoSection";
 
@@ -8,10 +9,7 @@ export const metadata: Metadata = generateToolMetadata("ai-token-counter");
 export default function AiTokenCounterPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateToolJsonLd("ai-token-counter")) }}
-      />
+      <ToolJsonLd slug="ai-token-counter" />
       <AiTokenCounterClient />
       <ToolSeoSection slug="ai-token-counter" />
     </>

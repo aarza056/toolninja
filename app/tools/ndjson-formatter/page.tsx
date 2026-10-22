@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { generateToolMetadata, generateToolJsonLd } from "@/lib/metadata";
+import { generateToolMetadata } from "@/lib/metadata";
+import ToolJsonLd from "@/components/ToolJsonLd";
 import NdjsonFormatterClient from "./NdjsonFormatterClient";
 import ToolSeoSection from "@/components/ToolSeoSection";
 
@@ -8,10 +9,7 @@ export const metadata: Metadata = generateToolMetadata("ndjson-formatter");
 export default function NdjsonFormatterPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateToolJsonLd("ndjson-formatter")) }}
-      />
+      <ToolJsonLd slug="ndjson-formatter" />
       <NdjsonFormatterClient />
       <ToolSeoSection slug="ndjson-formatter" />
     </>

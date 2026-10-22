@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { generateToolMetadata, generateToolJsonLd } from "@/lib/metadata";
+import { generateToolMetadata } from "@/lib/metadata";
+import ToolJsonLd from "@/components/ToolJsonLd";
 import HotpGeneratorClient from "./HotpGeneratorClient";
 import ToolSeoSection from "@/components/ToolSeoSection";
 
@@ -8,10 +9,7 @@ export const metadata: Metadata = generateToolMetadata("hotp-generator");
 export default function HotpGeneratorPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateToolJsonLd("hotp-generator")) }}
-      />
+      <ToolJsonLd slug="hotp-generator" />
       <HotpGeneratorClient />
       <ToolSeoSection slug="hotp-generator" />
     </>

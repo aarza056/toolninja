@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { generateToolMetadata, generateToolJsonLd } from "@/lib/metadata";
+import { generateToolMetadata } from "@/lib/metadata";
+import ToolJsonLd from "@/components/ToolJsonLd";
 import NodeTypeStrippingCheckerClient from "./NodeTypeStrippingCheckerClient";
 import ToolSeoSection from "@/components/ToolSeoSection";
 
@@ -8,10 +9,7 @@ export const metadata: Metadata = generateToolMetadata("node-type-stripping-chec
 export default function NodeTypeStrippingCheckerPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateToolJsonLd("node-type-stripping-checker")) }}
-      />
+      <ToolJsonLd slug="node-type-stripping-checker" />
       <NodeTypeStrippingCheckerClient />
       <ToolSeoSection slug="node-type-stripping-checker" />
     </>

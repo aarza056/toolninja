@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { generateToolMetadata, generateToolJsonLd } from "@/lib/metadata";
+import { generateToolMetadata } from "@/lib/metadata";
+import ToolJsonLd from "@/components/ToolJsonLd";
 import GithubActionsGeneratorClient from "./GithubActionsGeneratorClient";
 import ToolSeoSection from "@/components/ToolSeoSection";
 
@@ -8,10 +9,7 @@ export const metadata: Metadata = generateToolMetadata("github-actions-generator
 export default function GithubActionsGeneratorPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateToolJsonLd("github-actions-generator")) }}
-      />
+      <ToolJsonLd slug="github-actions-generator" />
       <GithubActionsGeneratorClient />
       <ToolSeoSection slug="github-actions-generator" />
     </>
