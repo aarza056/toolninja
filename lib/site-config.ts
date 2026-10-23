@@ -49,7 +49,9 @@ async function load(): Promise<SiteConfig> {
 }
 
 /** Cached for pages; refreshed whenever an admin saves. */
-export const getSiteConfig = unstable_cache(load, ["site-config"], { tags: [SITE_CONFIG_TAG], revalidate: 3600 });
+// The "v2" key part retires cache entries written by builds that couldn't reach storage (they cached
+// empty values). Bump it if that ever happens again.
+export const getSiteConfig = unstable_cache(load, ["site-config", "v2"], { tags: [SITE_CONFIG_TAG], revalidate: 3600 });
 
 /** Uncached, for the admin pages. */
 export const getSiteConfigFresh = load;

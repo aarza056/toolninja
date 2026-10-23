@@ -249,7 +249,11 @@ export function kv(): Store {
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
   if (url && token) {
-    store = upstashStore(new Redis({ url, token, automaticDeserialization: false }));
+    // cache: "default" rather than the client's own "no-store": during static rendering Next.js treats a
+    // no-store fetch as "this page must be dynamic" and throws. Upstash sends every command as a POST,
+    // which Next never caches anyway ("auto no cache"), so reads stay fresh and pages can still be
+    // pre-rendered with real data (banner, feature switches, ratings).
+    store = upstashStore(new Redis({ url, token, automaticDeserialization: false, cache: "default" }));
   } else {
     if (process.env.VERCEL_ENV === "production") console.warn("kv: KV_REST_API_URL/TOKEN missing — using in-memory store");
     store = memoryStore();
@@ -257,11 +261,21 @@ export function kv(): Store {
   return store;
 }
 
-/** Runs a storage call and returns `fallback` if storage is unreachable, so the site never breaks on it. */
+/** Next.js control-flow errors (dynamic-usage bailout, redirect, notFound…) carry a `digest`. */
+function isNextInternalError(e: unknown): boolean {
+  return typeof e === "object" && e !== null && typeof (e as { digest?: unknown }).digest === "string";
+}
+
+/**
+ * Runs a storage call and returns `fallback` if storage is unreachable, so the site never breaks on it.
+ * Next.js's own control-flow errors are re-thrown: swallowing one once hid a build-time bug where
+ * every pre-rendered page silently got empty data.
+ */
 export async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
     return await fn();
   } catch (e) {
+    if (isNextInternalError(e)) throw e;
     console.error("kv:", e instanceof Error ? e.message : "error");
     return fallback;
   }

@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 import { describe, expect, it } from "vitest";
 import { networkId, visitorId, originAllowed, allowedOrigins } from "@/lib/visitor";
@@ -67,6 +67,17 @@ describe("origin allowlist", () => {
     expect(originAllowed(withOrigin("http://localhost:3000"), { NODE_ENV: "development" })).toBe(true);
     expect(originAllowed(withOrigin("http://localhost:3000"), prod)).toBe(false);
     expect(originAllowed(withOrigin("http://localhost.evil.com"), { NODE_ENV: "development" })).toBe(false);
+  });
+});
+
+describe("tool registry", () => {
+  it("every tool in lib/tools.ts has a page", () => {
+    const missing = tools.filter((t) => !existsSync(join(__dirname, "..", "app", "tools", t.slug, "page.tsx"))).map((t) => t.slug);
+    expect(missing).toEqual([]);
+  });
+
+  it("slugs are unique", () => {
+    expect(new Set(tools.map((t) => t.slug)).size).toBe(tools.length);
   });
 });
 

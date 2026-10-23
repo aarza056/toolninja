@@ -215,7 +215,8 @@ export function getToolReviewData(slug: string): Promise<ToolReviewData> {
         return { ...toSummary(rating as Record<string, string> | null), reviews };
       }, empty);
     },
-    ["tool-reviews", slug],
+    // "v2" retires entries cached empty by builds that couldn't reach storage
+    ["tool-reviews", "v2", slug],
     { tags: [`reviews:${slug}`], revalidate: DAY }
   )();
 }

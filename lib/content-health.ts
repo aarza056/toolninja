@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import { tools, LATEST_TOOL_SLUGS } from "@/lib/tools";
 import { getAllPosts } from "@/lib/blog";
 import { toolContent } from "@/lib/tool-content";
@@ -31,13 +29,8 @@ export function runContentHealth(): { findings: Finding[]; stats: Record<string,
   const add = (f: Finding) => f.items.length && findings.push(f);
 
   // ── Tools ──
-  add({
-    severity: "error",
-    area: "Tools",
-    title: "Tools without a page",
-    hint: "Registered in lib/tools.ts but there's no app/tools/<slug>/page.tsx — the link 404s.",
-    items: tools.filter((t) => !fs.existsSync(path.join(process.cwd(), "app", "tools", t.slug, "page.tsx"))).map((t) => ({ label: t.name, detail: t.slug })),
-  });
+  // "Every tool has a page" is checked by the unit tests (tests/site.test.ts) instead: the source
+  // files aren't on the server in production, so a runtime check reported every tool as missing.
   add({
     severity: "warn",
     area: "Tools",
