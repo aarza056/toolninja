@@ -39,6 +39,37 @@ function rgbToHex(r: number, g: number, b: number): string {
   return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
 }
 
+function rgbToCmyk(r: number, g: number, b: number): [number, number, number, number] {
+  const rf = r / 255, gf = g / 255, bf = b / 255;
+  const k = 1 - Math.max(rf, gf, bf);
+  if (k === 1) return [0, 0, 0, 100];
+  const c = (1 - rf - k) / (1 - k);
+  const m = (1 - gf - k) / (1 - k);
+  const y = (1 - bf - k) / (1 - k);
+  return [Math.round(c * 100), Math.round(m * 100), Math.round(y * 100), Math.round(k * 100)];
+}
+
+// sRGB -> OKLCH, following Björn Ottosson's OKLab formulas (https://bottosson.github.io/posts/oklab/)
+function srgbToLinear(c: number): number {
+  const cn = c / 255;
+  return cn <= 0.04045 ? cn / 12.92 : Math.pow((cn + 0.055) / 1.055, 2.4);
+}
+
+function rgbToOklch(r: number, g: number, b: number): [number, number, number] {
+  const lr = srgbToLinear(r), lg = srgbToLinear(g), lb = srgbToLinear(b);
+  const l = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
+  const m = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
+  const s = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
+  const l_ = Math.cbrt(l), m_ = Math.cbrt(m), s_ = Math.cbrt(s);
+  const L = 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_;
+  const a = 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_;
+  const bb = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_;
+  const C = Math.sqrt(a * a + bb * bb);
+  let H = (Math.atan2(bb, a) * 180) / Math.PI;
+  if (H < 0) H += 360;
+  return [Math.round(L * 1000) / 10, Math.round(C * 1000) / 1000, Math.round(H * 10) / 10];
+}
+
 function parseInput(raw: string): [number, number, number] | null {
   raw = raw.trim();
   if (raw.startsWith("#") || /^[a-f0-9]{3,6}$/i.test(raw)) {
@@ -69,7 +100,15 @@ export default function ColorConverterClient() {
     const [red, green, blue] = r;
     const [h, s, l] = rgbToHsl(red, green, blue);
     const hex = rgbToHex(red, green, blue);
-    return { hex, rgb: `rgb(${red}, ${green}, ${blue})`, hsl: `hsl(${h}, ${s}%, ${l}%)` };
+    const [c, m, y, k] = rgbToCmyk(red, green, blue);
+    const [ol, oc, oh] = rgbToOklch(red, green, blue);
+    return {
+      hex,
+      rgb: `rgb(${red}, ${green}, ${blue})`,
+      hsl: `hsl(${h}, ${s}%, ${l}%)`,
+      cmyk: `cmyk(${c}%, ${m}%, ${y}%, ${k}%)`,
+      oklch: `oklch(${ol}% ${oc} ${oh})`,
+    };
   }, [rgb]);
 
   const result = colors();
@@ -92,7 +131,7 @@ export default function ColorConverterClient() {
   };
 
   return (
-    <ToolLayout title="Color Converter" description="Convert between HEX, RGB, and HSL color formats">
+    <ToolLayout title="Color Converter" description="Convert between HEX, RGB, HSL, CMYK, and OKLCH color formats">
       <div className="max-w-lg">
         {/* Color preview + picker row */}
         <div className="flex items-center gap-4 mb-6">
@@ -129,9 +168,9 @@ export default function ColorConverterClient() {
         {/* Conversions */}
         {result && (
           <div className="space-y-3">
-            {(["hex", "rgb", "hsl"] as const).map((fmt) => (
+            {(["hex", "rgb", "hsl", "cmyk", "oklch"] as const).map((fmt) => (
               <div key={fmt} className="flex items-center gap-3 p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
-                <span className="w-8 text-xs font-semibold text-[#888888] uppercase">{fmt}</span>
+                <span className="w-12 text-xs font-semibold text-[#888888] uppercase shrink-0">{fmt}</span>
                 <code className="flex-1 text-sm font-mono text-[#f5f5f5]">{result[fmt]}</code>
                 <CopyButton text={result[fmt]} size="sm" />
               </div>

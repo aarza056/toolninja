@@ -1,19 +1,50 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Hash, Trash2, AlertCircle } from "lucide-react";
+import { Hash, Trash2, AlertCircle, Upload, FileIcon, ShieldCheck, ShieldAlert } from "lucide-react";
+import { md5, hmacMd5 } from "@/lib/md5";
 
 const STORAGE_KEY = "toolninja:hash-generator";
 
-type Algorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
+type Algorithm = "MD5" | "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
 type OutputFormat = "hex" | "base64";
 type CaseFormat = "lower" | "upper";
+type Mode = "hash" | "hmac" | "file";
 
-const ALGORITHMS: Algorithm[] = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"];
+function formatBytes(n: number): string {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+}
+
+async function digest(algorithm: Algorithm, data: ArrayBuffer): Promise<ArrayBuffer> {
+  if (algorithm === "MD5") return toArrayBuffer(md5(new Uint8Array(data)));
+  return crypto.subtle.digest(algorithm, data);
+}
+
+async function computeHmac(message: string, secret: string, algorithm: Algorithm): Promise<ArrayBuffer> {
+  const enc = new TextEncoder();
+  if (algorithm === "MD5") return toArrayBuffer(hmacMd5(enc.encode(secret), enc.encode(message)));
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(secret),
+    { name: "HMAC", hash: algorithm },
+    false,
+    ["sign"]
+  );
+  return crypto.subtle.sign("HMAC", key, enc.encode(message));
+}
+
+const ALGORITHMS: Algorithm[] = ["MD5", "SHA-1", "SHA-256", "SHA-384", "SHA-512"];
 
 const BIT_LENGTHS: Record<Algorithm, number> = {
+  MD5: 128,
   "SHA-1": 160,
   "SHA-256": 256,
   "SHA-384": 384,
@@ -36,14 +67,38 @@ function bufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
+/** Constant-time string comparison — always walks the full length of the longer string
+ * regardless of where a mismatch occurs, so comparison time doesn't leak how many
+ * leading characters matched (the property a plain === comparison doesn't have). */
+function timingSafeEqual(a: string, b: string): boolean {
+  const maxLen = Math.max(a.length, b.length);
+  let diff = a.length === b.length ? 0 : 1;
+  for (let i = 0; i < maxLen; i++) {
+    const ca = i < a.length ? a.charCodeAt(i) : 0;
+    const cb = i < b.length ? b.charCodeAt(i) : 0;
+    diff |= ca ^ cb;
+  }
+  return diff === 0;
+}
+
+function normalizeForCompare(value: string): string {
+  return value.trim().replace(/^sha256=/i, "").toLowerCase();
+}
+
 export default function HashGeneratorClient() {
+  const [mode, setMode] = useState<Mode>("hash");
   const [input, setInput] = useState("");
+  const [secret, setSecret] = useState("");
   const [algorithm, setAlgorithm] = useState<Algorithm>("SHA-256");
   const [outputFormat, setOutputFormat] = useState<OutputFormat>("hex");
   const [caseFormat, setCaseFormat] = useState<CaseFormat>("lower");
   const [hash, setHash] = useState("");
   const [error, setError] = useState("");
   const [computing, setComputing] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [expected, setExpected] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     try {
@@ -59,7 +114,37 @@ export default function HashGeneratorClient() {
   }, [input]);
 
   useEffect(() => {
-    if (!input) {
+    if (mode === "file") {
+      if (!file) {
+        setHash("");
+        setError("");
+        return;
+      }
+      let cancelled = false;
+      setError("");
+      setComputing(true);
+      file
+        .arrayBuffer()
+        .then((buf) => digest(algorithm, buf))
+        .then((hashBuffer) => {
+          if (cancelled) return;
+          setHash(outputFormat === "hex" ? bufferToHex(hashBuffer, caseFormat === "upper") : bufferToBase64(hashBuffer));
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setError("Failed to hash this file. Please try again.");
+            setHash("");
+          }
+        })
+        .finally(() => {
+          if (!cancelled) setComputing(false);
+        });
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    if (!input || (mode === "hmac" && !secret)) {
       setHash("");
       setError("");
       return;
@@ -74,9 +159,10 @@ export default function HashGeneratorClient() {
           setHash("");
           return;
         }
-        const encoder = new TextEncoder();
-        const data = encoder.encode(input);
-        const hashBuffer = await window.crypto.subtle.digest(algorithm, data);
+        const hashBuffer =
+          mode === "hmac"
+            ? await computeHmac(input, secret, algorithm)
+            : await digest(algorithm, toArrayBuffer(new TextEncoder().encode(input)));
         if (outputFormat === "hex") {
           setHash(bufferToHex(hashBuffer, caseFormat === "upper"));
         } else {
@@ -91,17 +177,72 @@ export default function HashGeneratorClient() {
     }
 
     computeHash();
-  }, [input, algorithm, outputFormat, caseFormat]);
+  }, [input, secret, mode, algorithm, outputFormat, caseFormat, file]);
 
   const clear = () => {
     setInput("");
+    setSecret("");
+    setFile(null);
     setHash("");
     setError("");
+    setExpected("");
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const f = e.dataTransfer.files?.[0];
+    if (f) setFile(f);
   };
 
   return (
-    <ToolLayout title="Hash Generator" description="Generate cryptographic hashes using SHA-1, SHA-256, SHA-384, and SHA-512">
+    <ToolLayout title="Hash Generator" description="Generate cryptographic hashes, or HMAC signatures for verifying webhook payloads">
       <div className="max-w-2xl space-y-5">
+        {/* Mode tabs */}
+        <div className="flex">
+          <button
+            onClick={() => setMode("hash")}
+            className={`px-4 py-2 text-sm border first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+              mode === "hash" ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+            }`}
+          >
+            Hash
+          </button>
+          <button
+            onClick={() => setMode("hmac")}
+            className={`px-4 py-2 text-sm border border-l-0 last:rounded-r-[6px] transition-colors ${
+              mode === "hmac" ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+            }`}
+          >
+            HMAC
+          </button>
+          <button
+            onClick={() => setMode("file")}
+            className={`px-4 py-2 text-sm border border-l-0 first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+              mode === "file" ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+            }`}
+          >
+            File
+          </button>
+        </div>
+
+        {mode === "hmac" && (
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs text-[#888888] font-medium">Secret Key</label>
+            <input
+              type="text"
+              value={secret}
+              onChange={(e) => setSecret(e.target.value)}
+              placeholder="whsec_..."
+              spellCheck={false}
+              className="w-full p-3 font-mono text-sm bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
+            />
+            <p className="text-xs text-[#555555]">
+              Used to verify webhook signatures (Stripe, GitHub, etc.) — paste the payload below and compare the result to the signature header.
+            </p>
+          </div>
+        )}
+
         {/* Controls row */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Algorithm tabs */}
@@ -122,6 +263,9 @@ export default function HashGeneratorClient() {
                 </button>
               ))}
             </div>
+            {algorithm === "MD5" && (
+              <p className="text-[11px] text-[#f97316] mt-1.5">MD5 is fine for checksums, but never for passwords or signatures.</p>
+            )}
           </div>
 
           {/* Output format */}
@@ -177,18 +321,59 @@ export default function HashGeneratorClient() {
           </div>
         </div>
 
-        {/* Input textarea */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-[#888888] font-medium">Input Text</label>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Enter text to hash..."
-            rows={6}
-            spellCheck={false}
-            className="w-full p-3 font-mono text-sm resize-y bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
-          />
-        </div>
+        {/* Input: text, or file drop zone */}
+        {mode === "file" ? (
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs text-[#888888] font-medium">File</label>
+            <div
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed rounded-[8px] cursor-pointer transition-colors ${
+                dragOver ? "border-[#a855f7] bg-[#a855f7]/5" : "border-[#222222] hover:border-[#333333]"
+              }`}
+            >
+              {file ? (
+                <>
+                  <FileIcon size={28} strokeWidth={1} className="text-[#a855f7]" />
+                  <p className="text-sm text-[#f5f5f5]">{file.name}</p>
+                  <p className="text-xs text-[#555555]">{formatBytes(file.size)} — click or drop to replace</p>
+                </>
+              ) : (
+                <>
+                  <Upload size={28} strokeWidth={1} className="text-[#444444]" />
+                  <p className="text-sm text-[#888888]">Drag & drop a file, or click to upload</p>
+                </>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) setFile(f);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+            <p className="text-xs text-[#555555]">
+              The file never leaves your browser — hashing runs entirely client-side via the Web Crypto API.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs text-[#888888] font-medium">Input Text</label>
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Enter text to hash..."
+              rows={6}
+              spellCheck={false}
+              className="w-full p-3 font-mono text-sm resize-y bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
+            />
+          </div>
+        )}
 
         {/* Hash output */}
         <div className="flex flex-col gap-1.5">
@@ -225,6 +410,42 @@ export default function HashGeneratorClient() {
             </div>
           )}
         </div>
+
+        {/* Verify against an expected value */}
+        {hash && !error && (
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs text-[#888888] font-medium">
+              Verify against expected value <span className="text-[#555555] font-normal">(e.g. a webhook signature header)</span>
+            </label>
+            <input
+              type="text"
+              value={expected}
+              onChange={(e) => setExpected(e.target.value)}
+              placeholder="Paste the received hash/signature to compare…"
+              spellCheck={false}
+              className="w-full p-3 font-mono text-sm bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] placeholder:text-[#444444]"
+            />
+            {expected.trim() && (
+              <div
+                className={`flex items-center gap-2 p-2.5 rounded-[6px] text-xs ${
+                  timingSafeEqual(normalizeForCompare(hash), normalizeForCompare(expected))
+                    ? "bg-[#22c55e]/10 border border-[#22c55e]/30 text-[#22c55e]"
+                    : "bg-[#ef4444]/10 border border-[#ef4444]/30 text-[#ef4444]"
+                }`}
+              >
+                {timingSafeEqual(normalizeForCompare(hash), normalizeForCompare(expected)) ? (
+                  <>
+                    <ShieldCheck size={14} className="shrink-0" /> Match — computed using a constant-time comparison, so it can&apos;t leak timing info about where a mismatch occurred.
+                  </>
+                ) : (
+                  <>
+                    <ShieldAlert size={14} className="shrink-0" /> Mismatch — the computed value doesn&apos;t match what you pasted.
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </ToolLayout>
   );

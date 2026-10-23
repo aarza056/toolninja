@@ -2,10 +2,11 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { tools, categories } from "@/lib/tools";
+import { tools, categories, LATEST_TOOL_SLUGS } from "@/lib/tools";
 import type { Tool } from "@/lib/tools";
 import * as LucideIcons from "lucide-react";
-import { Search, X, RefreshCw } from "lucide-react";
+import { Search, X, RefreshCw, Sparkles } from "lucide-react";
+import { openAssistant } from "@/lib/showcase";
 import { devPhrases } from "@/lib/phrases";
 import { getRecentTools, getFavoriteTools } from "@/lib/user-prefs";
 import StarButton from "@/components/StarButton";
@@ -22,16 +23,7 @@ const FEATURED_SLUGS = [
   "color-palette",
 ];
 
-const NEW_SLUGS = new Set([
-  "sql-formatter","color-palette","jwt-generator","crypto-tools",
-  "http-request","html-formatter","config-validator","text-diff",
-  "cidr-calculator","unicode-explorer",
-  "xpath-tester","docker-run-to-compose",
-]);
-
-const LATEST_SLUGS = [
-  "docker-run-to-compose",
-];
+const NEW_SLUGS = new Set(LATEST_TOOL_SLUGS);
 
 const CATEGORY_COLORS: Record<string, string> = {
   Format:    "bg-purple-500/10 text-purple-400 border-purple-500/20",
@@ -90,7 +82,7 @@ const WHY_ITEMS = [
   {
     icon: "Lock",
     title: "Private by default",
-    desc: "Your code and data never leave the browser. No server calls, no logs, no telemetry of any kind.",
+    desc: "Your code and data are processed locally and never sent to our servers — no matter what tool you're using.",
   },
   {
     icon: "Zap",
@@ -120,6 +112,9 @@ export default function HomeClient() {
     setPhraseIdx(Math.floor(Math.random() * devPhrases.length));
     setRecentSlugs(getRecentTools());
     setFavSlugs(getFavoriteTools());
+    // Browser search integration (public/opensearch.xml) sends queries as /?q=…
+    const q = new URLSearchParams(window.location.search).get("q");
+    if (q) setSearch(q);
   }, []);
 
   const nextPhrase = useCallback(() => {
@@ -144,7 +139,7 @@ export default function HomeClient() {
   }, [search, activeCategory]);
 
   const featuredTools = tools.filter((t) => FEATURED_SLUGS.includes(t.slug));
-  const latestTools = tools.filter((t) => LATEST_SLUGS.includes(t.slug));
+  const latestTools = LATEST_TOOL_SLUGS.map((slug) => tools.find((t) => t.slug === slug)).filter(Boolean) as Tool[];
   const isFiltering = search.trim() !== "" || activeCategory !== "All";
 
   const favoriteTools = favSlugs
@@ -159,7 +154,8 @@ export default function HomeClient() {
       {/* Hero ─────────────────────────────────────────────────────────────── */}
       <div className="mb-12 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#a855f7]/10 border border-[#a855f7]/20 rounded-full text-xs text-[#a855f7] mb-6 font-medium">
-          <span>🥷</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="" width={18} height={16} />
           <span>{tools.length} tools · 0 accounts · 100% browser</span>
         </div>
 
@@ -192,7 +188,7 @@ export default function HomeClient() {
 
         <p className="text-[#666666] text-base max-w-md mx-auto mb-8 leading-relaxed">
           Fast, free, private. Every tool runs entirely in your browser —
-          no login, no tracking, no server calls.
+          no login, and your data stays there.
         </p>
 
         {/* Search */}
@@ -214,6 +210,13 @@ export default function HomeClient() {
             </button>
           )}
         </div>
+
+        <button
+          onClick={openAssistant}
+          className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs text-[#c4a5f7] bg-[#a855f7]/10 border border-[#a855f7]/30 rounded-full hover:bg-[#a855f7]/20 hover:text-[#f5f5f5] transition-colors"
+        >
+          <Sparkles size={12} /> New: paste anything — Ninja figures out what it is
+        </button>
       </div>
 
       {/* Category pills ───────────────────────────────────────────────────── */}

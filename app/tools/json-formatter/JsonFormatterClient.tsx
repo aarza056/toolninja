@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Braces, Minimize2, Trash2, AlertCircle, ChevronRight, ChevronDown } from "lucide-react";
+import { Braces, Minimize2, Trash2, AlertCircle, ChevronRight, ChevronDown, Wrench } from "lucide-react";
+import { flattenJson, unflattenJson } from "@/lib/json-flatten";
 
 const STORAGE_KEY = "toolninja:json-formatter";
 
@@ -124,7 +125,8 @@ function evalJsonPath(root: unknown, path: string): unknown {
 }
 
 // ─── Main component ───────────────────────────────────────────────────────
-type Tab = "formatted" | "tree" | "jsonpath";
+type Tab = "formatted" | "tree" | "jsonpath" | "flatten";
+type FlattenMode = "flatten" | "unflatten";
 
 export default function JsonFormatterClient() {
   const [input, setInput] = useState("");
@@ -134,6 +136,7 @@ export default function JsonFormatterClient() {
   const [parsedJson, setParsedJson] = useState<unknown>(null);
   const [jsonPath, setJsonPath] = useState("$");
   const [pathResult, setPathResult] = useState<{ value: unknown; error: string } | null>(null);
+  const [flattenMode, setFlattenMode] = useState<FlattenMode>("flatten");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -167,6 +170,25 @@ export default function JsonFormatterClient() {
       setParsedJson(null);
     }
   }, []);
+
+  const [repairing, setRepairing] = useState(false);
+  const [repairError, setRepairError] = useState("");
+
+  const repair = async () => {
+    if (!input.trim()) return;
+    setRepairing(true);
+    setRepairError("");
+    try {
+      const { jsonrepair } = await import("jsonrepair");
+      const repaired = jsonrepair(input);
+      setInput(repaired);
+      format(repaired);
+    } catch (e) {
+      setRepairError(e instanceof Error ? e.message : "Couldn't auto-repair this — it may be too malformed");
+    } finally {
+      setRepairing(false);
+    }
+  };
 
   const minify = () => {
     if (!input.trim()) return;
@@ -208,7 +230,23 @@ export default function JsonFormatterClient() {
     { id: "formatted", label: "Formatted" },
     { id: "tree", label: "Tree" },
     { id: "jsonpath", label: "JSONPath" },
+    { id: "flatten", label: "Flatten" },
   ];
+
+  const flattenOutput = (() => {
+    if (parsedJson === null) return "";
+    try {
+      if (flattenMode === "flatten") {
+        return JSON.stringify(flattenJson(parsedJson), null, 2);
+      }
+      if (typeof parsedJson !== "object" || parsedJson === null || Array.isArray(parsedJson)) {
+        return "";
+      }
+      return JSON.stringify(unflattenJson(parsedJson as Record<string, unknown>), null, 2);
+    } catch {
+      return "";
+    }
+  })();
 
   return (
     <ToolLayout title="JSON Formatter" description="Format, validate, explore and query JSON">
@@ -226,6 +264,16 @@ export default function JsonFormatterClient() {
         >
           <Minimize2 size={14} /> Minify
         </button>
+        {error && (
+          <button
+            onClick={repair}
+            disabled={repairing}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#1a1a1a] hover:bg-[#222222] disabled:opacity-50 text-[#f5f5f5] border border-[#222222] rounded-[6px] transition-colors"
+            title="Attempt to fix trailing commas, single quotes, unquoted keys, and JS comments"
+          >
+            <Wrench size={14} /> {repairing ? "Repairing…" : "Repair"}
+          </button>
+        )}
         <button
           onClick={clear}
           className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] border border-[#222222] rounded-[6px] transition-colors"
@@ -255,6 +303,11 @@ export default function JsonFormatterClient() {
           {error && (
             <div className="flex items-center gap-1.5 text-xs text-[#ef4444] mt-1">
               <AlertCircle size={12} /> {error}
+            </div>
+          )}
+          {repairError && (
+            <div className="flex items-center gap-1.5 text-xs text-[#f97316] mt-1">
+              <AlertCircle size={12} /> {repairError}
             </div>
           )}
         </div>
@@ -348,6 +401,52 @@ export default function JsonFormatterClient() {
                       : parsedJson === null
                       ? "Format JSON first, then query with $"
                       : "Enter a JSONPath expression above"}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Flatten tab */}
+          {tab === "flatten" && (
+            <div className="flex flex-col gap-2 flex-1" style={{ minHeight: 0 }}>
+              <div className="flex items-center justify-between">
+                <div className="flex rounded-[6px] border border-[#222222] overflow-hidden">
+                  <button
+                    onClick={() => setFlattenMode("flatten")}
+                    className={`px-3 py-1.5 text-xs transition-colors ${flattenMode === "flatten" ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
+                  >
+                    Flatten
+                  </button>
+                  <button
+                    onClick={() => setFlattenMode("unflatten")}
+                    className={`px-3 py-1.5 text-xs border-l border-[#222222] transition-colors ${flattenMode === "unflatten" ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
+                  >
+                    Unflatten
+                  </button>
+                </div>
+                {flattenOutput && <CopyButton text={flattenOutput} size="sm" />}
+              </div>
+              <p className="text-[10px] text-[#555555]">
+                {flattenMode === "flatten"
+                  ? 'Nested keys become dot-notation: {"a":{"b":1}} → {"a.b":1}'
+                  : 'Dot-notation keys become nested: {"a.b":1} → {"a":{"b":1}}'}
+              </p>
+              <div
+                className="flex-1 p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] overflow-auto"
+                style={{ minHeight: 0 }}
+              >
+                {flattenOutput ? (
+                  <pre className="m-0 p-0 bg-transparent text-[#f5f5f5] whitespace-pre-wrap break-all">{flattenOutput}</pre>
+                ) : (
+                  <p className="text-[#444444] italic">
+                    {error
+                      ? "Fix JSON error first"
+                      : parsedJson === null
+                      ? "Format valid JSON first"
+                      : flattenMode === "unflatten"
+                      ? "Input must be a flat JSON object to unflatten"
+                      : "Flattened output will appear here…"}
                   </p>
                 )}
               </div>

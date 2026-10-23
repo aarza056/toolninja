@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { Search, X } from "lucide-react";
 import { animations, animationCategories, type AnimationCategory } from "@/lib/animations";
 import AnimationCard from "@/components/AnimationCard";
 import AnimationModal from "@/components/AnimationModal";
@@ -9,6 +10,7 @@ import type { Animation } from "@/lib/animations";
 export default function CssAnimationsClient() {
   const [activeCategory, setActiveCategory] = useState<AnimationCategory>("All");
   const [previewAnimation, setPreviewAnimation] = useState<Animation | null>(null);
+  const [search, setSearch] = useState("");
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { All: animations.length };
@@ -18,16 +20,35 @@ export default function CssAnimationsClient() {
     return counts;
   }, []);
 
-  const filtered = useMemo(
-    () =>
-      activeCategory === "All"
-        ? animations
-        : animations.filter((a) => a.category === activeCategory),
-    [activeCategory]
-  );
+  const filtered = useMemo(() => {
+    const byCategory = activeCategory === "All" ? animations : animations.filter((a) => a.category === activeCategory);
+    const q = search.trim().toLowerCase();
+    return q ? byCategory.filter((a) => a.name.toLowerCase().includes(q)) : byCategory;
+  }, [activeCategory, search]);
 
   return (
     <>
+      {/* Search */}
+      <div className="relative mb-4 max-w-sm">
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#555555]" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search animations…"
+          className="w-full pl-9 pr-8 py-2 text-sm bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+        />
+        {search && (
+          <button
+            onClick={() => setSearch("")}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#555555] hover:text-[#f5f5f5] transition-colors"
+            aria-label="Clear search"
+          >
+            <X size={14} />
+          </button>
+        )}
+      </div>
+
       {/* Category filter tabs */}
       <div className="flex flex-wrap gap-2 mb-6">
         {animationCategories.map((cat) => (
@@ -55,15 +76,21 @@ export default function CssAnimationsClient() {
       </div>
 
       {/* Animations grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filtered.map((anim) => (
-          <AnimationCard
-            key={anim.id}
-            animation={anim}
-            onPreview={() => setPreviewAnimation(anim)}
-          />
-        ))}
-      </div>
+      {filtered.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {filtered.map((anim) => (
+            <AnimationCard
+              key={anim.id}
+              animation={anim}
+              onPreview={() => setPreviewAnimation(anim)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="p-8 text-center text-[#444444] border border-dashed border-[#222222] rounded-[8px]">
+          No animations match &quot;{search}&quot;
+        </div>
+      )}
 
       {/* Preview modal */}
       <AnimationModal

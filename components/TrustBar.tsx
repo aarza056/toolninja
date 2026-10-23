@@ -1,11 +1,15 @@
-const stats = [
-  { value: "1,000+", label: "developers" },
-  { value: "40",     label: "free tools" },
-  { value: "0",      label: "server calls" },
-  { value: "100%",   label: "browser only" },
-];
+import { tools } from "@/lib/tools";
 
 export default function TrustBar() {
+  const stats = [
+    { value: "1,000+", label: "developers" },
+    { value: String(tools.length), label: "free tools" },
+    // Tool inputs stay in the browser, but Ask Ninja questions and ratings do reach the server,
+    // so the stats only claim what's true site-wide.
+    { value: "0", label: "accounts" },
+    { value: "100%", label: "in-browser tools" },
+  ];
+
   return (
     <div className="flex items-center bg-[#111111] border border-[#1a1a1a] rounded-lg overflow-hidden my-4 w-fit max-w-full flex-wrap sm:flex-nowrap">
       {stats.map((stat, i) => (

@@ -1,3 +1,7 @@
+// `next dev` needs eval for hot reloading; production bundles don't (checked: the only Function()
+// calls in the client chunks are global-object fallbacks that never run in a browser).
+const isDev = process.env.NODE_ENV === 'development'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 
@@ -7,17 +11,21 @@ const nextConfig = {
       {
         source: '/(.*)',
         headers: [
+          // Nothing frames ToolNinja's own pages (the CSS-animation preview is a srcDoc iframe, which
+          // neither header applies to), so both say "never": X-Frame-Options for old browsers,
+          // frame-ancestors for current ones.
           {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
+            value: 'DENY',
           },
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
           },
           {
+            // The legacy XSS auditor is gone from modern browsers and was itself exploitable; 0 disables it.
             key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            value: '0',
           },
           {
             key: 'Referrer-Policy',
@@ -39,12 +47,19 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com",
+              // 'unsafe-inline' stays for now: Next's inline RSC payload scripts on statically generated
+              // pages can't carry a per-request nonce. /admin (dynamic) gets a strict nonce policy in
+              // middleware.ts on top of this one.
+              `script-src 'self'${isDev ? " 'unsafe-eval'" : ''} 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.googleadservices.com https://*.google.com https://*.doubleclick.net https://*.adtrafficquality.google`,
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https:",
               "font-src 'self'",
-              "connect-src 'self' https://www.google-analytics.com https://vitals.vercel-insights.com https://va.vercel-scripts.com",
+              "connect-src 'self' https://www.google-analytics.com https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net https://*.adtrafficquality.google https://csi.gstatic.com",
+              "frame-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google",
               "frame-ancestors 'none'",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
             ].join('; '),
           },
         ],
@@ -83,6 +98,12 @@ const nextConfig = {
         destination: 'https://toolninja.io/:path*',
         permanent: true,
       },
+      // URLs that received real traffic but never existed (external links guessing at slugs)
+      { source: '/tools/base64-encoder', destination: '/tools/base64', permanent: true },
+      { source: '/tools/base64-decoder', destination: '/tools/base64', permanent: true },
+      { source: '/tester/:slug', destination: '/tools/:slug', permanent: true },
+      { source: '/tools/color-blind-test', destination: '/tools/color-blindness-simulator', permanent: true },
+      { source: '/tools/tool_regex.php', destination: '/tools/regex-tester', permanent: true },
     ]
   },
 

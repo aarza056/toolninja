@@ -17,6 +17,12 @@ interface Permissions {
   others: PermSet;
 }
 
+interface SpecialBits {
+  setuid: boolean;
+  setgid: boolean;
+  sticky: boolean;
+}
+
 const PRESETS: { label: string; octal: string; description: string }[] = [
   { label: "644", octal: "644", description: "Default file" },
   { label: "755", octal: "755", description: "Executable / dir" },
@@ -42,6 +48,17 @@ function permSetToDigit(ps: PermSet): number {
 
 function permSetToSymbol(ps: PermSet): string {
   return (ps.read ? "r" : "-") + (ps.write ? "w" : "-") + (ps.execute ? "x" : "-");
+}
+
+// The special-bit letter replaces the execute character: lowercase when the underlying
+// execute bit is also set, uppercase when it isn't (e.g. rws vs. rwS).
+function specialExecChar(ps: PermSet, specialSet: boolean, letter: "s" | "t"): string {
+  if (!specialSet) return ps.execute ? "x" : "-";
+  return ps.execute ? letter : letter.toUpperCase();
+}
+
+function specialDigit(special: SpecialBits): number {
+  return (special.setuid ? 4 : 0) + (special.setgid ? 2 : 0) + (special.sticky ? 1 : 0);
 }
 
 function octalToPermissions(octal: string): Permissions | null {
@@ -78,16 +95,34 @@ const INITIAL_PERMS: Permissions = {
   others: { read: true, write: false, execute: true },
 };
 
+// Directories need execute (traverse) permission to be usable, but that bit doesn't belong
+// on regular files — stripping it is the standard convention when splitting dir vs file perms.
+function stripExecute(octal: string): string {
+  return octal
+    .split("")
+    .map((d) => (Number(d) & 6).toString())
+    .join("");
+}
+
 export default function ChmodCalculatorClient() {
   const [perms, setPerms] = useState<Permissions>(INITIAL_PERMS);
+  const [special, setSpecial] = useState<SpecialBits>({ setuid: false, setgid: false, sticky: false });
   const [octalInput, setOctalInput] = useState("755");
   const [octalError, setOctalError] = useState("");
+  const [recursivePath, setRecursivePath] = useState("/path/to/dir");
+  const [splitFileDir, setSplitFileDir] = useState(false);
+  const [fileOctal, setFileOctal] = useState("644");
 
   const ownerDigit = permSetToDigit(perms.owner);
   const groupDigit = permSetToDigit(perms.group);
   const othersDigit = permSetToDigit(perms.others);
-  const octal = `${ownerDigit}${groupDigit}${othersDigit}`;
-  const symbolic = permSetToSymbol(perms.owner) + permSetToSymbol(perms.group) + permSetToSymbol(perms.others);
+  const baseOctal = `${ownerDigit}${groupDigit}${othersDigit}`;
+  const specialD = specialDigit(special);
+  const octal = specialD > 0 ? `${specialD}${baseOctal}` : baseOctal;
+  const symbolic =
+    permSetToSymbol(perms.owner).slice(0, 2) + specialExecChar(perms.owner, special.setuid, "s") +
+    permSetToSymbol(perms.group).slice(0, 2) + specialExecChar(perms.group, special.setgid, "s") +
+    permSetToSymbol(perms.others).slice(0, 2) + specialExecChar(perms.others, special.sticky, "t");
   const chmodCommand = `chmod ${octal} filename`;
   const description = buildDescription(perms);
 
@@ -97,10 +132,21 @@ export default function ChmodCalculatorClient() {
         ...prev,
         [section]: { ...prev[section], [bit]: !prev[section][bit] },
       };
-      const d = permSetToDigit(updated.owner).toString() +
+      const base = permSetToDigit(updated.owner).toString() +
         permSetToDigit(updated.group).toString() +
         permSetToDigit(updated.others).toString();
-      setOctalInput(d);
+      const sd = specialDigit(special);
+      setOctalInput(sd > 0 ? `${sd}${base}` : base);
+      setOctalError("");
+      return updated;
+    });
+  };
+
+  const toggleSpecial = (bit: keyof SpecialBits) => {
+    setSpecial((prev) => {
+      const updated = { ...prev, [bit]: !prev[bit] };
+      const sd = specialDigit(updated);
+      setOctalInput(sd > 0 ? `${sd}${baseOctal}` : baseOctal);
       setOctalError("");
       return updated;
     });
@@ -108,16 +154,19 @@ export default function ChmodCalculatorClient() {
 
   const handleOctalInput = (value: string) => {
     setOctalInput(value);
-    if (value.length === 3) {
-      const parsed = octalToPermissions(value);
-      if (parsed) {
+    if (value.length === 3 || value.length === 4) {
+      const base = value.length === 4 ? value.slice(1) : value;
+      const specialD = value.length === 4 ? Number(value[0]) : 0;
+      const parsed = octalToPermissions(base);
+      if (parsed && specialD <= 7) {
         setPerms(parsed);
+        setSpecial({ setuid: (specialD & 4) !== 0, setgid: (specialD & 2) !== 0, sticky: (specialD & 1) !== 0 });
         setOctalError("");
       } else {
         setOctalError("Each digit must be 0–7");
       }
-    } else if (value.length > 3) {
-      setOctalError("Must be exactly 3 digits (e.g. 755)");
+    } else if (value.length > 4) {
+      setOctalError("Must be 3 digits (e.g. 755) or 4 with a special-bits prefix (e.g. 4755)");
     } else {
       setOctalError("");
     }
@@ -127,6 +176,7 @@ export default function ChmodCalculatorClient() {
     const parsed = octalToPermissions(presetOctal);
     if (parsed) {
       setPerms(parsed);
+      setSpecial({ setuid: false, setgid: false, sticky: false });
       setOctalInput(presetOctal);
       setOctalError("");
     }
@@ -159,8 +209,8 @@ export default function ChmodCalculatorClient() {
               <input
                 type="text"
                 value={octalInput}
-                onChange={(e) => handleOctalInput(e.target.value.replace(/\D/g, "").slice(0, 3))}
-                maxLength={3}
+                onChange={(e) => handleOctalInput(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                maxLength={4}
                 placeholder="755"
                 className={`w-20 px-3 py-2 text-sm font-mono bg-[#111111] border rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] ${
                   octalError ? "border-[#ef4444]" : "border-[#222222]"
@@ -216,6 +266,54 @@ export default function ChmodCalculatorClient() {
           ))}
         </div>
 
+        {/* Special permission bits */}
+        <div className="p-4 bg-[#111111] border border-[#222222] rounded-[8px]">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-semibold text-[#f5f5f5]">Special bits</span>
+            {specialD > 0 && (
+              <span className="text-lg font-mono font-bold text-[#a855f7]">{specialD}</span>
+            )}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <label className="flex items-start gap-2.5 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={special.setuid}
+                onChange={() => toggleSpecial("setuid")}
+                className="accent-[#a855f7] w-4 h-4 mt-0.5"
+              />
+              <span>
+                <span className="block text-sm text-[#888888] group-hover:text-[#f5f5f5] transition-colors">setuid (4)</span>
+                <span className="block text-[10px] text-[#555555]">Runs as the file&apos;s owner, not the invoking user</span>
+              </span>
+            </label>
+            <label className="flex items-start gap-2.5 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={special.setgid}
+                onChange={() => toggleSpecial("setgid")}
+                className="accent-[#a855f7] w-4 h-4 mt-0.5"
+              />
+              <span>
+                <span className="block text-sm text-[#888888] group-hover:text-[#f5f5f5] transition-colors">setgid (2)</span>
+                <span className="block text-[10px] text-[#555555]">On a directory: new files inherit its group</span>
+              </span>
+            </label>
+            <label className="flex items-start gap-2.5 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={special.sticky}
+                onChange={() => toggleSpecial("sticky")}
+                className="accent-[#a855f7] w-4 h-4 mt-0.5"
+              />
+              <span>
+                <span className="block text-sm text-[#888888] group-hover:text-[#f5f5f5] transition-colors">sticky (1)</span>
+                <span className="block text-[10px] text-[#555555]">In a shared dir: only the owner can delete their own files</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
         {/* Chmod command output */}
         <div>
           <div className="flex items-center justify-between mb-2">
@@ -228,6 +326,74 @@ export default function ChmodCalculatorClient() {
           <div className="flex items-center gap-3 p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
             <code className="flex-1 text-sm font-mono text-[#f5f5f5]">{chmodCommand}</code>
           </div>
+        </div>
+
+        {/* Recursive / directory command builder */}
+        <div className="p-4 bg-[#111111] border border-[#222222] rounded-[8px] space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-xs text-[#888888] font-medium flex items-center gap-1.5">
+              <Terminal size={12} />
+              Apply recursively to a directory
+            </label>
+            <label className="flex items-center gap-2 text-xs text-[#888888] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={splitFileDir}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setSplitFileDir(checked);
+                  if (checked) setFileOctal(stripExecute(octal));
+                }}
+                className="accent-[#a855f7] w-3.5 h-3.5"
+              />
+              Different permissions for files vs. directories
+            </label>
+          </div>
+
+          <input
+            type="text"
+            value={recursivePath}
+            onChange={(e) => setRecursivePath(e.target.value || "/path/to/dir")}
+            placeholder="/path/to/dir"
+            className="w-full px-3 py-1.5 text-sm font-mono bg-[#0a0a0a] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+          />
+
+          {!splitFileDir ? (
+            <div className="flex items-center gap-3 p-3 bg-[#0a0a0a] border border-[#222222] rounded-[8px]">
+              <code className="flex-1 text-sm font-mono text-[#f5f5f5]">
+                chmod -R {octal} {recursivePath}
+              </code>
+              <CopyButton text={`chmod -R ${octal} ${recursivePath}`} size="sm" />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[#555555] w-20 shrink-0">Directories</span>
+                <code className="text-xs font-mono text-[#a855f7]">{octal}</code>
+                <span className="text-xs text-[#555555]">(from the calculator above)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[#555555] w-20 shrink-0">Files</span>
+                <input
+                  type="text"
+                  value={fileOctal}
+                  onChange={(e) => setFileOctal(e.target.value.replace(/\D/g, "").slice(0, 3))}
+                  maxLength={3}
+                  className="w-16 px-2 py-1 text-xs font-mono bg-[#0a0a0a] border border-[#222222] rounded-[4px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+                />
+                <span className="text-xs text-[#555555]">(execute stripped by default — directories need it to be traversed, files usually don&apos;t)</span>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-[#0a0a0a] border border-[#222222] rounded-[8px]">
+                <code className="flex-1 text-xs font-mono text-[#f5f5f5] whitespace-pre-wrap break-all">
+                  {`find ${recursivePath} -type d -exec chmod ${octal} {} \\;\nfind ${recursivePath} -type f -exec chmod ${/^[0-7]{3}$/.test(fileOctal) ? fileOctal : "644"} {} \\;`}
+                </code>
+                <CopyButton
+                  text={`find ${recursivePath} -type d -exec chmod ${octal} {} \\;\nfind ${recursivePath} -type f -exec chmod ${/^[0-7]{3}$/.test(fileOctal) ? fileOctal : "644"} {} \\;`}
+                  size="sm"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Description */}

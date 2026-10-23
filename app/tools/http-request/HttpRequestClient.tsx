@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import ToolLayout from "@/components/ToolLayout";
-import { Loader2, Plus, Trash2, Copy, Check, ChevronDown, ChevronRight, Upload, Download, X } from "lucide-react";
+import { Loader2, Plus, Trash2, Copy, Check, ChevronDown, ChevronRight, Upload, Download, X, Terminal, ArrowRight } from "lucide-react";
 import { importFromPostman, exportToPostman, type ImportedRequest } from "@/lib/postman-collection";
+import { buildCurlCommand, toBase64Url } from "@/lib/curl-builder";
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS";
 
@@ -86,6 +88,7 @@ export default function HttpRequestClient() {
   const [importError, setImportError] = useState("");
   const [importPicker, setImportPicker] = useState<ImportedRequest[] | null>(null);
   const [exportCopied, setExportCopied] = useState(false);
+  const [curlCopied, setCurlCopied] = useState(false);
 
   const sendRequest = async () => {
     setLoading(true);
@@ -197,6 +200,20 @@ export default function HttpRequestClient() {
     setTimeout(() => setExportCopied(false), 1500);
   };
 
+  const curlCommand = buildCurlCommand(
+    method,
+    url,
+    Object.fromEntries(headers.filter((h) => h.key && h.value).map((h) => [h.key, h.value])),
+    ["GET", "HEAD"].includes(method) ? "" : body
+  );
+
+  const copyCurl = () => {
+    navigator.clipboard.writeText(curlCommand).then(() => {
+      setCurlCopied(true);
+      setTimeout(() => setCurlCopied(false), 1500);
+    });
+  };
+
   const inputClass =
     "flex-1 px-3 py-2 font-mono text-sm bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]";
 
@@ -269,6 +286,25 @@ export default function HttpRequestClient() {
           {exportCopied ? <Check size={12} /> : <Download size={12} />}
           {exportCopied ? "Downloaded!" : "Export as Postman Collection"}
         </button>
+        <button
+          onClick={copyCurl}
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-[6px] border transition-colors ${
+            curlCopied
+              ? "border-[#22c55e] text-[#22c55e] bg-[#22c55e]/10"
+              : "bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] hover:text-[#f5f5f5] border-[#222222]"
+          }`}
+        >
+          {curlCopied ? <Check size={12} /> : <Terminal size={12} />}
+          {curlCopied ? "Copied!" : "Copy as cURL"}
+        </button>
+        {url.trim() && (
+          <Link
+            href={`/tools/curl-to-code?cmd=${toBase64Url(curlCommand)}`}
+            className="flex items-center gap-1 px-3 py-1.5 text-xs text-[#a855f7] hover:text-[#c084fc] transition-colors ml-auto"
+          >
+            Convert to another language <ArrowRight size={12} />
+          </Link>
+        )}
       </div>
 
       {/* Error banner */}

@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — ToolNinja",
-  description: "ToolNinja privacy policy. All tools run in your browser — we collect no personal data, no usage analytics, and make no server calls.",
+  title: "Privacy Policy",
+  description: "ToolNinja privacy policy. Tool inputs are processed entirely in your browser and never sent to our servers. Learn how we use analytics and advertising cookies.",
+  alternates: { canonical: "https://toolninja.io/privacy" },
 };
 
 export default function PrivacyPage() {
@@ -14,24 +15,37 @@ export default function PrivacyPage() {
       </Link>
 
       <h1 className="text-2xl font-bold text-[#f5f5f5] mb-2">Privacy Policy</h1>
-      <p className="text-xs text-[#555555] mb-10">Last updated: May 2026</p>
+      <p className="text-xs text-[#555555] mb-10">Last updated: October 2026</p>
 
       <div className="prose-custom space-y-8 text-sm text-[#888888] leading-relaxed">
 
         <section>
           <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">The short version</h2>
           <div className="p-4 bg-[#111111] border border-[#222222] rounded-[8px] text-[#a855f7] text-sm font-medium">
-            ToolNinja runs entirely in your browser. We collect zero personal data, zero usage data,
-            and make zero server calls when you use any tool. There is nothing to sell and nothing to leak.
+            Whatever you type into a tool — code, text, keys, tokens, passwords — is processed
+            entirely in your browser and never sent to our servers. Separately, the site itself
+            uses analytics (only if you consent) and displays ads, both described below. Neither
+            one ever sees what you type into a tool. The only things that leave your browser are
+            what you deliberately send: a question to Ask Ninja AI, or a rating or comment (section 7).
           </div>
         </section>
 
         <section>
           <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">1. What we collect</h2>
           <p>
-            Nothing. Every tool on ToolNinja executes its logic locally in your browser using JavaScript.
-            Your code, text, keys, tokens, passwords, or any other input you paste into a tool never
-            leave your device. No data is transmitted to any server.
+            Nothing from the tools themselves. Every tool on ToolNinja executes its logic locally
+            in your browser using JavaScript. Your code, text, keys, tokens, passwords, or any
+            other input you paste into a tool never leave your device — no tool data is
+            transmitted to any server, including ours. (A couple of tools — the HTTP Request
+            Builder and the README Badge Generator&apos;s live stat badges — make requests to
+            whatever API or endpoint <em>you</em> point them at, by design. That&apos;s a request
+            you&apos;re directing, not data we collect.)
+          </p>
+          <p className="mt-3">
+            Separately, the site as a whole may collect standard analytics (which pages and tools
+            get visited, only if you consent) and Google&apos;s advertising partners may set
+            cookies to serve and measure ads — both covered in the sections below. Neither is ever
+            combined with, or has access to, what you actually type into a tool.
           </p>
         </section>
 
@@ -50,6 +64,11 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">3. Analytics &amp; cookies</h2>
+          <p className="mb-3">
+            We use <strong className="text-[#d4d4d4]">Vercel Web Analytics and Speed Insights</strong> on every page to count
+            page views and measure page speed. They don&apos;t use cookies, don&apos;t identify you across sites, and report
+            only aggregate numbers — never what you type into a tool.
+          </p>
           <p className="mb-3">
             If you accept analytics, we use Google Analytics to understand which tools developers use
             most. This helps us decide which tools to improve and which new ones to build.
@@ -78,17 +97,45 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">4. Third-party services</h2>
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">4. Advertising (Google AdSense)</h2>
+          <p className="mb-3">
+            ToolNinja uses Google AdSense to display ads. AdSense may use cookies and similar
+            technologies to serve ads and to personalize them based on your visits to this and
+            other websites. Google and its advertising partners may use this information to show
+            you ads they believe are relevant to you, on ToolNinja and elsewhere.
+          </p>
+          <p className="mb-3">
+            You can learn more about how Google uses data from sites that use its services, and
+            review your options for controlling personalized ads, at{" "}
+            <a
+              href="https://policies.google.com/technologies/partner-sites"
+              className="text-[#a855f7] hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              policies.google.com/technologies/partner-sites
+            </a>.
+          </p>
           <p>
-            ToolNinja is hosted on infrastructure that may collect standard web server logs (IP address,
-            user agent, timestamp, URL). This data is handled according to the hosting provider&apos;s own
-            privacy policy and is not combined with any user-level data by us. We do not integrate
-            any advertising networks, social tracking pixels, or user profiling services.
+            <strong className="text-[#d4d4d4]">Important:</strong> AdSense operates completely
+            separately from the tools themselves. Nothing you type into a tool is ever sent to
+            Google&apos;s ad network, used to target ads, or combined with ad-related data in any way.
           </p>
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">5. Security tools</h2>
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">5. Third-party services</h2>
+          <p>
+            ToolNinja is hosted on infrastructure that may collect standard web server logs (IP address,
+            user agent, timestamp, URL). This data is handled according to the hosting provider&apos;s own
+            privacy policy and is not combined with any user-level data by us. Beyond Google Analytics
+            and Google AdSense (both described above), we do not integrate any other advertising
+            networks, social tracking pixels, or user profiling services.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">6. Security tools</h2>
           <p>
             Tools such as AES encryption, RSA key generation, and JWT signing use your browser&apos;s
             built-in <strong className="text-[#d4d4d4]">Web Crypto API</strong>. Keys and plaintext
@@ -98,15 +145,35 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">6. Children&apos;s privacy</h2>
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">7. Ask Ninja, ratings and comments</h2>
+          <p className="mb-3">
+            <strong className="text-[#d4d4d4]">Ask Ninja&apos;s</strong> paste detection runs entirely in your
+            browser. Only when you press <em>Ask Ninja AI</em> is your question (and any image you attached) sent to
+            our AI provider, Anthropic, to generate an answer. We warn you first if it looks like it contains a
+            secret. We don&apos;t store your question: we keep only anonymous counts, a short topic label (such as
+            &quot;jwt&quot;), and — when no tool fits — a one-line summary of the kind of tool you needed, written by
+            the AI without your data.
+          </p>
           <p>
-            ToolNinja does not knowingly collect any information from children under 13. Because we
-            collect no personal information at all, there is nothing to address specifically for minors.
+            <strong className="text-[#d4d4d4]">Ratings and comments</strong> on tool pages are anonymous: no name,
+            email or account. Comments are checked by an automated filter (including our AI provider) and by a
+            person before they appear, and anything that looks like a token or key is removed before storing. To
+            limit spam we use a hashed visitor identifier that changes every day; we never store your IP address.
           </p>
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">7. Changes to this policy</h2>
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">8. Children&apos;s privacy</h2>
+          <p>
+            ToolNinja does not knowingly collect any information from children under 13, and the tools
+            themselves collect no personal information from anyone, of any age. Our advertising and
+            analytics providers are expected to comply with applicable children&apos;s privacy laws; see
+            Google&apos;s own policies for how they handle this across sites that use their services.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">9. Changes to this policy</h2>
           <p>
             If this policy changes materially, we will update the &quot;Last updated&quot; date at the top of
             this page. Continued use of ToolNinja after a policy update constitutes acceptance of the
@@ -115,7 +182,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">8. Contact</h2>
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">10. Contact</h2>
           <p>
             Questions about this policy? Open an issue on our public repository or reach out via the
             contact details listed there.

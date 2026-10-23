@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { toolContent } from "@/lib/tool-content";
 import { tools } from "@/lib/tools";
+import AdSlot from "@/components/AdSlot";
+import { AD_SLOTS } from "@/lib/ads";
+import { getAllPosts } from "@/lib/blog";
+import { categorySlug } from "@/lib/categories";
+import { toolReferences } from "@/lib/tool-references";
+import SupportCard from "@/components/support/SupportCard";
+import ToolReviews from "@/components/reviews/ToolReviews";
+import { getToolReviewData } from "@/lib/reviews";
+import { getSiteConfig } from "@/lib/site-config";
 
 interface Props {
   slug: string;
@@ -8,39 +17,33 @@ interface Props {
 
 const BASE_URL = "https://toolninja.io";
 
-export default function ToolSeoSection({ slug }: Props) {
+export default async function ToolSeoSection({ slug }: Props) {
+  const { flags } = await getSiteConfig();
   const content = toolContent[slug];
   const tool = tools.find((t) => t.slug === slug);
 
   const relatedTools = tool
     ? tools
         .filter((t) => t.slug !== slug && t.category === tool.category)
-        .slice(0, 3)
+        .slice(0, 6)
     : [];
+
+  const guides = getAllPosts()
+    .filter((p) => p.relatedTools.includes(slug))
+    .slice(0, 4);
+
+  const catSlug = tool ? categorySlug(tool.category) : "";
+  const reference = toolReferences[slug];
 
   const breadcrumbJsonLd = tool
     ? {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "ToolNinja",
-            item: BASE_URL,
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: tool.category,
-            item: `${BASE_URL}/#${tool.category.toLowerCase()}`,
-          },
-          {
-            "@type": "ListItem",
-            position: 3,
-            name: tool.name,
-            item: `${BASE_URL}/tools/${slug}`,
-          },
+          { "@type": "ListItem", position: 1, name: "ToolNinja", item: BASE_URL },
+          { "@type": "ListItem", position: 2, name: "Tools", item: `${BASE_URL}/tools` },
+          { "@type": "ListItem", position: 3, name: tool.category, item: `${BASE_URL}/tools/category/${catSlug}` },
+          { "@type": "ListItem", position: 4, name: tool.name, item: `${BASE_URL}/tools/${slug}` },
         ],
       }
     : null;
@@ -61,8 +64,6 @@ export default function ToolSeoSection({ slug }: Props) {
         }
       : null;
 
-  if (!content && !relatedTools.length) return null;
-
   return (
     <div className="border-t border-[#1a1a1a] px-6 py-10 space-y-8 max-w-3xl">
       {breadcrumbJsonLd && (
@@ -77,6 +78,10 @@ export default function ToolSeoSection({ slug }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
       )}
+
+      {tool && flags.ratings && <ToolReviews slug={slug} toolName={tool.name} initial={await getToolReviewData(slug)} />}
+
+      <AdSlot slot={AD_SLOTS.toolPage} />
 
       {content && (
         <>
@@ -141,8 +146,60 @@ export default function ToolSeoSection({ slug }: Props) {
         </>
       )}
 
+      {/* Reference table */}
+      {reference && (
+        <section>
+          <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-3">{reference.title}</h2>
+          {reference.intro && <p className="text-sm text-[#666] leading-relaxed mb-3">{reference.intro}</p>}
+          <div className="overflow-x-auto border border-[#1e1e1e] rounded-[8px]">
+            <table className="w-full text-sm border-collapse">
+              <thead className="bg-[#111111]">
+                <tr>
+                  {reference.columns.map((c) => (
+                    <th key={c} className="text-left px-3 py-2 text-xs font-semibold text-[#888] uppercase tracking-wide border-b border-[#1e1e1e]">
+                      {c}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {reference.rows.map((row, i) => (
+                  <tr key={i} className="even:bg-[#0d0d0d]">
+                    {row.map((cell, j) => (
+                      <td key={j} className={`px-3 py-1.5 border-b border-[#161616] text-[13px] ${j === 0 ? "font-mono text-[#c9a3f5]" : "text-[#888]"}`}>
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {reference.note && <p className="text-xs text-[#555] leading-relaxed mt-2">{reference.note}</p>}
+        </section>
+      )}
+
+      {/* Guides */}
+      {guides.length > 0 && (
+        <section>
+          <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-3">
+            Guides
+          </h2>
+          <ul className="space-y-2">
+            {guides.map((g) => (
+              <li key={g.slug}>
+                <Link href={`/blog/${g.slug}`} className="group flex gap-2.5 text-sm text-[#888] hover:text-[#a855f7] transition-colors">
+                  <span className="shrink-0">{g.coverEmoji}</span>
+                  <span className="leading-relaxed">{g.title}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {/* Related tools */}
-      {relatedTools.length > 0 && (
+      {relatedTools.length > 0 && tool && (
         <section>
           <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-3">
             Related tools
@@ -157,9 +214,17 @@ export default function ToolSeoSection({ slug }: Props) {
                 {t.name}
               </Link>
             ))}
+            <Link
+              href={`/tools/category/${catSlug}`}
+              className="px-3 py-1.5 text-xs text-[#a855f7] hover:underline"
+            >
+              All {tool.category.toLowerCase()} tools →
+            </Link>
           </div>
         </section>
       )}
+
+      {flags.support && <SupportCard placement="tool-page" />}
     </div>
   );
 }

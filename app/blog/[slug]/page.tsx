@@ -7,6 +7,10 @@ import { tools } from "@/lib/tools";
 import BlogContent from "./BlogContent";
 import ShareButtons from "@/components/ShareButtons";
 import RelatedArticles from "@/components/RelatedArticles";
+import SupportCard from "@/components/support/SupportCard";
+import { getSiteConfig } from "@/lib/site-config";
+import AdSlot from "@/components/AdSlot";
+import { AD_SLOTS } from "@/lib/ads";
 
 interface Props {
   params: { slug: string };
@@ -16,12 +20,19 @@ export async function generateStaticParams() {
   return getAllPostSlugs().map((slug) => ({ slug }));
 }
 
+function ogImagePath(title: string, description: string): string {
+  return `/api/og?title=${encodeURIComponent(title)}&desc=${encodeURIComponent(description)}`;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPostBySlug(params.slug);
   if (!post) return {};
+  const ogImage = ogImagePath(post.title, post.description);
 
   return {
-    title: post.title,
+    // Error-message titles are already long; the "| ToolNinja" suffix would only push the
+    // part that matches the searcher's query further toward truncation.
+    title: post.title.length > 50 ? { absolute: post.title } : post.title,
     description: post.description,
     keywords: post.tags,
     authors: [{ name: post.author, url: "https://toolninja.io" }],
@@ -33,14 +44,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.date,
       authors: ["ToolNinja"],
       tags: post.tags,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
+      images: [ogImage],
     },
     alternates: { canonical: `https://toolninja.io/blog/${post.slug}` },
   };
+}
+
+// Splits markdown at the "## " heading closest to the midpoint by character count, so
+// the ad lands roughly mid-article at a natural section boundary rather than mid-sentence.
+function splitAtMidpoint(content: string): [string, string | null] {
+  const indices: number[] = [];
+  const headingRegex = /\n(?=## )/g;
+  let match: RegExpExecArray | null;
+  while ((match = headingRegex.exec(content))) {
+    indices.push(match.index + 1);
+  }
+  if (indices.length < 2) return [content, null];
+
+  const target = content.length / 2;
+  let best = indices[0];
+  let bestDist = Math.abs(best - target);
+  for (const idx of indices) {
+    const dist = Math.abs(idx - target);
+    if (dist < bestDist) {
+      best = idx;
+      bestDist = dist;
+    }
+  }
+  return [content.slice(0, best), content.slice(best)];
 }
 
 function formatDate(dateStr: string): string {
@@ -51,11 +88,13 @@ function formatDate(dateStr: string): string {
   });
 }
 
-export default function BlogPostPage({ params }: Props) {
+export default async function BlogPostPage({ params }: Props) {
   const post = getPostBySlug(params.slug);
   if (!post) notFound();
 
   const allPosts = getAllPosts();
+
+  const [contentBefore, contentAfter] = splitAtMidpoint(post.content);
 
   const relatedToolObjects = post.relatedTools
     .map((slug) => tools.find((t) => t.slug === slug))
@@ -66,6 +105,7 @@ export default function BlogPostPage({ params }: Props) {
     "@type": "Article",
     headline: post.title,
     description: post.description,
+    image: `https://toolninja.io${ogImagePath(post.title, post.description)}`,
     datePublished: post.date,
     dateModified: post.date,
     author: {
@@ -77,6 +117,7 @@ export default function BlogPostPage({ params }: Props) {
       "@type": "Organization",
       name: "ToolNinja",
       url: "https://toolninja.io",
+      logo: { "@type": "ImageObject", url: "https://toolninja.io/logo.png" },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
@@ -181,7 +222,13 @@ export default function BlogPostPage({ params }: Props) {
       </header>
 
       {/* 1. Article content */}
-      <BlogContent content={post.content} />
+      <BlogContent content={contentBefore} />
+      {contentAfter && (
+        <>
+          <AdSlot slot={AD_SLOTS.blogMidArticle} layout="in-article" className="my-8" />
+          <BlogContent content={contentAfter} />
+        </>
+      )}
 
       {/* 2. Share buttons */}
       <ShareButtons
@@ -245,6 +292,8 @@ export default function BlogPostPage({ params }: Props) {
           </div>
         </div>
       )}
+
+      {(await getSiteConfig()).flags.support && <SupportCard placement="blog-post" className="mt-8" />}
 
       {/* 6. Back to blog */}
       <div className="mt-8 pt-6 border-t border-[#1e1e1e]">

@@ -8,9 +8,14 @@ export async function GET(req: NextRequest) {
   const title = searchParams.get("title") ?? "ToolNinja";
   const desc =
     searchParams.get("desc") ??
-    "Fast, free developer tools. No login, no tracking.";
+    "Fast, free developer tools. No login. Your data stays in your browser.";
 
   const shortDesc = desc.length > 90 ? desc.slice(0, 90) + "…" : desc;
+
+  const logoSvg = await fetch(new URL("/logo.svg", req.url))
+    .then((r) => (r.ok ? r.text() : ""))
+    .catch(() => "");
+  const logoSrc = logoSvg ? `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(logoSvg)))}` : "";
 
   return new ImageResponse(
     (
@@ -85,7 +90,12 @@ export async function GET(req: NextRequest) {
               marginBottom: "40px",
             }}
           >
-            <div style={{ fontSize: "44px", display: "flex" }}>🥷</div>
+            {logoSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+              <img src={logoSrc} width={74} height={64} />
+            ) : (
+              <div style={{ fontSize: "44px", display: "flex" }}>🥷</div>
+            )}
             <div
               style={{
                 fontSize: "20px",
@@ -130,7 +140,7 @@ export async function GET(req: NextRequest) {
 
           {/* Pills */}
           <div style={{ display: "flex", gap: "12px" }}>
-            {["Free", "No Login", "No Tracking", "Browser-First"].map(
+            {["Free", "No Login", "Private by Design", "Browser-First"].map(
               (tag) => (
                 <div
                   key={tag}

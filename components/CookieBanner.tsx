@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { isExcludedVisit } from "@/lib/owner";
 
 type ConsentState = "accepted" | "declined" | null;
 
@@ -60,12 +61,13 @@ export default function CookieBanner() {
     <>
       <div className="fixed inset-0 z-40 pointer-events-none" />
       <div
-        className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-slide-up"
+        className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-slide-up pointer-events-none"
         role="dialog"
         aria-label="Cookie consent"
         aria-modal="false"
       >
-        <div className="max-w-4xl mx-auto">
+        {/* Only the card takes clicks, so the strip around it doesn't block what's behind (e.g. the Ask Ninja launcher) */}
+        <div className="max-w-4xl mx-auto pointer-events-auto">
           <div className="bg-[#111] border border-[#2a2a2a] rounded-xl p-4 shadow-2xl shadow-black/50 backdrop-blur-sm">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -109,6 +111,8 @@ export default function CookieBanner() {
 function loadGoogleAnalytics() {
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
   if (!GA_ID || typeof window === "undefined") return;
+  // Never load for /admin or the owner's own browser (owner mode)
+  if (isExcludedVisit()) return;
   if (document.getElementById("ga-script")) return;
 
   const script1 = document.createElement("script");

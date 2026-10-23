@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Columns, FileText, Eye, Download } from "lucide-react";
+import { Columns, FileText, Eye, Download, Printer, List } from "lucide-react";
 
 const STORAGE_KEY = "toolninja:markdown-preview";
 
@@ -70,10 +70,56 @@ function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
+interface TocEntry {
+  level: number;
+  text: string;
+  id: string;
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+/** Extracts headings in document order and assigns each the same slug id GitHub-style
+ * renderers use (lowercased, hyphenated, de-duplicated with a -1, -2… suffix). Skips
+ * headings that fall inside fenced code blocks. */
+function extractToc(markdown: string): TocEntry[] {
+  const lines = markdown.split("\n");
+  const seen = new Map<string, number>();
+  const toc: TocEntry[] = [];
+  let inCodeBlock = false;
+
+  for (const line of lines) {
+    if (/^```/.test(line.trim())) {
+      inCodeBlock = !inCodeBlock;
+      continue;
+    }
+    if (inCodeBlock) continue;
+
+    const m = line.match(/^(#{1,6})\s+(.+)$/);
+    if (!m) continue;
+    const level = m[1].length;
+    const text = m[2].replace(/\s+#+\s*$/, "").trim();
+    const base = slugify(text) || "section";
+    const count = seen.get(base) ?? 0;
+    seen.set(base, count + 1);
+    toc.push({ level, text, id: count > 0 ? `${base}-${count}` : base });
+  }
+
+  return toc;
+}
+
 export default function MarkdownPreviewClient() {
   const [markdown, setMarkdown] = useState(DEFAULT_MD);
   const [view, setView] = useState<ViewMode>("split");
+  const [showToc, setShowToc] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
+  const headingCounterRef = useRef(0);
 
   useEffect(() => {
     try {
@@ -91,10 +137,39 @@ export default function MarkdownPreviewClient() {
   const { meta, body } = useMemo(() => parseFrontmatter(markdown), [markdown]);
   const wordCount = useMemo(() => countWords(body), [body]);
   const readingTime = Math.max(1, Math.round(wordCount / 200));
+  const toc = useMemo(() => extractToc(body), [body]);
 
-  const handleExportHtml = () => {
-    if (!previewRef.current) return;
-    const html = `<!DOCTYPE html>
+  // Reset before each render pass so the custom heading components below can pull the
+  // matching precomputed id by document order, keeping TOC links and rendered ids in sync.
+  headingCounterRef.current = 0;
+  const headingComponents = useMemo(() => {
+    const makeHeading = (level: 1 | 2 | 3 | 4 | 5 | 6) => {
+      const Tag = `h${level}` as const;
+      return function Heading({ children }: { children?: React.ReactNode }) {
+        const entry = toc[headingCounterRef.current];
+        headingCounterRef.current++;
+        return <Tag id={entry?.id}>{children}</Tag>;
+      };
+    };
+    return {
+      h1: makeHeading(1),
+      h2: makeHeading(2),
+      h3: makeHeading(3),
+      h4: makeHeading(4),
+      h5: makeHeading(5),
+      h6: makeHeading(6),
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toc]);
+
+  const scrollToHeading = (id: string) => {
+    const el = previewRef.current?.querySelector(`#${CSS.escape(id)}`);
+    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const buildExportHtml = (forPrint: boolean) => {
+    if (!previewRef.current) return "";
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -111,12 +186,18 @@ export default function MarkdownPreviewClient() {
   th { background: #f5f5f5; }
   blockquote { border-left: 4px solid #ddd; margin-left: 0; padding-left: 1rem; color: #666; }
   img { max-width: 100%; }
+  ${forPrint ? "@media print { body { padding: 0; max-width: none; } }" : ""}
 </style>
 </head>
 <body>
 ${previewRef.current.innerHTML}
 </body>
 </html>`;
+  };
+
+  const handleExportHtml = () => {
+    const html = buildExportHtml(false);
+    if (!html) return;
     const blob = new Blob([html], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -124,6 +205,19 @@ ${previewRef.current.innerHTML}
     a.download = `${meta?.title?.toLowerCase().replace(/\s+/g, "-") ?? "export"}.html`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleExportPdf = () => {
+    const html = buildExportHtml(true);
+    if (!html) return;
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
   };
 
   const showEditor = view === "split" || view === "editor";
@@ -161,13 +255,32 @@ ${previewRef.current.innerHTML}
           <span>{readingTime} min read</span>
         </div>
 
+        {toc.length > 0 && (
+          <button
+            onClick={() => setShowToc((v) => !v)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-[6px] border transition-colors ${
+              showToc ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
+            }`}
+          >
+            <List size={13} /> Contents
+          </button>
+        )}
+
         {/* Export */}
-        <button
-          onClick={handleExportHtml}
-          className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] border border-[#222222] rounded-[6px] transition-colors"
-        >
-          <Download size={13} /> Export HTML
-        </button>
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            onClick={handleExportPdf}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] border border-[#222222] rounded-[6px] transition-colors"
+          >
+            <Printer size={13} /> Export PDF
+          </button>
+          <button
+            onClick={handleExportHtml}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#888888] border border-[#222222] rounded-[6px] transition-colors"
+          >
+            <Download size={13} /> Export HTML
+          </button>
+        </div>
       </div>
 
       {/* Frontmatter metadata table */}
@@ -190,36 +303,59 @@ ${previewRef.current.innerHTML}
       )}
 
       {/* Editor / Preview panels */}
-      <div
-        className={`gap-4 h-[calc(100vh-${meta ? "340px" : "280px"})] min-h-[400px] ${
-          view === "split" ? "grid grid-cols-1 md:grid-cols-2" : "flex"
-        }`}
-      >
-        {/* Editor */}
-        {showEditor && (
-          <div className={`flex flex-col gap-1 ${view !== "split" ? "flex-1" : ""}`}>
-            <label className="text-xs text-[#888888] font-medium">Markdown</label>
-            <textarea
-              value={markdown}
-              onChange={(e) => setMarkdown(e.target.value)}
-              className="flex-1 w-full p-3 font-mono text-sm resize-none bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
-              spellCheck={false}
-            />
-          </div>
-        )}
-
-        {/* Preview */}
-        {showPreview && (
-          <div className={`flex flex-col gap-1 ${view !== "split" ? "flex-1" : ""}`}>
-            <label className="text-xs text-[#888888] font-medium">Preview</label>
-            <div
-              ref={previewRef}
-              className="flex-1 overflow-auto p-4 bg-[#111111] border border-[#222222] rounded-[8px] prose prose-invert prose-sm max-w-none"
-            >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{body}</ReactMarkdown>
+      <div className={`flex gap-4 h-[calc(100vh-${meta ? "340px" : "280px"})] min-h-[400px]`}>
+        {/* Table of contents sidebar */}
+        {showToc && toc.length > 0 && showPreview && (
+          <div className="hidden lg:flex flex-col gap-1 w-[220px] shrink-0">
+            <label className="text-xs text-[#888888] font-medium">Contents</label>
+            <div className="flex-1 overflow-auto p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
+              <nav className="space-y-1.5">
+                {toc.map((entry, i) => (
+                  <button
+                    key={`${entry.id}-${i}`}
+                    onClick={() => scrollToHeading(entry.id)}
+                    style={{ paddingLeft: `${(entry.level - 1) * 12}px` }}
+                    className="block w-full text-left text-xs text-[#888888] hover:text-[#a855f7] transition-colors truncate"
+                  >
+                    {entry.text}
+                  </button>
+                ))}
+              </nav>
             </div>
           </div>
         )}
+
+        <div
+          className={`gap-4 flex-1 min-w-0 ${
+            view === "split" ? "grid grid-cols-1 md:grid-cols-2" : "flex"
+          }`}
+        >
+          {/* Editor */}
+          {showEditor && (
+            <div className={`flex flex-col gap-1 ${view !== "split" ? "flex-1" : ""}`}>
+              <label className="text-xs text-[#888888] font-medium">Markdown</label>
+              <textarea
+                value={markdown}
+                onChange={(e) => setMarkdown(e.target.value)}
+                className="flex-1 w-full p-3 font-mono text-sm resize-none bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+                spellCheck={false}
+              />
+            </div>
+          )}
+
+          {/* Preview */}
+          {showPreview && (
+            <div className={`flex flex-col gap-1 ${view !== "split" ? "flex-1" : ""}`}>
+              <label className="text-xs text-[#888888] font-medium">Preview</label>
+              <div
+                ref={previewRef}
+                className="flex-1 overflow-auto p-4 bg-[#111111] border border-[#222222] rounded-[8px] prose prose-invert prose-sm max-w-none"
+              >
+                <ReactMarkdown remarkPlugins={[remarkGfm]} components={headingComponents}>{body}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <style>{`

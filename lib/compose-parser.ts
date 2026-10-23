@@ -43,6 +43,8 @@ interface ComposeService {
   pid?: string;
   ipc?: string;
   init?: boolean;
+  depends_on?: unknown;
+  build?: unknown;
 }
 
 interface ComposeFile {
@@ -249,14 +251,26 @@ function serviceToDockerRun(name: string, service: DockerService): string {
   }
 
   if (service.entrypoint) parts.push(`--entrypoint "${service.entrypoint}"`);
-  if (service.image) parts.push(service.image);
+  parts.push(service.image || "<image-from-build>");
   if (service.command) parts.push(service.command);
 
   return parts.join(" \\\n  ");
 }
 
+function serviceWarnings(name: string, svc: ComposeService): string[] {
+  const warnings: string[] = [];
+  if (svc.depends_on) {
+    warnings.push(`${name}: depends_on isn't expressible as a docker run flag — start ${JSON.stringify(svc.depends_on)} first, manually, in the right order.`);
+  }
+  if (svc.build && !svc.image) {
+    warnings.push(`${name}: this service uses 'build' instead of 'image' — run 'docker build' first and substitute the resulting image tag for <image-from-build> below.`);
+  }
+  return warnings;
+}
+
 export interface ComposeParseResult {
   commands: { name: string; command: string }[];
+  warnings: string[];
   error?: string;
 }
 
@@ -265,16 +279,16 @@ export function composeToDockerRun(input: string): ComposeParseResult {
   try {
     parsed = yaml.load(input) as ComposeFile;
   } catch (e) {
-    return { commands: [], error: `YAML parse error: ${(e as Error).message}` };
+    return { commands: [], warnings: [], error: `YAML parse error: ${(e as Error).message}` };
   }
 
   if (!parsed || typeof parsed !== "object") {
-    return { commands: [], error: "Invalid compose file: expected a YAML object" };
+    return { commands: [], warnings: [], error: "Invalid compose file: expected a YAML object" };
   }
 
   const services = parsed.services;
   if (!services || typeof services !== "object") {
-    return { commands: [], error: "No services found in compose file" };
+    return { commands: [], warnings: [], error: "No services found in compose file" };
   }
 
   const commands = Object.entries(services).map(([name, svc]) => {
@@ -282,5 +296,7 @@ export function composeToDockerRun(input: string): ComposeParseResult {
     return { name, command: serviceToDockerRun(name, service) };
   });
 
-  return { commands };
+  const warnings = Object.entries(services).flatMap(([name, svc]) => serviceWarnings(name, svc));
+
+  return { commands, warnings };
 }

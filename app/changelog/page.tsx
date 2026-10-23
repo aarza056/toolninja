@@ -1,53 +1,68 @@
-import fs from "fs";
-import path from "path";
 import type { Metadata } from "next";
-import ReactMarkdown from "react-markdown";
+import Link from "next/link";
+import { Rss } from "lucide-react";
+import { tools } from "@/lib/tools";
+import { getAllPosts } from "@/lib/blog";
+import { resolveReleases } from "@/lib/changelog-resolve";
+import ChangelogClient from "./ChangelogClient";
+
+const PAGE_URL = "https://toolninja.io/changelog";
 
 export const metadata: Metadata = {
-  title: "Changelog | ToolNinja",
-  description: "What's new in ToolNinja — updates, new tools, and fixes.",
+  title: "Changelog — New Tools, Features & Fixes",
+  description:
+    "Everything shipped on ToolNinja, newest first: new developer tools, improvements to existing ones, guides and fixes. Follow along via RSS.",
+  alternates: {
+    canonical: PAGE_URL,
+    types: { "application/rss+xml": [{ url: "https://toolninja.io/changelog/rss.xml", title: "ToolNinja Changelog" }] },
+  },
 };
 
 export default function ChangelogPage() {
-  const filePath = path.join(process.cwd(), "CHANGELOG.md");
-  const content = fs.existsSync(filePath)
-    ? fs.readFileSync(filePath, "utf8")
-    : "# Changelog\n\nNothing yet.";
+  const releases = resolveReleases();
+  const first = releases[releases.length - 1];
+  const stats = [
+    { value: tools.length, label: "tools" },
+    { value: getAllPosts().length, label: "guides" },
+    { value: releases.length, label: "releases" },
+    { value: first.dateLabel.replace(/ \d+,/, ""), label: "shipping since" },
+  ];
 
   return (
-    <div className="px-6 py-10 max-w-2xl mx-auto">
-      <ReactMarkdown
-        components={{
-          h1: ({ children }) => (
-            <h1 className="text-2xl font-bold text-[#f5f5f5] mb-2">{children}</h1>
-          ),
-          h2: ({ children }) => (
-            <h2 className="text-sm font-semibold text-[#a855f7] mt-10 mb-3 uppercase tracking-widest">
-              {children}
-            </h2>
-          ),
-          p: ({ children }) => (
-            <p className="text-sm text-[#666666] leading-relaxed mb-4">{children}</p>
-          ),
-          ul: ({ children }) => (
-            <ul className="space-y-1.5 mb-6">{children}</ul>
-          ),
-          li: ({ children }) => (
-            <li className="text-sm text-[#888888] leading-relaxed flex gap-2">
-              <span className="text-[#333333] shrink-0 mt-0.5">·</span>
-              <span>{children}</span>
-            </li>
-          ),
-          code: ({ children }) => (
-            <code className="text-xs font-mono text-[#a855f7] bg-[#a855f7]/10 px-1 py-0.5 rounded">
-              {children}
-            </code>
-          ),
-          hr: () => <hr className="border-[#1a1a1a] my-8" />,
-        }}
-      >
-        {content}
-      </ReactMarkdown>
+    <div className="px-4 sm:px-6 pt-20 pb-10 md:pt-10 max-w-3xl mx-auto">
+      <header className="mb-8">
+        <div className="flex flex-wrap items-start justify-between gap-4 mb-3">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#f5f5f5]">Changelog</h1>
+          <a
+            href="/changelog/rss.xml"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#888888] border border-[#262626] rounded-full hover:text-[#f59e0b] hover:border-[#f59e0b]/40 transition-colors"
+          >
+            <Rss size={12} /> RSS
+          </a>
+        </div>
+        <p className="text-sm text-[#888888] leading-relaxed max-w-xl">
+          Everything we&apos;ve shipped, newest first — new tools, upgrades to the ones you already use, guides and fixes. Looking
+          for something specific?{" "}
+          <Link href="/ask" className="text-[#a855f7] hover:underline">
+            Ask Ninja
+          </Link>{" "}
+          or browse{" "}
+          <Link href="/tools" className="text-[#a855f7] hover:underline">
+            all tools
+          </Link>
+          .
+        </p>
+        <dl className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-6">
+          {stats.map((s) => (
+            <div key={s.label} className="flex flex-col-reverse px-4 py-3 bg-[#0f0f10] border border-[#1f1f1f] rounded-[10px]">
+              <dt className="text-[11px] text-[#666666] uppercase tracking-wider">{s.label}</dt>
+              <dd className="text-xl font-bold text-[#f5f5f5] tabular-nums">{s.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </header>
+
+      <ChangelogClient releases={releases} />
     </div>
   );
 }

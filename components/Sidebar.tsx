@@ -3,14 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { tools, categories } from "@/lib/tools";
-import { Menu, X, Search } from "lucide-react";
+import { tools, categories, LATEST_TOOL_SLUGS } from "@/lib/tools";
+import { Menu, X, Search, Sparkles } from "lucide-react";
 import * as LucideIcons from "lucide-react";
+import { openAssistant } from "@/lib/showcase";
+import PatreonLink, { PatreonIcon } from "@/components/support/PatreonLink";
 
-const NEW_TOOL_SLUGS = new Set([
-  "xpath-tester",
-  "docker-run-to-compose",
-]);
+const NEW_TOOL_SLUGS = new Set(LATEST_TOOL_SLUGS);
 
 function ToolIcon({ name }: { name: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[name];
@@ -18,7 +17,7 @@ function ToolIcon({ name }: { name: string }) {
   return <Icon size={16} />;
 }
 
-export default function Sidebar() {
+export default function Sidebar({ showSupport = true }: { showSupport?: boolean }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMac, setIsMac] = useState(false);
@@ -37,10 +36,14 @@ export default function Sidebar() {
   const sidebarContent = (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="px-4 py-5 border-b border-[#222222]">
-        <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-          <span className="text-xl">🥷</span>
-          <span className="font-bold text-[#a855f7] text-base tracking-tight">ToolNinja</span>
+      <div className="px-4 py-4 border-b border-[#222222]">
+        <Link href="/" aria-label="ToolNinja home" className="flex items-center gap-2.5 min-w-0" onClick={() => setMobileOpen(false)}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="" width={52} height={45} className="shrink-0 w-[52px] h-auto" />
+          <span className="whitespace-nowrap font-extrabold text-[23px] leading-none tracking-tight text-[#f5f5f5]">
+            Tool<span className="text-[#a855f7] [text-shadow:0_0_14px_rgba(168,85,247,0.55)]">Ninja</span>
+            <span className="text-[#71717a] font-bold">.io</span>
+          </span>
         </Link>
       </div>
 
@@ -58,6 +61,24 @@ export default function Sidebar() {
             {isMac ? "⌘K" : "Ctrl+K"}
           </kbd>
         </button>
+        <button
+          onClick={() => {
+            openAssistant();
+            setMobileOpen(false);
+          }}
+          className="mt-2 w-full flex items-center gap-2 px-3 py-2 bg-[#a855f7]/10 border border-[#a855f7]/30 rounded-lg text-xs text-[#c4a5f7] hover:bg-[#a855f7]/20 hover:text-[#f5f5f5] transition-colors"
+        >
+          <Sparkles size={12} />
+          <span>Ask Ninja — paste anything</span>
+        </button>
+        {showSupport && <PatreonLink
+          placement="sidebar"
+          onClick={() => setMobileOpen(false)}
+          className="mt-2 w-full flex items-center gap-2 px-3 py-2 bg-[#ff424d]/[0.08] border border-[#ff424d]/25 rounded-lg text-xs text-[#ff8a90] hover:bg-[#ff424d]/15 hover:text-[#f5f5f5] transition-colors"
+        >
+          <PatreonIcon size={11} />
+          <span>Support us on Patreon</span>
+        </PatreonLink>}
       </div>
 
       {/* Tool list */}
@@ -66,9 +87,15 @@ export default function Sidebar() {
           const catTools = tools.filter((t) => t.category === cat);
           return (
             <div key={cat} className="mb-4">
-              <div className="px-4 py-1 text-xs font-semibold text-[#888888] uppercase tracking-wider">
+              <Link
+                href={`/tools/category/${cat.toLowerCase()}`}
+                onClick={() => setMobileOpen(false)}
+                className={`block px-4 py-1 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                  pathname === `/tools/category/${cat.toLowerCase()}` ? "text-[#a855f7]" : "text-[#888888] hover:text-[#f5f5f5]"
+                }`}
+              >
                 {cat}
-              </div>
+              </Link>
               {catTools.map((tool) => {
                 const isActive = pathname === `/tools/${tool.slug}`;
                 return (
@@ -100,9 +127,15 @@ export default function Sidebar() {
       {/* Footer */}
       <div className="px-4 py-4 border-t border-[#222222]">
         <p className="text-xs text-[#888888] leading-relaxed mb-2">
-          Your data never leaves the browser 🔒
+          Every tool runs in your browser 🔒
         </p>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-[#555555]">
+          <Link href="/tools" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+            All tools
+          </Link>
+          <Link href="/ask" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+            Ask Ninja
+          </Link>
           <Link href="/privacy" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Privacy
           </Link>
@@ -117,6 +150,9 @@ export default function Sidebar() {
           </Link>
           <Link href="/explain-error" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Explain Error
+          </Link>
+          <Link href="/support" onClick={() => setMobileOpen(false)} className="hover:text-[#ff8a90] transition-colors">
+            Support ♥
           </Link>
           {hasConsent && (
             <button
@@ -153,17 +189,14 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Mobile sidebar */}
+      {/* Single sidebar, shared between mobile drawer and desktop rail — rendered once so the
+          full tool nav doesn't appear twice in the DOM. On mobile it slides on/off screen with
+          mobileOpen; md:translate-x-0 pins it on-screen unconditionally at the desktop breakpoint. */}
       <aside
-        className={`md:hidden fixed top-0 left-0 z-50 h-full w-[240px] bg-[#111111] border-r border-[#222222] transform transition-transform duration-200 ${
+        className={`flex flex-col fixed top-0 left-0 z-50 md:z-30 w-[240px] h-screen bg-[#111111] border-r border-[#222222] transform transition-transform duration-200 md:translate-x-0 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {sidebarContent}
-      </aside>
-
-      {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-[240px] h-screen bg-[#111111] border-r border-[#222222] fixed top-0 left-0 z-30">
         {sidebarContent}
       </aside>
     </>

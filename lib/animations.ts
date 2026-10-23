@@ -7,7 +7,8 @@ export interface Animation {
     | "Text"
     | "Cards"
     | "Backgrounds"
-    | "Micro-interactions";
+    | "Micro-interactions"
+    | "Scroll";
   html: string;
   css: string;
   isNew?: boolean;
@@ -1417,6 +1418,92 @@ export const animations: Animation[] = [
   75%, 100%{ transform: scale(1); }
 }`,
   },
+  // ── SCROLL ─────────────────────────────────────────────────────────────────
+  {
+    id: "scroll-progress-bar",
+    name: "Scroll Progress Bar",
+    category: "Scroll",
+    isNew: true,
+    previewHeight: 160,
+    html: `<div class="scroll-demo">
+  <div class="scroll-progress"></div>
+  <p class="filler">Scroll inside this box ↓</p>
+  <p class="filler">Driven entirely by animation-timeline: scroll() —</p>
+  <p class="filler">no scroll event listener, no JavaScript at all.</p>
+  <p class="filler">Keep going…</p>
+  <p class="filler">You made it! 🎉</p>
+</div>`,
+    css: `.scroll-demo {
+  position: relative;
+  height: 140px;
+  overflow-y: auto;
+  padding: 20px 12px 12px;
+  background: #0d0d0d;
+  border-radius: 8px;
+  font-family: system-ui, sans-serif;
+}
+.filler {
+  margin: 36px 0;
+  font-size: 12px;
+  color: #888;
+}
+.scroll-progress {
+  position: sticky;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: #a855f7;
+  transform-origin: left;
+  animation: growProgress linear;
+  animation-timeline: scroll();
+}
+@keyframes growProgress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}`,
+  },
+  {
+    id: "scroll-reveal-view-timeline",
+    name: "Scroll Reveal (View Timeline)",
+    category: "Scroll",
+    isNew: true,
+    previewHeight: 160,
+    html: `<div class="view-demo">
+  <p class="filler">Scroll down ↓</p>
+  <div class="reveal-card">✨ I fade in as I enter view</div>
+  <p class="filler">animation-timeline: view() tracks</p>
+  <p class="filler">this element's own position in the viewport.</p>
+</div>`,
+    css: `.view-demo {
+  height: 140px;
+  overflow-y: auto;
+  padding: 12px;
+  background: #0d0d0d;
+  border-radius: 8px;
+  font-family: system-ui, sans-serif;
+}
+.filler {
+  margin: 36px 0;
+  font-size: 12px;
+  color: #666;
+}
+.reveal-card {
+  padding: 16px;
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  text-align: center;
+  animation: revealIn linear;
+  animation-timeline: view();
+  animation-range: entry 0% cover 40%;
+}
+@keyframes revealIn {
+  from { opacity: 0; transform: translateY(30px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}`,
+  },
 ];
 
 export const animationCategories = [
@@ -1427,6 +1514,7 @@ export const animationCategories = [
   "Cards",
   "Backgrounds",
   "Micro-interactions",
+  "Scroll",
 ] as const;
 
 export type AnimationCategory = (typeof animationCategories)[number];

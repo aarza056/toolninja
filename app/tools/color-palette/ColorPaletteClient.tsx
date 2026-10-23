@@ -2,7 +2,9 @@
 
 import { useState, useCallback } from "react";
 import ToolLayout from "@/components/ToolLayout";
+import CopyButton from "@/components/CopyButton";
 import { Copy, Check } from "lucide-react";
+import { contrastRatio } from "@/lib/contrast";
 
 // ─── HSL / HEX / RGB math ────────────────────────────────────────────────────
 
@@ -121,6 +123,15 @@ function generatePalette(baseHex: string, harmony: HarmonyType): SwatchColor[] {
 
 // ─── Swatch card ─────────────────────────────────────────────────────────────
 
+function bestTextContrast(rgb: [number, number, number]): { textColor: "white" | "black"; ratio: number; passesAA: boolean } {
+  const [r, g, b] = rgb;
+  const whiteRatio = contrastRatio({ r, g, b }, { r: 255, g: 255, b: 255 });
+  const blackRatio = contrastRatio({ r, g, b }, { r: 0, g: 0, b: 0 });
+  return whiteRatio >= blackRatio
+    ? { textColor: "white", ratio: whiteRatio, passesAA: whiteRatio >= 4.5 }
+    : { textColor: "black", ratio: blackRatio, passesAA: blackRatio >= 4.5 };
+}
+
 function SwatchCard({ color }: { color: SwatchColor }) {
   const [copied, setCopied] = useState(false);
 
@@ -133,6 +144,7 @@ function SwatchCard({ color }: { color: SwatchColor }) {
 
   const [r, g, b] = color.rgb;
   const [ch, cs, cl] = color.hsl;
+  const contrast = bestTextContrast(color.rgb);
 
   return (
     <div className="flex-1 min-w-[110px] max-w-[160px] rounded-[8px] border border-[#222222] overflow-hidden bg-[#111111]">
@@ -166,10 +178,42 @@ function SwatchCard({ color }: { color: SwatchColor }) {
         <p className="text-xs text-[#555555] font-mono truncate">
           rgb({r},{g},{b})
         </p>
-        <p className="text-[10px] text-[#444444]">{color.label}</p>
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] text-[#444444]">{color.label}</p>
+          <span
+            className={`text-[9px] px-1 py-0.5 rounded font-medium ${
+              contrast.passesAA ? "bg-[#22c55e]/10 text-[#22c55e]" : "bg-[#ef4444]/10 text-[#ef4444]"
+            }`}
+            title={`${contrast.textColor} text: ${contrast.ratio.toFixed(2)}:1`}
+          >
+            AA {contrast.textColor === "white" ? "⚪" : "⚫"} {contrast.ratio.toFixed(1)}
+          </span>
+        </div>
       </div>
     </div>
   );
+}
+
+// ─── Export formats ───────────────────────────────────────────────────────────
+
+type ExportFormat = "css" | "tailwind" | "scss";
+
+function slugForLabel(label: string, index: number): string {
+  const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return slug || `color-${index + 1}`;
+}
+
+function buildExport(palette: SwatchColor[], format: ExportFormat): string {
+  if (format === "css") {
+    const lines = palette.map((c, i) => `  --${slugForLabel(c.label, i)}: ${c.hex};`);
+    return `:root {\n${lines.join("\n")}\n}`;
+  }
+  if (format === "scss") {
+    return palette.map((c, i) => `$${slugForLabel(c.label, i)}: ${c.hex};`).join("\n");
+  }
+  // tailwind
+  const lines = palette.map((c, i) => `        "${slugForLabel(c.label, i)}": "${c.hex}",`);
+  return `// tailwind.config.js\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n        palette: {\n${lines.join("\n")}\n        },\n      },\n    },\n  },\n};`;
 }
 
 // ─── Harmony button list ──────────────────────────────────────────────────────
@@ -189,6 +233,7 @@ export default function ColorPaletteClient() {
   const [baseColor, setBaseColor] = useState("#a855f7");
   const [harmony, setHarmony] = useState<HarmonyType>("complementary");
   const [copiedBase, setCopiedBase] = useState(false);
+  const [exportFormat, setExportFormat] = useState<ExportFormat>("css");
 
   const palette = generatePalette(baseColor, harmony);
   const [bh, bs, bl] = hexToHsl(baseColor);
@@ -305,12 +350,14 @@ export default function ColorPaletteClient() {
                   <th className="text-left px-3 py-2 text-xs text-[#555555] font-medium">HEX</th>
                   <th className="text-left px-3 py-2 text-xs text-[#555555] font-medium">HSL</th>
                   <th className="text-left px-3 py-2 text-xs text-[#555555] font-medium">RGB</th>
+                  <th className="text-left px-3 py-2 text-xs text-[#555555] font-medium">WCAG AA Text</th>
                 </tr>
               </thead>
               <tbody>
                 {palette.map((color, i) => {
                   const [ch, cs, cl] = color.hsl;
                   const [cr, cg, cb] = color.rgb;
+                  const contrast = bestTextContrast(color.rgb);
                   return (
                     <tr key={i} className="border-b border-[#1a1a1a] last:border-0">
                       <td className="px-3 py-2">
@@ -322,11 +369,44 @@ export default function ColorPaletteClient() {
                       <td className="px-3 py-2 font-mono text-[#f5f5f5]">{color.hex.toUpperCase()}</td>
                       <td className="px-3 py-2 font-mono text-[#888888]">hsl({ch}, {cs}%, {cl}%)</td>
                       <td className="px-3 py-2 font-mono text-[#888888]">rgb({cr}, {cg}, {cb})</td>
+                      <td className="px-3 py-2 font-mono">
+                        <span className={contrast.passesAA ? "text-[#22c55e]" : "text-[#ef4444]"}>
+                          {contrast.textColor} · {contrast.ratio.toFixed(2)}:1 {contrast.passesAA ? "✓" : "✗"}
+                        </span>
+                      </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
+          </div>
+        </div>
+
+        {/* Export */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-xs text-[#888888] font-medium">Export</label>
+            <div className="flex rounded-[6px] border border-[#222222] overflow-hidden">
+              {(["css", "tailwind", "scss"] as ExportFormat[]).map((fmt) => (
+                <button
+                  key={fmt}
+                  onClick={() => setExportFormat(fmt)}
+                  className={`px-3 py-1 text-xs transition-colors ${
+                    exportFormat === fmt ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"
+                  }`}
+                >
+                  {fmt === "css" ? "CSS Variables" : fmt === "tailwind" ? "Tailwind Config" : "SCSS"}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="relative">
+            <pre className="p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] overflow-auto whitespace-pre-wrap">
+              {buildExport(palette, exportFormat)}
+            </pre>
+            <div className="absolute top-2 right-2">
+              <CopyButton text={buildExport(palette, exportFormat)} size="sm" />
+            </div>
           </div>
         </div>
       </div>
