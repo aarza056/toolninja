@@ -1,4 +1,5 @@
 import { kv, safe, today, DAY } from "@/lib/kv";
+import { upsertIdea } from "@/lib/ideas";
 
 // Anonymous Ask Ninja statistics: counts, token usage, cost, topics and unmet requests.
 // The visitor's question text is never stored — only the model's short topic label and,
@@ -9,6 +10,7 @@ const dayKey = (d: string) => `tn:ai:day:${d}`;
 const topicKey = (d: string) => `tn:ai:topics:${d}`;
 const toolKey = (d: string) => `tn:ai:tools:${d}`;
 const UNMET = "tn:ai:unmet";
+export const monthKey = (ym = today().slice(0, 7)) => `tn:ai:month:${ym}`;
 
 // Claude Haiku 5.5, USD per million tokens. A 1-hour cache write costs 2x input, a cache read 0.1x.
 const PRICE = { input: 0.1, output: 0.5, cacheRead: 0.01, cacheWrite: 0.2 };
@@ -39,6 +41,8 @@ export async function recordAsk(r: AskRecord) {
     .hincrby(dayKey(d), "cacheRead", r.cacheRead)
     .hincrby(dayKey(d), "cacheWrite", r.cacheWrite)
     .hincrby(dayKey(d), "costMicro", cost)
+    .incrby(monthKey(), cost)
+    .expire(monthKey(), 400 * DAY)
     // what the cached part would have cost at the normal input price
     .hincrby(dayKey(d), "savedMicro", Math.round(r.cacheRead * (PRICE.input - PRICE.cacheRead)))
     .expire(dayKey(d), KEEP_DAYS * DAY);
@@ -51,6 +55,7 @@ export async function recordAsk(r: AskRecord) {
   const unmet = r.unmet.trim().slice(0, 160);
   if (unmet) b.lpush(UNMET, JSON.stringify({ ts: Date.now(), topic, text: unmet })).ltrim(UNMET, 0, 499);
   await safe(() => b.exec(), []);
+  if (unmet) await safe(() => upsertIdea(unmet, topic), undefined);
 }
 
 export async function recordFailure(reason: string) {
@@ -61,7 +66,18 @@ export async function recordFailure(reason: string) {
 /** Extra AI spend outside Ask Ninja (review moderation), so the cost total is complete. */
 export async function recordExtraCost(micro: number, field = "moderationMicro") {
   const d = today();
-  await safe(() => kv().batch().hincrby(dayKey(d), field, micro).hincrby(dayKey(d), "costMicro", micro).expire(dayKey(d), KEEP_DAYS * DAY).exec(), []);
+  await safe(
+    () =>
+      kv()
+        .batch()
+        .hincrby(dayKey(d), field, micro)
+        .hincrby(dayKey(d), "costMicro", micro)
+        .expire(dayKey(d), KEEP_DAYS * DAY)
+        .incrby(monthKey(), micro)
+        .expire(monthKey(), 400 * DAY)
+        .exec(),
+    []
+  );
 }
 
 export interface DayStats {
@@ -142,7 +158,7 @@ export async function getUnmet(limit = 100): Promise<{ ts: number; topic: string
 export const usd = (micro: number) => (micro / 1e6).toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: micro < 1e6 ? 4 : 2 });
 
 /** Per-request counters checked before calling the model. One round trip. */
-export async function countRequest(visitor: string): Promise<{ window: number; daily: number; total: number }> {
+export async function countRequest(visitor: string): Promise<{ window: number; daily: number; total: number; monthMicro: number }> {
   const d = today();
   const bucket = Math.floor(Date.now() / 600000);
   const res = await kv()
@@ -153,6 +169,7 @@ export async function countRequest(visitor: string): Promise<{ window: number; d
     .expire(`tn:rl:ai:${visitor}:${d}`, DAY)
     .hincrby(dayKey(d), "requests", 1)
     .expire(dayKey(d), KEEP_DAYS * DAY)
+    .get(monthKey())
     .exec();
-  return { window: Number(res[0]), daily: Number(res[2]), total: Number(res[4]) };
+  return { window: Number(res[0]), daily: Number(res[2]), total: Number(res[4]), monthMicro: Number(res[6] ?? 0) };
 }

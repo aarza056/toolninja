@@ -6,7 +6,7 @@ import { ADMIN_COOKIE, verifySession } from "@/lib/admin-session";
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isLogin = pathname === "/admin/login" || pathname === "/api/admin/login";
-  const ok = isLogin || (await verifySession(req.cookies.get(ADMIN_COOKIE)?.value));
+  const ok = isLogin || (await verifySession(req.cookies.get(ADMIN_COOKIE)?.value)) !== null;
 
   let res: NextResponse;
   if (ok) res = NextResponse.next();

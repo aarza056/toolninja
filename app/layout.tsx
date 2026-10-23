@@ -5,8 +5,10 @@ import { tools } from "@/lib/tools";
 import Sidebar from "@/components/Sidebar";
 import ParticleBackground from "@/components/ParticleBackground";
 import CommandPalette from "@/components/CommandPalette";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import SiteTrackers from "@/components/SiteTrackers";
+import SiteBanner from "@/components/SiteBanner";
+import { getSiteConfig, bannerActive } from "@/lib/site-config";
+import { OWNER_HEAD_SCRIPT } from "@/lib/owner";
 import CookieBanner from "@/components/CookieBanner";
 import WhatsNewModal from "@/components/WhatsNewModal";
 import AssistantRoot from "@/components/assistant/AssistantRoot";
@@ -89,11 +91,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { flags, banner } = await getSiteConfig();
   return (
     <html lang="en" className="dark">
       <head>
@@ -105,6 +108,8 @@ export default function RootLayout({
         <link rel="search" type="application/opensearchdescription+xml" title="ToolNinja" href="/opensearch.xml" />
         <link rel="alternate" type="application/rss+xml" title="ToolNinja Blog" href="/blog/rss.xml" />
         <meta name="google-adsense-account" content="ca-pub-3459524040712269" />
+        {/* Owner mode: must run before the AdSense script so it never requests ads for the owner or /admin */}
+        <script dangerouslySetInnerHTML={{ __html: OWNER_HEAD_SCRIPT }} />
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3459524040712269"
@@ -114,24 +119,24 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0a0a0a] text-[#f5f5f5]`}>
         <ParticleBackground />
         <div className="relative z-[1] flex min-h-screen">
-          <Sidebar />
+          <Sidebar showSupport={flags.support} />
           <main className="flex-1 md:ml-[240px] min-h-screen overflow-y-auto">
+            <SiteBanner banner={bannerActive(banner) ? banner : null} />
             {children}
           </main>
         </div>
 
         <CommandPalette />
-        <AssistantRoot />
+        <AssistantRoot showcase={flags.showcase} launcher={flags.launcher} />
         {/* Watermark */}
         <div className="fixed bottom-3 right-4 flex items-center gap-1.5 text-xs text-[#333333] pointer-events-none select-none z-50">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.svg" alt="" width={16} height={14} className="opacity-25" />
           ToolNinja
         </div>
-        <Analytics />
-        <SpeedInsights />
+        <SiteTrackers />
         <CookieBanner />
-        <WhatsNewModal />
+        {flags.whatsNew && <WhatsNewModal />}
       </body>
     </html>
   );

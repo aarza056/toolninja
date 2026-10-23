@@ -15,7 +15,7 @@ type IdleWindow = Window & {
 
 // Loads the assistant bundle only once the page is idle (or the moment someone asks for it),
 // so it never competes with the page's own content for load time.
-export default function AssistantRoot() {
+export default function AssistantRoot({ showcase = true, launcher = true }: { showcase?: boolean; launcher?: boolean }) {
   const pathname = usePathname();
   const [ready, setReady] = useState(false);
   const [openOnLoad, setOpenOnLoad] = useState(false);
@@ -40,7 +40,7 @@ export default function AssistantRoot() {
     try {
       seen = Boolean(sessionStorage.getItem(SHOWCASE_SEEN_KEY));
     } catch {}
-    if (!isShowcaseActive() || seen) {
+    if (!showcase || !isShowcaseActive() || seen) {
       return () => window.removeEventListener(OPEN_ASSISTANT_EVENT, onOpen);
     }
 
@@ -54,10 +54,10 @@ export default function AssistantRoot() {
       if (useIdle) w.cancelIdleCallback?.(handle);
       else clearTimeout(handle);
     };
-  }, [ready]);
+  }, [ready, showcase]);
 
   // Always-visible launcher, except on /ask (already there) and while the card or overlay is up
-  const showLauncher = pathname !== "/ask" && !pathname.startsWith("/admin") && !assistantOpen;
+  const showLauncher = launcher && pathname !== "/ask" && !pathname.startsWith("/admin") && !assistantOpen;
 
   if (pathname.startsWith("/admin")) return null;
 
@@ -78,7 +78,7 @@ export default function AssistantRoot() {
           <Sparkles size={13} className="text-[#a855f7]" />
         </button>
       )}
-      {ready && <LaunchShowcase openOnLoad={openOnLoad} />}
+      {ready && <LaunchShowcase openOnLoad={openOnLoad} autoShow={showcase} />}
     </>
   );
 }

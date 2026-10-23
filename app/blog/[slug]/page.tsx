@@ -8,6 +8,7 @@ import BlogContent from "./BlogContent";
 import ShareButtons from "@/components/ShareButtons";
 import RelatedArticles from "@/components/RelatedArticles";
 import SupportCard from "@/components/support/SupportCard";
+import { getSiteConfig } from "@/lib/site-config";
 import AdSlot from "@/components/AdSlot";
 import { AD_SLOTS } from "@/lib/ads";
 
@@ -87,7 +88,7 @@ function formatDate(dateStr: string): string {
   });
 }
 
-export default function BlogPostPage({ params }: Props) {
+export default async function BlogPostPage({ params }: Props) {
   const post = getPostBySlug(params.slug);
   if (!post) notFound();
 
@@ -292,7 +293,7 @@ export default function BlogPostPage({ params }: Props) {
         </div>
       )}
 
-      <SupportCard placement="blog-post" className="mt-8" />
+      {(await getSiteConfig()).flags.support && <SupportCard placement="blog-post" className="mt-8" />}
 
       {/* 6. Back to blog */}
       <div className="mt-8 pt-6 border-t border-[#1e1e1e]">

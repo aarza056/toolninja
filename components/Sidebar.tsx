@@ -17,7 +17,7 @@ function ToolIcon({ name }: { name: string }) {
   return <Icon size={16} />;
 }
 
-export default function Sidebar() {
+export default function Sidebar({ showSupport = true }: { showSupport?: boolean }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMac, setIsMac] = useState(false);
@@ -71,14 +71,14 @@ export default function Sidebar() {
           <Sparkles size={12} />
           <span>Ask Ninja — paste anything</span>
         </button>
-        <PatreonLink
+        {showSupport && <PatreonLink
           placement="sidebar"
           onClick={() => setMobileOpen(false)}
           className="mt-2 w-full flex items-center gap-2 px-3 py-2 bg-[#ff424d]/[0.08] border border-[#ff424d]/25 rounded-lg text-xs text-[#ff8a90] hover:bg-[#ff424d]/15 hover:text-[#f5f5f5] transition-colors"
         >
           <PatreonIcon size={11} />
           <span>Support us on Patreon</span>
-        </PatreonLink>
+        </PatreonLink>}
       </div>
 
       {/* Tool list */}

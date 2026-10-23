@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { ExternalLink } from "lucide-react";
-import { getDays, usd } from "@/lib/ninja-stats";
+import { getDays, usd, monthKey } from "@/lib/ninja-stats";
+import { kv, safe } from "@/lib/kv";
+import { listIdeas } from "@/lib/ideas";
+import { twoFactorEnabled } from "@/lib/two-factor";
+import { tgConfigured, getChatId } from "@/lib/telegram";
+import Link from "next/link";
 import { getSettings } from "@/lib/site-settings";
 import { countReviews, getHeldRatings, getSpikeAlert, getAllRatings } from "@/lib/reviews";
 import { Alert, Button, Card, Stat } from "@/components/admin/ui";
@@ -9,7 +14,6 @@ import { dismissSpikeAlert } from "../actions";
 export const metadata: Metadata = { title: "Overview" };
 export const dynamic = "force-dynamic";
 
-const MONTHLY_BUDGET_MICRO = 5_000_000; // $5
 
 const LINKS = [
   { label: "Vercel Analytics", href: "https://vercel.com/dashboard" },
@@ -21,18 +25,23 @@ const LINKS = [
 ];
 
 export default async function AdminOverview() {
-  const [days, settings, pending, bugs, held, spike, ratings] = await Promise.all([
-    getDays(31),
+  const [days, settings, pending, bugs, held, spike, ratings, monthRaw, ideas, tfa, chat] = await Promise.all([
+    getDays(1),
     getSettings(),
     countReviews("pending"),
     countReviews("bug"),
     getHeldRatings(),
     getSpikeAlert(),
     getAllRatings(),
+    safe(() => kv().get(monthKey()), null),
+    listIdeas(),
+    twoFactorEnabled(),
+    getChatId(),
   ]);
   const t = days[0];
-  const month = t.date.slice(0, 7);
-  const monthCost = days.filter((d) => d.date.startsWith(month)).reduce((s, d) => s + d.costMicro, 0);
+  const monthCost = Number(monthRaw ?? 0);
+  const budget = settings.aiMonthlyBudgetMicro;
+  const newIdeas = ideas.filter((i) => i.status === "new").length;
   const capPct = settings.aiDailyCap ? Math.round((t.requests / settings.aiDailyCap) * 100) : 0;
   const totalRatings = Array.from(ratings.values()).reduce((s, r) => s + r.count, 0);
   const heldTools = new Set(held.map((h) => h.slug)).size;
@@ -61,9 +70,26 @@ export default async function AdminOverview() {
             Rating bursts held on {heldTools} tool{heldTools === 1 ? "" : "s"} ({held.length} ratings) — check Ratings.
           </Alert>
         )}
-        {monthCost > MONTHLY_BUDGET_MICRO * 0.8 && (
+        {budget > 0 && monthCost >= budget && <Alert tone="bad">Ninja AI used this month&apos;s budget ({usd(monthCost)}) and is paused until the 1st.</Alert>}
+        {budget > 0 && monthCost >= budget * 0.8 && monthCost < budget && (
           <Alert tone="warn">
-            AI spend this month is {usd(monthCost)} of the $5 budget.
+            AI spend this month is {usd(monthCost)} of the {usd(budget)} budget.
+          </Alert>
+        )}
+        {!tfa && (
+          <Alert tone="warn">
+            Two-step sign-in is off.{" "}
+            <Link href="/admin/settings" className="underline">
+              Turn it on
+            </Link>
+          </Alert>
+        )}
+        {tgConfigured() && !chat && (
+          <Alert tone="info">
+            Telegram bot is set up but not connected.{" "}
+            <Link href="/admin/settings" className="underline">
+              Connect it
+            </Link>
           </Alert>
         )}
       </div>
@@ -71,8 +97,13 @@ export default async function AdminOverview() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Stat label="Ninja questions today" value={t.requests} sub={`cap ${settings.aiDailyCap} · ${capPct}%`} href="/admin/ninja" />
         <Stat label="AI cost today" value={usd(t.costMicro)} sub={`saved ${usd(t.savedMicro)} by caching`} href="/admin/ninja" />
-        <Stat label="AI cost this month" value={usd(monthCost)} sub={`of $5.00 budget · ${Math.round((monthCost / MONTHLY_BUDGET_MICRO) * 100)}%`} href="/admin/ninja" />
-        <Stat label="Unanswered today" value={t.noTool} sub="questions no tool solved" href="/admin/ninja" />
+        <Stat
+          label="AI cost this month"
+          value={usd(monthCost)}
+          sub={budget ? `of ${usd(budget)} budget · ${Math.round((monthCost / budget) * 100)}%` : "no budget set"}
+          href="/admin/ninja"
+        />
+        <Stat label="New tool ideas" value={newIdeas} sub="requests no tool solved" href="/admin/ideas" />
         <Stat label="Reviews to approve" value={pending} href="/admin/reviews" />
         <Stat label="Bug reports" value={bugs} href="/admin/reviews?tab=bug" />
         <Stat label="Ratings, all tools" value={totalRatings} href="/admin/ratings" />

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { countReviews, getSpamCounts, getSpamLog, listReviews, type Review, type ReviewStatus } from "@/lib/reviews";
 import { tools } from "@/lib/tools";
 import { Badge, Button, Card, Stars, ago } from "@/components/admin/ui";
-import { approveAllGenuine, reviewAction } from "../../actions";
+import { approveAllGenuine, reviewAction, replyAction, bugStateAction } from "../../actions";
 
 export const metadata: Metadata = { title: "Reviews" };
 export const dynamic = "force-dynamic";
@@ -16,6 +16,11 @@ const TABS: { key: ReviewStatus | "spam"; label: string }[] = [
   { key: "rejected", label: "Rejected" },
   { key: "spam", label: "Spam log" },
 ];
+const BUG_STATES = [
+  { key: "new", label: "New" },
+  { key: "in_progress", label: "In progress" },
+  { key: "fixed", label: "Fixed" },
+] as const;
 const CATEGORY_TONE = { genuine: "good", bug: "info", spam: "bad", abusive: "bad", unchecked: "warn" } as const;
 const LAYER_LABEL: Record<string, string> = {
   honeypot: "Hidden trap field",
@@ -62,6 +67,47 @@ function Row({ r }: { r: Review }) {
         </div>
         <p className="text-sm text-[#e5e5e5] whitespace-pre-wrap break-words">{r.comment}</p>
         {r.note && <p className="mt-1 text-xs text-[#777777]">AI: {r.note}</p>}
+
+        {r.status === "bug" && (
+          <form action={bugStateAction} className="mt-3 flex flex-wrap items-center gap-2">
+            <input type="hidden" name="id" value={r.id} />
+            <span className="text-[11px] text-[#777777]">Status:</span>
+            {BUG_STATES.map((b) => (
+              <button
+                key={b.key}
+                name="state"
+                value={b.key}
+                className={`px-2 py-0.5 text-[11px] rounded-md border ${
+                  (r.bugState ?? "new") === b.key ? "border-[#a855f7]/60 bg-[#a855f7]/15 text-[#e9d5ff]" : "border-[#2a2a2a] text-[#888888] hover:text-[#f5f5f5]"
+                }`}
+              >
+                {b.label}
+              </button>
+            ))}
+            <input
+              name="note"
+              defaultValue={r.bugNote ?? ""}
+              maxLength={300}
+              placeholder="Note (what you found, which release fixes it)"
+              className="flex-1 min-w-[200px] px-2.5 py-1 text-xs bg-[#0a0a0a] border border-[#2a2a2a] rounded-md text-[#f5f5f5]"
+            />
+          </form>
+        )}
+
+        {r.status === "published" && (
+          <form action={replyAction} className="mt-3 flex flex-col sm:flex-row gap-2">
+            <input type="hidden" name="id" value={r.id} />
+            <input
+              name="reply"
+              defaultValue={r.reply?.text ?? ""}
+              maxLength={500}
+              placeholder="Reply publicly as ToolNinja (leave empty to remove)"
+              className="flex-1 px-2.5 py-1.5 text-xs bg-[#0a0a0a] border border-[#2a2a2a] rounded-md text-[#f5f5f5]"
+            />
+            <Button>{r.reply ? "Update reply" : "Reply"}</Button>
+          </form>
+        )}
+        {r.reply && r.status === "published" && <p className="mt-1 text-[11px] text-[#c4a5f7]">Replied {ago(r.reply.ts)} — shown under the review on the tool page.</p>}
       </div>
       <form action={reviewAction} className="flex flex-wrap gap-1.5 shrink-0">
         <input type="hidden" name="id" value={r.id} />
@@ -102,7 +148,8 @@ export default async function ReviewsAdmin({ searchParams }: { searchParams: { t
 }
 
 async function ReviewList({ status }: { status: ReviewStatus }) {
-  const reviews = await listReviews(status, 200);
+  const order = { new: 0, in_progress: 1, fixed: 2 } as const;
+  const reviews = (await listReviews(status, 200)).sort((a, b) => (status === "bug" ? order[a.bugState ?? "new"] - order[b.bugState ?? "new"] : 0));
   const genuine = reviews.filter((r) => r.category === "genuine" && !r.redacted && !r.note.includes("mentions a domain")).length;
   return (
     <Card

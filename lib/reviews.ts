@@ -8,6 +8,7 @@ import { tools } from "@/lib/tools";
 import { scanForSecrets } from "@/lib/secret-scanner";
 import { getSettings, saveSettings } from "@/lib/site-settings";
 import { costMicro, recordExtraCost } from "@/lib/ninja-stats";
+import { notify, esc } from "@/lib/telegram";
 
 // Ratings and comments for tool pages. Anti-spam layers, in order: page token (proves the page was
 // loaded and JavaScript ran), honeypot, minimum time on page, origin check (in the route), rate limits,
@@ -38,7 +39,12 @@ export interface Review {
   category: ReviewCategory;
   note: string; // why it was sorted this way (AI note or rule name)
   redacted: boolean; // a secret was removed before storing
+  reply?: { text: string; ts: number }; // public answer from ToolNinja, shown under the comment
+  bugState?: BugState; // for bug reports
+  bugNote?: string;
 }
+
+export type BugState = "new" | "in_progress" | "fixed";
 
 const K = {
   rating: (slug: string) => `tn:rating:${slug}`,
@@ -181,6 +187,7 @@ export interface PublicReview {
   stars: number;
   comment: string;
   ts: number;
+  reply?: { text: string; ts: number };
 }
 
 export interface ToolReviewData extends RatingSummary {
@@ -200,7 +207,7 @@ export function getToolReviewData(slug: string): Promise<ToolReviewData> {
           if (!r) return [];
           try {
             const rv = JSON.parse(r) as Review;
-            return rv.status === "published" ? [{ id: rv.id, stars: rv.stars, comment: rv.comment, ts: rv.ts }] : [];
+            return rv.status === "published" ? [{ id: rv.id, stars: rv.stars, comment: rv.comment, ts: rv.ts, reply: rv.reply }] : [];
           } catch {
             return [];
           }
@@ -293,7 +300,14 @@ export async function submitComment(slug: string, stars: number, raw: string, vi
   if (mine > COMMENTS_PER_VISITOR_HOUR) return "rate_limited";
   if (all > COMMENT_SPIKE_PER_HOUR) {
     await saveSettings({ commentsPaused: true });
-    await kv().set(K.alert, String(Date.now()), { ex: 7 * DAY });
+    const fresh = await kv().set(K.alert, String(Date.now()), { ex: 7 * DAY, nx: true });
+    if (fresh)
+      await notify(`🚨 <b>Comment spike</b> — more than ${COMMENT_SPIKE_PER_HOUR} comments in an hour. New comments were paused automatically.`, [
+        [
+          { text: "Keep paused", data: "cm:pause" },
+          { text: "Resume comments", data: "cm:resume" },
+        ],
+      ]);
     return "paused";
   }
 
@@ -343,6 +357,7 @@ export async function submitComment(slug: string, stars: number, raw: string, vi
     category: ai.category,
     note: mentionsDomain ? `${ai.note} · mentions a domain`.trim() : ai.note,
     redacted: local.redacted || ai.secret,
+    ...(status === "bug" ? { bugState: "new" as BugState } : {}),
   };
   const b = kv()
     .batch()
@@ -352,7 +367,30 @@ export async function submitComment(slug: string, stars: number, raw: string, vi
   await b.exec();
   if (status === "rejected") await logSpam(`ai_${ai.category}`, slug, review.comment);
   if (status === "published") revalidateTag(`reviews:${slug}`);
+  if (status !== "rejected") await notifyReview(review);
   return status === "rejected" ? "silently_blocked" : "accepted";
+}
+
+async function notifyReview(r: Review) {
+  const tool = tools.find((t) => t.slug === r.slug)?.name ?? r.slug;
+  const head =
+    r.status === "bug" ? `🐞 <b>Bug report</b> · ${esc(tool)}` : r.status === "published" ? `⭐ <b>New review (auto-approved)</b> · ${esc(tool)}` : `⭐ <b>New review</b> · ${esc(tool)}`;
+  const body = [
+    head,
+    `${"★".repeat(r.stars)}${"☆".repeat(5 - r.stars)}`,
+    `“${esc(r.comment)}”`,
+    r.redacted ? "⚠️ a secret was removed" : "",
+    r.note ? `<i>AI: ${esc(r.note)}</i>` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+  const buttons =
+    r.status === "pending"
+      ? [[{ text: "✅ Approve", data: `rv:pub:${r.id}` }, { text: "❌ Reject", data: `rv:rej:${r.id}` }, { text: "🐞 Bug", data: `rv:bug:${r.id}` }]]
+      : r.status === "bug"
+        ? [[{ text: "✅ Publish as review", data: `rv:pub:${r.id}` }, { text: "❌ Reject", data: `rv:rej:${r.id}` }]]
+        : [[{ text: "Unpublish", data: `rv:rej:${r.id}` }]];
+  await notify(body, buttons);
 }
 
 // ─── Admin ──────────────────────────────────────────────────────────────────
@@ -390,6 +428,31 @@ export async function setReviewStatus(id: string, next: ReviewStatus | "deleted"
   }
   await b.exec();
   revalidateTag(`reviews:${rv.slug}`);
+}
+
+async function updateReview(id: string, patch: (r: Review) => void) {
+  const raw = await kv().get(K.review(id));
+  if (!raw) return;
+  const rv = JSON.parse(raw) as Review;
+  patch(rv);
+  await kv().set(K.review(id), JSON.stringify(rv), rv.status === "rejected" ? { ex: 30 * DAY } : undefined);
+  revalidateTag(`reviews:${rv.slug}`);
+}
+
+/** Public reply under a review. Empty text removes it. */
+export async function setReviewReply(id: string, text: string) {
+  const clean = text.replace(/\s+/g, " ").trim().slice(0, MAX_COMMENT);
+  await updateReview(id, (r) => {
+    if (clean) r.reply = { text: clean, ts: Date.now() };
+    else delete r.reply;
+  });
+}
+
+export async function setBugState(id: string, state: BugState, note?: string) {
+  await updateReview(id, (r) => {
+    r.bugState = state;
+    if (note !== undefined) r.bugNote = note.trim().slice(0, 300);
+  });
 }
 
 export async function getSpamLog(limit = 100): Promise<{ ts: number; layer: string; slug: string; excerpt: string }[]> {

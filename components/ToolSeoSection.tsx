@@ -9,6 +9,7 @@ import { toolReferences } from "@/lib/tool-references";
 import SupportCard from "@/components/support/SupportCard";
 import ToolReviews from "@/components/reviews/ToolReviews";
 import { getToolReviewData } from "@/lib/reviews";
+import { getSiteConfig } from "@/lib/site-config";
 
 interface Props {
   slug: string;
@@ -17,6 +18,7 @@ interface Props {
 const BASE_URL = "https://toolninja.io";
 
 export default async function ToolSeoSection({ slug }: Props) {
+  const { flags } = await getSiteConfig();
   const content = toolContent[slug];
   const tool = tools.find((t) => t.slug === slug);
 
@@ -77,7 +79,7 @@ export default async function ToolSeoSection({ slug }: Props) {
         />
       )}
 
-      {tool && <ToolReviews slug={slug} toolName={tool.name} initial={await getToolReviewData(slug)} />}
+      {tool && flags.ratings && <ToolReviews slug={slug} toolName={tool.name} initial={await getToolReviewData(slug)} />}
 
       <AdSlot slot={AD_SLOTS.toolPage} />
 
@@ -222,7 +224,7 @@ export default async function ToolSeoSection({ slug }: Props) {
         </section>
       )}
 
-      <SupportCard placement="tool-page" />
+      {flags.support && <SupportCard placement="tool-page" />}
     </div>
   );
 }

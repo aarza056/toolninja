@@ -6,7 +6,7 @@ import { MessageSquare, Check } from "lucide-react";
 export interface ReviewData {
   count: number;
   avg: number;
-  reviews: { id: string; stars: number; comment: string; ts: number }[];
+  reviews: { id: string; stars: number; comment: string; ts: number; reply?: { text: string; ts: number } }[];
 }
 
 const MIN_FOR_AVERAGE = 5;
@@ -237,6 +237,15 @@ export default function ToolReviews({ slug, toolName, initial }: { slug: string;
                 <span className="text-[11px] text-[#666666]">{ago(r.ts)}</span>
               </div>
               <p className="text-sm text-[#cccccc] leading-relaxed whitespace-pre-wrap break-words">{r.comment}</p>
+              {r.reply && (
+                <div className="mt-2 ml-3 pl-3 border-l-2 border-[#a855f7]/40">
+                  <p className="flex items-center gap-1.5 text-[11px] font-semibold text-[#c4a5f7]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/logo.svg" alt="" width={14} height={12} /> Reply from ToolNinja
+                  </p>
+                  <p className="text-sm text-[#aaaaaa] leading-relaxed whitespace-pre-wrap break-words">{r.reply.text}</p>
+                </div>
+              )}
             </li>
           ))}
         </ul>

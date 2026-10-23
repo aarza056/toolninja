@@ -3,6 +3,7 @@ import { LogOut } from "lucide-react";
 import { requireAdmin } from "@/lib/admin-guard";
 import { kv } from "@/lib/kv";
 import AdminNav from "./AdminNav";
+import { OwnerModeAutoEnable } from "@/components/admin/OwnerMode";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ export default async function AdminPanelLayout({ children }: { children: React.R
           </button>
         </form>
       </header>
+      <OwnerModeAutoEnable />
       <AdminNav />
       <main className="mt-6">{children}</main>
     </div>

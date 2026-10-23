@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ADSENSE_CLIENT } from "@/lib/ads";
+import { isExcludedVisit } from "@/lib/owner";
 
 interface AdSlotProps {
   slot: string;
@@ -26,6 +27,7 @@ export default function AdSlot({ slot, minHeight = 250, className = "", format =
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") return;
+    if (isExcludedVisit()) return; // owner mode: no ad requests from the site owner
     const el = containerRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
 

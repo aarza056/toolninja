@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { isExcludedVisit } from "@/lib/owner";
 
 type ConsentState = "accepted" | "declined" | null;
 
@@ -110,6 +111,8 @@ export default function CookieBanner() {
 function loadGoogleAnalytics() {
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
   if (!GA_ID || typeof window === "undefined") return;
+  // Never load for /admin or the owner's own browser (owner mode)
+  if (isExcludedVisit()) return;
   if (document.getElementById("ga-script")) return;
 
   const script1 = document.createElement("script");

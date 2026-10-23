@@ -38,6 +38,7 @@ const PLACEHOLDERS = [
 const FAIL_MESSAGES: Record<string, string> = {
   rate_limited: "You've asked a lot in a short time — try again in a few minutes.",
   daily_cap: "Ninja AI has hit its daily limit. It'll be back tomorrow — the local detection still works.",
+  budget: "Ninja AI has used this month's budget. It'll be back next month — the local detection still works.",
   refusal: "I can't help with that one. Try rephrasing it as a developer question.",
   image_too_large: "That image is too large — try a smaller screenshot.",
   default: "Ninja AI is unavailable right now. Try again in a moment.",
@@ -389,7 +390,7 @@ export default function AssistantPanel({ variant = "full", onCloudMode, autoFocu
                     </div>
                     {t.status === "thinking" && <ThinkingDots line={thinkingLines[thinkingIdx % thinkingLines.length]} />}
                     {t.status === "failed" && <p className="text-sm text-[#f97316]">{t.error}</p>}
-                    {t.status === "failed" && t.reason === "daily_cap" && (
+                    {t.status === "failed" && (t.reason === "daily_cap" || t.reason === "budget") && (
                       <p className="text-xs text-[#888888]">
                         Ninja AI is paid for by supporters — more support means a higher daily limit.{" "}
                         <PatreonLink placement="ninja-daily-cap" className="text-[#ff8a90] hover:text-[#f5f5f5] underline">

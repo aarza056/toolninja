@@ -17,7 +17,7 @@ type View = "none" | "overlay" | "corner";
 
 const BOT_UA = /bot|crawler|spider|crawling|lighthouse|headless|slurp|bingpreview|facebookexternalhit/i;
 
-export default function LaunchShowcase({ openOnLoad = false }: { openOnLoad?: boolean }) {
+export default function LaunchShowcase({ openOnLoad = false, autoShow = true }: { openOnLoad?: boolean; autoShow?: boolean }) {
   const pathname = usePathname();
   const [view, setView] = useState<View>(openOnLoad ? "overlay" : "none");
   const [mode, setMode] = useState<CloudMode>("idle");
@@ -31,7 +31,7 @@ export default function LaunchShowcase({ openOnLoad = false }: { openOnLoad?: bo
   // Once per visit during the showcase window: full screen if the visit starts on the homepage,
   // a corner card if it starts on a tool page (people arriving from search came for that tool).
   useEffect(() => {
-    if (!isShowcaseActive() || BOT_UA.test(navigator.userAgent)) return;
+    if (!autoShow || !isShowcaseActive() || BOT_UA.test(navigator.userAgent)) return;
     try {
       if (sessionStorage.getItem(SHOWCASE_SEEN_KEY)) return;
       sessionStorage.setItem(SHOWCASE_SEEN_KEY, "1");

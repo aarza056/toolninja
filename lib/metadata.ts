@@ -649,6 +649,11 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   },
 };
 
+/** The hand-written title/description for a tool, or null when it falls back to the generic template. */
+export function customToolMeta(slug: string): { title: string; description: string } | null {
+  return toolMeta[slug] ?? null;
+}
+
 export function generateToolMetadata(slug: string): Metadata {
   const tool = tools.find((t) => t.slug === slug);
   if (!tool) return {};

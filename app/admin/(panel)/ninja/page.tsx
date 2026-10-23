@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getDays, getTopics, getRecommendedTools, getUnmet, usd } from "@/lib/ninja-stats";
+import { getDays, getTopics, getRecommendedTools, usd, monthKey } from "@/lib/ninja-stats";
+import { listIdeas } from "@/lib/ideas";
+import { kv, safe } from "@/lib/kv";
+import NinjaTestConsole from "@/components/admin/NinjaTestConsole";
 import { getSettings } from "@/lib/site-settings";
 import { tools } from "@/lib/tools";
 import { Badge, Button, Card, Stat, ago } from "@/components/admin/ui";
@@ -40,7 +43,18 @@ function BarList({ rows, total, link }: { rows: [string, number][]; total: numbe
 }
 
 export default async function NinjaAdmin() {
-  const [days, topics, recTools, unmet, settings] = await Promise.all([getDays(30), getTopics(30), getRecommendedTools(30), getUnmet(100), getSettings()]);
+  const [days, topics, recTools, ideas, settings, monthRaw] = await Promise.all([
+    getDays(30),
+    getTopics(30),
+    getRecommendedTools(30),
+    listIdeas(),
+    getSettings(),
+    safe(() => kv().get(monthKey()), null),
+  ]);
+  const monthMicro = Number(monthRaw ?? 0);
+  const budget = settings.aiMonthlyBudgetMicro;
+  const budgetPct = budget ? Math.min(100, Math.round((monthMicro / budget) * 100)) : 0;
+  const topIdeas = ideas.filter((i) => i.status === "new").sort((a, b) => b.count - a.count).slice(0, 5);
   const t = days[0];
   const sum = (k: "requests" | "answered" | "noTool" | "costMicro" | "savedMicro" | "images" | "cacheRead" | "input") => days.reduce((s, d) => s + d[k], 0);
   const topicTotal = topics.reduce((s, [, v]) => s + v, 0);
@@ -77,12 +91,42 @@ export default async function NinjaAdmin() {
               className="w-32 px-3 py-1.5 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg text-[#f5f5f5] tabular-nums"
             />
           </label>
+          <label className="text-sm text-[#dddddd]">
+            <span className="block text-xs text-[#888888] mb-1">Monthly AI budget, $ (0 = no limit)</span>
+            <input
+              type="number"
+              name="budget"
+              min={0}
+              max={1000}
+              step="0.5"
+              defaultValue={(budget / 1e6).toFixed(2)}
+              className="w-32 px-3 py-1.5 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg text-[#f5f5f5] tabular-nums"
+            />
+          </label>
           <Button tone="primary">Save</Button>
           <p className="text-xs text-[#777777] w-full">
             Changes apply immediately. Status: {settings.aiEnabled ? <Badge tone="good">on</Badge> : <Badge tone="bad">off</Badge>} · today {t.requests}/
             {settings.aiDailyCap}
           </p>
         </form>
+        {budget > 0 && (
+          <div className="mt-4">
+            <div className="flex justify-between text-xs text-[#888888] mb-1 tabular-nums">
+              <span>
+                This month {usd(monthMicro)} of {usd(budget)}
+              </span>
+              <span>{budgetPct}%{budgetPct >= 100 ? " — paused until the 1st" : ""}</span>
+            </div>
+            <div className="h-2 bg-[#1a1a1a] rounded-full overflow-hidden" role="progressbar" aria-valuenow={budgetPct} aria-valuemin={0} aria-valuemax={100} aria-label="Monthly AI budget used">
+              <div className={`h-full rounded-full ${budgetPct >= 100 ? "bg-[#ef4444]" : budgetPct >= 80 ? "bg-[#f59e0b]" : "bg-[#a855f7]"}`} style={{ width: `${budgetPct}%` }} />
+            </div>
+            <p className="mt-1.5 text-[11px] text-[#666666]">At 80% you get a Telegram warning; at 100% Ninja pauses itself and resumes automatically on the 1st.</p>
+          </div>
+        )}
+      </Card>
+
+      <Card title="Test console">
+        <NinjaTestConsole />
       </Card>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -130,17 +174,14 @@ export default async function NinjaAdmin() {
         </Card>
       </div>
 
-      <Card title={`Unanswered requests — tool ideas (${unmet.length})`}>
-        <p className="text-xs text-[#777777] mb-3">
-          Questions where no existing tool fit, summarised by the AI without the visitor&apos;s data. Use them to pick the next tools.
-        </p>
-        {unmet.length ? (
+      <Card title="Most requested missing tools" action={<Link href="/admin/ideas" className="text-xs text-[#c4a5f7] hover:underline">Open idea board →</Link>}>
+        {topIdeas.length ? (
           <ul className="divide-y divide-[#1a1a1a]">
-            {unmet.map((u, i) => (
-              <li key={i} className="flex items-start justify-between gap-4 py-2 text-sm">
-                <span className="text-[#dddddd]">{u.text}</span>
+            {topIdeas.map((u) => (
+              <li key={u.id} className="flex items-start justify-between gap-4 py-2 text-sm">
+                <span className="text-[#dddddd]">{u.title}</span>
                 <span className="shrink-0 flex items-center gap-2 text-xs text-[#777777]">
-                  {u.topic && <Badge>{u.topic}</Badge>} {ago(u.ts)}
+                  <Badge tone="info">{u.count}×</Badge> {ago(u.lastTs)}
                 </span>
               </li>
             ))}
