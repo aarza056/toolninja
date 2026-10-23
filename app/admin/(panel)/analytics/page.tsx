@@ -10,6 +10,7 @@ import {
   today,
   yesterday,
   lastDays,
+  previousDays,
   monthToDate,
   countryName,
   pageLabel,
@@ -93,12 +94,11 @@ export default async function AnalyticsAdmin({ searchParams }: { searchParams: {
 
   try {
     const now = Date.now();
-    const prev7: Range = { since: lastDays(14, now).since, until: lastDays(7, now).since - 1 };
     const [tToday, tYesterday, t7, tPrev7, t30, tMonth, daily, hourly, pages, referrers, countries, devices, browsers] = await Promise.all([
       totals(today(now)),
       totals(yesterday(now)),
       totals(lastDays(7, now)),
-      totals(prev7),
+      totals(previousDays(7, now)),
       totals(lastDays(30, now)),
       totals(monthToDate(now)),
       series(lastDays(30, now), "day"),

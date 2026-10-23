@@ -63,6 +63,10 @@ async function request<T>(path: string, params: Params): Promise<T> {
 }
 
 // ─── Time ranges (UTC days, matching the rest of /admin) ─────────────────────
+// Vercel rounds since/until to whole days when a query has no hour/day breakdown, and a range
+// that starts and ends on the same day comes back empty (that showed "0 visitors today" while the
+// daily chart had numbers). So every range is whole UTC days: `until` is the next midnight,
+// exclusive.
 
 const DAY_MS = 86_400_000;
 export function startOfUtcDay(t = Date.now()): number {
@@ -71,19 +75,26 @@ export function startOfUtcDay(t = Date.now()): number {
 
 export interface Range {
   since: number;
+  /** exclusive — always a UTC midnight */
   until: number;
 }
 
 /** Last `days` UTC days including today, e.g. 7 → today and the 6 days before. */
 export function lastDays(days: number, now = Date.now()): Range {
-  return { since: startOfUtcDay(now) - (days - 1) * DAY_MS, until: now };
+  const tomorrow = startOfUtcDay(now) + DAY_MS;
+  return { since: tomorrow - days * DAY_MS, until: tomorrow };
 }
 
-export const today = (now = Date.now()): Range => ({ since: startOfUtcDay(now), until: now });
-export const yesterday = (now = Date.now()): Range => ({ since: startOfUtcDay(now) - DAY_MS, until: startOfUtcDay(now) - 1 });
+export const today = (now = Date.now()): Range => lastDays(1, now);
+export const yesterday = (now = Date.now()): Range => ({ since: startOfUtcDay(now) - DAY_MS, until: startOfUtcDay(now) });
+/** The `days` days just before lastDays(days), for "vs previous" comparisons. */
+export const previousDays = (days: number, now = Date.now()): Range => {
+  const r = lastDays(days, now);
+  return { since: r.since - days * DAY_MS, until: r.since };
+};
 export const monthToDate = (now = Date.now()): Range => {
   const d = new Date(now);
-  return { since: Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1), until: now };
+  return { since: Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1), until: startOfUtcDay(now) + DAY_MS };
 };
 
 // ─── Queries ────────────────────────────────────────────────────────────────
@@ -94,6 +105,11 @@ export interface Totals {
 }
 
 export async function totals(range: Range): Promise<Totals> {
+  // One day: read it from the daily breakdown, the same numbers the daily chart shows
+  if (range.until - range.since === DAY_MS) {
+    const day = (await series(range, "day")).find((p) => Date.parse(p.timestamp) === range.since);
+    return { pageviews: day?.pageviews ?? 0, visitors: day?.visitors ?? 0 };
+  }
   const r = await request<{ data: Partial<Totals> }>("visits/count", { since: range.since, until: range.until });
   return { pageviews: Number(r.data?.pageviews ?? 0), visitors: Number(r.data?.visitors ?? 0) };
 }
@@ -102,9 +118,15 @@ export interface TimePoint extends Totals {
   timestamp: string;
 }
 
-export async function series(range: Range, granularity: "hour" | "day"): Promise<TimePoint[]> {
+export async function series(range: Range, granularity: "hour" | "day", now = Date.now()): Promise<TimePoint[]> {
   const r = await request<{ data: Partial<TimePoint>[] }>("visits/aggregate", { since: range.since, until: range.until, by: granularity, limit: 100 });
-  return (r.data ?? []).map((p) => ({ timestamp: String(p.timestamp), pageviews: Number(p.pageviews ?? 0), visitors: Number(p.visitors ?? 0) }));
+  return (r.data ?? [])
+    .map((p) => ({ timestamp: String(p.timestamp), pageviews: Number(p.pageviews ?? 0), visitors: Number(p.visitors ?? 0) }))
+    .filter((p) => {
+      // keep buckets inside the range, and none from the future (e.g. later hours of today)
+      const t = Date.parse(p.timestamp);
+      return t >= range.since && t < range.until && t <= now;
+    });
 }
 
 export type Dimension = "requestPath" | "referrerHostname" | "country" | "deviceType" | "browserName" | "osName" | "utmSource";

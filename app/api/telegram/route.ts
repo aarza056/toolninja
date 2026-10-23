@@ -14,6 +14,7 @@ import {
   today,
   yesterday,
   lastDays,
+  previousDays,
   countryLabel,
   pageLabel,
   referrerLabel,
@@ -73,7 +74,7 @@ const visitorsText = () =>
       totals(today(now)),
       totals(yesterday(now)),
       totals(lastDays(7, now)),
-      totals({ since: lastDays(14, now).since, until: lastDays(7, now).since - 1 }),
+      totals(previousDays(7, now)),
       totals(lastDays(30, now)),
     ]);
     const c = change(w.visitors, prevW.visitors);
