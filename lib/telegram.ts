@@ -6,6 +6,7 @@ import { kv, safe } from "@/lib/kv";
 // Incoming updates are verified with Telegram's secret-token header; everything else is ignored.
 
 const K = { chat: "tn:tg:chat", link: "tn:tg:link" };
+const API_BASE = process.env.TELEGRAM_API_BASE || "https://api.telegram.org"; // overridable for local tests
 
 export const tgConfigured = () => Boolean(process.env.TELEGRAM_BOT_TOKEN);
 
@@ -18,7 +19,7 @@ export async function tgApi<T = unknown>(method: string, body: Record<string, un
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) return { ok: false, description: "TELEGRAM_BOT_TOKEN is not set" };
   try {
-    const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
+    const res = await fetch(`${API_BASE}/bot${token}/${method}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

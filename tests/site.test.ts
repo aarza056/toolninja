@@ -83,7 +83,8 @@ describe("tool registry", () => {
 
 describe("README", () => {
   it("lists every tool from lib/tools.ts (run `npm run readme:tools` to update)", () => {
-    const readme = readFileSync(join(__dirname, "..", "README.md"), "utf8");
+    // Git on Windows may check the file out with CRLF line endings
+    const readme = readFileSync(join(__dirname, "..", "README.md"), "utf8").replace(/\r\n/g, "\n");
     const block = readme.slice(readme.indexOf(START), readme.indexOf(END) + END.length);
     expect(block).toBe(renderToolsSection(tools, categories));
     expect(block).toContain(`(${tools.length} total)`);

@@ -109,6 +109,7 @@ Optional `.env.local` settings:
 | `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Upstash Redis (set automatically by the Vercel integration) |
 | `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET` | `/admin` sign-in |
 | `TELEGRAM_BOT_TOKEN` | Admin alerts |
+| `VERCEL_API_TOKEN` (+ `VERCEL_TEAM_ID` for team projects, `VERCEL_ANALYTICS_PROJECT` if not `toolninja`) | Admin → Analytics and the Telegram `/visitors` commands |
 | `NEXT_PUBLIC_GA_ID` | Google Analytics (consent-gated) |
 
 Checks: `npm test`, `npx tsc --noEmit`, `npx next lint` — CI runs all three on every push and pull request.
