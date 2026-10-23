@@ -8,6 +8,7 @@ import { tgConfigured, getChatId } from "@/lib/telegram";
 import Link from "next/link";
 import { getSettings } from "@/lib/site-settings";
 import { countReviews, getHeldRatings, getSpikeAlert, getAllRatings } from "@/lib/reviews";
+import { vercelAnalyticsConfigured, totals, today, yesterday, lastDays } from "@/lib/vercel-analytics";
 import { Alert, Button, Card, Stat } from "@/components/admin/ui";
 import { dismissSpikeAlert } from "../actions";
 
@@ -24,8 +25,21 @@ const LINKS = [
   { label: "Patreon", href: "https://www.patreon.com/cw/ToolNinjaio" },
 ];
 
+// Visitor numbers for the top row; null when the API isn't connected or doesn't answer.
+async function visitorTotals() {
+  if (!vercelAnalyticsConfigured()) return null;
+  try {
+    const now = Date.now();
+    const [t, y, w] = await Promise.all([totals(today(now)), totals(yesterday(now)), totals(lastDays(7, now))]);
+    return { today: t, yesterday: y, week: w };
+  } catch {
+    return null;
+  }
+}
+
 export default async function AdminOverview() {
-  const [days, settings, pending, bugs, held, spike, ratings, monthRaw, ideas, tfa, chat] = await Promise.all([
+  const [visitors, days, settings, pending, bugs, held, spike, ratings, monthRaw, ideas, tfa, chat] = await Promise.all([
+    visitorTotals(),
     getDays(1),
     getSettings(),
     countReviews("pending"),
@@ -93,6 +107,22 @@ export default async function AdminOverview() {
           </Alert>
         )}
       </div>
+
+      {visitors ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <Stat label="Visitors today" value={visitors.today.visitors.toLocaleString("en-US")} sub={`${visitors.today.pageviews.toLocaleString("en-US")} page views`} href="/admin/analytics" />
+          <Stat label="Visitors yesterday" value={visitors.yesterday.visitors.toLocaleString("en-US")} sub={`${visitors.yesterday.pageviews.toLocaleString("en-US")} page views`} href="/admin/analytics" />
+          <Stat label="Visitors, 7 days" value={visitors.week.visitors.toLocaleString("en-US")} sub={`${visitors.week.pageviews.toLocaleString("en-US")} page views`} href="/admin/analytics" />
+          <Stat label="Top pages & sources" value="→" sub="countries, devices, by hour" href="/admin/analytics" />
+        </div>
+      ) : !vercelAnalyticsConfigured() ? (
+        <Alert tone="info">
+          Analytics isn&apos;t connected yet.{" "}
+          <Link href="/admin/analytics" className="underline">
+            Set up Analytics
+          </Link>
+        </Alert>
+      ) : null}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Stat label="Ninja questions today" value={t.requests} sub={`cap ${settings.aiDailyCap} · ${capPct}%`} href="/admin/ninja" />

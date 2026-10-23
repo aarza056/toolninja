@@ -6,6 +6,20 @@ import { getDays, monthKey, usd } from "@/lib/ninja-stats";
 import { clearSpikeAlert, countReviews, setReviewStatus } from "@/lib/reviews";
 import { bumpSessionVersion } from "@/lib/two-factor";
 import { kv, safe } from "@/lib/kv";
+import {
+  vercelAnalyticsConfigured,
+  VercelAnalyticsError,
+  totals,
+  top,
+  today,
+  yesterday,
+  lastDays,
+  countryLabel,
+  pageLabel,
+  referrerLabel,
+  change,
+  type Dimension,
+} from "@/lib/vercel-analytics";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,6 +31,8 @@ interface Update {
 
 const HELP = `<b>ToolNinja admin bot</b>
 /status — today at a glance
+/visitors — visitors today, yesterday, 7 and 30 days
+/pages · /referrers · /countries — top 10 (add 1, 7 or 30 for days, e.g. /pages 30)
 /ninja on · /ninja off — switch Ninja AI
 /pause · /resume — new comments
 /help — this list`;
@@ -38,6 +54,53 @@ async function statusText(): Promise<string> {
     `🧹 Comments: ${s.commentsPaused ? "<b>paused</b>" : "open"}`,
   ].join("\n");
 }
+
+const num = (v: number) => v.toLocaleString("en-US");
+
+async function analyticsText(build: () => Promise<string>): Promise<string> {
+  if (!vercelAnalyticsConfigured()) return "Analytics isn't connected yet — add VERCEL_API_TOKEN in Vercel (see Admin → Analytics).";
+  try {
+    return await build();
+  } catch (e) {
+    return e instanceof VercelAnalyticsError ? `⚠️ ${esc(e.message)}` : "⚠️ Couldn't reach Vercel's API right now.";
+  }
+}
+
+const visitorsText = () =>
+  analyticsText(async () => {
+    const now = Date.now();
+    const [t, y, w, prevW, m] = await Promise.all([
+      totals(today(now)),
+      totals(yesterday(now)),
+      totals(lastDays(7, now)),
+      totals({ since: lastDays(14, now).since, until: lastDays(7, now).since - 1 }),
+      totals(lastDays(30, now)),
+    ]);
+    const c = change(w.visitors, prevW.visitors);
+    return [
+      `<b>👥 Visitors</b> (UTC days)`,
+      `Today: <b>${num(t.visitors)}</b> · ${num(t.pageviews)} views`,
+      `Yesterday: ${num(y.visitors)} · ${num(y.pageviews)} views`,
+      `7 days: ${num(w.visitors)} · ${num(w.pageviews)} views${c === null ? "" : ` (${c >= 0 ? "▲" : "▼"} ${Math.abs(c)}% vs previous 7)`}`,
+      `30 days: ${num(m.visitors)} · ${num(m.pageviews)} views`,
+    ].join("\n");
+  });
+
+const TOP_LISTS: Record<string, { dimension: Dimension; title: string; label: (v: string) => string }> = {
+  "/pages": { dimension: "requestPath", title: "📄 Top pages", label: pageLabel },
+  "/referrers": { dimension: "referrerHostname", title: "🔗 Top referrers", label: referrerLabel },
+  "/countries": { dimension: "country", title: "🌍 Top countries", label: countryLabel },
+};
+
+const topText = (cmd: string, arg?: string) =>
+  analyticsText(async () => {
+    const list = TOP_LISTS[cmd];
+    const days = arg === "1" || arg === "30" ? Number(arg) : 7;
+    const rows = await top(list.dimension, days === 1 ? today() : lastDays(days), 10);
+    const period = days === 1 ? "today" : `last ${days} days`;
+    if (!rows.length) return `<b>${list.title}</b> · ${period}\nNo data yet.`;
+    return [`<b>${list.title}</b> · ${period}`, ...rows.map((r, i) => `${i + 1}. ${esc(list.label(r.value))} — <b>${num(r.visitors)}</b> (${num(r.pageviews)} views)`)].join("\n");
+  });
 
 async function runAction(data: string): Promise<string> {
   const [kind, action, id] = data.split(":");
@@ -87,6 +150,8 @@ export async function POST(req: Request) {
         const [cmd, arg] = text.toLowerCase().split(/\s+/);
         let reply = HELP;
         if (cmd === "/status") reply = await statusText();
+        else if (cmd === "/visitors") reply = await visitorsText();
+        else if (Object.prototype.hasOwnProperty.call(TOP_LISTS, cmd)) reply = await topText(cmd, arg);
         else if (cmd === "/ninja" && (arg === "on" || arg === "off")) reply = await runAction(`ninja:${arg}`);
         else if (cmd === "/pause") reply = await runAction("cm:pause");
         else if (cmd === "/resume") reply = await runAction("cm:resume");

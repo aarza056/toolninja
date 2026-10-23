@@ -4,6 +4,7 @@ import { MODEL } from "@/lib/ninja-ask";
 import { getSettings } from "@/lib/site-settings";
 import { twoFactorEnabled, resetOverride, backupCodesLeft } from "@/lib/two-factor";
 import { tgConfigured, tgApi, getChatId, webhookInfo } from "@/lib/telegram";
+import { vercelAnalyticsConfigured, totals, today } from "@/lib/vercel-analytics";
 
 export type CheckState = "ok" | "warn" | "fail";
 export interface Check {
@@ -80,6 +81,11 @@ export async function runChecks(origin: string): Promise<Check[]> {
   }
 
   // Analytics & deploy
+  if (!vercelAnalyticsConfigured()) add("Site", "Vercel Web Analytics API", "warn", "VERCEL_API_TOKEN is not set — Admin → Analytics and /visitors are off.");
+  else {
+    const [t, ms, err] = await timed(() => totals(today()));
+    add("Site", "Vercel Web Analytics API", t ? "ok" : "fail", t ? `Connected · ${t.visitors} visitors today (${ms} ms)` : err ?? "error");
+  }
   add("Site", "Google Analytics ID", process.env.NEXT_PUBLIC_GA_ID ? "ok" : "warn", process.env.NEXT_PUBLIC_GA_ID ? "Set" : "NEXT_PUBLIC_GA_ID is not set");
   add("Site", "Environment", "ok", `${process.env.VERCEL_ENV ?? "local"}${process.env.VERCEL_GIT_COMMIT_REF ? ` · branch ${process.env.VERCEL_GIT_COMMIT_REF}` : ""}${process.env.VERCEL_GIT_COMMIT_SHA ? ` · ${process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7)}` : ""}`);
   return checks;
