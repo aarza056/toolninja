@@ -23,7 +23,9 @@ export function parseCsv(text: string, delimiter = ","): string[][] {
       i++;
       continue;
     }
-    if (char === '"') {
+    // A quote opens a quoted field only at the start of a field (RFC 4180). Mid-field it's a
+    // literal character — e.g. inch marks in `5" screen` — instead of swallowing the rest of the row.
+    if (char === '"' && field.length === 0) {
       inQuotes = true;
       i++;
       continue;

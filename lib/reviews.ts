@@ -5,7 +5,7 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
 import { kv, safe, today, DAY } from "@/lib/kv";
 import { tools } from "@/lib/tools";
-import { scanForSecrets } from "@/lib/secret-scanner";
+import { redactSecrets as redactKnownSecrets } from "@/lib/secret-scanner";
 import { getSettings, saveSettings } from "@/lib/site-settings";
 import { costMicro, recordExtraCost } from "@/lib/ninja-stats";
 import { notify, esc } from "@/lib/telegram";
@@ -234,9 +234,8 @@ const NON_WORD = new RegExp("[^\\p{L}\\p{N} ]", "gu");
 const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, " ").replace(NON_WORD, "").trim();
 
 function redactSecrets(text: string): { text: string; redacted: boolean } {
-  let out = text;
-  for (const f of scanForSecrets(text)) if (f.match) out = out.split(f.match).join("[removed]");
-  return { text: out, redacted: out !== text };
+  const r = redactKnownSecrets(text);
+  return { text: r.text, redacted: r.count > 0 };
 }
 
 const ModerationSchema = z.object({

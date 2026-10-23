@@ -48,9 +48,10 @@ export async function twoFactorEnabled(): Promise<boolean> {
   return Boolean(await safe(() => kv().get(K.secret), null));
 }
 
-/** Whether sign-in must ask for a code right now. */
-export async function codeRequired(): Promise<boolean> {
-  return !resetOverride() && (await twoFactorEnabled());
+/** Whether sign-in must ask for a code. Throws when storage can't be read — sign-in must not fall back to password-only. */
+export async function codeRequiredStrict(): Promise<boolean> {
+  if (resetOverride()) return false;
+  return Boolean(await kv().get(K.secret));
 }
 
 export async function backupCodesLeft(): Promise<number> {

@@ -75,7 +75,7 @@ export default function SupportPage() {
         </span>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#f5f5f5] mb-3">Keep ToolNinja free</h1>
         <p className="text-[15px] text-[#888888] leading-relaxed max-w-xl mx-auto">
-          No login, no paywall, and your data never leaves your browser. That&apos;s not changing. If ToolNinja saves you time, you
+          No login, no paywall, and every tool runs in your browser. That&apos;s not changing. If ToolNinja saves you time, you
           can help keep it that way.
         </p>
         <dl className="flex justify-center gap-8 mt-7">

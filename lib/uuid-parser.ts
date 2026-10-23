@@ -90,6 +90,8 @@ export function parseUuid(input: string): UuidParseResult | null {
 export function isValidUlid(input: string): boolean {
   const s = input.trim().toUpperCase();
   if (s.length !== 26) return false;
+  // 48-bit timestamp: the first character can't exceed 7 (the spec rejects larger values)
+  if (s[0] > "7") return false;
   return Array.from(s).every((c) => ULID_ALPHABET.includes(c));
 }
 

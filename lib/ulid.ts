@@ -50,8 +50,10 @@ export function generateMonotonicULIDs(count: number, timestamp: number = Date.n
   return out;
 }
 
+/** 26 Crockford Base32 characters; the first is at most 7, since the timestamp is 48 bits and the
+ * spec requires anything above 7ZZZZZZZZZZZZZZZZZZZZZZZZZ to be rejected. */
 export function isValidULID(ulid: string): boolean {
-  return /^[0-9A-HJKMNP-TV-Z]{26}$/i.test(ulid);
+  return /^[0-7][0-9A-HJKMNP-TV-Z]{25}$/i.test(ulid);
 }
 
 export function ulidToDate(ulid: string): Date | null {

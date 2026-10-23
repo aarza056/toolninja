@@ -23,7 +23,7 @@ const orgJsonLd = {
   logo: "https://toolninja.io/logo.png",
   sameAs: [PATREON_URL],
   description:
-    "Fast, free developer tools. No login. No nonsense. Everything runs in your browser.",
+    "Fast, free developer tools. No login. No nonsense. Every tool runs in your browser.",
 };
 
 export default function HomePage() {

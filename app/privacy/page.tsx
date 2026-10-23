@@ -65,6 +65,11 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">3. Analytics &amp; cookies</h2>
           <p className="mb-3">
+            We use <strong className="text-[#d4d4d4]">Vercel Web Analytics and Speed Insights</strong> on every page to count
+            page views and measure page speed. They don&apos;t use cookies, don&apos;t identify you across sites, and report
+            only aggregate numbers — never what you type into a tool.
+          </p>
+          <p className="mb-3">
             If you accept analytics, we use Google Analytics to understand which tools developers use
             most. This helps us decide which tools to improve and which new ones to build.
             Google Analytics is only loaded <strong className="text-[#d4d4d4]">after you explicitly accept</strong> —

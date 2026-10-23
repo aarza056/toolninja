@@ -75,7 +75,7 @@ export const SECRET_RULES: SecretRule[] = [
   {
     name: "Private Key Block",
     severity: "critical",
-    pattern: /-----BEGIN (RSA |EC |OPENSSH |DSA |)PRIVATE KEY-----/g,
+    pattern: /-----BEGIN (RSA |EC |OPENSSH |DSA |ENCRYPTED |)PRIVATE KEY-----|-----BEGIN PGP PRIVATE KEY BLOCK-----/g,
     remediation: "A private key in version control should be considered fully compromised — generate a new key pair, update every system that trusted the old public key, and revoke the old one.",
   },
   {
@@ -107,6 +107,37 @@ function lineOf(text: string, index: number): number {
 function redact(match: string): string {
   if (match.length <= 10) return match.slice(0, 2) + "…";
   return match.slice(0, 6) + "…" + match.slice(-4);
+}
+
+/**
+ * Replaces every detected secret in `text` with "[removed]". Findings from scanForSecrets only
+ * carry a redacted preview, so redaction has to work from the raw regex matches — this does.
+ */
+export function redactSecrets(text: string, replacement = "[removed]"): { text: string; count: number } {
+  const spans: [number, number][] = [];
+  for (const rule of SECRET_RULES) {
+    const regex = new RegExp(rule.pattern.source, rule.pattern.flags.includes("g") ? rule.pattern.flags : rule.pattern.flags + "g");
+    let m: RegExpExecArray | null;
+    while ((m = regex.exec(text))) {
+      if (m[0].length === 0) {
+        regex.lastIndex++;
+        continue;
+      }
+      spans.push([m.index, m.index + m[0].length]);
+    }
+  }
+  if (!spans.length) return { text, count: 0 };
+  // Merge overlapping matches (one value can match several rules), then replace right to left
+  spans.sort((a, b) => a[0] - b[0]);
+  const merged: [number, number][] = [];
+  for (const s of spans) {
+    const last = merged[merged.length - 1];
+    if (last && s[0] <= last[1]) last[1] = Math.max(last[1], s[1]);
+    else merged.push([...s]);
+  }
+  let out = text;
+  for (let i = merged.length - 1; i >= 0; i--) out = out.slice(0, merged[i][0]) + replacement + out.slice(merged[i][1]);
+  return { text: out, count: merged.length };
 }
 
 export function scanForSecrets(text: string): SecretFinding[] {

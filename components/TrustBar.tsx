@@ -4,8 +4,10 @@ export default function TrustBar() {
   const stats = [
     { value: "1,000+", label: "developers" },
     { value: String(tools.length), label: "free tools" },
-    { value: "0", label: "data uploads" },
-    { value: "100%", label: "browser only" },
+    // Tool inputs stay in the browser, but Ask Ninja questions and ratings do reach the server,
+    // so the stats only claim what's true site-wide.
+    { value: "0", label: "accounts" },
+    { value: "100%", label: "in-browser tools" },
   ];
 
   return (

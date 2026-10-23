@@ -112,13 +112,23 @@ function detectDevice(ua: string): ParsedUserAgent["device"] {
   return { type: "desktop" };
 }
 
+function botVersion(ua: string, re: RegExp): string {
+  const m = re.exec(ua);
+  if (m) {
+    const after = ua.slice(m.index).match(/^[^\s;/)]*\/([\d.]+)/);
+    if (after) return after[1];
+  }
+  return "";
+}
+
 export function parseUserAgent(ua: string): ParsedUserAgent {
   const trimmed = ua.trim();
 
   const bot = BOT_PATTERNS.find((b) => b.re.test(trimmed));
   if (bot) {
     return {
-      browser: { name: bot.name, version: match(trimmed, /\/([\d.]+)/) ?? "" },
+      // The version belongs to the bot's own token ("Googlebot/2.1"), not to the leading "Mozilla/5.0"
+      browser: { name: bot.name, version: botVersion(trimmed, bot.re) },
       engine: null,
       os: detectOS(trimmed),
       device: { type: "bot" },

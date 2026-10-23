@@ -24,6 +24,16 @@ export interface CorsCheckResult {
   verdict: "allowed" | "blocked";
 }
 
+const isSimpleContentType = (contentType: string) => SIMPLE_CONTENT_TYPES.includes(contentType.toLowerCase().split(";")[0].trim());
+
+/** Headers the preflight must explicitly allow: non-safelisted request headers, plus Content-Type
+ * when its value isn't one of the three simple types (it's only safelisted with those values). */
+function headersNeedingPermission(requestHeaders: string[], contentType: string): string[] {
+  const names = requestHeaders.map((h) => h.toLowerCase()).filter((h) => !SIMPLE_HEADERS.includes(h));
+  if (contentType && !isSimpleContentType(contentType)) names.push("content-type");
+  return Array.from(new Set(names));
+}
+
 function simplePreflightReasons(method: string, requestHeaders: string[], contentType: string): string[] {
   const reasons: string[] = [];
   if (!SIMPLE_METHODS.includes(method.toUpperCase())) {
@@ -34,7 +44,7 @@ function simplePreflightReasons(method: string, requestHeaders: string[], conten
       reasons.push(`Header "${h}" is not on the CORS-safelisted header list.`);
     }
   }
-  if (contentType && !SIMPLE_CONTENT_TYPES.includes(contentType.toLowerCase().split(";")[0].trim())) {
+  if (contentType && !isSimpleContentType(contentType)) {
     reasons.push(`Content-Type "${contentType}" isn't one of the three simple content types (application/x-www-form-urlencoded, multipart/form-data, text/plain).`);
   }
   return reasons;
@@ -78,28 +88,40 @@ export function checkCors(input: CorsCheckInput): CorsCheckResult {
   }
 
   if (preflightReasons.length > 0) {
+    // These follow the Fetch spec's CORS-preflight checks. A "*" in either list is a wildcard only
+    // for requests without credentials, and never covers the Authorization header.
+    const method = input.method.toUpperCase();
     const acam = responseHeaders["access-control-allow-methods"];
     const allowedMethods = acam ? acam.split(",").map((s) => s.trim().toUpperCase()) : [];
-    const methodOk = allowedMethods.includes(input.method.toUpperCase());
+    const methodWildcard = allowedMethods.includes("*") && !input.withCredentials;
+    // GET, HEAD and POST are CORS-safelisted methods: always permitted, listed or not
+    const methodOk = SIMPLE_METHODS.includes(method) || allowedMethods.includes(method) || methodWildcard;
     checks.push({
       label: "Access-Control-Allow-Methods",
       pass: methodOk,
-      detail: methodOk
-        ? `${input.method} is listed.`
-        : `${input.method} isn't in Access-Control-Allow-Methods (got: ${acam ?? "nothing"}).`,
+      detail: SIMPLE_METHODS.includes(method)
+        ? `${input.method} is a CORS-safelisted method — always allowed, whether or not it's listed.`
+        : methodOk
+          ? methodWildcard && !allowedMethods.includes(method)
+            ? `Allowed by the "*" wildcard (valid because no credentials are sent).`
+            : `${input.method} is listed.`
+          : `${input.method} isn't in Access-Control-Allow-Methods (got: ${acam ?? "nothing"})${allowedMethods.includes("*") ? ' — "*" does not count when credentials are sent' : ""}.`,
     });
 
     const acah = responseHeaders["access-control-allow-headers"];
     const allowedHeaders = acah ? acah.split(",").map((s) => s.trim().toLowerCase()) : [];
-    const missingHeaders = input.requestHeaders.filter(
-      (h) => !SIMPLE_HEADERS.includes(h.toLowerCase()) && !allowedHeaders.includes(h.toLowerCase())
+    const headerWildcard = allowedHeaders.includes("*") && !input.withCredentials;
+    const missingHeaders = headersNeedingPermission(input.requestHeaders, input.contentType).filter(
+      (h) => !allowedHeaders.includes(h) && !(headerWildcard && h !== "authorization")
     );
     checks.push({
       label: "Access-Control-Allow-Headers",
       pass: missingHeaders.length === 0,
       detail: missingHeaders.length === 0
-        ? "Every custom header this request sends is allowed."
-        : `Not allowed: ${missingHeaders.join(", ")} — add them to Access-Control-Allow-Headers on the server.`,
+        ? "Every header this request needs permission for is allowed."
+        : `Not allowed: ${missingHeaders.join(", ")} — add them to Access-Control-Allow-Headers on the server${
+            missingHeaders.includes("authorization") && allowedHeaders.includes("*") ? ' ("*" never covers Authorization — list it explicitly)' : ""
+          }${missingHeaders.includes("content-type") ? " (Content-Type needs permission because its value isn't a simple type)" : ""}.`,
     });
   }
 

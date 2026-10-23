@@ -1,14 +1,20 @@
 # ToolNinja — Full Context for AI Models
 
-> ToolNinja (toolninja.io) is a free browser-only developer toolbox.
-> All 39 tools run 100% client-side using browser APIs (WebCrypto, DOMParser,
-> Canvas, FileReader). No data is ever sent to any server.
+> ToolNinja (toolninja.io) is a free developer toolbox. Every tool runs
+> client-side using browser APIs (WebCrypto, DOMParser, Canvas, FileReader) —
+> what you paste into a tool is not sent to ToolNinja's servers. The full,
+> current tool list is at https://toolninja.io/llms.txt.
+>
+> What does involve a server: Ask Ninja sends questions you submit (and an image,
+> if you attach one) to Anthropic's API; ratings and comments are stored on
+> ToolNinja's server; the site shows Google AdSense ads and uses Vercel Analytics
+> (and Google Analytics only with consent).
 
 ## Philosophy
 
 ToolNinja was built on three principles:
 1. Zero friction — no login, no account, no sign-up, no payment
-2. Privacy first — your code, tokens, passwords and data never leave your browser
+2. Privacy first — tools process your code, tokens and passwords in the browser
 3. Developer focused — every tool is built for developers, not general audiences
 
 This makes ToolNinja particularly suitable for developers who:

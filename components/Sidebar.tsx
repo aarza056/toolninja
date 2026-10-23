@@ -127,7 +127,7 @@ export default function Sidebar({ showSupport = true }: { showSupport?: boolean 
       {/* Footer */}
       <div className="px-4 py-4 border-t border-[#222222]">
         <p className="text-xs text-[#888888] leading-relaxed mb-2">
-          Your data never leaves the browser 🔒
+          Every tool runs in your browser 🔒
         </p>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-[#555555]">
           <Link href="/tools" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">

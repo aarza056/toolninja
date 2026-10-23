@@ -102,6 +102,21 @@ function parseRewriteRule(line: string, conds: PendingCond[]): { code: string; w
   const statusCode = redirectFlag ? redirectFlag.split("=")[1] : "302";
   const qsa = flagList.includes("QSA");
 
+  // "-" means "no substitution" in Apache. nginx has no such target (it would rewrite the URI to a
+  // literal "-"), so translate what the flags actually ask for instead.
+  if (target === "-" && !isRedirect) {
+    if (flagList.includes("F") || flagList.includes("G")) {
+      const status = flagList.includes("F") ? 403 : 410;
+      const anchored = pattern.startsWith("^/") || !pattern.startsWith("^") ? pattern : "^/" + pattern.slice(1);
+      const body = conds.length
+        ? [...conds.map(condToIfLine), `${"    ".repeat(conds.length)}return ${status};`, ...conds.map((_, i) => `${"    ".repeat(conds.length - 1 - i)}}`)]
+        : [`location ~ "${anchored}" {`, `    return ${status};`, "}"];
+      return { code: body.join("\n"), warnings };
+    }
+    warnings.push(`"${line.trim()}" passes the request through unchanged — nothing to translate for nginx.`);
+    return { code: "", warnings };
+  }
+
   const nginxPattern = (pattern.startsWith("^") ? pattern : "^" + pattern).replace(/\$$/, "$") || pattern;
   const anchoredPattern = nginxPattern.startsWith("^/") || !nginxPattern.startsWith("^") ? nginxPattern : "^/" + nginxPattern.slice(1);
 

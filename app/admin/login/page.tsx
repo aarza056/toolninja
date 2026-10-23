@@ -12,6 +12,7 @@ const ERRORS: Record<string, string> = {
   locked: "Too many wrong attempts — sign-in is locked for 30 minutes.",
   expired: "That took too long — enter your password again.",
   forbidden: "Request blocked.",
+  unavailable: "Sign-in is temporarily unavailable (storage isn't responding). Try again in a minute.",
   not_configured: "Admin isn't configured: set ADMIN_PASSWORD and ADMIN_SESSION_SECRET.",
 };
 
