@@ -321,7 +321,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "timestamp-converter": {
     about:
-      "The Unix Timestamp Converter translates between Unix epoch timestamps (integer seconds or milliseconds since January 1, 1970 UTC) and human-readable dates. Unix timestamps are the standard time representation in databases, APIs, JWT tokens, server logs, and most programming languages.\n\nA World Clock section shows the converted timestamp across a dozen major time zones simultaneously — UTC, US and European cities, and key Asia-Pacific zones — so you can see what a given moment looks like for a distributed team or a global user base without opening a separate timezone converter.",
+      "The Unix Timestamp Converter translates between Unix epoch timestamps (integer seconds or milliseconds since January 1, 1970 UTC) and human-readable dates. Unix timestamps are the standard time representation in databases, APIs, JWT tokens, server logs, and most programming languages.\n\nA World Clock section shows the converted timestamp across a dozen major time zones simultaneously — UTC, US and European cities, and key Asia-Pacific zones — so you can see what a given moment looks like for a distributed team or a global user base without opening a separate timezone converter.\n\nPaste seconds, milliseconds, microseconds or nanoseconds — the unit is detected from the length. You get ISO 8601 in UTC and in your zone, RFC 2822, and the same instant as ready-to-paste code for JavaScript (both Date and the Temporal API, now built into Chrome, Firefox and Node 26), Python, Go, Java, C#, PHP, Rust, PostgreSQL, MySQL, SQLite and Bash. Date → Timestamp converts a wall-clock time in any time zone, or any ISO 8601 / RFC 2822 string.",
     useCases: [
       "Converting timestamps from API responses or database records to readable dates",
       "Debugging JWT token expiry — the exp and iat claims are Unix timestamps",
@@ -473,7 +473,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "css-animations": {
     about:
-      "The CSS Animations library provides copy-paste ready HTML and CSS animation combinations with live previews. All animations use pure @keyframes with no JavaScript dependencies, no build tools, and no external libraries — paste the code and it works. Categories include buttons, loaders, text effects, cards, backgrounds, micro-interactions, and scroll-driven animations.\n\nThe Scroll category uses animation-timeline: scroll() and animation-timeline: view() — a 2026-relevant addition that drives an animation purely from scroll position (a progress bar, a reveal-on-scroll card) with zero JavaScript and no scroll event listener at all.",
+      "The CSS Animations library provides copy-paste ready HTML and CSS animation combinations with live previews. All animations use pure @keyframes with no JavaScript dependencies, no build tools, and no external libraries — paste the code and it works. Categories include buttons, loaders, text effects, cards, backgrounds, micro-interactions, and scroll-driven animations.\n\nThe Scroll category uses animation-timeline: scroll() and animation-timeline: view() — a 2026-relevant addition that drives an animation purely from scroll position (a progress bar, a reveal-on-scroll card) with zero JavaScript and no scroll event listener at all.\n\nOpen any animation and use Customize to change its speed, delay, easing (including a spring curve), repeat count and direction with a live preview. The copied CSS includes a prefers-reduced-motion fallback scoped to the animated elements, and the Tailwind v4 tab gives the animation as an @theme block, so it becomes an animate-* utility class.",
     useCases: [
       "Adding polished hover and loading animations without importing a library",
       "Building animated UI components for prototypes and demos quickly",
@@ -483,7 +483,7 @@ export const toolContent: Record<string, ToolContent> = {
     ],
     tips: [
       "Add animation-play-state: paused with a :hover selector to pause animations on hover.",
-      "Use @media (prefers-reduced-motion: reduce) to disable animations for users who have requested reduced motion in their OS settings.",
+      "Keep \"Respect reduced motion\" on in Customize: users who ask their OS for less motion then get the final state without the movement.",
       "CSS animations are GPU-accelerated when using transform and opacity — avoid animating layout properties like width, height, or top.",
       "animation-timeline: scroll() ties progress to the nearest scrollable ancestor; animation-timeline: view() ties it to the animated element's own position as it crosses the viewport — pick scroll() for a progress bar, view() for a reveal-on-scroll effect.",
       "Use the search box to jump straight to an animation by name instead of scanning categories — it filters live as you type.",
@@ -626,20 +626,20 @@ export const toolContent: Record<string, ToolContent> = {
 
   "json-to-typescript": {
     about:
-      "The JSON to TypeScript converter automatically generates TypeScript interface definitions from any JSON object or array. It handles nested objects, arrays, union types from mixed arrays, and optional fields — saving the tedious manual work of writing types by hand from API responses.\n\nBeyond TypeScript, it also generates Python dataclasses, Go structs, and Zod schemas from the same JSON — switch languages with one click, quicktype-style, without re-pasting your sample data. The Zod output goes a step further than a plain type: it's runtime-checkable validation code, with string fields that look like an email, URL, UUID, or ISO datetime automatically getting the matching Zod validator (z.string().email(), .url(), .uuid(), .datetime()) instead of a bare z.string().",
+      "The JSON to TypeScript converter automatically generates TypeScript interface definitions from any JSON object or array. It handles nested objects, arrays, union types from mixed arrays, and optional fields — saving the tedious manual work of writing types by hand from API responses.\n\nBeyond TypeScript, it generates Zod schemas, Go structs, Python (Pydantic models or dataclasses), Rust serde structs, C# classes for System.Text.Json, Kotlin kotlinx.serialization data classes and Swift Codable structs from the same JSON — switch languages with one click, quicktype-style. For these languages every item of an array is merged into one type, so a field missing from some items becomes optional and a field that is sometimes null becomes nullable, and keys that aren't valid identifiers (first-name, type) get the language's own rename attribute. The Zod output goes a step further than a plain type: it's runtime-checkable validation code, with string fields that look like an email, URL, UUID, or ISO datetime automatically getting the matching Zod validator (z.string().email(), .url(), .uuid(), .datetime()) instead of a bare z.string().",
     useCases: [
       "Creating TypeScript interfaces from API response payloads",
       "Generating types from database query results or fixture data",
       "Getting a typed starting point when adding TypeScript to an existing JavaScript project",
       "Quickly typing third-party API responses you don't control",
-      "Generating Python dataclasses or Go structs from the same JSON response for a polyglot backend",
+      "Generating Go, Python, Rust, C#, Kotlin or Swift models from the same JSON response for a polyglot backend or a mobile app",
       "Generating a Zod schema to validate API responses at runtime, not just type them at compile time",
     ],
     tips: [
       "Paste a real API response to generate accurate types — the generator infers types from actual values.",
       "For arrays with mixed element types, the generator creates union types (string | number).",
       "Review generated types — null values produce type | null, which may need adjustment based on your API contract.",
-      "Switch the language tab to Python, Go, or Zod to generate dataclasses, structs, or a runtime schema from the exact same JSON input.",
+      "Switch the language tab to generate the same types in Go, Pydantic, Rust, C#, Kotlin or Swift — paste an array of several real items so optional fields are detected.",
       "Zod's format detection (email, URL, UUID, datetime) is based on the sample values you paste — always double check it against your actual API contract rather than trusting it blindly.",
     ],
     faq: [
@@ -777,7 +777,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "cron-tester": {
     about:
-      "The CRON Expression Tester parses cron schedule expressions and previews the next upcoming run times in human-readable format. Cron expressions have five fields controlling minute, hour, day-of-month, month, and day-of-week, with special characters for ranges, steps, and lists.",
+      "The CRON Expression Tester parses cron schedule expressions and previews the next upcoming run times in human-readable format. Cron expressions have five fields controlling minute, hour, day-of-month, month, and day-of-week, with special characters for ranges, steps, and lists.\n\nSchedulers don't agree on the details, so the tester has a mode for each: Linux crontab (names, @daily, and the rule that a job runs when either the day of month or the weekday matches), GitHub Actions (weekdays 0–6, no @daily, at most every 5 minutes, optional timezone:), Kubernetes CronJob (.spec.timeZone), AWS EventBridge (cron(…) with a year field, 1 = Sunday, ? and L/W/#), Quartz and Spring (a seconds field). Next runs are shown in any time zone with daylight-saving changes handled, and the same schedule is converted into the other formats where it can be expressed.",
     useCases: [
       "Verifying that a scheduled job will run at the expected times before deploying",
       "Debugging why a cron job isn't firing when expected",
@@ -787,7 +787,7 @@ export const toolContent: Record<string, ToolContent> = {
     tips: [
       "The classic 5-field format is: minute hour day month weekday (0-59, 0-23, 1-31, 1-12, 0-7).",
       "*/5 in the minute field means 'every 5 minutes'. 0,30 means 'at minute 0 and 30'.",
-      "Some platforms (AWS EventBridge, Quartz) add a 6th field for seconds or year — check your platform's documentation.",
+      "Pasting a schedule between platforms is the classic mistake: EventBridge and Quartz number weekdays 1–7 from Sunday, so Linux 1-5 (Mon–Fri) becomes 2-6 — the conversion table does this for you.",
     ],
     faq: [
       {
@@ -804,7 +804,7 @@ export const toolContent: Record<string, ToolContent> = {
       },
       {
         q: "Does cron run in UTC or local time?",
-        a: "Standard cron (as configured in /etc/crontab and user crontabs) runs in the server's local timezone. Cloud schedulers (AWS EventBridge, Google Cloud Scheduler, GitHub Actions) typically run in UTC. Always specify the timezone explicitly in platform schedulers to avoid surprises around daylight saving time transitions.",
+        a: "Standard cron (as configured in /etc/crontab and user crontabs) runs in the server's local timezone. Cloud schedulers default to UTC: GitHub Actions uses UTC unless the schedule entry sets timezone: (supported since March 2026), Kubernetes uses .spec.timeZone, and EventBridge Scheduler takes a schedule time zone. Set the zone explicitly so daylight-saving changes don't shift your job by an hour.",
       },
     ],
   },
@@ -2895,6 +2895,173 @@ export const toolContent: Record<string, ToolContent> = {
     ],
   },
 
+  "mcp-config-generator": {
+    about:
+      "The MCP Config Generator writes the Model Context Protocol server entry for the AI client you use — and the validator tells you exactly why a config won't load. Every client reads almost the same JSON, but the differences are what break things: Claude Code wants \"type\": \"http\" on remote servers (without it, the entry is read as a local command and fails), VS Code uses a top-level \"servers\" key and \"inputs\" for secrets, Cursor and Devin Desktop (formerly Windsurf) interpolate ${env:NAME}, Claude Code uses ${NAME}, and Claude Desktop's config file only launches local servers at all.\n\nFill in the server once — a local command such as npx or uvx, or a remote HTTP/SSE URL — and get the right file for each client, plus the claude mcp add command. Tokens are moved out of the file into each client's variable syntax, so the config can be committed safely. The validator catches the classic failures: trailing commas, unescaped Windows backslashes, a whole command line stuffed into \"command\", args given as a string, the wrong top-level key, variable syntax from another client, and API keys sitting in plain text.\n\nEverything runs in your browser — nothing you type is sent anywhere or saved.",
+    useCases: [
+      "Adding a new MCP server (GitHub, Linear, a database, your own) to Claude Code, Cursor or VS Code without hand-editing JSON",
+      "Finding why a server shows as failed or never appears in the client",
+      "Converting a server snippet from a README written for Claude Desktop into another client's format",
+      "Sharing a project .mcp.json with your team without committing API keys",
+      "Checking a config before restarting the client, instead of after",
+    ],
+    tips: [
+      "In Claude Code, run claude mcp list to see which servers connected; claude mcp get <name> shows the details for one.",
+      "Put only the program in \"command\" (npx) and everything else in \"args\" ([\"-y\", \"@scope/server\"]) — clients don't split a command line on spaces.",
+      "On Windows, if a server fails with spawn npx ENOENT, use \"command\": \"cmd\" with \"/c\", \"npx\" as the first args.",
+      "A single .mcp.json in the project root is read by both Claude Code and VS Code's Copilot agent.",
+    ],
+    faq: [
+      {
+        q: "Where does each client keep its MCP config?",
+        a: "Claude Code: .mcp.json in the project (or claude mcp add --scope user for all projects). Claude Desktop: claude_desktop_config.json in ~/Library/Application Support/Claude on macOS or %APPDATA%\\Claude on Windows (Settings → Developer → Edit Config opens it). Cursor: .cursor/mcp.json or ~/.cursor/mcp.json. VS Code: .vscode/mcp.json or the user configuration. Devin Desktop (formerly Windsurf): ~/.config/devin/mcp_config.json, or %APPDATA%\\devin\\ on Windows.",
+      },
+      {
+        q: "How do I add a remote MCP server to Claude Desktop?",
+        a: "Use Settings → Connectors → Add custom connector — the config file itself only starts local processes. If you need it in the file, the generator bridges the remote server through the mcp-remote package (npx -y mcp-remote <url>), which runs locally and forwards to the remote server.",
+      },
+      {
+        q: "Why does my remote server work in Cursor but not in Claude Code?",
+        a: "Cursor treats any entry with a url as remote. Claude Code reads an entry without \"type\" as a local (stdio) server, so a url-only entry is a configuration error there. Add \"type\": \"http\" (or \"sse\" for older servers).",
+      },
+      {
+        q: "Is it safe to paste my config here?",
+        a: "The generator and validator run entirely in your browser; nothing is uploaded or stored, not even in local storage. The validator also warns you when a config contains a plain-text token, so you can move it to an environment variable before committing.",
+      },
+    ],
+  },
+
+  "llm-schema-checker": {
+    about:
+      "The Structured Output Schema Checker tells you whether OpenAI, Claude and Gemini will accept a JSON Schema for structured outputs — before the API answers with a 400. The providers support different subsets of JSON Schema: OpenAI's strict mode needs additionalProperties: false on every object and every property listed in required (optional fields become \"type\": [\"string\", \"null\"]), rejects allOf, not and if/then/else, and limits formats, nesting depth and enum sizes. Claude also requires additionalProperties: false and allows optional fields, but doesn't support recursive schemas, numeric limits like minimum, or string length limits. Gemini accepts most of JSON Schema and silently ignores constraints like minLength and uniqueItems.\n\nPaste a bare schema or a whole response_format, tool or function definition — the checker finds the schema inside and lists every problem with its exact path. The auto-fix produces a version the provider accepts and tells you which constraints it removed, so you can check them in your own code. You also get the exact place the schema goes in each provider's request.",
+    useCases: [
+      "Fixing \"Invalid schema for response_format\" or \"additionalProperties must be false\" errors from OpenAI",
+      "Moving a structured-output integration between OpenAI, Claude and Gemini",
+      "Checking a schema generated by Zod, Pydantic or a JSON Schema generator before using it with an LLM",
+      "Turning optional fields into the nullable form strict mode needs",
+      "Learning which JSON Schema keywords each provider actually enforces",
+    ],
+    tips: [
+      "In OpenAI strict mode, \"optional\" means nullable: the field is always present, but the model may set it to null.",
+      "Constraints a provider doesn't support aren't enforced by the model — validate the parsed output with Zod (.parse) or Pydantic (model_validate_json) anyway.",
+      "Claude's Python and TypeScript SDKs remove unsupported constraints like minimum or maxLength automatically and check them after the response; with raw HTTP you must remove them yourself.",
+      "Keep schemas shallow and enums short — very large schemas are slower to compile and can be rejected outright.",
+    ],
+    faq: [
+      {
+        q: "Why does OpenAI require every property to be in required?",
+        a: "Strict mode constrains generation so the output always matches the schema exactly. A field that may or may not appear makes that harder, so OpenAI requires all fields and asks you to express optionality as a union with null instead.",
+      },
+      {
+        q: "Does the same schema work for Claude and OpenAI?",
+        a: "Often, after a few changes. A schema fixed for OpenAI strict mode (all fields required and nullable, additionalProperties: false, no numeric or length limits) is also accepted by Claude. Going the other way, Claude allows optional fields that OpenAI strict mode rejects.",
+      },
+      {
+        q: "Are these rules current?",
+        a: "They follow each provider's structured-output documentation as of October 2026. Providers expand their support over time, so if an API accepts something this tool flags, the API wins.",
+      },
+    ],
+  },
+
+  "node-26-upgrade-checker": {
+    about:
+      "The Node.js 26 Upgrade Checker scans your package.json and source code for what breaks when you move to Node 26, which becomes the Active LTS on 28 October 2026. Node 26 removes the legacy node:_stream_* modules (DEP0193) and response.writeHeader() (DEP0063), drops the --experimental-transform-types flag, turns module.register() (DEP0205), CryptoKey-in-node:crypto (DEP0203/DEP0204) and Duplex.toWeb's type option (DEP0201) into runtime warnings, enables Temporal by default and moves compiled addons to NODE_MODULE_VERSION 147.\n\nBecause many teams jump from Node 20 or 22 straight to 26, the checker also covers everything removed in Node 23, 24 and 25 — util.isString() and friends, util.log(), SlowBuffer, fs.F_OK, fs.rmdir(…, { recursive: true }), tls.createSecurePair(), assert.CallTracker and more — each with its DEP code and the replacement. In package.json it checks engines.node, scripts that use removed flags, packages that no longer work (node-sass, fibers) and native addons that need a rebuild.\n\nIt's a pattern-based scanner, not a full parser, so findings are places to look. Everything runs in your browser.",
+    useCases: [
+      "Planning an upgrade from Node 20, 22 or 24 to the Node 26 LTS",
+      "Explaining an error after upgrading, like \"Cannot find module '_stream_readable'\" or \"res.writeHeader is not a function\"",
+      "Checking whether engines in package.json blocks installs on Node 26",
+      "Finding native dependencies that need a clean reinstall in CI and Docker images",
+      "Auditing old code for APIs that were deprecated for years and are now gone",
+    ],
+    tips: [
+      "Delete node_modules and run npm ci on the new version — compiled addons from an older install fail with \"was compiled against a different Node.js version\".",
+      "Run your test suite once with node --throw-deprecation: every runtime deprecation becomes an error with a stack trace that names the file.",
+      "Upgrade @types/node to ^26 along with the runtime so the compiler flags removed APIs too.",
+      "If the error comes from a dependency, the stack trace names the package — update it rather than patching node_modules.",
+    ],
+    faq: [
+      {
+        q: "When does Node 26 become LTS?",
+        a: "Node 26 enters Active LTS on 28 October 2026. Node 25, 23 and 21 are end-of-life; Node 22 and 24 remain supported LTS lines for now, so you can plan the move rather than rush it.",
+      },
+      {
+        q: "Will my TypeScript still run with node file.ts?",
+        a: "Yes, if it only uses erasable syntax — type stripping is on by default. What's gone is --experimental-transform-types, which also transformed enums, namespaces and parameter properties. Check a file with the Node.js Type-Stripping Checker, or keep using tsx or tsc for those features.",
+      },
+      {
+        q: "Does Temporal being on by default break anything?",
+        a: "Rarely. Code that defines its own global named Temporal, or tests that assume it's absent, can behave differently. On the plus side, server code no longer needs the Temporal polyfill.",
+      },
+    ],
+  },
+
+  "email-auth-checker": {
+    about:
+      "The SPF, DKIM & DMARC Checker looks up a domain's email authentication records and explains what receivers will do with them. Since November 2025 Gmail rejects non-compliant bulk mail outright, and Yahoo and Outlook have similar rules: SPF and DKIM must pass, and a DMARC record (p=none is enough to start) must be published.\n\nThe SPF check walks every include:, a, mx, exists and redirect the way receivers do and counts the DNS lookups against RFC 7208's limit of 10 — the most common hidden failure, which shows up as a PermError (550 5.7.24 at Microsoft 365) and fails SPF for all your mail. It also flags +all, ?all, deprecated ptr, multiple SPF records, includes that point nowhere and too many void lookups. The DMARC check reads the policy, reporting addresses and alignment, including records inherited from the organisational domain. The DKIM check tries the common selectors (Google, Microsoft 365, Mailchimp, SendGrid and others, plus any you enter) and reports the RSA key size.\n\nThe generators build an SPF record from the services you send with and a DMARC record with the policy you choose. Lookups go from your browser to Cloudflare's public DNS-over-HTTPS resolver (Google's as a fallback); only domain names are sent.",
+    useCases: [
+      "Finding out why mail lands in spam or bounces with 550 5.7.26, 5.7.24 or \"SPF permerror\"",
+      "Meeting Gmail, Yahoo and Outlook bulk-sender requirements",
+      "Adding a new sending service (a CRM, newsletter or helpdesk) without breaking the 10-lookup limit",
+      "Moving DMARC from p=none to quarantine or reject with confidence",
+      "Checking a client's or new employer's domain setup in a minute",
+    ],
+    tips: [
+      "Each include: costs one lookup plus every lookup inside it — a single vendor include can use three or four. The include tree shows the real cost.",
+      "ip4: and ip6: cost no lookups, but replacing a vendor's include with its current IPs breaks silently when the vendor changes them.",
+      "Publish exactly one SPF record per domain. Two v=spf1 records are a PermError even if both are valid.",
+      "DKIM selectors can't be listed from DNS. Find yours in the s= tag of the DKIM-Signature header of an email you sent.",
+    ],
+    faq: [
+      {
+        q: "What does \"SPF PermError: too many DNS lookups\" mean?",
+        a: "SPF evaluation may trigger at most 10 DNS lookups (include, a, mx, ptr, exists and redirect each count, recursively). Beyond that the receiver stops and returns PermError, which DMARC treats as a failure for every message. Remove includes for services you no longer use, or move rarely changing senders to ip4:/ip6: ranges.",
+      },
+      {
+        q: "Is p=none good enough?",
+        a: "It satisfies the bulk-sender requirement to publish DMARC, and it's the right start because nothing is blocked while you read the reports (rua=). But it doesn't stop spoofing. Once the reports show your legitimate mail passing, move to p=quarantine and then p=reject.",
+      },
+      {
+        q: "Why does my DKIM key show as 1024 bits?",
+        a: "Many older setups used 1024-bit RSA keys. They still verify, but 2048-bit is the current recommendation. Most providers let you rotate to a 2048-bit key by publishing a new selector and switching signing over.",
+      },
+      {
+        q: "Is my domain sent to ToolNinja?",
+        a: "No. The DNS queries go straight from your browser to Cloudflare's 1.1.1.1 (or Google's 8.8.8.8 as a fallback) over HTTPS, and they only contain the record names being looked up — information that is public anyway.",
+      },
+    ],
+  },
+
+  "google-authenticator-export-decoder": {
+    about:
+      "The Google Authenticator Export Decoder turns Google Authenticator's \"Transfer accounts\" QR codes into standard 2FA setup links that any authenticator app can import. Google's export QR doesn't contain the usual otpauth://totp link: it holds an otpauth-migration://offline?data=… link — a base64 protobuf with up to ten accounts per code — which Bitwarden, 1Password, Aegis and most other apps don't accept. This tool decodes it and gives you, for each account, the secret, a standard otpauth:// link and a QR code to scan into the new app, with the current code shown so you can check it matches before deleting anything.\n\nIt also works the other way: paste otpauth:// links and build a transfer QR that Google Authenticator imports in one scan.\n\nDecoding happens entirely in your browser tab. Nothing is uploaded, and nothing is saved — not even to the browser's local storage — because these secrets are the keys to your accounts.",
+    useCases: [
+      "Moving 2FA codes from Google Authenticator to Bitwarden, 1Password, Aegis, Authy or a hardware token",
+      "Backing up 2FA secrets before resetting or replacing a phone",
+      "Recovering the secret of one account to add it to a second device",
+      "Importing many accounts into Google Authenticator with a single scan",
+    ],
+    tips: [
+      "Android blocks screenshots in Google Authenticator. Photograph the export screen with another device instead.",
+      "Large exports are split across several QR codes — add all of them; the tool tells you which ones are missing.",
+      "Check every account's code against the old app before removing anything there.",
+      "Delete the screenshots afterwards: anyone with them can generate your codes.",
+    ],
+    faq: [
+      {
+        q: "Is it safe to decode my export here?",
+        a: "The decoding is plain JavaScript running in your browser; the images and links never leave the tab and nothing is stored. As with any 2FA secret, use a device you trust and close the tab when you're done.",
+      },
+      {
+        q: "Why won't Bitwarden import the Google Authenticator QR code directly?",
+        a: "Google's export uses its own otpauth-migration:// format so it can fit several accounts into one code. Most apps only understand the standard otpauth://totp/ format with one account per link, which is exactly what this tool produces.",
+      },
+      {
+        q: "What about HOTP (counter-based) accounts?",
+        a: "They're decoded too, with their current counter, and exported as otpauth://hotp/ links. Few services use HOTP, and not every app supports it.",
+      },
+    ],
+  },
+
   "node-type-stripping-checker": {
     about:
       "Since Node 24 (the 2026 LTS), running node file.ts works out of the box via type stripping — a transform (the amaro module, built on SWC) that erases TypeScript-only syntax and runs the resulting JavaScript directly, with zero type checking performed at runtime.\n\nThe catch: type stripping can only erase syntax, it can't generate runtime code. A handful of TypeScript features compile to real runtime behavior, not just type annotations — enums (a runtime object), parameter properties (a runtime field assignment hidden in a constructor parameter), namespaces containing actual values (a runtime IIFE), and decorators (runtime metadata/wrapping) — and none of those can be handled by erasure alone. This tool scans a TypeScript file for exactly those four patterns using bracket-aware pattern matching (not a full TypeScript parser — it can misread unusual formatting), so you know before you try node file.ts whether it'll actually run.",
@@ -4176,12 +4343,13 @@ export const toolContent: Record<string, ToolContent> = {
 
   "github-actions-generator": {
     about:
-      "The ToolNinja GitHub Actions Workflow Generator builds a ready-to-commit CI workflow from a few choices: stack (Node.js, Python, Go, or a Docker image pushed to GitHub Container Registry), triggers, runner, version matrix, and which steps to run.\n\nThe generated YAML pins each action (checkout, setup-node, setup-python, setup-go, and the Docker build actions) to its current major version, so you don't start from a blog post's outdated v2 or v3 snippet. Dependency caching is set up where the setup action supports it, and version numbers in matrices are quoted so YAML doesn't read 3.10 as 3.1.\n\nThe Docker option logs in to GHCR with the built-in GITHUB_TOKEN, tags images by branch, PR, and commit SHA, uses GitHub's build cache, and skips pushing on pull requests.",
+      "The ToolNinja GitHub Actions Workflow Generator builds a ready-to-commit CI workflow from a few choices: stack (Node.js, Python, Go, or a Docker image pushed to GitHub Container Registry), triggers, runner, version matrix, and which steps to run.\n\nThe generated YAML pins each action (checkout, setup-node, setup-python, setup-go, and the Docker build actions) to the exact commit of its latest release, with the version as a comment — a tag can be moved to different code, as the 2025 tj-actions/changed-files compromise showed; a commit can't. Workflows get a read-only token by default and checkout without stored credentials, and a Dependabot file keeps the pins current.\n\nThe Audit tab checks an existing workflow for the problems security scanners like zizmor report: unpinned actions, missing permissions, pull_request_target that runs a pull request's code, untrusted input such as PR titles inside run: scripts, tokens left on disk and self-hosted runners on pull requests — and it can pin every action to its commit for you. Dependency caching is set up where the setup action supports it, and version numbers in matrices are quoted so YAML doesn't read 3.10 as 3.1.\n\nThe Docker option logs in to GHCR with the built-in GITHUB_TOKEN, tags images by branch, PR, and commit SHA, uses GitHub's build cache, and skips pushing on pull requests.",
     useCases: [
       "Adding CI to a new repository without writing workflow YAML from scratch",
       "Testing a Node or Python project across several runtime versions with a matrix",
       "Building and pushing a Docker image to GitHub Container Registry on every push",
       "Updating an old workflow to current action versions",
+      "Auditing a workflow for supply-chain and script-injection risks before merging",
     ],
     tips: [
       "Save the file under .github/workflows/ in your repository; GitHub picks up any .yml file there automatically.",

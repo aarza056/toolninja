@@ -4,16 +4,22 @@ import { useState, useEffect, useCallback } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { AlertCircle, Trash2 } from "lucide-react";
-import { jsonToPythonDataclasses, jsonToGoStructs, jsonToZodSchema } from "@/lib/json-type-gen";
+import { jsonToZodSchema } from "@/lib/json-type-gen";
+import { jsonToCode, type CodeLanguage } from "@/lib/json-to-code";
 
 const STORAGE_KEY = "toolninja:json-to-typescript";
 
-type Language = "typescript" | "zod" | "python" | "go";
+type Language = "typescript" | "zod" | CodeLanguage;
 const LANGUAGES: { id: Language; label: string }[] = [
   { id: "typescript", label: "TypeScript" },
   { id: "zod", label: "Zod" },
-  { id: "python", label: "Python" },
   { id: "go", label: "Go" },
+  { id: "pydantic", label: "Python · Pydantic" },
+  { id: "dataclass", label: "Python · dataclass" },
+  { id: "rust", label: "Rust" },
+  { id: "csharp", label: "C#" },
+  { id: "kotlin", label: "Kotlin" },
+  { id: "swift", label: "Swift" },
 ];
 
 function escHtml(s: string): string {
@@ -212,10 +218,8 @@ export default function JsonToTypeScriptClient() {
         return;
       }
       try {
-        if (lang === "python") {
-          setOutput(jsonToPythonDataclasses(text, name));
-        } else if (lang === "go") {
-          setOutput(jsonToGoStructs(text, name));
+        if (lang !== "typescript" && lang !== "zod") {
+          setOutput(jsonToCode(text, lang, name));
         } else if (lang === "zod") {
           setOutput(jsonToZodSchema(text, name, opt));
         } else {
@@ -266,10 +270,10 @@ export default function JsonToTypeScriptClient() {
   return (
     <ToolLayout
       title="JSON → TypeScript"
-      description="Generate TypeScript, Python, or Go types from JSON automatically"
+      description="Generate TypeScript, Zod, Go, Python, Rust, C#, Kotlin or Swift types from JSON"
     >
       {/* Language row */}
-      <div className="flex items-center gap-1 bg-[#111111] border border-[#222222] rounded-[6px] p-0.5 mb-3 w-fit">
+      <div className="flex flex-wrap items-center gap-1 bg-[#111111] border border-[#222222] rounded-[6px] p-0.5 mb-3 w-fit max-w-full">
         {LANGUAGES.map((l) => (
           <ToggleButton key={l.id} active={language === l.id} onClick={() => setLanguage(l.id)}>
             {l.label}
@@ -313,6 +317,10 @@ export default function JsonToTypeScriptClient() {
           <ToggleButton active={optionalFields} onClick={() => setOptionalFields((v) => !v)}>
             Optional fields {optionalFields ? "on" : "off"}
           </ToggleButton>
+        )}
+
+        {language !== "typescript" && language !== "zod" && (
+          <span className="text-xs text-[#666666]">Array items are merged — fields missing from some items become optional.</span>
         )}
 
         <button
@@ -370,7 +378,7 @@ export default function JsonToTypeScriptClient() {
               <p className="text-[#444444] text-sm italic">
                 {error
                   ? "Fix the JSON error to see output"
-                  : "TypeScript interfaces will appear here…"}
+                  : `${LANGUAGES.find((l) => l.id === language)?.label} types will appear here…`}
               </p>
             )}
           </div>

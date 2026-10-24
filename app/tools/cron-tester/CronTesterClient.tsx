@@ -1,334 +1,171 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Clock, AlertCircle, ChevronDown } from "lucide-react";
+import { Clock, AlertCircle, AlertTriangle, ChevronDown } from "lucide-react";
+import { DIALECTS, parseCron, nextRuns, describe, convert, minGapMs, type CronDialect } from "@/lib/cron";
 
 const STORAGE_KEY = "toolninja:cron-tester";
 
-interface CronField {
-  label: string;
-  hint: string;
-  min: number;
-  max: number;
+const FIELD_LABELS: Record<CronDialect, string[]> = {
+  standard: ["Minute", "Hour", "Day", "Month", "Weekday"],
+  github: ["Minute", "Hour", "Day", "Month", "Weekday"],
+  kubernetes: ["Minute", "Hour", "Day", "Month", "Weekday"],
+  aws: ["Minute", "Hour", "Day", "Month", "Weekday", "Year"],
+  quartz: ["Second", "Minute", "Hour", "Day", "Month", "Weekday", "Year"],
+  spring: ["Second", "Minute", "Hour", "Day", "Month", "Weekday"],
+};
+
+const PRESETS: Record<"five" | "aws" | "seconds", { label: string; value: string }[]> = {
+  five: [
+    { label: "Every 15 minutes", value: "*/15 * * * *" },
+    { label: "Every hour", value: "0 * * * *" },
+    { label: "Every day at 03:00", value: "0 3 * * *" },
+    { label: "Weekdays at 09:00", value: "0 9 * * 1-5" },
+    { label: "Sundays at midnight", value: "0 0 * * 0" },
+    { label: "1st of every month", value: "0 0 1 * *" },
+  ],
+  aws: [
+    { label: "Every 15 minutes", value: "cron(0/15 * * * ? *)" },
+    { label: "Weekdays at 09:00", value: "cron(0 9 ? * MON-FRI *)" },
+    { label: "Last day of the month", value: "cron(0 0 L * ? *)" },
+    { label: "Last Friday at 18:00", value: "cron(0 18 ? * 6L *)" },
+    { label: "2nd Tuesday at 10:00", value: "cron(0 10 ? * 3#2 *)" },
+  ],
+  seconds: [
+    { label: "Every 30 seconds", value: "0/30 * * * * ?" },
+    { label: "Weekdays at 09:00", value: "0 0 9 ? * MON-FRI" },
+    { label: "Last day of the month", value: "0 0 0 L * ?" },
+    { label: "Weekday nearest the 15th", value: "0 0 12 15W * ?" },
+  ],
+};
+
+const presetsFor = (d: CronDialect) => (d === "aws" ? PRESETS.aws : d === "quartz" ? PRESETS.seconds : d === "spring" ? PRESETS.seconds.map((p) => ({ ...p, value: p.value.replace(/\?/g, "*") })) : PRESETS.five);
+
+const COMMON_ZONES = ["UTC", "America/Los_Angeles", "America/New_York", "America/Sao_Paulo", "Europe/London", "Europe/Berlin", "Europe/Moscow", "Asia/Yerevan", "Asia/Dubai", "Asia/Kolkata", "Asia/Shanghai", "Asia/Tokyo", "Australia/Sydney"];
+
+function allZones(): string[] {
+  try {
+    const list = (Intl as unknown as { supportedValuesOf?: (k: string) => string[] }).supportedValuesOf?.("timeZone");
+    if (list?.length) return Array.from(new Set(["UTC", ...list]));
+  } catch {}
+  return COMMON_ZONES;
 }
 
-const FIELDS: CronField[] = [
-  { label: "Minute", hint: "0–59", min: 0, max: 59 },
-  { label: "Hour", hint: "0–23", min: 0, max: 23 },
-  { label: "Day", hint: "1–31", min: 1, max: 31 },
-  { label: "Month", hint: "1–12", min: 1, max: 12 },
-  { label: "Weekday", hint: "0–7 (0,7=Sun)", min: 0, max: 7 },
-];
+function formatRun(ms: number, timeZone: string): string {
+  return new Intl.DateTimeFormat(undefined, { timeZone, weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(new Date(ms));
+}
 
-const PRESETS: { label: string; value: string }[] = [
-  { label: "Every minute", value: "* * * * *" },
-  { label: "Every hour", value: "0 * * * *" },
-  { label: "Every 15 minutes", value: "*/15 * * * *" },
-  { label: "Every day at midnight", value: "0 0 * * *" },
-  { label: "Every weekday at 9am", value: "0 9 * * 1-5" },
-  { label: "Every Sunday at midnight", value: "0 0 * * 0" },
-  { label: "1st of every month", value: "0 0 1 * *" },
-];
-
-const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-// ---------- Cron field parser ----------
-
-function parseValues(field: string, min: number, max: number): number[] | null {
-  const result = new Set<number>();
-
-  for (const part of field.split(",")) {
-    const trimmed = part.trim();
-
-    // */step
-    const stepWild = trimmed.match(/^\*\/(\d+)$/);
-    if (stepWild) {
-      const step = parseInt(stepWild[1], 10);
-      if (step < 1) return null;
-      for (let i = min; i <= max; i += step) result.add(i);
-      continue;
-    }
-
-    // range/step or range
-    const rangeStep = trimmed.match(/^(\d+)-(\d+)(?:\/(\d+))?$/);
-    if (rangeStep) {
-      const lo = parseInt(rangeStep[1], 10);
-      const hi = parseInt(rangeStep[2], 10);
-      const step = rangeStep[3] ? parseInt(rangeStep[3], 10) : 1;
-      if (lo < min || hi > max || lo > hi || step < 1) return null;
-      for (let i = lo; i <= hi; i += step) result.add(i);
-      continue;
-    }
-
-    // wildcard
-    if (trimmed === "*") {
-      for (let i = min; i <= max; i++) result.add(i);
-      continue;
-    }
-
-    // plain number
-    const num = parseInt(trimmed, 10);
-    if (isNaN(num) || num < min || num > max) return null;
-    result.add(num);
+function snippet(dialect: CronDialect, expr: string, tz: string): string | null {
+  if (dialect === "github") {
+    return `on:\n  schedule:\n    - cron: "${expr}"${tz !== "UTC" ? `\n      timezone: "${tz}"` : ""}`;
   }
-
-  return Array.from(result).sort((a, b) => a - b);
-}
-
-interface ParsedCron {
-  minutes: number[];
-  hours: number[];
-  days: number[];
-  months: number[];
-  weekdays: number[];
-}
-
-function parseCron(expr: string): { parsed: ParsedCron; error: string } | { parsed: null; error: string } {
-  const parts = expr.trim().split(/\s+/);
-  if (parts.length !== 5) {
-    return { parsed: null, error: `Expected 5 fields, got ${parts.length}. Format: minute hour day month weekday` };
+  if (dialect === "kubernetes") {
+    return `apiVersion: batch/v1\nkind: CronJob\nmetadata:\n  name: my-job\nspec:\n  schedule: "${expr}"\n  timeZone: "${tz}"\n  jobTemplate:\n    spec:\n      template:\n        spec:\n          restartPolicy: OnFailure\n          containers:\n            - name: job\n              image: busybox:1.36\n              command: ["sh", "-c", "date"]`;
   }
-
-  const [minuteStr, hourStr, dayStr, monthStr, wdStr] = parts;
-
-  const minutes = parseValues(minuteStr, 0, 59);
-  if (!minutes) return { parsed: null, error: "Invalid minute field. Valid: 0–59, *, */n, n-m" };
-
-  const hours = parseValues(hourStr, 0, 23);
-  if (!hours) return { parsed: null, error: "Invalid hour field. Valid: 0–23, *, */n, n-m" };
-
-  const days = parseValues(dayStr, 1, 31);
-  if (!days) return { parsed: null, error: "Invalid day field. Valid: 1–31, *, */n, n-m" };
-
-  const months = parseValues(monthStr, 1, 12);
-  if (!months) return { parsed: null, error: "Invalid month field. Valid: 1–12, *, */n, n-m" };
-
-  // Weekday 0 and 7 both mean Sunday; normalize 7→0
-  const rawWd = parseValues(wdStr, 0, 7);
-  if (!rawWd) return { parsed: null, error: "Invalid weekday field. Valid: 0–7 (0 and 7 = Sunday)" };
-  const weekdays = Array.from(new Set(rawWd.map((d) => (d === 7 ? 0 : d)))).sort((a, b) => a - b);
-
-  return { parsed: { minutes, hours, days, months, weekdays }, error: "" };
-}
-
-function matchesCron(d: Date, p: ParsedCron): boolean {
-  const minute = d.getMinutes();
-  const hour = d.getHours();
-  const day = d.getDate();
-  const month = d.getMonth() + 1;
-  const weekday = d.getDay();
-
-  return (
-    p.minutes.includes(minute) &&
-    p.hours.includes(hour) &&
-    p.days.includes(day) &&
-    p.months.includes(month) &&
-    p.weekdays.includes(weekday)
-  );
-}
-
-function getNextRuns(parsed: ParsedCron, count: number): Date[] {
-  const results: Date[] = [];
-  // Start from next minute
-  const start = new Date();
-  start.setSeconds(0, 0);
-  start.setMinutes(start.getMinutes() + 1);
-
-  const cursor = new Date(start);
-  const limit = new Date(start.getTime() + 366 * 24 * 60 * 60 * 1000); // 1 year max
-
-  while (results.length < count && cursor < limit) {
-    if (matchesCron(cursor, parsed)) {
-      results.push(new Date(cursor));
-    }
-    cursor.setMinutes(cursor.getMinutes() + 1);
+  if (dialect === "aws") {
+    const e = /^cron\(/i.test(expr) ? expr : `cron(${expr})`;
+    return `aws scheduler create-schedule --name my-schedule \\\n  --schedule-expression "${e}" \\\n  --schedule-expression-timezone "${tz}" \\\n  --flexible-time-window '{"Mode": "OFF"}' \\\n  --target '{"Arn": "<target-arn>", "RoleArn": "<role-arn>"}'`;
   }
-
-  return results;
-}
-
-function formatDate(d: Date): string {
-  return d.toLocaleString(undefined, {
-    weekday: "short",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-// ---------- Human-readable description ----------
-
-function describeField(field: string, type: "minute" | "hour" | "day" | "month" | "weekday"): string {
-  const ordinal = (n: number) => {
-    const s = ["th", "st", "nd", "rd"];
-    const v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  };
-
-  if (field === "*") {
-    return type === "minute"
-      ? "every minute"
-      : type === "hour"
-      ? "every hour"
-      : type === "day"
-      ? "every day"
-      : type === "month"
-      ? "every month"
-      : "every weekday";
-  }
-
-  const stepWild = field.match(/^\*\/(\d+)$/);
-  if (stepWild) {
-    const n = parseInt(stepWild[1], 10);
-    const unit =
-      type === "minute" ? "minute" : type === "hour" ? "hour" : type === "day" ? "day" : type === "month" ? "month" : "day";
-    return `every ${n} ${unit}${n !== 1 ? "s" : ""}`;
-  }
-
-  const rangeStep = field.match(/^(\d+)-(\d+)(?:\/(\d+))?$/);
-  if (rangeStep) {
-    const lo = parseInt(rangeStep[1], 10);
-    const hi = parseInt(rangeStep[2], 10);
-    const step = rangeStep[3] ? parseInt(rangeStep[3], 10) : 1;
-
-    const fmtVal = (v: number) => {
-      if (type === "weekday") return WEEKDAY_NAMES[v] ?? String(v);
-      if (type === "month") return MONTH_NAMES[v - 1] ?? String(v);
-      return String(v);
-    };
-
-    const rangeStr = `${fmtVal(lo)} through ${fmtVal(hi)}`;
-    return step > 1 ? `${rangeStr} every ${step}` : rangeStr;
-  }
-
-  // Plain numbers — could be comma-separated via the outer loop but we handle single here
-  const nums = field.split(",").map(Number);
-  const fmtVal = (v: number) => {
-    if (type === "weekday") return WEEKDAY_NAMES[v] ?? String(v);
-    if (type === "month") return MONTH_NAMES[v - 1] ?? String(v);
-    if (type === "minute" || type === "hour") return String(v);
-    return ordinal(v);
-  };
-
-  if (nums.length === 1) {
-    const v = nums[0];
-    if (type === "minute") return `at minute ${v}`;
-    if (type === "hour") return `at ${v.toString().padStart(2, "0")}:00`;
-    if (type === "day") return `on the ${ordinal(v)}`;
-    if (type === "month") return `in ${MONTH_NAMES[v - 1] ?? v}`;
-    if (type === "weekday") return `on ${WEEKDAY_NAMES[v] ?? v}`;
-  }
-
-  return nums.map(fmtVal).join(", ");
-}
-
-function buildDescription(expr: string): string {
-  const parts = expr.trim().split(/\s+/);
-  if (parts.length !== 5) return "";
-
-  const [min, hr, day, mon, wd] = parts;
-
-  const minuteDesc = describeField(min, "minute");
-  const hourDesc = describeField(hr, "hour");
-  const dayDesc = describeField(day, "day");
-  const monthDesc = describeField(mon, "month");
-  const wdDesc = describeField(wd, "weekday");
-
-  // Special-case the most common patterns
-  if (min === "*" && hr === "*") return `Runs ${minuteDesc}, ${hourDesc}`;
-  if (hr === "*") return `Runs ${minuteDesc} of every hour`;
-
-  let desc = "Runs ";
-  desc += minuteDesc;
-  if (hr !== "*") desc += `, ${hourDesc}`;
-  if (day !== "*") desc += `, ${dayDesc}`;
-  if (mon !== "*") desc += `, ${monthDesc}`;
-  if (wd !== "*") desc += `, ${wdDesc}`;
-  return desc;
+  if (dialect === "spring") return `@Scheduled(cron = "${expr}", zone = "${tz}")\npublic void run() { … }`;
+  if (dialect === "standard") return tz === "UTC" || tz === "local" ? `# crontab -e\n${expr} /path/to/command` : `# crontab -e — cronie (Fedora, RHEL, Arch) honours CRON_TZ; Debian/Ubuntu cron uses the server's time zone\nCRON_TZ=${tz}\n${expr} /path/to/command`;
+  return null;
 }
 
 export default function CronTesterClient() {
-  const [expression, setExpression] = useState("*/5 * * * *");
+  const [expression, setExpression] = useState("0 9 * * 1-5");
+  const [dialect, setDialect] = useState<CronDialect>("standard");
+  const [tz, setTz] = useState("UTC");
   const [presetsOpen, setPresetsOpen] = useState(false);
+  const [zones, setZones] = useState<string[]>(COMMON_ZONES);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
+    setZones(allZones());
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const d = JSON.parse(saved);
-        if (d.expression) setExpression(d.expression);
-      }
+      const d = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
+      if (d.expression) setExpression(d.expression);
+      if (d.dialect && DIALECTS.some((x) => x.id === d.dialect)) setDialect(d.dialect);
+      if (d.tz) setTz(d.tz);
+      else setTz(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC");
     } catch {}
   }, []);
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ expression }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ expression, dialect, tz }));
     } catch {}
-  }, [expression]);
+  }, [expression, dialect, tz]);
 
-  const { parsed, error } = useMemo(() => parseCron(expression), [expression]);
-
-  const [nextRuns, setNextRuns] = useState<Date[]>([]);
-  const parsedRef = useRef(parsed);
-  parsedRef.current = parsed;
+  // Refresh "next runs" once a minute
   useEffect(() => {
-    if (!parsedRef.current) { setNextRuns([]); return; }
-    setNextRuns(getNextRuns(parsedRef.current, 8));
-  }, [parsed]);
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
 
-  const description = useMemo(() => {
-    if (error || !parsed) return "";
-    return buildDescription(expression);
-  }, [expression, parsed, error]);
+  const result = useMemo(() => parseCron(expression, dialect), [expression, dialect]);
+  const parsed = result.parsed;
+  const runs = useMemo(() => (parsed ? nextRuns(parsed, 8, tz, now) : []), [parsed, tz, now]);
+  const description = parsed ? describe(parsed) : "";
+  const parts = expression.trim().replace(/^cron\((.*)\)$/i, "$1").split(/\s+/);
+  const labels = FIELD_LABELS[dialect];
 
-  const parts = expression.trim().split(/\s+/);
-  const isValid = !error && parts.length === 5;
+  const warnings = [...result.warnings];
+  if (parsed && dialect === "github") {
+    if (runs.length > 1 && minGapMs(runs) < 5 * 60_000) warnings.push("GitHub runs scheduled workflows at most once every 5 minutes — runs closer together are skipped.");
+    if (parsed.fields.minute!.values.has(0) && parsed.fields.minute!.values.size === 1) warnings.push("Minute 0 is GitHub's busiest moment; runs can be delayed or dropped. Pick another minute, e.g. 7 or 23.");
+  }
+
+  const conversions = parsed ? DIALECTS.filter((d) => d.id !== dialect).map((d) => ({ ...d, ...convert(parsed, d.id) })) : [];
+  const snip = parsed ? snippet(dialect, expression.trim(), tz) : null;
 
   return (
-    <ToolLayout
-      title="CRON Expression Tester"
-      description="Validate cron expressions, see human-readable descriptions and the next scheduled run times."
-    >
-      <div className="max-w-2xl space-y-6">
-        {/* Input + Presets */}
+    <ToolLayout title="CRON Expression Tester" description="Test cron schedules for Linux, GitHub Actions, Kubernetes, AWS EventBridge, Quartz and Spring — in any time zone">
+      <div className="max-w-3xl space-y-6">
+        <div className="flex flex-wrap gap-1">
+          {DIALECTS.map((d) => (
+            <button
+              key={d.id}
+              onClick={() => {
+                if (d.id === dialect) return;
+                // Carry the schedule over when it converts cleanly, otherwise load the dialect's example
+                const conv = parsed ? convert(parsed, d.id).expr : undefined;
+                setDialect(d.id);
+                setExpression(conv ?? d.example);
+              }}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors border ${dialect === d.id ? "bg-[#a855f7]/20 text-[#a855f7] border-[#a855f7]/30" : "text-[#888888] hover:text-[#f5f5f5] border-transparent"}`}
+            >
+              {d.label}
+            </button>
+          ))}
+        </div>
+
         <div>
-          <label className="text-xs text-[#888888] font-medium block mb-1.5">
-            Cron Expression
-          </label>
+          <label className="text-xs text-[#888888] font-medium block mb-1.5">Cron expression</label>
           <div className="flex gap-2">
             <input
               type="text"
               value={expression}
               onChange={(e) => setExpression(e.target.value)}
-              placeholder="*/5 * * * *"
+              placeholder={DIALECTS.find((d) => d.id === dialect)!.example}
               spellCheck={false}
-              className={`flex-1 px-3 py-2 font-mono text-sm bg-[#111111] border rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] ${
-                error ? "border-[#ef4444]" : "border-[#222222]"
-              }`}
+              className={`flex-1 min-w-0 px-3 py-2 font-mono text-sm bg-[#111111] border rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] ${result.error ? "border-[#ef4444]" : "border-[#222222]"}`}
             />
             <div className="relative">
-              <button
-                onClick={() => setPresetsOpen((o) => !o)}
-                className="flex items-center gap-1.5 px-3 py-2 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#f5f5f5] border border-[#222222] rounded-[6px] transition-colors whitespace-nowrap"
-              >
+              <button onClick={() => setPresetsOpen((o) => !o)} className="flex items-center gap-1.5 px-3 py-2 text-sm bg-[#1a1a1a] hover:bg-[#222222] text-[#f5f5f5] border border-[#222222] rounded-[6px] whitespace-nowrap">
                 Presets <ChevronDown size={14} />
               </button>
               {presetsOpen && (
-                <div className="absolute right-0 top-full mt-1 z-10 bg-[#111111] border border-[#222222] rounded-[8px] shadow-xl min-w-[220px] py-1">
-                  {PRESETS.map((p) => (
+                <div className="absolute right-0 top-full mt-1 z-10 bg-[#111111] border border-[#222222] rounded-[8px] shadow-xl min-w-[260px] py-1">
+                  {presetsFor(dialect).map((p) => (
                     <button
                       key={p.value}
                       onClick={() => {
                         setExpression(p.value);
                         setPresetsOpen(false);
                       }}
-                      className="w-full flex items-center justify-between gap-4 px-3 py-2 text-sm text-[#f5f5f5] hover:bg-[#1a1a1a] transition-colors text-left"
+                      className="w-full flex items-center justify-between gap-4 px-3 py-2 text-sm text-[#f5f5f5] hover:bg-[#1a1a1a] text-left"
                     >
                       <span>{p.label}</span>
                       <span className="font-mono text-xs text-[#888888]">{p.value}</span>
@@ -337,46 +174,36 @@ export default function CronTesterClient() {
                 </div>
               )}
             </div>
-            {isValid && <CopyButton text={expression} />}
+            {parsed && <CopyButton text={expression.trim()} />}
           </div>
-
-          {error && (
-            <div className="flex items-center gap-1.5 text-xs text-[#ef4444] mt-2">
-              <AlertCircle size={12} /> {error}
+          {result.error && (
+            <div className="flex items-start gap-1.5 text-xs text-[#ef4444] mt-2">
+              <AlertCircle size={12} className="shrink-0 mt-0.5" /> {result.error}
             </div>
           )}
+          {warnings.map((w) => (
+            <div key={w} className="flex items-start gap-1.5 text-xs text-[#fbbf24] mt-2">
+              <AlertTriangle size={12} className="shrink-0 mt-0.5" /> {w}
+            </div>
+          ))}
         </div>
 
-        {/* Field breakdown */}
         <div>
-          <label className="text-xs text-[#888888] font-medium block mb-2">Field Breakdown</label>
-          <div className="grid grid-cols-5 gap-2">
-            {FIELDS.map((f, i) => {
+          <label className="text-xs text-[#888888] font-medium block mb-2">Field breakdown</label>
+          <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${labels.length}, minmax(0, 1fr))` }}>
+            {labels.map((l, i) => {
               const val = parts[i] ?? "";
-              const active = isValid && val !== "";
+              const active = Boolean(parsed) && val !== "";
               return (
-                <div
-                  key={f.label}
-                  className={`flex flex-col items-center p-3 bg-[#111111] border rounded-[8px] ${
-                    active ? "border-[#a855f7]/50" : "border-[#222222]"
-                  }`}
-                >
-                  <span className="text-xs text-[#888888] mb-1">{f.label}</span>
-                  <span
-                    className={`font-mono text-sm font-semibold ${
-                      active ? "text-[#a855f7]" : "text-[#444444]"
-                    }`}
-                  >
-                    {val || "—"}
-                  </span>
-                  <span className="text-[10px] text-[#555555] mt-1">{f.hint}</span>
+                <div key={l} className={`flex flex-col items-center p-2.5 bg-[#111111] border rounded-[8px] min-w-0 ${active ? "border-[#a855f7]/50" : "border-[#222222]"}`}>
+                  <span className="text-[10px] sm:text-xs text-[#888888] mb-1">{l}</span>
+                  <span className={`font-mono text-xs sm:text-sm font-semibold truncate max-w-full ${active ? "text-[#a855f7]" : "text-[#444444]"}`}>{val || "—"}</span>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Human-readable description */}
         {description && (
           <div className="flex items-start gap-3 p-4 bg-[#111111] border border-[#222222] rounded-[8px]">
             <Clock size={16} className="text-[#a855f7] shrink-0 mt-0.5" />
@@ -387,33 +214,69 @@ export default function CronTesterClient() {
           </div>
         )}
 
-        {/* Next run times */}
-        {nextRuns.length > 0 && (
+        {parsed && (
           <div>
-            <label className="text-xs text-[#888888] font-medium block mb-2">
-              Next 8 Run Times
-            </label>
-            <div className="space-y-1.5">
-              {nextRuns.map((d, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 px-3 py-2.5 bg-[#111111] border border-[#222222] rounded-[8px]"
-                >
-                  <span className="text-xs text-[#555555] w-4 text-right">{i + 1}</span>
-                  <span className="flex-1 font-mono text-sm text-[#f5f5f5]">{formatDate(d)}</span>
-                  <CopyButton text={formatDate(d)} size="sm" />
-                </div>
-              ))}
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <label className="text-xs text-[#888888] font-medium">Next 8 runs</label>
+              <label className="flex items-center gap-2 text-xs text-[#888888]">
+                Time zone
+                <select value={tz} onChange={(e) => setTz(e.target.value)} className="px-2 py-1 text-xs bg-[#111111] border border-[#222222] rounded-[6px] text-[#f5f5f5] max-w-[220px]">
+                  {zones.map((z) => (
+                    <option key={z} value={z}>
+                      {z}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
+            {dialect === "github" && tz !== "UTC" && <p className="text-xs text-[#888888] mb-2">GitHub uses UTC unless the schedule sets timezone: (supported since March 2026) — see the snippet below.</p>}
+            {runs.length ? (
+              <div className="space-y-1.5">
+                {runs.map((ms, i) => (
+                  <div key={ms} className="flex items-center gap-3 px-3 py-2.5 bg-[#111111] border border-[#222222] rounded-[8px]">
+                    <span className="text-xs text-[#555555] w-4 text-right">{i + 1}</span>
+                    <span className="flex-1 font-mono text-sm text-[#f5f5f5]">{formatRun(ms, tz)}</span>
+                    <span className="hidden sm:inline text-[10px] font-mono text-[#555555]">{new Date(ms).toISOString().replace(".000", "")}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 p-4 bg-[#111111] border border-[#ef4444] rounded-[8px] text-sm text-[#ef4444]">
+                <AlertCircle size={14} className="shrink-0" /> No run in the next five years — check the day, month and weekday combination (e.g. 30 February never happens).
+              </div>
+            )}
+            <p className="mt-2 text-[11px] text-[#555555]">Times that don&apos;t exist when clocks spring forward are skipped; when clocks fall back, a repeated time runs once.</p>
           </div>
         )}
 
-        {isValid && nextRuns.length === 0 && (
-          <div className="flex items-center gap-2 p-4 bg-[#111111] border border-[#ef4444] rounded-[8px]">
-            <AlertCircle size={14} className="text-[#ef4444] shrink-0" />
-            <span className="text-sm text-[#ef4444]">
-              No matching run times found within the next year. Check day/month/weekday combination.
-            </span>
+        {snip && (
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-[#888888] font-medium">Use it in {DIALECTS.find((d) => d.id === dialect)!.label}</label>
+              <CopyButton text={snip} size="sm" />
+            </div>
+            <pre className="p-3 font-mono text-xs bg-[#0a0a0a] border border-[#222222] rounded-[8px] text-[#f5f5f5] overflow-auto">{snip}</pre>
+          </div>
+        )}
+
+        {conversions.length > 0 && (
+          <div>
+            <label className="text-xs text-[#888888] font-medium block mb-2">Same schedule in other formats</label>
+            <div className="divide-y divide-[#1f1f1f] border border-[#222222] rounded-[8px] bg-[#111111]">
+              {conversions.map((c) => (
+                <div key={c.id} className="flex items-center gap-3 px-3 py-2">
+                  <span className="w-36 shrink-0 text-xs text-[#888888]">{c.label}</span>
+                  {c.expr ? (
+                    <>
+                      <code className="flex-1 min-w-0 font-mono text-xs text-[#f5f5f5] truncate">{c.expr}</code>
+                      <CopyButton text={c.expr} size="sm" />
+                    </>
+                  ) : (
+                    <span className="flex-1 text-xs text-[#666666]">{c.note}</span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
