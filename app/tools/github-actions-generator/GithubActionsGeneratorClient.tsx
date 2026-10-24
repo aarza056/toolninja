@@ -3,15 +3,17 @@
 import { useState, useMemo, useEffect } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { Download } from "lucide-react";
+import { Download, ShieldCheck } from "lucide-react";
 import {
   generateWorkflow,
   workflowFilename,
+  dependabotConfig,
   DEFAULT_GHA_OPTIONS,
   type GhaOptions,
   type GhaStack,
   type GhaNodePm,
 } from "@/lib/gha-gen";
+import WorkflowAudit from "./WorkflowAudit";
 
 const STORAGE_KEY = "toolninja:github-actions-generator";
 
@@ -45,6 +47,7 @@ function download(filename: string, content: string) {
 
 export default function GithubActionsGeneratorClient() {
   const [opts, setOpts] = useState<GhaOptions>(DEFAULT_GHA_OPTIONS);
+  const [tab, setTab] = useState<"generate" | "audit">("generate");
 
   useEffect(() => {
     try {
@@ -66,8 +69,27 @@ export default function GithubActionsGeneratorClient() {
   return (
     <ToolLayout
       title="GitHub Actions Workflow Generator"
-      description="Pick a stack and triggers, get a ready-to-commit .github/workflows YAML file using current action versions"
+      description="Generate a hardened .github/workflows file — or audit an existing one for unpinned actions, risky triggers and script injection"
     >
+      <div className="flex gap-1 mb-5">
+        {(
+          [
+            ["generate", "Generate"],
+            ["audit", "Audit a workflow"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors border ${tab === id ? "bg-[#a855f7]/20 text-[#a855f7] border-[#a855f7]/30" : "text-[#888888] hover:text-[#f5f5f5] border-transparent"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {tab === "audit" ? (
+        <WorkflowAudit />
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
         <div className="space-y-4">
           <div>
@@ -183,6 +205,16 @@ export default function GithubActionsGeneratorClient() {
               {opts.stack !== "python" && <Check label="Build" checked={opts.runBuild} onChange={(v) => update({ runBuild: v })} />}
             </div>
           )}
+
+          <div className="space-y-2">
+            <label className="flex items-center gap-1.5 text-xs text-[#888888] font-medium">
+              <ShieldCheck size={13} className="text-[#a855f7]" /> Security
+            </label>
+            <Check label="Pin actions to commit SHAs (recommended)" checked={opts.pinShas} onChange={(v) => update({ pinShas: v })} />
+            <p className="text-[10px] text-[#555555] leading-relaxed">
+              Always added: a read-only token by default and checkout without saving credentials.
+            </p>
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 min-w-0">
@@ -199,11 +231,23 @@ export default function GithubActionsGeneratorClient() {
             {output}
           </pre>
           <p className="text-[11px] text-[#555555]">
-            Action versions are pinned to their current major release. Version numbers in matrices are quoted on purpose — unquoted,
-            YAML reads <code className="text-[#888888]">3.10</code> as the number 3.1.
+            {opts.pinShas
+              ? "Each action is pinned to the exact commit of its latest release (checked October 2026), with the version as a comment. A tag can be moved to different code — a commit can't."
+              : "Action versions follow their current major release tag, which the action's owner can move."}{" "}
+            Version numbers in matrices are quoted on purpose — unquoted, YAML reads <code className="text-[#888888]">3.10</code> as the number 3.1.
           </p>
+          {opts.pinShas && (
+            <div className="mt-2 space-y-1">
+              <div className="flex items-center justify-between">
+                <code className="text-xs text-[#888888]">.github/dependabot.yml — keeps the pins up to date</code>
+                <CopyButton text={dependabotConfig()} size="sm" />
+              </div>
+              <pre className="p-3 font-mono text-xs bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] overflow-auto">{dependabotConfig()}</pre>
+            </div>
+          )}
         </div>
       </div>
+      )}
     </ToolLayout>
   );
 }

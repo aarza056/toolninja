@@ -132,6 +132,14 @@ export default function PrivacyPage() {
             and Google AdSense (both described above), we do not integrate any other advertising
             networks, social tracking pixels, or user profiling services.
           </p>
+          <p className="mt-3">
+            Two tools look up public information when you ask them to, directly from your browser rather than through
+            our servers: the SPF, DKIM &amp; DMARC Checker sends the DNS names it checks (such as _dmarc.example.com) to
+            Cloudflare&apos;s 1.1.1.1 DNS-over-HTTPS service, with Google Public DNS as a fallback, and the GitHub
+            Actions audit&apos;s &ldquo;Pin to commit SHAs&rdquo; button sends the names of the actions in your workflow
+            (such as actions/checkout@v4) to GitHub&apos;s public API. Nothing else you entered is included in those
+            requests.
+          </p>
         </section>
 
         <section>

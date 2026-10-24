@@ -363,7 +363,7 @@ export const tools: Tool[] = [
   {
     slug: "json-to-typescript",
     name: "JSON to TypeScript",
-    description: "Auto-generate TypeScript interfaces from JSON objects",
+    description: "Generate TypeScript, Zod, Go, Python, Rust, C#, Kotlin or Swift types from JSON",
     icon: "Code2",
     category: "Generate",
     keywords: [
@@ -372,6 +372,7 @@ export const tools: Tool[] = [
       "json to interface typescript", "generate typescript from json",
       "json to type typescript", "json schema to typescript",
       "json to ts types", "typescript interface generator from json",
+      "json to go struct", "json to pydantic", "json to rust serde", "json to c# class", "json to kotlin data class", "json to swift codable",
     ],
   },
   {
@@ -611,13 +612,27 @@ export const tools: Tool[] = [
   {
     slug: "github-actions-generator",
     name: "GitHub Actions Workflow Generator",
-    description: "Pick a stack and triggers, get a ready-to-commit .github/workflows YAML file",
+    description: "Generate a hardened workflow with SHA-pinned actions, or audit one for security problems",
     icon: "CirclePlay",
     category: "Generate",
     keywords: [
       "github actions generator", "github actions workflow generator", "github actions yaml generator",
       "ci workflow generator", "github actions node ci", "github actions python workflow",
       "github actions docker build push", "generate github workflow", "github actions template",
+      "pin github actions to sha", "github actions security audit", "pull_request_target security", "github actions script injection",
+    ],
+  },
+
+  {
+    slug: "mcp-config-generator",
+    name: "MCP Config Generator & Validator",
+    description: "Build or check MCP server configs for Claude Code, Claude Desktop, Cursor, VS Code and Devin Desktop",
+    icon: "Plug",
+    category: "Generate",
+    keywords: [
+      "mcp config generator", "mcp.json validator", "claude desktop config", "claude_desktop_config.json",
+      "cursor mcp.json", "vscode mcp.json", ".mcp.json claude code", "mcp server config",
+      "claude mcp add", "windsurf mcp config", "mcp config validator", "model context protocol config",
     ],
   },
 
@@ -639,7 +654,7 @@ export const tools: Tool[] = [
   {
     slug: "timestamp-converter",
     name: "Timestamp Converter",
-    description: "Convert Unix timestamps to human-readable dates",
+    description: "Convert Unix timestamps to dates in any time zone, with code for 12 languages incl. Temporal",
     icon: "Clock",
     category: "Convert",
     keywords: [
@@ -648,6 +663,7 @@ export const tools: Tool[] = [
       "epoch to date", "unix epoch converter", "convert timestamp online",
       "epoch time converter", "unix timestamp to human readable",
       "milliseconds to date", "epoch timestamp converter",
+      "temporal api converter", "date to unix timestamp timezone",
     ],
   },
   {
@@ -895,7 +911,7 @@ export const tools: Tool[] = [
   {
     slug: "cron-tester",
     name: "CRON Expression Tester",
-    description: "Parse cron expressions and preview upcoming run times",
+    description: "Test cron for Linux, GitHub Actions, Kubernetes, AWS EventBridge, Quartz and Spring in any time zone",
     icon: "Timer",
     category: "Test",
     keywords: [
@@ -904,6 +920,7 @@ export const tools: Tool[] = [
       "cron schedule tester", "cron expression builder",
       "test cron expression", "cron syntax checker",
       "cron expression explainer", "quartz cron tester",
+      "aws eventbridge cron", "github actions cron", "kubernetes cronjob schedule", "spring cron expression",
     ],
   },
   {
@@ -1145,11 +1162,37 @@ export const tools: Tool[] = [
     ],
   },
 
+  {
+    slug: "llm-schema-checker",
+    name: "Structured Output Schema Checker",
+    description: "Check a JSON Schema against OpenAI strict mode, Claude and Gemini structured outputs — and auto-fix it",
+    icon: "FileCheck2",
+    category: "Test",
+    keywords: [
+      "structured outputs schema validator", "openai strict mode schema", "invalid schema for response_format",
+      "additionalProperties false required", "json schema for llm", "claude structured outputs schema",
+      "gemini responseJsonSchema", "response_format json_schema", "function calling schema checker",
+      "llm json schema fixer",
+    ],
+  },
+  {
+    slug: "node-26-upgrade-checker",
+    name: "Node.js 26 Upgrade Checker",
+    description: "Find what breaks on Node 26 LTS — removed APIs, deprecations, engines and native addons",
+    icon: "CircleArrowUp",
+    category: "Test",
+    keywords: [
+      "node 26 upgrade", "node 26 breaking changes", "node.js 26 lts", "upgrade node 22 to 26",
+      "node 24 to 26 migration", "_stream_readable removed", "writeHeader is not a function",
+      "module.register deprecated", "node deprecation checker", "node lts upgrade checker",
+    ],
+  },
+
   // ─── Design ───────────────────────────────────────────────────────────────
   {
     slug: "css-animations",
     name: "CSS Animations",
-    description: "Copy-paste HTML+CSS animation combos with live previews",
+    description: "Copy-paste CSS animations with live previews — tweak speed and easing, export to Tailwind v4",
     icon: "Sparkles",
     category: "Design",
     keywords: [
@@ -1159,6 +1202,7 @@ export const tools: Tool[] = [
       "css keyframe animations", "css animation generator",
       "css animation snippets", "css transition effects",
       "pure css animations", "css animation collection",
+      "tailwind v4 animation", "prefers-reduced-motion css",
     ],
   },
   {
@@ -1565,6 +1609,31 @@ export const tools: Tool[] = [
       "certificate decoder", "ssl certificate decoder", "pem decoder online",
       "x509 certificate decoder", "decode ssl certificate", "check certificate expiry",
       "certificate fingerprint sha256", "pem certificate viewer", "ssl cert checker online",
+    ],
+  },
+
+  {
+    slug: "email-auth-checker",
+    name: "SPF, DKIM & DMARC Checker",
+    description: "Check SPF lookups, DMARC policy and DKIM keys for any domain, and generate correct records",
+    icon: "MailCheck",
+    category: "Security",
+    keywords: [
+      "spf checker", "dmarc checker", "dkim checker", "spf too many dns lookups", "spf permerror",
+      "dmarc record generator", "spf record generator", "email authentication check",
+      "gmail bulk sender requirements", "550 5.7.24 spf", "check dmarc record", "dkim selector lookup",
+    ],
+  },
+  {
+    slug: "google-authenticator-export-decoder",
+    name: "Google Authenticator Export Decoder",
+    description: "Decode Google Authenticator transfer QR codes into standard 2FA links for any authenticator app",
+    icon: "ScanQrCode",
+    category: "Security",
+    keywords: [
+      "google authenticator export", "otpauth-migration decoder", "google authenticator to bitwarden",
+      "export google authenticator codes", "decode google authenticator qr", "google authenticator to 1password",
+      "transfer 2fa codes", "otpauth-migration://offline", "extract totp secret google authenticator",
     ],
   },
 

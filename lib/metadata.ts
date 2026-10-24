@@ -135,9 +135,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online ULID generator. Generate sortable, URL-safe ULIDs in bulk — a 48-bit timestamp plus 80 bits of randomness, Crockford Base32 encoded. No login, 100% browser-based.",
   },
   "json-to-typescript": {
-    title: "JSON to TypeScript — Generate Interfaces Online | ToolNinja",
+    title: "JSON to TypeScript, Go, Python & Rust Types | ToolNinja",
     description:
-      "Free online JSON to TypeScript converter. Paste any JSON and instantly generate TypeScript interfaces and type definitions. Perfect for API response typing. No login, 100% browser-based.",
+      "Free online JSON to TypeScript converter. Paste any JSON and generate TypeScript interfaces, Zod schemas, Go structs, Pydantic models, Rust serde structs, C#, Kotlin or Swift types — array items are merged so optional fields are detected. No login, 100% browser-based.",
   },
   "json-to-zod": {
     title: "JSON to Zod Schema Generator Online | ToolNinja",
@@ -147,7 +147,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "github-actions-generator": {
     title: "GitHub Actions Workflow Generator — CI YAML | ToolNinja",
     description:
-      "Free GitHub Actions workflow generator. Pick Node.js, Python, Go, or Docker-to-GHCR, choose triggers and a version matrix, and get a ready-to-commit .github/workflows YAML file using current action versions. No login required.",
+      "Free GitHub Actions workflow generator. Pick Node.js, Python, Go, or Docker-to-GHCR, choose triggers and a version matrix, and get a hardened .github/workflows file with SHA-pinned actions and a read-only token — or audit an existing workflow for unpinned actions, pull_request_target and script injection. No login required.",
   },
   "qr-code-generator": {
     title: "QR Code Generator — Free, No Signup, PNG & SVG | ToolNinja",
@@ -244,7 +244,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "timestamp-converter": {
     title: "Unix Timestamp Converter — Epoch to Date | ToolNinja",
     description:
-      "Free online Unix timestamp converter. Convert epoch time to human readable dates or dates to Unix timestamps instantly. Supports seconds and milliseconds. Shows UTC, local time and relative time. No login required.",
+      "Free online Unix timestamp converter. Convert epoch time to human readable dates or dates to Unix timestamps instantly. Detects seconds, milliseconds, microseconds and nanoseconds, converts in any time zone, and gives ready-to-paste code for JavaScript (Date and Temporal), Python, Go, SQL and more. No login required.",
   },
   "number-base-converter": {
     title: "Number Base Converter — Binary, Decimal, Hex Converter | ToolNinja",
@@ -347,7 +347,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "cron-tester": {
     title: "Cron Expression Tester & Parser Online | ToolNinja",
     description:
-      "Free online CRON expression tester. Validate, parse and test cron job schedules instantly. See next execution times in human readable format. Supports standard and Quartz cron syntax. No login required.",
+      "Free online CRON expression tester. Validate, parse and test cron job schedules instantly. See the next run times in any time zone for Linux crontab, GitHub Actions, Kubernetes, AWS EventBridge, Quartz and Spring, and convert between them. No login required.",
   },
   "http-request": {
     title: "HTTP Request Builder — Online API Tester & REST Client | ToolNinja",
@@ -414,6 +414,31 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free online TypeScript 7 migration checker. Paste a tsconfig.json and instantly see which compiler options the Go-based TypeScript 7 compiler removes — es5/es3 targets, amd/umd/systemjs modules, and more. No login, 100% browser-based.",
   },
+  "mcp-config-generator": {
+    title: "MCP Config Generator & Validator | ToolNinja",
+    description:
+      "Free MCP config generator and validator. Build the server entry for Claude Code (.mcp.json), Claude Desktop, Cursor, VS Code or Devin Desktop (Windsurf), keep API keys out of the file, and find exactly why a config won't load. No login, 100% browser-based.",
+  },
+  "llm-schema-checker": {
+    title: "Structured Outputs Schema Checker | ToolNinja",
+    description:
+      "Free JSON Schema checker for LLM structured outputs. See what OpenAI strict mode, Claude and Gemini reject — missing additionalProperties, optional fields, unsupported keywords — and auto-fix it in one click. No login, 100% browser-based.",
+  },
+  "node-26-upgrade-checker": {
+    title: "Node.js 26 Upgrade Checker — LTS | ToolNinja",
+    description:
+      "Free Node.js 26 upgrade checker. Paste package.json and code to find removed APIs (_stream_*, writeHeader, util.is*), new deprecations, engines that exclude Node 26 and native addons that need a rebuild. No login, 100% browser-based.",
+  },
+  "email-auth-checker": {
+    title: "SPF, DKIM & DMARC Checker + Generator | ToolNinja",
+    description:
+      "Free SPF, DKIM and DMARC checker. Count SPF DNS lookups through every include (the 10-lookup PermError), check your DMARC policy and DKIM key size, and generate correct records for Gmail and Outlook bulk-sender rules. No login.",
+  },
+  "google-authenticator-export-decoder": {
+    title: "Google Authenticator Export Decoder | ToolNinja",
+    description:
+      "Free Google Authenticator export decoder. Turn otpauth-migration transfer QR codes into standard 2FA links and QR codes for Bitwarden, 1Password, Aegis or Authy — decoded offline, nothing uploaded or saved. No login.",
+  },
   "node-type-stripping-checker": {
     title: "Node.js Type Stripping Compatibility Checker | ToolNinja",
     description:
@@ -449,7 +474,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "css-animations": {
     title: "CSS Animations Library — Copy-Paste Animation Code | ToolNinja",
     description:
-      "Free CSS animations library with live previews. Ready-to-use CSS animation examples including buttons, loaders, text effects, card animations, and zero-JS scroll-driven animations (animation-timeline: scroll()/view()). One-click copy HTML and CSS code. No login required.",
+      "Free CSS animations library with live previews. Ready-to-use CSS animation examples including buttons, loaders, text effects, card animations, and zero-JS scroll-driven animations (animation-timeline: scroll()/view()). Tune speed, easing and repeats, add a prefers-reduced-motion fallback, and copy HTML, CSS or a Tailwind v4 @theme block. No login required.",
   },
   "css-flexbox-generator": {
     title: "CSS Flexbox Generator — Visual Playground | ToolNinja",

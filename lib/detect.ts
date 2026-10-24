@@ -2,6 +2,7 @@ import { decodeCertificates, formatDn } from "./x509";
 import { inspectPublicKey } from "./ssh-keygen";
 import { parseId } from "./uuid-parser";
 import { parseOtpauthUrl } from "./totp";
+import { decodeMigration } from "./otpauth-migration";
 import { isBcryptHash, bcryptCost } from "./bcrypt-tool";
 import { parseColor, toHex } from "./contrast";
 import { parseUserAgent } from "./user-agent-parser";
@@ -184,6 +185,21 @@ async function detectSshKey(s: string): Promise<Detection | null> {
 }
 
 function detectOtpauth(s: string): Detection | null {
+  if (/^otpauth-migration:\/\//i.test(s)) {
+    let count = 0;
+    try {
+      count = decodeMigration(s).accounts.length;
+    } catch {}
+    return {
+      id: "otpauth-migration",
+      label: "Google Authenticator export",
+      confidence: "high",
+      summary: count ? `${count} account${count === 1 ? "" : "s"} in a Google Authenticator transfer code` : "A Google Authenticator transfer code",
+      fields: [],
+      tools: ["google-authenticator-export-decoder", "totp-generator"],
+      warning: "This contains 2FA secrets. Anyone with it can generate your login codes.",
+    };
+  }
   if (!s.startsWith("otpauth://")) return null;
   const parsed = parseOtpauthUrl(s);
   const isHotp = s.startsWith("otpauth://hotp");
@@ -414,7 +430,14 @@ function detectJson(s: string): Detection | null {
     return { id: "tsconfig", label: "tsconfig.json", confidence: "high", summary: "TypeScript compiler config", fields: [], tools: ["ts7-migration-checker", "json-formatter"] };
   }
   if (obj && (obj.dependencies || obj.devDependencies) && obj.name) {
-    return { id: "package-json", label: "package.json", confidence: "high", summary: String(obj.name), fields: [], tools: ["package-json-inspector", "semver-calculator"] };
+    return { id: "package-json", label: "package.json", confidence: "high", summary: String(obj.name), fields: [], tools: ["package-json-inspector", "node-26-upgrade-checker", "semver-calculator"] };
+  }
+  const servers = obj && ((obj.mcpServers ?? obj.servers) as Record<string, unknown> | undefined);
+  if (servers && typeof servers === "object" && Object.values(servers).some((v) => v && typeof v === "object" && ("command" in v || "url" in v || "serverUrl" in v))) {
+    return { id: "mcp-config", label: "MCP server config", confidence: "high", summary: `${Object.keys(servers).length} server${Object.keys(servers).length === 1 ? "" : "s"}`, fields: [], tools: ["mcp-config-generator", "json-formatter"] };
+  }
+  if (obj && (obj.json_schema || obj.input_schema || (obj.type === "object" && obj.properties) || (obj.$schema && obj.properties))) {
+    return { id: "json-schema", label: "JSON Schema", confidence: "high", summary: "Check it for OpenAI, Claude and Gemini structured outputs", fields: [], tools: ["llm-schema-checker", "json-schema-generator", "json-formatter"] };
   }
   const summary = Array.isArray(value) ? `Array of ${value.length} item${value.length === 1 ? "" : "s"}` : obj ? `Object with ${Object.keys(obj).length} keys` : "JSON value";
   return {
@@ -424,6 +447,32 @@ function detectJson(s: string): Detection | null {
     summary,
     fields: [],
     tools: ["json-formatter", "json-to-typescript", "json-to-zod", "json-schema-generator"],
+  };
+}
+
+function detectEmailAuth(s: string): Detection | null {
+  const m = /^"?(v=spf1|v=DMARC1|v=DKIM1)\b/i.exec(s);
+  if (!m) return null;
+  const kind = m[1].toUpperCase() === "V=SPF1" ? "SPF" : m[1].toUpperCase() === "V=DMARC1" ? "DMARC" : "DKIM";
+  return {
+    id: "email-auth",
+    label: `${kind} record`,
+    confidence: "high",
+    summary: kind === "SPF" ? `${(s.match(/\binclude:/gi) ?? []).length} include(s) — check the full lookup count for your domain` : "Email authentication DNS record",
+    fields: [],
+    tools: ["email-auth-checker"],
+  };
+}
+
+function detectWorkflow(s: string): Detection | null {
+  if (!/^\s*jobs:\s*$/m.test(s) || !/(runs-on:|uses:)/.test(s)) return null;
+  return {
+    id: "github-workflow",
+    label: "GitHub Actions workflow",
+    confidence: "high",
+    summary: "Audit it for unpinned actions and script injection",
+    fields: [],
+    tools: ["github-actions-generator", "config-validator"],
   };
 }
 
@@ -648,6 +697,8 @@ export async function detectLocal(raw: string, articles: ErrorArticleIndex[] = [
     detectDockerRun(s),
     detectBcrypt(s),
     detectJson(s),
+    detectEmailAuth(s),
+    detectWorkflow(s),
     detectMarkup(s),
     detectSql(s),
     detectUserAgent(s),

@@ -26,6 +26,24 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    date: "2026-10-24",
+    title: "Node 26, MCP and email authentication",
+    summary: "Get ready for Node 26 LTS, set up MCP servers, fix structured-output schemas and pass Gmail's sender checks.",
+    items: [
+      { kind: "new", tool: "node-26-upgrade-checker" },
+      { kind: "new", tool: "mcp-config-generator" },
+      { kind: "new", tool: "llm-schema-checker" },
+      { kind: "new", tool: "email-auth-checker" },
+      { kind: "new", tool: "google-authenticator-export-decoder" },
+      { kind: "improved", tool: "github-actions-generator", text: "Actions pinned to commit SHAs, read-only token, Dependabot file, and a workflow security audit" },
+      { kind: "improved", tool: "json-to-typescript", text: "Pydantic, Rust, C#, Kotlin and Swift output; array items merged into optional fields" },
+      { kind: "improved", tool: "cron-tester", text: "GitHub Actions, Kubernetes, EventBridge, Quartz and Spring formats, any time zone, conversions" },
+      { kind: "improved", tool: "timestamp-converter", text: "Code for 12 languages incl. Temporal, µs/ns detection, time-zone aware date → timestamp" },
+      { kind: "improved", tool: "css-animations", text: "Customize speed, easing and repeats; reduced-motion fallback; Tailwind v4 export" },
+      { kind: "guide", post: "nodejs-26-lts-upgrade-breaking-changes" },
+    ],
+  },
+  {
     date: "2026-10-23",
     title: "Rate any tool",
     summary: "Every tool now has a quick star rating and an optional comment — no account needed. Ratings help other developers pick the right tool and tell us what to improve.",

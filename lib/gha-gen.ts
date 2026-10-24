@@ -23,20 +23,36 @@ export interface GhaOptions {
   // docker
   imageName: string;
   pushImage: boolean;
+  /** Pin each action to the commit of its release instead of a movable tag */
+  pinShas: boolean;
 }
 
-// Major versions checked against each action's latest GitHub release.
-export const ACTION_VERSIONS = {
-  checkout: "actions/checkout@v7",
-  setupNode: "actions/setup-node@v7",
-  setupPython: "actions/setup-python@v7",
-  setupGo: "actions/setup-go@v7",
-  pnpm: "pnpm/action-setup@v6",
-  dockerLogin: "docker/login-action@v4",
-  dockerBuildx: "docker/setup-buildx-action@v4",
-  dockerMeta: "docker/metadata-action@v6",
-  dockerBuildPush: "docker/build-push-action@v7",
-};
+export interface ActionRef {
+  repo: string;
+  major: string;
+  version: string;
+  sha: string;
+}
+
+// Each action's latest release and the commit its tag points to (checked 2026-10-24 with
+// `git ls-remote`). Tags can be moved — that's how the tj-actions/changed-files compromise spread —
+// commits can't.
+export const ACTIONS = {
+  checkout: { repo: "actions/checkout", major: "v7", version: "v7.0.1", sha: "3d3c42e5aac5ba805825da76410c181273ba90b1" },
+  setupNode: { repo: "actions/setup-node", major: "v7", version: "v7.1.0", sha: "949feb2413d6458794dcd2491c4babbbce0c15c1" },
+  setupPython: { repo: "actions/setup-python", major: "v7", version: "v7.1.0", sha: "6d4fd22b20465ccc0f7354476588e8df7c9ca0e0" },
+  setupGo: { repo: "actions/setup-go", major: "v7", version: "v7.0.0", sha: "b7ad1dad31e06c5925ef5d2fc7ad053ef454303e" },
+  pnpm: { repo: "pnpm/action-setup", major: "v6", version: "v6.1.0", sha: "ea17c68df8912ef543352723c149a84f56e3d413" },
+  dockerLogin: { repo: "docker/login-action", major: "v4", version: "v4.7.0", sha: "81c6f93d4bc991e510b342a00b419b3bb4efc5c6" },
+  dockerBuildx: { repo: "docker/setup-buildx-action", major: "v4", version: "v4.4.1", sha: "f87e5991a6d7451dcb8d9637bfbc97413f497069" },
+  dockerMeta: { repo: "docker/metadata-action", major: "v6", version: "v6.2.0", sha: "dc802804100637a589fabce1cb79ff13a1411302" },
+  dockerBuildPush: { repo: "docker/build-push-action", major: "v7", version: "v7.4.0", sha: "c3c9e263c25d99ce0380d002d59b67737d91b0dc" },
+} satisfies Record<string, ActionRef>;
+
+/** `owner/repo@<sha> # vX.Y.Z` when pinned, otherwise `owner/repo@vX` */
+export function actionRef(a: ActionRef, pin: boolean): string {
+  return pin ? `${a.repo}@${a.sha} # ${a.version}` : `${a.repo}@${a.major}`;
+}
 
 export const DEFAULT_GHA_OPTIONS: GhaOptions = {
   stack: "node",
@@ -56,6 +72,7 @@ export const DEFAULT_GHA_OPTIONS: GhaOptions = {
   goVersion: "stable",
   imageName: "",
   pushImage: true,
+  pinShas: true,
 };
 
 function list(value: string): string[] {
@@ -77,16 +94,22 @@ function triggers(o: GhaOptions): string {
   return lines.join("\n");
 }
 
+// The token isn't left in .git/config for later steps to read — nothing here pushes with git.
+function checkoutStep(o: GhaOptions): string[] {
+  return [`      - uses: ${actionRef(ACTIONS.checkout, o.pinShas)}`, "        with:", "          persist-credentials: false"];
+}
+
 function nodeJob(o: GhaOptions): string {
+  const u = (a: ActionRef) => actionRef(a, o.pinShas);
   const versions = list(o.nodeVersions);
   const run = (script: string) => (o.nodePm === "npm" ? `npm run ${script}` : `${o.nodePm} ${script}`);
   const install = o.nodePm === "npm" ? "npm ci" : o.nodePm === "yarn" ? "yarn install --frozen-lockfile" : "pnpm install --frozen-lockfile";
   const steps = [
-    `      - uses: ${ACTION_VERSIONS.checkout}`,
+    ...checkoutStep(o),
     ...(o.nodePm === "pnpm"
-      ? [`      - uses: ${ACTION_VERSIONS.pnpm}`, `        # Reads the pnpm version from "packageManager" in package.json — or add: with: { version: <x> }`]
+      ? [`      - uses: ${u(ACTIONS.pnpm)}`, `        # Reads the pnpm version from "packageManager" in package.json — or add: with: { version: <x> }`]
       : []),
-    `      - uses: ${ACTION_VERSIONS.setupNode}`,
+    `      - uses: ${u(ACTIONS.setupNode)}`,
     "        with:",
     "          node-version: ${{ matrix.node-version }}",
     `          cache: ${o.nodePm}`,
@@ -106,10 +129,11 @@ ${steps.join("\n")}`;
 }
 
 function pythonJob(o: GhaOptions): string {
+  const u = (a: ActionRef) => actionRef(a, o.pinShas);
   const versions = list(o.pythonVersions);
   const steps = [
-    `      - uses: ${ACTION_VERSIONS.checkout}`,
-    `      - uses: ${ACTION_VERSIONS.setupPython}`,
+    ...checkoutStep(o),
+    `      - uses: ${u(ACTIONS.setupPython)}`,
     "        with:",
     "          python-version: ${{ matrix.python-version }}",
     "          cache: pip",
@@ -129,9 +153,10 @@ ${steps.join("\n")}`;
 }
 
 function goJob(o: GhaOptions): string {
+  const u = (a: ActionRef) => actionRef(a, o.pinShas);
   const steps = [
-    `      - uses: ${ACTION_VERSIONS.checkout}`,
-    `      - uses: ${ACTION_VERSIONS.setupGo}`,
+    ...checkoutStep(o),
+    `      - uses: ${u(ACTIONS.setupGo)}`,
     "        with:",
     `          go-version: ${o.goVersion.trim() === "stable" || !o.goVersion.trim() ? "stable" : `"${o.goVersion.trim()}"`}`,
     ...(o.runLint ? ["      - run: go vet ./..."] : []),
@@ -146,6 +171,7 @@ ${steps.join("\n")}`;
 }
 
 function dockerJob(o: GhaOptions): string {
+  const u = (a: ActionRef) => actionRef(a, o.pinShas);
   const image = o.imageName.trim() || "ghcr.io/${{ github.repository }}";
   const push = o.pushImage ? "${{ github.event_name != 'pull_request' }}" : "false";
   return `jobs:
@@ -155,11 +181,11 @@ function dockerJob(o: GhaOptions): string {
       contents: read
       packages: write
     steps:
-      - uses: ${ACTION_VERSIONS.checkout}
-      - uses: ${ACTION_VERSIONS.dockerBuildx}
+${checkoutStep(o).join("\n")}
+      - uses: ${u(ACTIONS.dockerBuildx)}
 ${
   o.pushImage
-    ? `      - uses: ${ACTION_VERSIONS.dockerLogin}
+    ? `      - uses: ${u(ACTIONS.dockerLogin)}
         if: github.event_name != 'pull_request'
         with:
           registry: ghcr.io
@@ -168,14 +194,14 @@ ${
 `
     : ""
 }      - id: meta
-        uses: ${ACTION_VERSIONS.dockerMeta}
+        uses: ${u(ACTIONS.dockerMeta)}
         with:
           images: ${image}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=sha
-      - uses: ${ACTION_VERSIONS.dockerBuildPush}
+      - uses: ${u(ACTIONS.dockerBuildPush)}
         with:
           context: .
           push: ${push}
@@ -187,7 +213,22 @@ ${
 
 export function generateWorkflow(o: GhaOptions): string {
   const job = o.stack === "node" ? nodeJob(o) : o.stack === "python" ? pythonJob(o) : o.stack === "go" ? goJob(o) : dockerJob(o);
-  return `name: ${o.name.trim() || "CI"}\n\n${triggers(o)}\n\n${job}\n`;
+  // Read-only token by default; a job that needs more asks for it itself (see the Docker job)
+  return `name: ${o.name.trim() || "CI"}\n\n${triggers(o)}\n\npermissions:\n  contents: read\n\n${job}\n`;
+}
+
+/** .github/dependabot.yml that keeps pinned actions up to date (one grouped PR a week). */
+export function dependabotConfig(): string {
+  return `version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+`;
 }
 
 export function workflowFilename(o: GhaOptions): string {
