@@ -2,7 +2,8 @@ import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 import { describe, expect, it } from "vitest";
 import { networkId, visitorId, originAllowed, allowedOrigins } from "@/lib/visitor";
-import { tools, categories } from "@/lib/tools";
+import { tools, categories, LATEST_TOOL_SLUGS } from "@/lib/tools";
+import { releases } from "@/lib/changelog";
 import { analyzeHeaders } from "@/lib/security-headers";
 import { renderToolsSection, START, END } from "../scripts/readme-tools.mjs";
 import nextConfig from "../next.config.mjs";
@@ -78,6 +79,15 @@ describe("tool registry", () => {
 
   it("slugs are unique", () => {
     expect(new Set(tools.map((t) => t.slug)).size).toBe(tools.length);
+  });
+});
+
+describe("Just added", () => {
+  it("the homepage's newest tools match the newest release in the changelog", () => {
+    const newest = releases.find((r) => r.items.some((i) => i.kind === "new"))!;
+    const released = newest.items.filter((i) => i.kind === "new" && i.tool).map((i) => i.tool);
+    expect([...LATEST_TOOL_SLUGS].sort()).toEqual([...released].sort());
+    for (const slug of LATEST_TOOL_SLUGS) expect(tools.some((t) => t.slug === slug), slug).toBe(true);
   });
 });
 

@@ -1734,10 +1734,11 @@ export type Category = (typeof categories)[number];
 // Single source of truth for "newest tool" badges and the homepage's "Just added" section —
 // update this one list each time a batch of tools ships, newest first. Sidebar's NEW badges,
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
+// tests/site.test.ts fails if this falls out of step with the newest release in lib/changelog.ts.
 export const LATEST_TOOL_SLUGS = [
-  "json-to-zod",
-  "semver-calculator",
-  "certificate-decoder",
-  "websocket-tester",
-  "github-actions-generator",
+  "node-26-upgrade-checker",
+  "mcp-config-generator",
+  "llm-schema-checker",
+  "email-auth-checker",
+  "google-authenticator-export-decoder",
 ];
