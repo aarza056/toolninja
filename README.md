@@ -50,7 +50,7 @@ Regex Tester · Diff Checker · CRON Expression Tester · HTTP Request Builder �
 CSS Animations · CSS Flexbox Generator · CSS Grid Generator · CSS clamp() / Fluid Typography Calculator · CSS Unit Converter · Aspect Ratio Calculator · SVG Path Visualizer · CSS Custom Properties Auditor · CSS Gradient Generator · Color Palette Generator · Mermaid Diagram Editor · Image Color Palette Extractor · CSS Box Shadow Generator · CSS Specificity Calculator · Placeholder Image Generator · CSS Scrollbar Generator · CSS Scroll Carousel Generator
 
 ### Security
-AES / RSA Encryption · CSP Header Builder & Analyzer · JWT Key Pair Generator · SSH Key Generator · TOTP / 2FA Code Generator · HOTP Generator · 2FA Backup Codes Generator · package.json Script Inspector · HTTP Security Headers Checker · JWK ↔ PEM Converter · Secret / API Key Scanner · Password Strength Checker · JWK Thumbprint Calculator · Passkey / WebAuthn Playground · Bcrypt Hash Generator & Verifier · X.509 / PEM Certificate Decoder · SPF, DKIM & DMARC Checker · Google Authenticator Export Decoder
+AES / RSA Encryption · CSP Header Builder & Analyzer · JWT Key Pair Generator · SSH Key Generator · 2FA Live Code & TOTP Generator · HOTP Generator · 2FA Backup Codes Generator · package.json Script Inspector · HTTP Security Headers Checker · JWK ↔ PEM Converter · Secret / API Key Scanner · Password Strength Checker · JWK Thumbprint Calculator · Passkey / WebAuthn Playground · Bcrypt Hash Generator & Verifier · X.509 / PEM Certificate Decoder · SPF, DKIM & DMARC Checker · Google Authenticator Export Decoder
 
 ### Accessibility
 Color Contrast Checker · Color Blindness Simulator

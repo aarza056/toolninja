@@ -1,6 +1,6 @@
 ---
-title: "Windows Event IDs You'll Actually See: 4625, 1000, 7000, and 41 Explained"
-description: "Event Viewer logs thousands of entries a day and almost none of them matter. These four — failed logon, application crash, service start failure, and unexpected shutdown — are the ones that actually mean something. Here's how to read each one."
+title: "Windows Event ID 4625, 1000, 7000 & 41 Explained (with Fixes)"
+description: "What Windows Event IDs 4625 (failed logon), 1000 (app crash), 7000 (service failed) and 41 (unexpected shutdown) mean, and how to fix each one."
 date: "2026-08-04"
 author: "ToolNinja"
 coverEmoji: "🪟"

@@ -1466,11 +1466,12 @@ export const tools: Tool[] = [
   },
   {
     slug: "totp-generator",
-    name: "TOTP / 2FA Code Generator",
-    description: "Generate live TOTP authentication codes from a secret key — test 2FA integrations in your browser",
+    name: "2FA Live Code & TOTP Generator",
+    description: "Paste a 2FA secret and get the live code — or several at once, one per line",
     icon: "Smartphone",
     category: "Security",
     keywords: [
+      "2fa live code", "2fa code from secret", "live 2fa code generator", "totp online",
       "totp generator", "totp generator online", "2fa code generator",
       "generate totp code", "authenticator code generator", "otp generator online",
       "test 2fa online", "totp secret generator", "google authenticator code generator",

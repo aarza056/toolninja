@@ -1,4 +1,22 @@
 import { describe, expect, it } from "vitest";
+import { extractSecret } from "@/lib/totp";
+
+describe("2FA live code: secrets pasted in common formats", () => {
+  it("bare, spaced, lowercase, padded", () => {
+    expect(extractSecret("JBSWY3DPEHPK3PXP")).toEqual({ secret: "JBSWY3DPEHPK3PXP", label: "" });
+    expect(extractSecret("jbsw y3dp ehpk 3pxp")?.secret).toBe("JBSWY3DPEHPK3PXP");
+    expect(extractSecret("JBSWY3DPEHPK3PXP====")?.secret).toBe("JBSWY3DPEHPK3PXP");
+  });
+  it("label|secret and user:pass:secret lines keep the rest as a label", () => {
+    expect(extractSecret("github|JBSWY3DPEHPK3PXP")).toEqual({ secret: "JBSWY3DPEHPK3PXP", label: "github" });
+    expect(extractSecret("alice:hunter2:JBSWY3DPEHPK3PXP")).toEqual({ secret: "JBSWY3DPEHPK3PXP", label: "alice · hunter2" });
+  });
+  it("otpauth links and junk", () => {
+    expect(extractSecret("otpauth://totp/GitHub:alice?secret=JBSWY3DPEHPK3PXP&issuer=GitHub")).toEqual({ secret: "JBSWY3DPEHPK3PXP", label: "GitHub · alice" });
+    expect(extractSecret("hello world")).toBeNull();
+    expect(extractSecret("ABC123")).toBeNull();
+  });
+});
 import { generateTOTP, hotp, base32Encode, base32Decode, buildOtpauthUrl, parseOtpauthUrl, secondsRemaining, generateRandomSecret } from "@/lib/totp";
 import { generateHOTP, buildHotpOtpauthUrl, parseHotpOtpauthUrl } from "@/lib/hotp";
 

@@ -103,6 +103,28 @@ export function buildOtpauthUrl(secret: string, label: string, issuer: string, o
   return `otpauth://totp/${encodedLabel}?${params.toString()}`;
 }
 
+/**
+ * Pulls a Base32 secret out of a pasted line: a bare secret (any case, with spaces or dashes),
+ * an otpauth:// link, or a "label|secret" / "user:pass:secret" style line. Returns null when
+ * nothing on the line looks like a secret.
+ */
+export function extractSecret(line: string): { secret: string; label: string } | null {
+  const text = line.trim();
+  if (!text) return null;
+  if (/^otpauth:\/\//i.test(text)) {
+    const p = parseOtpauthUrl(text);
+    return p ? { secret: p.secret.toUpperCase().replace(/[^A-Z2-7]/g, ""), label: [p.issuer, p.label].filter(Boolean).join(" · ") } : null;
+  }
+  const parts = text.split(/[|;,\t]|:(?!\/\/)/).map((p) => p.trim()).filter(Boolean);
+  const candidates = parts
+    .map((p) => ({ raw: p, secret: p.toUpperCase().replace(/[\s-]/g, "") }))
+    .filter((c) => /^[A-Z2-7]{16,}=*$/.test(c.secret));
+  if (!candidates.length) return null;
+  // The longest Base32-looking part is the secret; anything else on the line is a label
+  const best = candidates.reduce((a, b) => (b.secret.length > a.secret.length ? b : a));
+  return { secret: best.secret.replace(/=+$/, ""), label: parts.filter((p) => p !== best.raw).join(" · ") };
+}
+
 export function parseOtpauthUrl(url: string): { secret: string; label: string; issuer: string; opts: TotpOptions } | null {
   try {
     const parsed = new URL(url);

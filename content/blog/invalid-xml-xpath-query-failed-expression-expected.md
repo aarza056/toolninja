@@ -1,6 +1,6 @@
 ---
-title: "Invalid XML / XPath Query Failed: Expression Expected Fix"
-description: "XPath errors like 'expression expected' or 'invalid token' appear when XPath syntax is wrong or the XML is malformed. Learn the exact causes and fixes with examples."
+title: "XPath \"Expression Expected\" and Invalid XPath Errors: Fixes"
+description: "Why XPath fails with \"expression expected\", \"invalid token\" or \"not a valid XPath expression\" — the syntax and XML mistakes behind each, with fixes."
 date: "2026-05-22"
 author: "ToolNinja"
 coverEmoji: "📄"

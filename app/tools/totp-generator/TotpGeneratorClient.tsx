@@ -16,6 +16,7 @@ import {
   type TotpOptions,
 } from "@/lib/totp";
 import { decodeQrFromImage } from "@/lib/qr-decode";
+import LiveCodes from "./LiveCodes";
 
 const STORAGE_KEY = "toolninja:totp-generator";
 const ACCOUNTS_KEY = "toolninja:totp-generator:accounts";
@@ -231,9 +232,10 @@ export default function TotpGeneratorClient() {
 
   return (
     <ToolLayout
-      title="TOTP / 2FA Code Generator"
-      description="Generate live TOTP authentication codes from a secret key — test 2FA integrations entirely in your browser"
+      title="2FA Live Code & TOTP Generator"
+      description="Paste a 2FA secret to get the live code instantly — or build and test TOTP setups, entirely in your browser"
     >
+      <LiveCodes />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: config */}
         <div className="space-y-4">

@@ -106,6 +106,13 @@ const nextConfig = {
       { source: '/tester/:slug', destination: '/tools/:slug', permanent: true },
       { source: '/tools/color-blind-test', destination: '/tools/color-blindness-simulator', permanent: true },
       { source: '/tools/tool_regex.php', destination: '/tools/regex-tester', permanent: true },
+      // A mangled link Search Console found: /tools/toolninja-io/tools/xpath-tester
+      { source: '/tools/toolninja-io/tools/:slug', destination: '/tools/:slug', permanent: true },
+      // Names people search for that map to existing tools
+      { source: '/tools/2fa-live-code', destination: '/tools/totp-generator', permanent: true },
+      { source: '/tools/cidr', destination: '/tools/cidr-calculator', permanent: true },
+      { source: '/tools/chmod', destination: '/tools/chmod-calculator', permanent: true },
+      { source: '/tools/xpath', destination: '/tools/xpath-tester', permanent: true },
     ]
   },
 
