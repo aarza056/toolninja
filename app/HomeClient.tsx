@@ -11,6 +11,7 @@ import { devPhrases } from "@/lib/phrases";
 import { getRecentTools, getFavoriteTools } from "@/lib/user-prefs";
 import StarButton from "@/components/StarButton";
 import TrustBar from "@/components/TrustBar";
+import NewsletterSignup from "@/components/NewsletterSignup";
 
 type FilterCategory = typeof categories[number] | "All";
 
@@ -101,7 +102,7 @@ const WHY_ITEMS = [
   },
 ] as const;
 
-export default function HomeClient() {
+export default function HomeClient({ showNewsletter = false }: { showNewsletter?: boolean }) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("All");
   const [phraseIdx, setPhraseIdx] = useState(0);
@@ -217,6 +218,12 @@ export default function HomeClient() {
         >
           <Sparkles size={12} /> New: paste anything — Ninja figures out what it is
         </button>
+
+        {showNewsletter && (
+          <div className="max-w-xl mx-auto mt-8 text-left">
+            <NewsletterSignup source="home" compact />
+          </div>
+        )}
       </div>
 
       {/* Category pills ───────────────────────────────────────────────────── */}

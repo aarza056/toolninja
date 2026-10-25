@@ -283,7 +283,7 @@ export async function analyzeDmarc(domain: string, resolve: Resolver): Promise<D
 
 // ─── DKIM ────────────────────────────────────────────────────────────────────
 
-export const COMMON_SELECTORS = ["google", "selector1", "selector2", "k1", "k2", "k3", "s1", "s2", "default", "dkim", "mail", "smtp", "mandrill", "mte1", "pm", "zmail", "fm1", "fm2", "fm3", "protonmail", "protonmail2", "protonmail3", "sig1", "brevo1", "mailjet", "resend", "scph"];
+export const COMMON_SELECTORS = ["google", "selector1", "selector2", "k1", "k2", "k3", "s1", "s2", "default", "dkim", "mail", "smtp", "mandrill", "mte1", "pm", "zmail", "fm1", "fm2", "fm3", "protonmail", "protonmail2", "protonmail3", "sig1", "brevo1", "mailjet", "resend", "scph", "privateemail"];
 
 export interface DkimKey {
   selector: string;

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import HomeClient from "./HomeClient";
 import { PATREON_URL } from "@/lib/support";
+import { getSiteConfig } from "@/lib/site-config";
+import { emailConfigured } from "@/lib/email-send";
 
 export const metadata: Metadata = {
   alternates: { canonical: "https://toolninja.io" },
@@ -26,7 +28,8 @@ const orgJsonLd = {
     "Fast, free developer tools. No login. No nonsense. Every tool runs in your browser.",
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { flags } = await getSiteConfig();
   return (
     <>
       <script
@@ -37,7 +40,7 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
       />
-      <HomeClient />
+      <HomeClient showNewsletter={flags.newsletter && emailConfigured()} />
     </>
   );
 }

@@ -170,6 +170,24 @@ export default function PrivacyPage() {
           </p>
         </section>
 
+        <section id="newsletter">
+          <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">Newsletter</h2>
+          <p>
+            If you subscribe to updates, we store your email address, whether you confirmed it, the dates you subscribed or
+            unsubscribed, and the page you signed up on — nothing else. Nothing is sent until you click the confirmation link
+            we email you. Emails are delivered through Resend, our email provider, which processes your address only to
+            deliver them and to tell us about bounces and spam reports; addresses that bounce or report spam are never
+            emailed again.
+          </p>
+          <p className="mt-3">
+            Every email has a one-click unsubscribe link. To have your address deleted completely, write to{" "}
+            <a href="mailto:info@toolninja.io" className="text-[#a855f7] hover:underline">
+              info@toolninja.io
+            </a>
+            . We never sell or share the list.
+          </p>
+        </section>
+
         <section>
           <h2 className="text-base font-semibold text-[#d4d4d4] mb-3">8. Children&apos;s privacy</h2>
           <p>
