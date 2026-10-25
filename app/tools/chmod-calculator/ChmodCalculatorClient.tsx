@@ -104,10 +104,13 @@ function stripExecute(octal: string): string {
     .join("");
 }
 
-export default function ChmodCalculatorClient() {
-  const [perms, setPerms] = useState<Permissions>(INITIAL_PERMS);
-  const [special, setSpecial] = useState<SpecialBits>({ setuid: false, setgid: false, sticky: false });
-  const [octalInput, setOctalInput] = useState("755");
+export default function ChmodCalculatorClient({ initialOctal, heading, intro }: { initialOctal?: string; heading?: string; intro?: string } = {}) {
+  // A 3-digit mode, or 4 digits with the setuid/setgid/sticky digit in front
+  const start = initialOctal && /^[0-7]?[0-7]{3}$/.test(initialOctal) ? initialOctal : "755";
+  const startSpecial = start.length === 4 ? Number(start[0]) : 0;
+  const [perms, setPerms] = useState<Permissions>(() => octalToPermissions(start.slice(-3)) ?? INITIAL_PERMS);
+  const [special, setSpecial] = useState<SpecialBits>({ setuid: (startSpecial & 4) !== 0, setgid: (startSpecial & 2) !== 0, sticky: (startSpecial & 1) !== 0 });
+  const [octalInput, setOctalInput] = useState(start);
   const [octalError, setOctalError] = useState("");
   const [recursivePath, setRecursivePath] = useState("/path/to/dir");
   const [splitFileDir, setSplitFileDir] = useState(false);
@@ -196,8 +199,8 @@ export default function ChmodCalculatorClient() {
 
   return (
     <ToolLayout
-      title="Chmod Calculator"
-      description="Calculate Unix file permissions visually. Toggle checkboxes or type an octal value."
+      title={heading ?? "Chmod Calculator"}
+      description={intro ?? "Calculate Unix file permissions visually. Toggle checkboxes or type an octal value."}
     >
       <div className="max-w-2xl space-y-6">
         {/* Octal display + input row */}

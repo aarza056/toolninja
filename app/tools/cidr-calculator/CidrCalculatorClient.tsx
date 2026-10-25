@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import { AlertCircle } from "lucide-react";
 import CopyButton from "@/components/CopyButton";
+import CidrChecks from "./CidrChecks";
 
 // ─── IP math ──────────────────────────────────────────────────────────────────
 
@@ -355,8 +356,8 @@ function ResultCard({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function CidrCalculatorClient() {
-  const [input, setInput] = useState("192.168.1.0/24");
+export default function CidrCalculatorClient({ initialInput, heading, intro }: { initialInput?: string; heading?: string; intro?: string } = {}) {
+  const [input, setInput] = useState(initialInput ?? "192.168.1.0/24");
   const [result, setResult] = useState<CidrResult | null>(null);
   const [v6Result, setV6Result] = useState<Ipv6Result | null>(null);
   const [error, setError] = useState("");
@@ -446,8 +447,8 @@ export default function CidrCalculatorClient() {
 
   return (
     <ToolLayout
-      title="CIDR Calculator"
-      description="Turn CIDR notation into an IP range, subnet mask, and host count — or an IP range or subnet mask back into CIDR. IPv4 and IPv6."
+      title={heading ?? "CIDR Calculator"}
+      description={intro ?? "Turn CIDR notation into an IP range, subnet mask, and host count — or an IP range or subnet mask back into CIDR. IPv4 and IPv6."}
     >
       <div className="space-y-6">
         {/* Input */}
@@ -593,6 +594,9 @@ export default function CidrCalculatorClient() {
                 value={getIpClass(result.network)}
                 mono={false}
               />
+              {result.prefix >= 16 && result.prefix <= 28 && (
+                <ResultCard label="Usable in AWS / Azure (5 reserved)" value={formatHostCount(result.totalHosts - 5)} mono={false} />
+              )}
             </div>
 
             {/* Binary section */}
@@ -710,6 +714,8 @@ export default function CidrCalculatorClient() {
             Enter a CIDR range above to calculate
           </div>
         )}
+
+        <CidrChecks />
       </div>
     </ToolLayout>
   );
