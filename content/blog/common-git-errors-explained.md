@@ -1,6 +1,6 @@
 ---
-title: "The Git Errors Every Developer Hits (and the Exact Fix for Each)"
-description: "Failed to push some refs, refusing to merge unrelated histories, detached HEAD, and merge conflicts — the Git errors everyone Googles at least once. Here's what each one actually means and how to resolve it."
+title: "Common Git Errors and How to Fix Them (Push, Merge, HEAD)"
+description: "\"Failed to push some refs\", \"refusing to merge unrelated histories\", detached HEAD and merge conflicts — what each Git error means and the exact fix."
 date: "2026-08-05"
 author: "ToolNinja"
 coverEmoji: "🔧"

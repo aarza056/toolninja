@@ -308,9 +308,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online .htaccess to nginx converter. Convert RewriteRule, RewriteCond, redirects, ErrorDocument, and the standard WordPress rewrite block to nginx server block syntax. No login, 100% browser-based.",
   },
   "meeting-planner": {
-    title: "Meeting Planner — Time Zone Meeting Finder | ToolNinja",
+    title: "Meeting Planner Across Time Zones — Free | ToolNinja",
     description:
-      "Free meeting planner: compare working hours across time zones on one grid, find a time that works for everyone, and export a calendar invite. No login.",
+      "Find a meeting time that works in every time zone: compare working hours side by side, spot the overlap at a glance and send a calendar invite. Free, no login.",
   },
   "json-to-markdown-table": {
     title: "JSON to Markdown Table Converter Online | ToolNinja",
@@ -375,9 +375,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online text diff tool. Compare strings at character, word or line level with inline diff highlighting. Uses Myers algorithm for accurate differences. Perfect for comparing code snippets. No login required.",
   },
   "xpath-tester": {
-    title: "XPath Tester Online — Test XPath on XML & HTML | ToolNinja",
+    title: "XPath Online Tester & Evaluator (XML, HTML) | ToolNinja",
     description:
-      "Free online XPath tester and evaluator. Run XPath expressions against XML or HTML and see every match live, with an XPath cheat sheet. No login needed.",
+      "Test XPath online: paste XML or HTML, type an expression and see every matching node live. Evaluator, validator and cheat sheet in one — free, no login.",
   },
   "css-xpath-converter": {
     title: "CSS Selector to XPath Converter Online | ToolNinja",
@@ -574,14 +574,14 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online JWT key pair generator. Generate RSA and ECDSA key pairs for RS256, RS384, RS512, PS256, ES256 and more, in both PEM and JWK format, using WebCrypto. Private keys never leave your browser. No login required.",
   },
   "ssh-key-generator": {
-    title: "SSH Key Generator Online — Ed25519 & RSA Keys | ToolNinja",
+    title: "SSH Key Generator Online — Ed25519 & RSA | ToolNinja",
     description:
-      "Generate SSH keys online: Ed25519 or RSA key pairs in real OpenSSH format, with fingerprint and randomart. Keys are created locally and never uploaded.",
+      "Generate an SSH key online in seconds: Ed25519 or RSA key pairs in OpenSSH format with fingerprint, like ssh-keygen without installing anything. Never uploaded.",
   },
   "totp-generator": {
-    title: "TOTP Generator — Live 2FA Codes Online | ToolNinja",
+    title: "2FA Live Code Generator — TOTP from Secret | ToolNinja",
     description:
-      "Free TOTP generator with live 2FA codes from any Base32 secret. Works like Google Authenticator: scan or create otpauth:// QR codes. Runs in your browser.",
+      "Paste your 2FA secret and get the live 6-digit code instantly — several at once, one per line. Free TOTP generator; nothing is uploaded or saved.",
   },
   "hotp-generator": {
     title: "HOTP Generator Online — RFC 4226 Counter-Based OTP | ToolNinja",
@@ -658,9 +658,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Complete HTTP status codes reference. Look up every HTTP response code including 200, 301, 404, 500 and more, plus a side-by-side comparison of commonly confused codes (401 vs 403, 409 vs 412 vs 423, and more). No login required.",
   },
   "chmod-calculator": {
-    title: "Chmod Calculator — Linux Permissions Generator | ToolNinja",
+    title: "Chmod Calculator — Linux Permissions (755, 644) | ToolNinja",
     description:
-      "Free chmod calculator: convert between octal (755, 644) and rwxr-xr-x permissions with checkboxes, including setuid, setgid, and the sticky bit.",
+      "Free chmod calculator and Linux permissions calculator: convert 755, 644 or 777 to rwxr-xr-x and back with checkboxes, including setuid, setgid and the sticky bit.",
   },
   "ai-token-counter": {
     title: "AI Token Counter — Claude, GPT & Gemini Cost | ToolNinja",

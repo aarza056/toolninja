@@ -1,6 +1,6 @@
 ---
-title: "Why DuckDuckGo Results Differ From Google (SEO for Privacy Search)"
-description: "DuckDuckGo doesn't run its own web crawler for most results — it's largely built on Bing's index. Here's what that actually means for rankings, and why it matters more than most site owners realize."
+title: "DuckDuckGo SEO: Why Your Rankings Differ From Google"
+description: "DuckDuckGo builds most results on Bing's index, not Google's. Here's why your site ranks differently there, and the few changes that help on both."
 date: "2026-07-16"
 author: "ToolNinja"
 coverEmoji: "🦆"
