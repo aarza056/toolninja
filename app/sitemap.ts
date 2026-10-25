@@ -2,6 +2,7 @@
 import { tools } from "@/lib/tools";
 import { getAllPosts } from "@/lib/blog";
 import { CATEGORY_INFO } from "@/lib/categories";
+import { COMMON_MODES } from "@/lib/chmod-modes";
 
 const BASE_URL = "https://toolninja.io";
 
@@ -25,6 +26,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
+    // Reference pages: one per CIDR prefix and per common chmod mode
+    ...Array.from({ length: 33 }, (_, p) => ({ url: `${BASE_URL}/tools/cidr-calculator/${p}`, changeFrequency: "yearly" as const, priority: 0.6 })),
+    ...COMMON_MODES.map((m) => ({ url: `${BASE_URL}/tools/chmod-calculator/${m}`, changeFrequency: "yearly" as const, priority: 0.6 })),
     {
       url: `${BASE_URL}/blog`,
       ...(latestPost ? { lastModified: new Date(latestPost) } : {}),

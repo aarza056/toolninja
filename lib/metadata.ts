@@ -264,7 +264,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "cidr-calculator": {
     title: "CIDR Calculator — IP Range & Subnet Mask | ToolNinja",
     description:
-      "Free CIDR calculator: get the IP range, subnet mask, and host count for any CIDR block, or convert an IP range or subnet mask back to CIDR. IPv4 & IPv6.",
+      "Free CIDR calculator: IP range, subnet mask and host count for any block, IP range or mask back to CIDR, overlap and IP-in-range checks, AWS usable IPs. IPv4 & IPv6.",
   },
 
   "docker-run-to-compose": {
