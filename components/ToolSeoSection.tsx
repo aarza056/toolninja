@@ -10,6 +10,8 @@ import SupportCard from "@/components/support/SupportCard";
 import ToolReviews from "@/components/reviews/ToolReviews";
 import { getToolReviewData } from "@/lib/reviews";
 import { getSiteConfig } from "@/lib/site-config";
+import { emailConfigured } from "@/lib/email-send";
+import NewsletterSignup from "@/components/NewsletterSignup";
 
 interface Props {
   slug: string;
@@ -80,6 +82,8 @@ export default async function ToolSeoSection({ slug }: Props) {
       )}
 
       {tool && flags.ratings && <ToolReviews slug={slug} toolName={tool.name} initial={await getToolReviewData(slug)} />}
+
+      {flags.newsletter && emailConfigured() && <NewsletterSignup source={`tool/${slug}`} compact />}
 
       <AdSlot slot={AD_SLOTS.toolPage} />
 

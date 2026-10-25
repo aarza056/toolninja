@@ -9,6 +9,8 @@ import ShareButtons from "@/components/ShareButtons";
 import RelatedArticles from "@/components/RelatedArticles";
 import SupportCard from "@/components/support/SupportCard";
 import { getSiteConfig } from "@/lib/site-config";
+import { emailConfigured } from "@/lib/email-send";
+import NewsletterSignup from "@/components/NewsletterSignup";
 import AdSlot from "@/components/AdSlot";
 import { AD_SLOTS } from "@/lib/ads";
 
@@ -293,6 +295,11 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       )}
 
+      {(await getSiteConfig()).flags.newsletter && emailConfigured() && (
+        <div className="mt-8">
+          <NewsletterSignup source={`blog/${params.slug}`} />
+        </div>
+      )}
       {(await getSiteConfig()).flags.support && <SupportCard placement="blog-post" className="mt-8" />}
 
       {/* 6. Back to blog */}

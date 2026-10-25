@@ -10,6 +10,7 @@ export const FEATURE_FLAGS = {
   whatsNew: { label: "“What's new” popup", hint: "First-visit popup listing the newest tools" },
   support: { label: "Patreon support links", hint: "Sidebar button and end-of-page support cards" },
   ratings: { label: "Ratings & comments widget", hint: "Under every tool; existing ratings are kept" },
+  newsletter: { label: "Newsletter signup", hint: "Email box on the homepage, changelog, tool pages and guides" },
 } as const;
 
 export type FeatureFlag = keyof typeof FEATURE_FLAGS;
@@ -30,7 +31,7 @@ export interface SiteConfig {
   banner: Banner | null;
 }
 
-const DEFAULT_FLAGS: Flags = { showcase: true, launcher: true, whatsNew: true, support: true, ratings: true };
+const DEFAULT_FLAGS: Flags = { showcase: true, launcher: true, whatsNew: true, support: true, ratings: true, newsletter: true };
 const K = { flags: "tn:flags", banner: "tn:banner" };
 export const SITE_CONFIG_TAG = "site-config";
 

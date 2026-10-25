@@ -5,6 +5,9 @@ import { tools } from "@/lib/tools";
 import { getAllPosts } from "@/lib/blog";
 import { resolveReleases } from "@/lib/changelog-resolve";
 import ChangelogClient from "./ChangelogClient";
+import { getSiteConfig } from "@/lib/site-config";
+import { emailConfigured } from "@/lib/email-send";
+import NewsletterSignup from "@/components/NewsletterSignup";
 
 const PAGE_URL = "https://toolninja.io/changelog";
 
@@ -18,7 +21,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ChangelogPage() {
+export default async function ChangelogPage() {
+  const showNewsletter = (await getSiteConfig()).flags.newsletter && emailConfigured();
   const releases = resolveReleases();
   const first = releases[releases.length - 1];
   const stats = [
@@ -60,6 +64,11 @@ export default function ChangelogPage() {
             </div>
           ))}
         </dl>
+        {showNewsletter && (
+          <div className="mt-4">
+            <NewsletterSignup source="changelog" compact />
+          </div>
+        )}
       </header>
 
       <ChangelogClient releases={releases} />
