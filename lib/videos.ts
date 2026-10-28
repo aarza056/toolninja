@@ -146,9 +146,9 @@ export function validateVideo(input: Partial<Video>, knownPage: (page: string) =
   if (!knownPage(page)) return { ok: false, error: "Pick the page the video belongs to." };
   const uploadDate = String(input.uploadDate ?? "").trim();
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/.test(uploadDate) || Number.isNaN(Date.parse(uploadDate)))
-    return { ok: false, error: "The upload date is missing. Fetch the video again." };
+    return { ok: false, error: "Pick the date the video was published." };
   const durationSec = Math.round(Number(input.durationSec));
-  if (!Number.isFinite(durationSec) || durationSec <= 0 || durationSec > 6 * 3600) return { ok: false, error: "The length is missing. Fetch the video again." };
+  if (!Number.isFinite(durationSec) || durationSec <= 0 || durationSec > 6 * 3600) return { ok: false, error: "Type the length as minutes:seconds, like 0:31." };
   const thumbnail = String(input.thumbnail ?? "");
   if (!thumbnail.startsWith(`https://i.ytimg.com/vi/${id}/`)) return { ok: false, error: "The thumbnail is missing. Fetch the video again." };
   return { ok: true, video: { id, format, title, description, page, uploadDate, durationSec, thumbnail } };
