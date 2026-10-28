@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AskPageClient from "@/components/assistant/AskPageClient";
+import { ShortVideo } from "@/components/videos/PageVideos";
+import { videosForPage } from "@/lib/videos";
+import { getVideos } from "@/lib/video-store";
 
 const BASE_URL = "https://toolninja.io";
 const PAGE_URL = `${BASE_URL}/ask`;
@@ -63,7 +66,8 @@ const FAQ = [
   },
 ];
 
-export default function AskPage() {
+export default async function AskPage() {
+  const short = videosForPage(await getVideos(), "/ask").find((v) => v.format === "short");
   const jsonLd = [
     {
       "@context": "https://schema.org",
@@ -104,6 +108,30 @@ export default function AskPage() {
         problem in plain words, or drop in a screenshot, and Ninja AI explains it.
       </p>
 
+      <div className="mt-10 flex flex-col gap-8 sm:flex-row sm:items-start">
+        <section className="flex-1 min-w-0">
+          <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-3">How it works</h2>
+          <ol className="space-y-2 text-sm text-[#888888] leading-relaxed list-decimal pl-5">
+            <li>
+              <strong className="text-[#cccccc]">Instant, in your browser.</strong> As you paste, Ninja runs the same parsers our{" "}
+              <Link href="/tools" className="text-[#a855f7] hover:underline">tools</Link> use — nothing leaves your device.
+            </li>
+            <li>
+              <strong className="text-[#cccccc]">The right tool, one click away.</strong> Every result links the tool that does the full job.
+            </li>
+            <li>
+              <strong className="text-[#cccccc]">AI when you want it.</strong> Press “Ask Ninja AI” for an explanation of an error, a
+              screenshot, or a problem in your own words.
+            </li>
+          </ol>
+        </section>
+        {short && (
+          <aside className="w-full max-w-[240px] mx-auto shrink-0 sm:mx-0 sm:w-[220px]">
+            <ShortVideo video={short} heading="Watch it work" />
+          </aside>
+        )}
+      </div>
+
       <section className="mt-10">
         <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-4">What Ninja recognizes instantly</h2>
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
@@ -118,23 +146,6 @@ export default function AskPage() {
         <p className="mt-3 text-sm text-[#666666]">
           Plus error messages, matched against our <Link href="/blog" className="text-[#a855f7] hover:underline">error guides</Link>.
         </p>
-      </section>
-
-      <section className="mt-10">
-        <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-3">How it works</h2>
-        <ol className="space-y-2 text-sm text-[#888888] leading-relaxed list-decimal pl-5">
-          <li>
-            <strong className="text-[#cccccc]">Instant, in your browser.</strong> As you paste, Ninja runs the same parsers our{" "}
-            <Link href="/tools" className="text-[#a855f7] hover:underline">tools</Link> use — nothing leaves your device.
-          </li>
-          <li>
-            <strong className="text-[#cccccc]">The right tool, one click away.</strong> Every result links the tool that does the full job.
-          </li>
-          <li>
-            <strong className="text-[#cccccc]">AI when you want it.</strong> Press “Ask Ninja AI” for an explanation of an error, a
-            screenshot, or a problem in your own words.
-          </li>
-        </ol>
       </section>
 
       <section className="mt-10">

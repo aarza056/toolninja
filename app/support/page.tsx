@@ -6,6 +6,8 @@ import { getAllPosts } from "@/lib/blog";
 import { releases } from "@/lib/changelog";
 import { SUPPORT_TIERS, PATREON_URL } from "@/lib/support";
 import PatreonLink, { PatreonIcon } from "@/components/support/PatreonLink";
+import { YouTubeIcon } from "@/components/videos/PageVideos";
+import { YOUTUBE_CHANNEL_URL } from "@/lib/videos";
 
 const PAGE_URL = "https://toolninja.io/support";
 
@@ -173,6 +175,18 @@ export default function SupportPage() {
             <p className="text-sm font-semibold text-[#f5f5f5] mb-1 group-hover:text-[#a855f7]">Share a tool you like</p>
             <p className="text-xs text-[#888888]">Send it to a teammate or link it in your docs and READMEs.</p>
           </Link>
+          <a
+            href={`${YOUTUBE_CHANNEL_URL}?sub_confirmation=1`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group sm:col-span-2 p-4 bg-[#0f0f10] border border-[#1f1f1f] rounded-xl hover:border-[#ff4d4d]/40 transition-colors"
+          >
+            <span className="block text-[#ff6b6b] mb-2">
+              <YouTubeIcon size={16} />
+            </span>
+            <p className="text-sm font-semibold text-[#f5f5f5] mb-1 group-hover:text-[#ff6b6b]">Subscribe on YouTube</p>
+            <p className="text-xs text-[#888888]">Short video guides for the tools. Likes and comments help other developers find them.</p>
+          </a>
         </div>
       </section>
 

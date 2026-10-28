@@ -3,7 +3,7 @@
 // Every email has a plain-text part too.
 
 export interface DigestItem {
-  kind: "new" | "improved" | "guide";
+  kind: "new" | "improved" | "guide" | "video";
   title: string;
   text: string;
   url: string;
@@ -68,10 +68,10 @@ function shell(preheader: string, body: string, footer: string): string {
 </html>`;
 }
 
-const SECTION: Record<DigestItem["kind"], string> = { new: "🆕 New tools", improved: "⚡ Improved", guide: "📖 New guide" };
+const SECTION: Record<DigestItem["kind"], string> = { new: "🆕 New tools", improved: "⚡ Improved", guide: "📖 New guide", video: "🎬 New videos" };
 
 export function renderNewsletter(c: NewsletterContent, links: Links): { html: string; text: string } {
-  const sections = (["new", "improved", "guide"] as const)
+  const sections = (["new", "improved", "guide", "video"] as const)
     .map((kind) => {
       const items = c.items.filter((i) => i.kind === kind);
       if (!items.length) return "";
@@ -97,7 +97,7 @@ export function renderNewsletter(c: NewsletterContent, links: Links): { html: st
 
   const html = shell(c.preheader, `${paragraphs(c.intro)}${sections}${button}`, footer);
 
-  const textSections = (["new", "improved", "guide"] as const)
+  const textSections = (["new", "improved", "guide", "video"] as const)
     .map((kind) => {
       const items = c.items.filter((i) => i.kind === kind);
       return items.length ? `${SECTION[kind].replace(/^\S+\s/, "").toUpperCase()}\n\n${items.map((i) => `* ${i.title}\n  ${i.text}\n  ${i.url}`).join("\n\n")}` : "";

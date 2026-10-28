@@ -57,7 +57,8 @@ const nextConfig = {
               "connect-src 'self' https://www.google-analytics.com https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net https://*.adtrafficquality.google https://csi.gstatic.com" +
                 // DNS-over-HTTPS for the SPF/DKIM/DMARC checker; GitHub's API for pinning workflow actions
                 " https://cloudflare-dns.com https://dns.google https://api.github.com",
-              "frame-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google",
+              // youtube-nocookie: video guides, loaded only after a click (components/videos/YouTubePlayer.tsx)
+              "frame-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google https://www.youtube-nocookie.com",
               "frame-ancestors 'none'",
               "object-src 'none'",
               "base-uri 'self'",
@@ -89,6 +90,8 @@ const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 86400,
+    // Video thumbnails: fetched by our image optimizer, so visitors never contact YouTube before pressing play
+    remotePatterns: [{ protocol: 'https', hostname: 'i.ytimg.com', pathname: '/vi/**' }],
   },
 
   // ── REDIRECTS ─────────────────────────────────────────────────────────────

@@ -3,6 +3,8 @@ import { kv, safe } from "@/lib/kv";
 import { tools } from "@/lib/tools";
 import { releases, type Release } from "@/lib/changelog";
 import { getPostBySlug } from "@/lib/blog";
+import { videosBetween, type Video } from "@/lib/videos";
+import { getVideosFresh } from "@/lib/video-store";
 import { notify } from "@/lib/telegram";
 import { sendEmail, sendBatch, emailConfigured, type OutgoingEmail } from "@/lib/email-send";
 import { renderNewsletter, renderConfirmEmail, type DigestItem, type NewsletterContent } from "@/lib/newsletter-template";
@@ -205,7 +207,7 @@ export async function sendHistory(): Promise<SendRecord[]> {
 
 const toolBySlug = new Map(tools.map((t) => [t.slug, t]));
 
-export function digestItems(release: Release, siteUrl = SITE_URL): DigestItem[] {
+export function digestItems(release: Release, siteUrl = SITE_URL, videos: Video[] = []): DigestItem[] {
   const items: DigestItem[] = [];
   for (const i of release.items) {
     if (i.kind === "new" && i.tool) {
@@ -219,6 +221,11 @@ export function digestItems(release: Release, siteUrl = SITE_URL): DigestItem[] 
       if (p) items.push({ kind: "guide", title: p.title, text: p.description, url: `${siteUrl}/blog/${i.post}` });
     }
   }
+  // Videos published since the previous release (for the latest release: up to now), linked to the page that plays them
+  const idx = releases.findIndex((r) => r.date === release.date);
+  for (const v of idx < 0 ? [] : videosBetween(videos, releases[idx + 1]?.date, idx > 0 ? release.date : undefined)) {
+    items.push({ kind: "video", title: v.title, text: v.description, url: `${siteUrl}${v.page}` });
+  }
   return items;
 }
 
@@ -231,9 +238,10 @@ export function draftFromRelease(release: Release = releases[0]): Omit<Newslette
   };
 }
 
-export function buildEmail(content: Omit<NewsletterContent, "items">, releaseDate: string, unsubscribeUrl: string, siteUrl = SITE_URL) {
+/** `videos` can be passed in when building many emails at once, so the list is read only once */
+export async function buildEmail(content: Omit<NewsletterContent, "items">, releaseDate: string, unsubscribeUrl: string, siteUrl = SITE_URL, videos?: Video[]) {
   const release = releases.find((r) => r.date === releaseDate) ?? releases[0];
-  return renderNewsletter({ ...content, items: digestItems(release, siteUrl) }, { siteUrl, unsubscribeUrl, postalAddress: process.env.NEWSLETTER_POSTAL_ADDRESS });
+  return renderNewsletter({ ...content, items: digestItems(release, siteUrl, videos ?? (await getVideosFresh())) }, { siteUrl, unsubscribeUrl, postalAddress: process.env.NEWSLETTER_POSTAL_ADDRESS });
 }
 
 // ─── sending ─────────────────────────────────────────────────────────────────
@@ -253,7 +261,7 @@ async function record(r: SendRecord) {
 export async function sendTest(content: Omit<NewsletterContent, "items">, releaseDate: string, to: string, siteUrl = SITE_URL): Promise<{ ok: boolean; error?: string }> {
   const email = normalizeEmail(to);
   if (!email) return { ok: false, error: "That isn't a valid email address." };
-  const { html, text } = buildEmail(content, releaseDate, `${siteUrl}/newsletter/unsubscribe?t=TEST`, siteUrl);
+  const { html, text } = await buildEmail(content, releaseDate, `${siteUrl}/newsletter/unsubscribe?t=TEST`, siteUrl);
   const res = await sendEmail({ to: email, subject: `[Test] ${content.subject}`, html, text });
   await record({ id: token().slice(0, 10), at: Date.now(), subject: content.subject, recipients: 1, sent: res.ok ? 1 : 0, failed: res.ok ? 0 : 1, test: true, errors: res.error ? [res.error] : undefined });
   return res.ok ? { ok: true } : { ok: false, error: res.error };
@@ -269,10 +277,13 @@ export async function sendToAll(content: Omit<NewsletterContent, "items">, relea
   if (!locked) return { ok: false, sent: 0, failed: 0, error: "A send is already running." };
   try {
     const id = token().slice(0, 10);
-    const emails: OutgoingEmail[] = recipients.map((s) => {
-      const { html, text } = buildEmail(content, releaseDate, `${siteUrl}/newsletter/unsubscribe?t=${s.unsubToken}`, siteUrl);
-      return { to: s.email, subject: content.subject, html, text, headers: unsubscribeHeaders(s.unsubToken, siteUrl) };
-    });
+    const videos = await getVideosFresh();
+    const emails: OutgoingEmail[] = await Promise.all(
+      recipients.map(async (s) => {
+        const { html, text } = await buildEmail(content, releaseDate, `${siteUrl}/newsletter/unsubscribe?t=${s.unsubToken}`, siteUrl, videos);
+        return { to: s.email, subject: content.subject, html, text, headers: unsubscribeHeaders(s.unsubToken, siteUrl) };
+      })
+    );
     const r = await sendBatch(emails, `tn-nl-${id}`);
     await record({ id, at: Date.now(), subject: content.subject, recipients: recipients.length, sent: r.sent, failed: r.failed, test: false, errors: r.errors.length ? r.errors : undefined });
     await safe(() => notify(`📨 <b>Newsletter sent</b> — ${r.sent} delivered to Resend${r.failed ? `, ${r.failed} failed` : ""}\n“${content.subject}”`), false);

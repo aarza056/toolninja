@@ -8,6 +8,7 @@ import { Menu, X, Search, Sparkles } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { openAssistant } from "@/lib/showcase";
 import PatreonLink, { PatreonIcon } from "@/components/support/PatreonLink";
+import { YOUTUBE_CHANNEL_URL } from "@/lib/videos";
 
 const NEW_TOOL_SLUGS = new Set(LATEST_TOOL_SLUGS);
 
@@ -151,6 +152,12 @@ export default function Sidebar({ showSupport = true }: { showSupport?: boolean 
           <Link href="/explain-error" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
             Explain Error
           </Link>
+          <Link href="/videos" onClick={() => setMobileOpen(false)} className="hover:text-[#888888] transition-colors">
+            Videos
+          </Link>
+          <a href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="hover:text-[#ff6b6b] transition-colors">
+            YouTube ↗
+          </a>
           <Link href="/support" onClick={() => setMobileOpen(false)} className="hover:text-[#ff8a90] transition-colors">
             Support ♥
           </Link>
