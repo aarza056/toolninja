@@ -36,12 +36,25 @@ function jsonString(html: string, key: string): string | null {
   }
 }
 
+/**
+ * Length in seconds, or null. A video that's still processing reports "lengthSeconds":"0", so zero
+ * counts as missing; the stream data and the <meta itemprop="duration"> tag are the fallbacks.
+ */
+function durationFrom(html: string): number | null {
+  const secs = Number(jsonString(html, "lengthSeconds"));
+  if (secs > 0) return secs;
+  const ms = Number(jsonString(html, "approxDurationMs"));
+  if (ms > 0) return Math.round(ms / 1000);
+  const m = /itemprop="duration" content="PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?"/.exec(html);
+  const total = m ? Number(m[1] ?? 0) * 3600 + Number(m[2] ?? 0) * 60 + Number(m[3] ?? 0) : 0;
+  return total > 0 ? total : null;
+}
+
 export function parseWatchPage(html: string): { durationSec: number | null; uploadDate: string | null; description: string } {
-  const len = jsonString(html, "lengthSeconds");
   let date = jsonString(html, "uploadDate") ?? jsonString(html, "publishDate");
   if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) date += "T00:00:00Z";
   return {
-    durationSec: len && /^\d+$/.test(len) ? Number(len) : null,
+    durationSec: durationFrom(html),
     uploadDate: date,
     description: jsonString(html, "shortDescription") ?? "",
   };
@@ -114,8 +127,11 @@ export async function fetchVideoInfo(input: string, knownPage: (page: string) =>
   const oembed = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${id}`)}&format=json`, { cache: "no-store" }).catch(() => null);
   if (!oembed) return { ok: false, error: "Couldn't reach YouTube. Try again in a moment." };
   if (!oembed.ok) return { ok: false, error: "YouTube didn't find that video. It has to be Public or Unlisted, and embedding must be allowed." };
-  const meta = (await oembed.json()) as { title?: string; width?: number; height?: number };
-  const format: Video["format"] = (meta.height ?? 0) > (meta.width ?? 0) ? "short" : "guide";
+  const meta = (await oembed.json()) as { title?: string };
+  // youtube.com/shorts/<id> opens Shorts directly and redirects every other video to /watch. (oEmbed's
+  // width/height can't tell: they follow the link form asked about, not the video.)
+  const probe = await fetch(`https://www.youtube.com/shorts/${id}`, { method: "HEAD", redirect: "manual", cache: "no-store", headers: { "User-Agent": UA } }).catch(() => null);
+  const format: Video["format"] = probe ? (probe.status === 200 ? "short" : "guide") : /\/shorts\//.test(input) ? "short" : "guide";
 
   const watch = await fetch(`https://www.youtube.com/watch?v=${id}&hl=en`, {
     cache: "no-store",

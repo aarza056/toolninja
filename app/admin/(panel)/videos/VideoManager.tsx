@@ -79,6 +79,11 @@ export default function VideoManager({ videos, pages }: { videos: Video[]; pages
       setIsNew(!existing);
       setNoPageFound(!existing && !r.video.page);
       if (existing) setMessage({ tone: "ok", text: "This video is already on the site. You're editing it." });
+      else if (!r.video.durationSec || !r.video.uploadDate)
+        setMessage({
+          tone: "bad",
+          text: `YouTube didn't report the ${!r.video.durationSec ? "length" : "publish date"} yet (new uploads can take a few minutes). Type it in below, or fetch again later.`,
+        });
     });
   }
 

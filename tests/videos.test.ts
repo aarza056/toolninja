@@ -118,6 +118,12 @@ describe("reading YouTube", () => {
     expect(parseWatchPage("nothing here")).toEqual({ durationSec: null, uploadDate: null, description: "" });
   });
 
+  it("falls back when a fresh upload reports length 0", () => {
+    expect(parseWatchPage(`"lengthSeconds":"0","approxDurationMs":"30633"`).durationSec).toBe(31);
+    expect(parseWatchPage(`"lengthSeconds":"0" <meta itemprop="duration" content="PT1M5S">`).durationSec).toBe(65);
+    expect(parseWatchPage(`"lengthSeconds":"0"`).durationSec).toBeNull();
+  });
+
   it("cleans titles and descriptions for the site", () => {
     expect(cleanTitle("Convert JSON to a Zod Schema in 5 Seconds #shorts #toolninjaio")).toBe("Convert JSON to a Zod Schema in 5 Seconds");
     expect(cleanTitle("Your MCP Server Won’t Start? Fix the Config in Seconds 🥷 #shorts")).toBe("Your MCP Server Won’t Start? Fix the Config in Seconds");
