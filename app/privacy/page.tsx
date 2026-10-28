@@ -140,6 +140,16 @@ export default function PrivacyPage() {
             (such as actions/checkout@v4) to GitHub&apos;s public API. Nothing else you entered is included in those
             requests.
           </p>
+          <p className="mt-3" id="videos">
+            Some pages show one of our YouTube videos. Until you press play, the preview image comes from our own site
+            and nothing is loaded from YouTube. When you press play, the player loads from youtube-nocookie.com,
+            YouTube&apos;s privacy-enhanced mode, and from then on YouTube (Google) receives your IP address and may store
+            cookies or similar data under{" "}
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-[#a855f7] hover:underline">
+              Google&apos;s privacy policy
+            </a>
+            .
+          </p>
         </section>
 
         <section>
