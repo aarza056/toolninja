@@ -34,7 +34,12 @@ export async function tgApi<T = unknown>(method: string, body: Record<string, un
 
 export const getChatId = () => safe(() => kv().get(K.chat), null);
 
-export type Buttons = { text: string; data: string }[][];
+/** Inline keyboard rows: `data` buttons call back into the webhook, `url` buttons open a link */
+export type Buttons = { text: string; data?: string; url?: string }[][];
+
+export const inlineKeyboard = (buttons: Buttons) => ({
+  inline_keyboard: buttons.map((row) => row.map((b) => (b.url ? { text: b.text, url: b.url } : { text: b.text, callback_data: b.data ?? "" }))),
+});
 
 export const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -48,7 +53,7 @@ export async function notify(html: string, buttons?: Buttons): Promise<boolean> 
     text: html,
     parse_mode: "HTML",
     disable_web_page_preview: true,
-    ...(buttons ? { reply_markup: { inline_keyboard: buttons.map((row) => row.map((b) => ({ text: b.text, callback_data: b.data }))) } } : {}),
+    ...(buttons ? { reply_markup: inlineKeyboard(buttons) } : {}),
   });
   return r.ok;
 }
