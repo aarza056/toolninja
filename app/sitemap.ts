@@ -3,6 +3,10 @@ import { tools } from "@/lib/tools";
 import { getAllPosts } from "@/lib/blog";
 import { CATEGORY_INFO } from "@/lib/categories";
 import { COMMON_MODES } from "@/lib/chmod-modes";
+import { CURL_LANGUAGE_PAGES } from "@/lib/curl-languages";
+import { FLAVORS } from "@/lib/regex-flavors";
+import { BARCODE_PAGES } from "@/lib/barcode-pages";
+import { TOKEN_COUNTER_PAGES } from "@/lib/token-counter-pages";
 
 const BASE_URL = "https://toolninja.io";
 
@@ -29,6 +33,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Reference pages: one per CIDR prefix and per common chmod mode
     ...Array.from({ length: 33 }, (_, p) => ({ url: `${BASE_URL}/tools/cidr-calculator/${p}`, changeFrequency: "yearly" as const, priority: 0.6 })),
     ...COMMON_MODES.map((m) => ({ url: `${BASE_URL}/tools/chmod-calculator/${m}`, changeFrequency: "yearly" as const, priority: 0.6 })),
+    // One page per target language / regex flavor / barcode type / AI provider
+    ...CURL_LANGUAGE_PAGES.map((p) => ({ url: `${BASE_URL}/tools/curl-to-code/${p.slug}`, changeFrequency: "monthly" as const, priority: 0.6 })),
+    ...FLAVORS.map((f) => ({ url: `${BASE_URL}/tools/regex-tester/${f.slug}`, changeFrequency: "monthly" as const, priority: 0.6 })),
+    ...BARCODE_PAGES.map((p) => ({ url: `${BASE_URL}/tools/barcode-generator/${p.slug}`, changeFrequency: "monthly" as const, priority: 0.6 })),
+    ...Object.keys(TOKEN_COUNTER_PAGES).map((p) => ({ url: `${BASE_URL}/tools/ai-token-counter/${p}`, changeFrequency: "monthly" as const, priority: 0.6 })),
     {
       url: `${BASE_URL}/blog`,
       ...(latestPost ? { lastModified: new Date(latestPost) } : {}),

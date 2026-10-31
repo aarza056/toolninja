@@ -573,7 +573,7 @@ export const tools: Tool[] = [
   {
     slug: "barcode-generator",
     name: "Barcode Generator",
-    description: "Generate Code 128, EAN-13, and UPC-A barcodes — download as PNG",
+    description: "Generate EAN-13, UPC-A, EAN-8, Code 128, Code 39 and ITF-14 barcodes — download as PNG or SVG",
     icon: "Barcode",
     category: "Generate",
     keywords: [
@@ -724,6 +724,42 @@ export const tools: Tool[] = [
       "cidr block calculator",
     ],
   },
+  {
+    slug: "cidr-merge",
+    name: "CIDR Merge & IP Range to CIDR",
+    description: "Merge and deduplicate IP lists into the fewest CIDR blocks, subtract ranges, and convert IP ranges to CIDR",
+    icon: "Merge",
+    category: "Convert",
+    keywords: [
+      "ip range to cidr",
+      "cidr merge",
+      "cidr aggregator",
+      "merge ip ranges",
+      "summarize cidr blocks",
+      "ip list to cidr",
+      "exclude ip range from cidr",
+      "ip address range to cidr",
+      "calculate cidr from ip range",
+      "network range parser",
+    ],
+  },
+  {
+    slug: "vlsm-subnet-planner",
+    name: "VLSM Subnet Planner",
+    description: "Split a network into subnets sized by host count — the most efficient CIDR for each, with AWS rules optional",
+    icon: "Split",
+    category: "Convert",
+    keywords: [
+      "vlsm calculator",
+      "vlsm subnet calculator",
+      "subnet planner",
+      "subnet by number of hosts",
+      "variable length subnet mask",
+      "aws subnet calculator",
+      "vpc subnet planner",
+      "subnetting calculator",
+    ],
+  },
 
   {
     slug: "docker-run-to-compose",
@@ -793,7 +829,7 @@ export const tools: Tool[] = [
   {
     slug: "curl-to-code",
     name: "cURL to Code",
-    description: "Paste a curl command, get working code in JavaScript, Python, PHP, or Go",
+    description: "Paste a curl command, get working code in Python, JavaScript, PHP, Go, Java, C#, Ruby, Rust, PowerShell and more",
     icon: "SquareTerminal",
     category: "Convert",
     keywords: [
@@ -883,7 +919,7 @@ export const tools: Tool[] = [
   {
     slug: "regex-tester",
     name: "Regex Tester",
-    description: "Test and debug regular expressions with live highlighting",
+    description: "Test and debug regular expressions with live highlighting — and check them for Python, Java, .NET, Go and PHP",
     icon: "SearchCode",
     category: "Test",
     keywords: [
@@ -1064,6 +1100,25 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "payment-test-cards",
+    name: "Payment Test Cards",
+    description: "Official test card numbers for Stripe, Adyen, Braintree, PayPal, Checkout.com and Square — success, declines and 3-D Secure",
+    icon: "Wallet",
+    category: "Test",
+    keywords: [
+      "stripe test card numbers",
+      "test credit card numbers",
+      "stripe test cards",
+      "adyen test card numbers",
+      "braintree test credit card",
+      "paypal sandbox test card",
+      "checkout.com test cards",
+      "square sandbox test card",
+      "3d secure test card",
+      "declined test card number",
+    ],
+  },
+  {
     slug: "patch-generator",
     name: "Unified Diff / Patch Generator",
     description: "Generate a real, downloadable .patch file from two texts — usable with git apply or patch",
@@ -1146,6 +1201,23 @@ export const tools: Tool[] = [
       "jsonpath query tester", "test jsonpath expression", "jsonpath online",
       "jsonpath tool", "json query tester", "jsonpath checker",
       "jsonpath validator", "jsonpath expression tester", "jsonpath playground",
+    ],
+  },
+  {
+    slug: "json-path-finder",
+    name: "JSON Path Finder",
+    description: "Click any value in your JSON to get its path as JSONPath, JavaScript, jq or Python",
+    icon: "Route",
+    category: "Test",
+    keywords: [
+      "json path finder",
+      "jsonpathfinder",
+      "find json path",
+      "get json path of value",
+      "json path generator",
+      "jq path finder",
+      "json key path",
+      "json tree path",
     ],
   },
   {
@@ -1518,7 +1590,7 @@ export const tools: Tool[] = [
   {
     slug: "security-headers-checker",
     name: "HTTP Security Headers Checker",
-    description: "Paste raw response headers and check them against HSTS, CSP, X-Frame-Options, and more",
+    description: "Check a URL or pasted headers against HSTS, CSP, X-Frame-Options and more, with HSTS preload status",
     icon: "ListChecks",
     category: "Security",
     keywords: [
@@ -1712,6 +1784,25 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "llm-api-cost-calculator",
+    name: "LLM API Cost Calculator",
+    description: "Estimate your monthly Claude, GPT and Gemini API bill with prompt caching, batch and long-context pricing",
+    icon: "Coins",
+    category: "Reference",
+    keywords: [
+      "llm api cost calculator",
+      "ai api cost calculator",
+      "claude api cost calculator",
+      "openai api cost calculator",
+      "gemini api pricing calculator",
+      "ai token cost calculator",
+      "claude code cost calculator",
+      "llm pricing comparison",
+      "prompt caching cost",
+      "batch api discount",
+    ],
+  },
+  {
     slug: "unicode-explorer",
     name: "Unicode Explorer",
     description: "Search and inspect Unicode characters by name, code point, or symbol",
@@ -1737,9 +1828,9 @@ export type Category = (typeof categories)[number];
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 // tests/site.test.ts fails if this falls out of step with the newest release in lib/changelog.ts.
 export const LATEST_TOOL_SLUGS = [
-  "node-26-upgrade-checker",
-  "mcp-config-generator",
-  "llm-schema-checker",
-  "email-auth-checker",
-  "google-authenticator-export-decoder",
+  "llm-api-cost-calculator",
+  "payment-test-cards",
+  "json-path-finder",
+  "cidr-merge",
+  "vlsm-subnet-planner",
 ];

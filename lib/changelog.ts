@@ -26,6 +26,25 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    date: "2026-10-31",
+    title: "LLM costs, payment test cards and network planning",
+    summary: "Budget your LLM API bill, find the right sandbox card for every payment scenario, get the path to any JSON value, and merge and plan IP networks.",
+    items: [
+      { kind: "new", tool: "llm-api-cost-calculator" },
+      { kind: "new", tool: "payment-test-cards" },
+      { kind: "new", tool: "json-path-finder" },
+      { kind: "new", tool: "cidr-merge" },
+      { kind: "new", tool: "vlsm-subnet-planner" },
+      { kind: "improved", tool: "curl-to-code", text: "Java, C#, Ruby, Rust, PowerShell, Swift, Python httpx and wget output, safer string escaping, and a page per language" },
+      { kind: "improved", tool: "regex-tester", text: "Checks your pattern for Python, Java, .NET, Go and PHP, tests their syntax, and writes code for all six" },
+      { kind: "improved", tool: "security-headers-checker", text: "Check any URL directly, with HSTS preload status from hstspreload.org" },
+      { kind: "improved", tool: "barcode-generator", text: "EAN-8, Code 39 and ITF-14, plus a page per barcode type" },
+      { kind: "improved", tool: "ai-token-counter", text: "Current prices for Claude, GPT-6 and Gemini, plus Claude, GPT and Gemini token counter pages" },
+      { kind: "fix", tool: "websocket-tester", text: "Connecting to ws:// and wss:// servers works again" },
+      { kind: "guide", post: "regex-flavors-compared" },
+    ],
+  },
+  {
     date: "2026-10-24",
     title: "Node 26, MCP and email authentication",
     summary: "Get ready for Node 26 LTS, set up MCP servers, fix structured-output schemas and pass Gmail's sender checks.",

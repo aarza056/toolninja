@@ -1,22 +1,22 @@
+import { LLM_MODELS, ratesOn, today, type Provider } from "@/lib/llm-pricing";
+
 export interface ModelPricing {
   id: string;
-  provider: "Anthropic" | "OpenAI" | "Google";
+  provider: Provider;
   label: string;
   inputPer1M: number;
   outputPer1M: number;
 }
 
-// Approximate list pricing as of October 2026 — providers change these often, so treat this as
-// a starting point, not a bill. The tool lets you override both fields per model.
-export const MODEL_PRICING: ModelPricing[] = [
-  { id: "claude-opus-5-5", provider: "Anthropic", label: "Claude Opus 5.5", inputPer1M: 4.0, outputPer1M: 20.0 },
-  { id: "claude-sonnet-5-5", provider: "Anthropic", label: "Claude Sonnet 5.5", inputPer1M: 2.0, outputPer1M: 10.0 },
-  { id: "claude-haiku-4-5", provider: "Anthropic", label: "Claude Haiku 4.5", inputPer1M: 1.0, outputPer1M: 5.0 },
-  { id: "gpt-5.5", provider: "OpenAI", label: "GPT-5.5", inputPer1M: 5.0, outputPer1M: 30.0 },
-  { id: "gpt-5", provider: "OpenAI", label: "GPT-5", inputPer1M: 1.25, outputPer1M: 10.0 },
-  { id: "gemini-2.5-flash", provider: "Google", label: "Gemini 2.5 Flash", inputPer1M: 0.3, outputPer1M: 2.5 },
-  { id: "gemini-2.5-flash-lite", provider: "Google", label: "Gemini 2.5 Flash-Lite", inputPer1M: 0.1, outputPer1M: 0.4 },
-];
+/** Standard input/output list prices on a day, from the shared price list (lib/llm-pricing.ts) */
+export function modelPricing(day = today(), provider?: Provider): ModelPricing[] {
+  return LLM_MODELS.filter((m) => !provider || m.provider === provider).map((m) => {
+    const { rates } = ratesOn(m, day);
+    return { id: m.id, provider: m.provider, label: m.label, inputPer1M: rates.input, outputPer1M: rates.output };
+  });
+}
+
+export const MODEL_PRICING: ModelPricing[] = modelPricing();
 
 export interface TokenEstimate {
   tokens: number;

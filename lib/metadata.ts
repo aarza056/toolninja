@@ -220,9 +220,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online XML sitemap generator. Paste your page URLs and get a ready-to-upload sitemap.xml with lastmod, changefreq, and priority. No login, 100% browser-based.",
   },
   "barcode-generator": {
-    title: "Barcode Generator Online — Code 128, EAN-13 & UPC-A | ToolNinja",
+    title: "Barcode Generator — EAN-13, UPC-A, Code 128, Code 39, ITF-14 | ToolNinja",
     description:
-      "Free online barcode generator. Create Code 128, EAN-13, and UPC-A barcodes with automatic check digits and download as PNG. Verified byte-for-byte against a reference decoder. No login, 100% browser-based.",
+      "Free online barcode generator for EAN-13, UPC-A, EAN-8, Code 128, Code 39 and ITF-14 with automatic check digits. Download PNG or SVG — every format checked against a reference decoder. No login, 100% browser-based.",
   },
   "readme-badge-generator": {
     title: "README Badge Generator — Free shields.io Badge Maker | ToolNinja",
@@ -293,9 +293,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online .env file tool. Parse and validate .env files, convert to JSON, and generate a safe-to-commit .env.example with values stripped. Catches duplicate keys instantly. No login, 100% browser-based.",
   },
   "curl-to-code": {
-    title: "cURL to Code — Convert curl to Python, JS & Go | ToolNinja",
+    title: "cURL to Code — Convert curl to Python, JS, PHP, Go & More | ToolNinja",
     description:
-      "Free online curl command converter. Paste any curl command and instantly get working code in JavaScript (fetch), Node.js (axios), Python (requests), PHP (cURL), or Go (net/http). No login required.",
+      "Free curl converter: paste a curl command and get working code in Python (requests, httpx), JavaScript, Node.js, PHP, Go, Java, C#, Ruby, Rust, PowerShell, Swift or wget — headers, body and auth included. No login.",
   },
   "url-parser": {
     title: "URL Parser Online — Parse URLs & Build Query Strings | ToolNinja",
@@ -335,9 +335,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
 
   // ── Test ─────────────────────────────────────────────────────────────────
   "regex-tester": {
-    title: "Regex Tester — Test & Check Regular Expressions | ToolNinja",
+    title: "Regex Tester — JavaScript, Python, Java, C#, Go & PHP | ToolNinja",
     description:
-      "Free online regex tester and checker. Test regular expressions live with match highlighting, capture groups, and a regex cheat sheet. Runs in your browser.",
+      "Free online regex tester: live match highlighting, capture groups, replace mode and an explainer — plus a check of what behaves differently in Python, Java, .NET, Go and PHP, with code for each. Runs in your browser.",
   },
   "diff-checker": {
     title: "Diff Checker — Compare Two Texts Online | ToolNinja",
@@ -433,6 +433,31 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "SPF, DKIM & DMARC Checker + Generator | ToolNinja",
     description:
       "Free SPF, DKIM and DMARC checker. Count SPF DNS lookups through every include (the 10-lookup PermError), check your DMARC policy and DKIM key size, and generate correct records for Gmail and Outlook bulk-sender rules. No login.",
+  },
+  "llm-api-cost-calculator": {
+    title: "LLM API Cost Calculator — Claude, GPT & Gemini Pricing | ToolNinja",
+    description:
+      "Estimate your monthly LLM API bill on Claude, GPT and Gemini: requests, input and output tokens, prompt caching, Batch API and long-context pricing, from each provider's official list prices. Free.",
+  },
+  "payment-test-cards": {
+    title: "Payment Test Cards — Stripe, Adyen, PayPal & More | ToolNinja",
+    description:
+      "Official test card numbers for Stripe, Adyen, Braintree, PayPal, Checkout.com and Square: successful payments, declines, 3-D Secure and fraud scenarios, with the expiry and CVC each one needs.",
+  },
+  "json-path-finder": {
+    title: "JSON Path Finder — Get the Path to Any JSON Value | ToolNinja",
+    description:
+      "Free JSON path finder: paste JSON, click any value and copy its path as JSONPath, JavaScript, jq or Python. Search keys and values, and turn array indexes into [*]. Runs in your browser.",
+  },
+  "cidr-merge": {
+    title: "IP Range to CIDR & CIDR Merge Tool | ToolNinja",
+    description:
+      "Convert IP ranges to CIDR, and merge, deduplicate and subtract lists of IPs and CIDR blocks into the fewest blocks — for firewall rules and allowlists. Free, IPv4, runs in your browser.",
+  },
+  "vlsm-subnet-planner": {
+    title: "VLSM Subnet Calculator — Plan Subnets by Host Count | ToolNinja",
+    description:
+      "Free VLSM calculator: enter a network and how many hosts each subnet needs to get the most efficient CIDR, mask and usable range for each — with AWS/Azure reserved-address rules.",
   },
   "google-authenticator-export-decoder": {
     title: "Google Authenticator Export Decoder | ToolNinja",
@@ -599,9 +624,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online package.json inspector. See exactly which scripts run automatically on npm install (preinstall, postinstall, prepare) and which dependencies aren't version-pinned. No login, 100% browser-based.",
   },
   "security-headers-checker": {
-    title: "Security Headers Checker — HSTS, CSP & More | ToolNinja",
+    title: "Security Headers Checker — Scan Any URL for HSTS, CSP | ToolNinja",
     description:
-      "Free online HTTP security headers checker. Paste raw response headers and get a scored analysis against HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy and more. No login, 100% browser-based.",
+      "Free HTTP security headers checker. Enter a URL or paste response headers to get a scored report on HSTS, CSP, X-Frame-Options, Referrer-Policy and more, plus HSTS preload status and ready-to-paste fixes.",
   },
   "jwk-pem-converter": {
     title: "JWK to PEM Converter Online — Convert RSA & EC Keys | ToolNinja",
@@ -665,7 +690,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "ai-token-counter": {
     title: "AI Token Counter — Claude, GPT & Gemini Cost | ToolNinja",
     description:
-      "Free online AI token counter and cost estimator. Paste a prompt and estimate token count plus the cost across Claude, GPT, and Gemini models side by side. No login, 100% browser-based — your text never leaves your device.",
+      "Free AI token counter and cost estimator. Paste a prompt to estimate its tokens and see the cost on current Claude, GPT and Gemini models, with list prices from each provider. No login — your text never leaves your device.",
   },
   "unicode-explorer": {
     title: "Unicode Explorer — Character & Code Point Lookup | ToolNinja",

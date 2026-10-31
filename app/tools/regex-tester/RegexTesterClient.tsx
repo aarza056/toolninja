@@ -3,35 +3,10 @@
 import { useState, useEffect, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { AlertCircle, Table2, Repeat2, Lightbulb, ChevronDown, ChevronUp, Code2 } from "lucide-react";
+import { AlertCircle, Table2, Repeat2, Lightbulb, ChevronDown, ChevronUp, Code2, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import { regexPatterns, patternCategories, type RegexPattern } from "@/lib/regex-patterns";
 import { explainRegex } from "@/lib/regex-explainer";
-
-type CodeLang = "JavaScript" | "Python" | "Java";
-
-function buildCodeSnippet(pattern: string, flagStr: string, lang: CodeLang): string {
-  if (lang === "JavaScript") {
-    const escaped = pattern.replace(/\//g, "\\/");
-    return `const regex = /${escaped}/${flagStr};\nconst matches = "your string".match(regex);`;
-  }
-  if (lang === "Python") {
-    const flagParts: string[] = [];
-    if (flagStr.includes("i")) flagParts.push("re.IGNORECASE");
-    if (flagStr.includes("m")) flagParts.push("re.MULTILINE");
-    if (flagStr.includes("s")) flagParts.push("re.DOTALL");
-    const flagsArg = flagParts.length ? `, ${flagParts.join(" | ")}` : "";
-    const escaped = pattern.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
-    return `import re\n\npattern = re.compile(r'${escaped}'${flagsArg})\nmatches = pattern.findall("your string")`;
-  }
-  // Java
-  const flagParts: string[] = [];
-  if (flagStr.includes("i")) flagParts.push("Pattern.CASE_INSENSITIVE");
-  if (flagStr.includes("m")) flagParts.push("Pattern.MULTILINE");
-  if (flagStr.includes("s")) flagParts.push("Pattern.DOTALL");
-  const flagsArg = flagParts.length ? `, ${flagParts.join(" | ")}` : "";
-  const escaped = pattern.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-  return `Pattern pattern = Pattern.compile("${escaped}"${flagsArg});\nMatcher matcher = pattern.matcher("your string");`;
-}
+import { FLAVORS, checkFlavor, regexSnippet, toJavaScript, type FlavorId } from "@/lib/regex-flavors";
 
 const STORAGE_KEY = "toolninja:regex-tester";
 
@@ -41,7 +16,14 @@ function escHtml(s: string) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-export default function RegexTesterClient() {
+interface Props {
+  /** The regex flavor of a /tools/regex-tester/<language> page */
+  flavor?: FlavorId;
+  heading?: string;
+  intro?: string;
+}
+
+export default function RegexTesterClient({ flavor, heading, intro }: Props = {}) {
   const [pattern, setPattern] = useState("");
   const [flags, setFlags] = useState({ g: true, i: false, m: false, s: false });
   const [testString, setTestString] = useState("");
@@ -50,7 +32,8 @@ export default function RegexTesterClient() {
   const [showLibrary, setShowLibrary] = useState(false);
   const [showExplain, setShowExplain] = useState(false);
   const [showCode, setShowCode] = useState(false);
-  const [codeLang, setCodeLang] = useState<CodeLang>("JavaScript");
+  const [codeLang, setCodeLang] = useState<FlavorId>(flavor ?? "javascript");
+  const [compatOpen, setCompatOpen] = useState<FlavorId | null>(flavor && flavor !== "javascript" ? flavor : null);
   const [patternSearch, setPatternSearch] = useState("");
   const [patternCategory, setPatternCategory] = useState<string>("All");
 
@@ -78,11 +61,16 @@ export default function RegexTesterClient() {
     .map(([k]) => k)
     .join("");
 
+  // On a language page, constructs with an exact JavaScript equivalent are rewritten so they can run here
+  const runnable = useMemo(() => toJavaScript(pattern, flavor ?? "javascript", flagStr), [pattern, flavor, flagStr]);
+  const compat = useMemo(() => (pattern ? FLAVORS.map((f) => ({ f, findings: checkFlavor(pattern, f.id, flagStr) })) : []), [pattern, flagStr]);
+
   const result = useMemo(() => {
     if (!pattern) return { highlighted: escHtml(testString), matches: [] as RegExpMatchArray[], replaceResult: "", error: "" };
     try {
-      const gFlagStr = flagStr.includes("g") ? flagStr : flagStr + "g";
-      const regex = new RegExp(pattern, gFlagStr);
+      const runFlags = runnable.flags;
+      const gFlagStr = runFlags.includes("g") ? runFlags : runFlags + "g";
+      const regex = new RegExp(runnable.pattern, gFlagStr);
       const allMatches = Array.from(testString.matchAll(regex));
 
       let highlighted = "";
@@ -96,7 +84,7 @@ export default function RegexTesterClient() {
       }
       highlighted += escHtml(testString.slice(lastIndex));
 
-      const replaceResult = testString.replace(new RegExp(pattern, gFlagStr), replaceWith);
+      const replaceResult = testString.replace(new RegExp(runnable.pattern, gFlagStr), replaceWith);
       return { highlighted, matches: allMatches, replaceResult, error: "" };
     } catch (e: unknown) {
       return {
@@ -106,7 +94,10 @@ export default function RegexTesterClient() {
         error: e instanceof Error ? e.message : "Invalid regex",
       };
     }
-  }, [pattern, testString, flagStr, replaceWith]);
+  }, [pattern, runnable, testString, replaceWith]);
+
+  // Valid in this page's language, but JavaScript (which runs the test here) can't execute it
+  const jsOnlyLimit = Boolean(result.error && flavor && flavor !== "javascript" && !checkFlavor(pattern, flavor, flagStr).some((x) => x.level === "error") && checkFlavor(pattern, "javascript", flagStr).some((x) => x.level === "error"));
 
   const { highlighted, matches, replaceResult, error } = result;
   const hasResults = !!(pattern && testString && !error);
@@ -137,8 +128,8 @@ export default function RegexTesterClient() {
 
   return (
     <ToolLayout
-      title="Regex Tester"
-      description="Test regular expressions with live highlighting, match table, and replace mode"
+      title={heading ?? "Regex Tester"}
+      description={intro ?? "Test regular expressions with live highlighting, match table, and replace mode — and see if they work in Python, Java, .NET, Go and PHP"}
     >
       {/* Pattern + Flags */}
       <div className="flex flex-col gap-2 mb-4">
@@ -172,7 +163,46 @@ export default function RegexTesterClient() {
         </div>
         {error && (
           <div className="flex items-center gap-1.5 text-xs text-[#ef4444]">
-            <AlertCircle size={12} /> {error}
+            <AlertCircle size={12} /> {jsOnlyLimit ? `Valid ${FLAVORS.find((x) => x.id === flavor)!.name} syntax, but the browser's JavaScript engine can't run it, so matches can't be shown here (${error})` : error}
+          </div>
+        )}
+        {runnable.changed && !error && (
+          <p className="text-[11px] text-[#666666] font-mono break-all">Tested in your browser as /{runnable.pattern}/{runnable.flags}</p>
+        )}
+        {compat.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs text-[#666666] mr-1">Works in</span>
+              {compat.map(({ f, findings }) => {
+                const errors = findings.filter((x) => x.level === "error").length;
+                const warns = findings.filter((x) => x.level === "warning").length;
+                const Icon = errors ? XCircle : warns ? AlertTriangle : CheckCircle2;
+                const tone = errors ? "text-[#f87171]" : warns ? "text-[#fbbf24]" : "text-[#4ade80]";
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => setCompatOpen((o) => (o === f.id ? null : f.id))}
+                    aria-expanded={compatOpen === f.id}
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border transition-colors ${compatOpen === f.id ? "border-[#a855f7]/60 bg-[#a855f7]/10" : "border-[#222222] hover:border-[#333333]"}`}
+                  >
+                    <Icon size={12} className={tone} />
+                    <span className="text-[#bbbbbb]">{f.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {compatOpen && (
+              <ul className="p-3 bg-[#111111] border border-[#222222] rounded-[8px] space-y-1.5">
+                {(compat.find((c) => c.f.id === compatOpen)?.findings ?? []).map((x, i) => (
+                  <li key={i} className={`text-xs leading-relaxed ${x.level === "error" ? "text-[#f87171]" : x.level === "warning" ? "text-[#fbbf24]" : "text-[#999999]"}`}>
+                    {x.message}
+                  </li>
+                ))}
+                {(compat.find((c) => c.f.id === compatOpen)?.findings.length ?? 0) === 0 && (
+                  <li className="text-xs text-[#4ade80]">No known differences in {FLAVORS.find((x) => x.id === compatOpen)!.name} for this pattern.</li>
+                )}
+              </ul>
+            )}
           </div>
         )}
         {pattern && !error && (
@@ -197,7 +227,7 @@ export default function RegexTesterClient() {
             ))}
           </div>
         )}
-        {pattern && !error && (
+        {pattern && (!error || jsOnlyLimit) && (
           <button
             onClick={() => setShowCode((v) => !v)}
             className="flex items-center gap-1.5 text-xs text-[#a855f7] hover:text-[#c084fc] transition-colors w-fit"
@@ -207,11 +237,11 @@ export default function RegexTesterClient() {
             {showCode ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
         )}
-        {showCode && pattern && !error && (
+        {showCode && pattern && (!error || jsOnlyLimit) && (
           <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px] space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex">
-                {(["JavaScript", "Python", "Java"] as CodeLang[]).map((lang) => (
+                {FLAVORS.map(({ id: lang, name }) => (
                   <button
                     key={lang}
                     onClick={() => setCodeLang(lang)}
@@ -221,14 +251,14 @@ export default function RegexTesterClient() {
                         : "bg-[#0d0d0d] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
                     }`}
                   >
-                    {lang}
+                    {name}
                   </button>
                 ))}
               </div>
-              <CopyButton text={buildCodeSnippet(pattern, flagStr, codeLang)} size="sm" />
+              <CopyButton text={regexSnippet(pattern, flagStr, codeLang)} size="sm" />
             </div>
             <pre className="p-3 font-mono text-xs bg-[#0d0d0d] border border-[#222222] rounded-[6px] text-[#f5f5f5] overflow-auto whitespace-pre-wrap">
-              {buildCodeSnippet(pattern, flagStr, codeLang)}
+              {regexSnippet(pattern, flagStr, codeLang)}
             </pre>
           </div>
         )}

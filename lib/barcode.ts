@@ -1,4 +1,4 @@
-export type BarcodeFormat = "code128" | "ean13" | "upca";
+export type BarcodeFormat = "code128" | "ean13" | "upca" | "ean8" | "code39" | "itf14";
 
 export interface BarcodeResult {
   /** Module pattern as a string of "1" (bar) / "0" (space), one character per module. */
@@ -131,8 +131,93 @@ export function encodeUPCA(input: string): BarcodeResult {
   return { modules: result.modules, displayText: result.displayText.slice(1) };
 }
 
+/** GS1 check digit (EAN-8, EAN-13, UPC-A, GTIN-14): weights 3,1,3… starting from the rightmost data digit */
+export function gs1CheckDigit(data: string): number {
+  let sum = 0;
+  for (let i = 0; i < data.length; i++) sum += Number(data[data.length - 1 - i]) * (i % 2 === 0 ? 3 : 1);
+  return (10 - (sum % 10)) % 10;
+}
+
+/** Digits with the GS1 check digit appended (from n-1 digits) or verified (from n digits) */
+function withCheckDigit(input: string, n: number, name: string): string {
+  const digits = input.replace(/D/g, "");
+  if (digits.length !== n - 1 && digits.length !== n) throw new Error(`${name} requires ${n - 1} digits (check digit auto-computed) or ${n} digits.`);
+  const data = digits.slice(0, n - 1);
+  const check = gs1CheckDigit(data);
+  if (digits.length === n && Number(digits[n - 1]) !== check) throw new Error(`Invalid check digit: expected ${check}, got ${digits[n - 1]}.`);
+  return data + check;
+}
+
+/** Encodes a 7 or 8-digit EAN-8 (the short EAN for small packages): 4 digits each side, no parity pattern. */
+export function encodeEAN8(input: string): BarcodeResult {
+  const full = withCheckDigit(input, 8, "EAN-8");
+  const left = full.slice(0, 4).split("").map((d) => L_PATTERNS[Number(d)]).join("");
+  const right = full.slice(4).split("").map((d) => R_PATTERNS[Number(d)]).join("");
+  return { modules: SIDE_GUARD + left + MIDDLE_GUARD + right + SIDE_GUARD, displayText: full };
+}
+
+// Code 39: 9 elements per character (bar, space, bar … bar), 3 of them wide. n = narrow, w = wide.
+const CODE39: Record<string, string> = {
+  "0": "nnnwwnwnn", "1": "wnnwnnnnw", "2": "nnwwnnnnw", "3": "wnwwnnnnn", "4": "nnnwwnnnw",
+  "5": "wnnwwnnnn", "6": "nnwwwnnnn", "7": "nnnwnnwnw", "8": "wnnwnnwnn", "9": "nnwwnnwnn",
+  A: "wnnnnwnnw", B: "nnwnnwnnw", C: "wnwnnwnnn", D: "nnnnwwnnw", E: "wnnnwwnnn",
+  F: "nnwnwwnnn", G: "nnnnnwwnw", H: "wnnnnwwnn", I: "nnwnnwwnn", J: "nnnnwwwnn",
+  K: "wnnnnnnww", L: "nnwnnnnww", M: "wnwnnnnwn", N: "nnnnwnnww", O: "wnnnwnnwn",
+  P: "nnwnwnnwn", Q: "nnnnnnwww", R: "wnnnnnwwn", S: "nnwnnnwwn", T: "nnnnwnwwn",
+  U: "wwnnnnnnw", V: "nwwnnnnnw", W: "wwwnnnnnn", X: "nwnnwnnnw", Y: "wwnnwnnnn",
+  Z: "nwwnwnnnn", "-": "nwnnnnwnw", ".": "wwnnnnwnn", " ": "nwwnnnwnn", $: "nwnwnwnnn",
+  "/": "nwnwnnnwn", "+": "nwnnnwnwn", "%": "nnnwnwnwn", "*": "nwnnwnwnn",
+};
+
+/** Bars-and-spaces widths (n/w) to modules, with a 3:1 wide-to-narrow ratio */
+const widths = (pattern: string, startWithBar = true) =>
+  pattern
+    .split("")
+    .map((w, i) => ((i % 2 === 0) === startWithBar ? "1" : "0").repeat(w === "w" ? 3 : 1))
+    .join("");
+
+/** Code 39 (uppercase letters, digits and - . space $ / + %), framed by * start/stop characters. Lowercase is uppercased. */
+export function encodeCode39(input: string): BarcodeResult {
+  const text = input.toUpperCase();
+  for (const ch of text) {
+    if (ch === "*" || !(ch in CODE39)) throw new Error(`Code 39 only encodes A–Z, 0–9 and - . space $ / + % — "${ch}" isn't supported.`);
+  }
+  const chars = `*${text}*`.split("");
+  // One narrow space between characters
+  return { modules: chars.map((c) => widths(CODE39[c])).join("0"), displayText: `*${text}*` };
+}
+
+// Interleaved 2 of 5: 5 elements per digit, 2 wide
+const ITF = ["nnwwn", "wnnnw", "nwnnw", "wwnnn", "nnwnw", "wnwnn", "nwwnn", "nnnww", "wnnwn", "nwnwn"];
+
+/** ITF-14: a GTIN-14 for cartons and cases, in Interleaved 2 of 5 (digit pairs: one in the bars, one in the spaces). */
+export function encodeITF14(input: string): BarcodeResult {
+  const full = withCheckDigit(input, 14, "ITF-14");
+  let modules = "1010"; // start: narrow bar, space, bar, space
+  for (let i = 0; i < 14; i += 2) {
+    const bars = ITF[Number(full[i])];
+    const spaces = ITF[Number(full[i + 1])];
+    let pair = "";
+    for (let k = 0; k < 5; k++) pair += bars[k] + spaces[k];
+    modules += widths(pair);
+  }
+  modules += "11101"; // stop: wide bar, narrow space, narrow bar
+  return { modules, displayText: full };
+}
+
 export function generateBarcode(format: BarcodeFormat, input: string): BarcodeResult {
-  if (format === "code128") return encodeCode128(input);
-  if (format === "ean13") return encodeEAN13(input);
-  return encodeUPCA(input);
+  switch (format) {
+    case "code128":
+      return encodeCode128(input);
+    case "ean13":
+      return encodeEAN13(input);
+    case "upca":
+      return encodeUPCA(input);
+    case "ean8":
+      return encodeEAN8(input);
+    case "code39":
+      return encodeCode39(input);
+    case "itf14":
+      return encodeITF14(input);
+  }
 }
