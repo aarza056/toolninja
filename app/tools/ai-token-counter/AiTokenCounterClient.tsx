@@ -3,7 +3,9 @@
 import { useState, useEffect, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import { Trash2, Info } from "lucide-react";
-import { MODEL_PRICING, estimateTokens, estimateCost } from "@/lib/token-counter";
+import Link from "next/link";
+import { modelPricing, estimateTokens, estimateCost } from "@/lib/token-counter";
+import { PRICES_CHECKED, PRICING_SOURCES, today, type Provider } from "@/lib/llm-pricing";
 
 const STORAGE_KEY = "toolninja:ai-token-counter";
 
@@ -19,7 +21,14 @@ const PROVIDER_COLORS: Record<string, string> = {
   Google: "text-[#3b82f6]",
 };
 
-export default function AiTokenCounterClient() {
+interface Props {
+  /** Show one provider's models first (the /tools/ai-token-counter/<provider> pages) */
+  provider?: Provider;
+  heading?: string;
+  intro?: string;
+}
+
+export default function AiTokenCounterClient({ provider, heading, intro }: Props = {}) {
   const [input, setInput] = useState("");
   const [outputRatio, setOutputRatio] = useState(1); // assumed output tokens, as a multiple of input
 
@@ -38,11 +47,16 @@ export default function AiTokenCounterClient() {
 
   const estimate = useMemo(() => estimateTokens(input), [input]);
   const assumedOutputTokens = Math.round(estimate.tokens * outputRatio);
+  // Priced on the visitor's date, so announced price changes apply on time; the page's provider first
+  const models = useMemo(() => {
+    const all = modelPricing(today());
+    return provider ? [...all.filter((m) => m.provider === provider), ...all.filter((m) => m.provider !== provider)] : all;
+  }, [provider]);
 
   return (
     <ToolLayout
-      title="AI Token Counter & Cost Estimator"
-      description="Estimate how many tokens your prompt costs, and what it'd run across Claude, GPT, and Gemini"
+      title={heading ?? "AI Token Counter & Cost Estimator"}
+      description={intro ?? "Estimate how many tokens your prompt costs, and what it'd run across Claude, GPT, and Gemini"}
     >
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
         <div>
@@ -114,7 +128,7 @@ export default function AiTokenCounterClient() {
           <div>
             <label className="text-xs text-[#888888] font-medium block mb-2">Estimated cost by model</label>
             <div className="space-y-2">
-              {MODEL_PRICING.map((m) => {
+              {models.map((m) => {
                 const cost = estimateCost(estimate.tokens, m.inputPer1M) + estimateCost(assumedOutputTokens, m.outputPer1M);
                 return (
                   <div key={m.id} className="flex items-center justify-between p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
@@ -135,9 +149,11 @@ export default function AiTokenCounterClient() {
           </div>
 
           <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px] text-xs text-[#666666] leading-relaxed">
-            Prices are approximate list rates as of October 2026 and change often — this is a
-            ballpark for comparing models relatively, not a bill. Always check the provider&apos;s
-            own pricing page before budgeting against it.
+            Standard list prices from the{" "}
+            <a href={PRICING_SOURCES.Anthropic} target="_blank" rel="noopener noreferrer" className="text-[#a855f7] hover:underline">Anthropic</a>,{" "}
+            <a href={PRICING_SOURCES.OpenAI} target="_blank" rel="noopener noreferrer" className="text-[#a855f7] hover:underline">OpenAI</a> and{" "}
+            <a href={PRICING_SOURCES.Google} target="_blank" rel="noopener noreferrer" className="text-[#a855f7] hover:underline">Google</a> pricing pages, checked {PRICES_CHECKED}. For a monthly budget with caching and batch discounts, use the{" "}
+            <Link href="/tools/llm-api-cost-calculator" className="text-[#a855f7] hover:underline">LLM API Cost Calculator</Link>.
           </div>
         </div>
       </div>

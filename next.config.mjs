@@ -2,6 +2,29 @@
 // calls in the client chunks are global-object fallbacks that never run in a browser).
 const isDev = process.env.NODE_ENV === 'development'
 
+/** The site-wide CSP; `extraConnect` widens connect-src for the one page that needs it. */
+const csp = (extraConnect = '') =>
+  [
+    "default-src 'self'",
+    // 'unsafe-inline' stays for now: Next's inline RSC payload scripts on statically generated
+    // pages can't carry a per-request nonce. /admin (dynamic) gets a strict nonce policy in
+    // middleware.ts on top of this one.
+    `script-src 'self'${isDev ? " 'unsafe-eval'" : ''} 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.googleadservices.com https://*.google.com https://*.doubleclick.net https://*.adtrafficquality.google`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https:",
+    "font-src 'self'",
+    "connect-src 'self' https://www.google-analytics.com https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net https://*.adtrafficquality.google https://csi.gstatic.com" +
+      // DNS-over-HTTPS for the SPF/DKIM/DMARC checker; GitHub's API for pinning workflow actions
+      " https://cloudflare-dns.com https://dns.google https://api.github.com" +
+      extraConnect,
+    // youtube-nocookie: video guides, loaded only after a click (components/videos/YouTubePlayer.tsx)
+    "frame-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google https://www.youtube-nocookie.com",
+    "frame-ancestors 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; ')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 
@@ -45,27 +68,15 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              // 'unsafe-inline' stays for now: Next's inline RSC payload scripts on statically generated
-              // pages can't carry a per-request nonce. /admin (dynamic) gets a strict nonce policy in
-              // middleware.ts on top of this one.
-              `script-src 'self'${isDev ? " 'unsafe-eval'" : ''} 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.googleadservices.com https://*.google.com https://*.doubleclick.net https://*.adtrafficquality.google`,
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https:",
-              "font-src 'self'",
-              "connect-src 'self' https://www.google-analytics.com https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net https://*.adtrafficquality.google https://csi.gstatic.com" +
-                // DNS-over-HTTPS for the SPF/DKIM/DMARC checker; GitHub's API for pinning workflow actions
-                " https://cloudflare-dns.com https://dns.google https://api.github.com",
-              // youtube-nocookie: video guides, loaded only after a click (components/videos/YouTubePlayer.tsx)
-              "frame-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google https://www.youtube-nocookie.com",
-              "frame-ancestors 'none'",
-              "object-src 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-            ].join('; '),
+            value: csp(),
           },
         ],
+      },
+      {
+        // The WebSocket tester connects to whatever ws:// or wss:// server you enter. A later entry
+        // setting the same header replaces it, so only this page gets the wider connect-src.
+        source: '/tools/websocket-tester',
+        headers: [{ key: 'Content-Security-Policy', value: csp(' ws: wss:') }],
       },
       {
         source: '/favicon.ico',

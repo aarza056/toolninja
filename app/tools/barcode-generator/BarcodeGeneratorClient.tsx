@@ -11,16 +11,28 @@ const FORMATS: { id: BarcodeFormat; label: string; placeholder: string; hint: st
   { id: "code128", label: "Code 128", placeholder: "TOOLNINJA-2026", hint: "Any printable ASCII text — letters, numbers, punctuation" },
   { id: "ean13", label: "EAN-13", placeholder: "400638133393", hint: "12 digits (check digit auto-added) or 13 digits" },
   { id: "upca", label: "UPC-A", placeholder: "036000291452", hint: "11 digits (check digit auto-added) or 12 digits" },
+  { id: "ean8", label: "EAN-8", placeholder: "9638507", hint: "7 digits (check digit auto-added) or 8 digits" },
+  { id: "code39", label: "Code 39", placeholder: "TOOLNINJA-39", hint: "A–Z, 0–9 and - . space $ / + % (lowercase is uppercased)" },
+  { id: "itf14", label: "ITF-14", placeholder: "1540014128876", hint: "13 digits (check digit auto-added) or 14 digits — the GTIN-14 for cartons" },
 ];
 
-export default function BarcodeGeneratorClient() {
-  const [format, setFormat] = useState<BarcodeFormat>("code128");
-  const [value, setValue] = useState("TOOLNINJA-2026");
+interface Props {
+  /** The format of a /tools/barcode-generator/<type> page */
+  initialFormat?: BarcodeFormat;
+  heading?: string;
+  intro?: string;
+}
+
+export default function BarcodeGeneratorClient({ initialFormat, heading, intro }: Props = {}) {
+  const [format, setFormat] = useState<BarcodeFormat>(initialFormat ?? "code128");
+  const [value, setValue] = useState(FORMATS.find((f) => f.id === (initialFormat ?? "code128"))!.placeholder);
   const [barWidth, setBarWidth] = useState(2);
   const [height, setHeight] = useState(80);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    // A format page starts on its own format and example
+    if (initialFormat) return;
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -29,6 +41,7 @@ export default function BarcodeGeneratorClient() {
         if (parsed.value) setValue(parsed.value);
       }
     } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -124,17 +137,25 @@ export default function BarcodeGeneratorClient() {
 
   return (
     <ToolLayout
-      title="Barcode Generator"
-      description="Generate Code 128, EAN-13, and UPC-A barcodes — download as PNG, entirely in your browser"
+      title={heading ?? "Barcode Generator"}
+      description={intro ?? "Generate Code 128, EAN-13, UPC-A, EAN-8, Code 39 and ITF-14 barcodes — download as PNG or SVG, entirely in your browser"}
     >
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 min-w-0 space-y-4">
-          <div className="flex">
+          <div className="flex flex-wrap gap-1">
             {FORMATS.map((f) => (
               <button
                 key={f.id}
-                onClick={() => setFormat(f.id)}
-                className={`px-3 py-1.5 text-sm border first:rounded-l-[6px] last:rounded-r-[6px] transition-colors ${
+                onClick={() => {
+                  setFormat(f.id);
+                  // Keep the value if it fits the new format, otherwise show that format's example
+                  try {
+                    generateBarcode(f.id, value.trim());
+                  } catch {
+                    setValue(f.placeholder);
+                  }
+                }}
+                className={`px-3 py-1.5 text-sm border rounded-[6px] transition-colors ${
                   format === f.id ? "bg-[#a855f7] border-[#a855f7] text-white" : "bg-[#111111] border-[#222222] text-[#888888] hover:text-[#f5f5f5]"
                 }`}
               >

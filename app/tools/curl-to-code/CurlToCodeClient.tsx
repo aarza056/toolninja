@@ -21,10 +21,17 @@ const EXAMPLE = `curl -X POST "https://api.example.com/users" \\
   -H "Authorization: Bearer YOUR_TOKEN" \\
   -d '{"name": "Jane", "email": "jane@example.com"}'`;
 
-export default function CurlToCodeClient() {
+interface Props {
+  /** Language selected at first (the /tools/curl-to-code/<language> pages) */
+  initialLanguage?: string;
+  heading?: string;
+  intro?: string;
+}
+
+export default function CurlToCodeClient({ initialLanguage, heading, intro }: Props = {}) {
   const searchParams = useSearchParams();
   const [input, setInput] = useState("");
-  const [language, setLanguage] = useState(LANGUAGES[0].id);
+  const [language, setLanguage] = useState(initialLanguage ?? LANGUAGES[0].id);
 
   useEffect(() => {
     const fromQuery = searchParams.get("cmd");
@@ -37,6 +44,7 @@ export default function CurlToCodeClient() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) setInput(saved);
+      else if (initialLanguage) setInput(EXAMPLE);
     } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -51,8 +59,8 @@ export default function CurlToCodeClient() {
 
   return (
     <ToolLayout
-      title="cURL to Code"
-      description="Paste a curl command, get working code in JavaScript, Python, PHP, or Go"
+      title={heading ?? "cURL to Code"}
+      description={intro ?? "Paste a curl command, get working code in Python, JavaScript, PHP, Go, Java, C#, Ruby, Rust, PowerShell and more"}
     >
       <div className="mb-4">
         <div className="flex items-center justify-between mb-1">

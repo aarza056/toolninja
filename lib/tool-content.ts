@@ -121,7 +121,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "regex-tester": {
     about:
-      "The ToolNinja Regex Tester is a free online regular expression tester with live match highlighting. Test any regex pattern against a string and see all matches highlighted in real time as you type — no button press needed.\n\nWhether you need to quickly regex test a pattern, debug a complex regular expression, or use it as a regex web tool for JavaScript development — the results appear instantly. The match table shows every match with its exact index, length, and capture groups so you can verify your pattern precisely.\n\nUse it to test email validation regex, URL matching patterns, phone number formats, date patterns, and anything else your project requires. Replace mode lets you preview regex substitutions before using them in code. Supports all JavaScript regex flags: global (g), case-insensitive (i), multiline (m), and dotAll (s). A fast, privacy-first regex101 alternative.\n\nRuns 100% in your browser — your test strings and patterns never leave your machine. No login, no account required.",
+      "The ToolNinja Regex Tester is a free online regular expression tester with live match highlighting. Test any regex pattern against a string and see all matches highlighted in real time as you type — no button press needed.\n\nWhether you need to quickly regex test a pattern, debug a complex regular expression, or use it as a regex web tool for JavaScript development — the results appear instantly. The match table shows every match with its exact index, length, and capture groups so you can verify your pattern precisely.\n\nUse it to test email validation regex, URL matching patterns, phone number formats, date patterns, and anything else your project requires. Replace mode lets you preview regex substitutions before using them in code. Supports all JavaScript regex flags: global (g), case-insensitive (i), multiline (m), and dotAll (s). Writing the pattern for another language? The \"Works in\" row checks it for Python, Java, C# / .NET, Go and PHP (PCRE) and explains anything that behaves differently there, and each language has its own tester page. A fast, privacy-first regex101 alternative.\n\nRuns 100% in your browser — your test strings and patterns never leave your machine. No login, no account required.",
     useCases: [
       "Testing email validation, URL matching and phone number regex patterns",
       "Using ready-made patterns for common validations — no regex knowledge needed",
@@ -138,7 +138,7 @@ export const toolContent: Record<string, ToolContent> = {
       "Named capture groups (?<name>pattern) make extraction code far more readable than numbered groups.",
       "Use ^ and $ anchors to match the full string — without them the pattern can match anywhere.",
       "Click 'Explain this regex' to get a token-by-token plain-English breakdown of any pattern, including quantifiers, groups, and character classes.",
-      "Click 'Use in code' to get a ready-to-paste JavaScript, Python, or Java snippet using your exact pattern and flags — flags are automatically translated (JS's i/m/s flags become re.IGNORECASE/MULTILINE/DOTALL in Python, for example).",
+      "Click 'Use in code' to get a ready-to-paste JavaScript, Python, Java, C#, Go or PHP snippet using your exact pattern and flags — flags are automatically translated (JS's i/m/s flags become re.IGNORECASE/MULTILINE/DOTALL in Python, for example).",
     ],
     faq: [
       {
@@ -1795,7 +1795,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "curl-to-code": {
     about:
-      "The cURL to Code converter parses a curl command — including headers, method, body, and basic auth — and generates equivalent, ready-to-run code in JavaScript (fetch), Node.js (axios), Python (requests), PHP (cURL), or Go (net/http).\n\ncURL is still the default way API documentation shows example requests, but translating that into the language you're actually working in is tedious and error-prone by hand — especially with multiple headers and a JSON body. This tool does the translation instantly.",
+      "The cURL to Code converter parses a curl command — including headers, method, body, and basic auth — and generates equivalent, ready-to-run code in 13 targets: JavaScript (fetch), Node.js (axios), Python (requests or httpx), PHP (cURL), Go (net/http), Java (HttpClient), C# (HttpClient), Ruby (Net::HTTP), Rust (reqwest), PowerShell, Swift (URLSession) and wget. Every value goes through the target language's own string escaping, so quotes, backslashes and $ signs in tokens or JSON bodies survive intact.\n\ncURL is still the default way API documentation shows example requests, but translating that into the language you're actually working in is tedious and error-prone by hand — especially with multiple headers and a JSON body. This tool does the translation instantly.",
     useCases: [
       "Converting a curl example from API documentation into the language your project actually uses",
       "Turning a request copied from browser DevTools ('Copy as cURL') into a script for testing or automation",
@@ -2372,11 +2372,12 @@ export const toolContent: Record<string, ToolContent> = {
 
   "barcode-generator": {
     about:
-      "The Barcode Generator creates Code 128, EAN-13, and UPC-A barcodes directly in your browser — no server round-trip, and no external barcode library shipped to your browser either; the encoding logic is implemented from the published Code 128 and EAN/UPC specifications. Code 128 handles any printable ASCII text (letters, numbers, punctuation) via Subset B, while EAN-13 and UPC-A handle the numeric product codes used in retail, auto-computing and validating the check digit.\n\nDuring development, the encoder's output was verified byte-for-byte against a widely-used reference barcode library for a range of test inputs — matching not just visually, but at the level of individual black/white module widths — before being reimplemented independently for this tool. That verification step matters for a barcode specifically, since a single incorrect module makes the whole thing unscannable while still looking plausible to the eye.\n\nAdjust bar width and height, then download the result as a PNG ready to drop into a label, document, or product listing.",
+      "The Barcode Generator creates EAN-13, UPC-A, EAN-8, Code 128, Code 39 and ITF-14 barcodes directly in your browser — no server round-trip, and no external barcode library shipped to your browser either; the encoding logic is implemented from the published symbology specifications. Code 128 handles any printable ASCII text (letters, numbers, punctuation) via Subset B, while EAN-13 and UPC-A handle the numeric product codes used in retail, auto-computing and validating the check digit.\n\nDuring development, the encoder's output was verified byte-for-byte against a widely-used reference barcode library for a range of test inputs — matching not just visually, but at the level of individual black/white module widths — before being reimplemented independently for this tool. The EAN-8, Code 39 and ITF-14 encoders were checked the same way, by decoding the generated bars with the ZXing reference decoder. That verification step matters for a barcode specifically, since a single incorrect module makes the whole thing unscannable while still looking plausible to the eye.\n\nAdjust bar width and height, then download the result as a PNG or SVG ready to drop into a label, document, or product listing.",
     useCases: [
       "Generating a Code 128 barcode for an internal inventory or asset-tracking label",
       "Creating an EAN-13 barcode from a product's GTIN for packaging or an e-commerce listing",
       "Producing a UPC-A barcode for a US retail product without a subscription barcode service",
+      "Making an ITF-14 carton barcode from a product's EAN-13 for cases and pallets",
       "Quickly checking whether a 12 or 13-digit product code's check digit is actually valid",
     ],
     tips: [
@@ -2623,7 +2624,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "security-headers-checker": {
     about:
-      "The HTTP Security Headers Checker analyzes a pasted block of raw HTTP response headers against the standard set of browser-enforced security headers — HSTS, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, and a few others — and produces a scored report explaining what each one does, whether it's present, and whether its value looks correctly configured.\n\nUnlike tools that require pointing at a live URL (which raises its own CORS and privacy considerations for a browser-only tool), this one works entirely from headers you paste in directly — copied from curl -I, from your browser's DevTools Network tab, or from your own server's config as a pre-deployment check.\n\nEach check explains not just whether a header is present, but why its absence or misconfiguration actually matters — the goal is understanding the risk, not just a pass/fail checklist.",
+      "The HTTP Security Headers Checker analyzes a pasted block of raw HTTP response headers against the standard set of browser-enforced security headers — HSTS, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, and a few others — and produces a scored report explaining what each one does, whether it's present, and whether its value looks correctly configured.\n\nEnter a URL and the checker requests that page from our server — reading only the status line and headers, following up to five redirects and refusing private or internal addresses — and adds the domain's HSTS preload status from hstspreload.org. Or paste headers directly (from curl -I, your browser's DevTools Network tab, or a config you're about to deploy); pasted headers are analyzed entirely in your browser.\n\nEach check explains not just whether a header is present, but why its absence or misconfiguration actually matters — the goal is understanding the risk, not just a pass/fail checklist.",
     useCases: [
       "Auditing your own site's security headers before or after a deployment",
       "Understanding what a specific security header actually protects against",
@@ -2638,8 +2639,8 @@ export const toolContent: Record<string, ToolContent> = {
     ],
     faq: [
       {
-        q: "Why can't I just paste a URL instead of headers?",
-        a: "Fetching a live URL's headers from browser JavaScript runs into CORS restrictions for cross-origin requests, and would mean this tool making a network request on your behalf — which doesn't fit a 100% client-side, no-server-calls tool. Pasting headers you've already retrieved (via curl, DevTools, or your own server logs) sidesteps both issues entirely.",
+        q: "What happens when I check a URL?",
+        a: "Our server requests the page once, reads only the status line and response headers (never the body), follows up to five redirects and checks that every address is public. The URL isn't stored — only an anonymous counter for rate limiting. Pasted headers never leave your browser.",
       },
       {
         q: "Is a 100 score the same as 'fully secure'?",
@@ -3031,6 +3032,162 @@ export const toolContent: Record<string, ToolContent> = {
     ],
   },
 
+  "llm-api-cost-calculator": {
+    about:
+      "The LLM API Cost Calculator turns a workload into a monthly bill: how many requests you send, how many input and output tokens each one uses, how much of the prompt is a reusable prefix, how often that prefix is a cache hit, and how much traffic can go through the Batch API. It prices the same workload on current Claude, GPT and Gemini models side by side, so you can see what a model switch, a better cache hit rate or batching would save.\n\nPrices are the official list prices from Anthropic's, OpenAI's and Google's pricing pages (the date they were checked is shown under the table). It models each provider's own rules: Anthropic's cache-write premium, OpenAI's long-context surcharge above 272K input tokens, Claude Haiku 5.5's higher rate for prompts over 100K tokens, Gemini's implicit caching, and price changes Google has already announced, which switch on automatically on their start date.\n\nEverything is calculated in your browser; nothing you type is sent anywhere.",
+    useCases: [
+      "Budgeting a new AI feature before launch",
+      "Comparing what the same workload costs on Claude, GPT and Gemini",
+      "Seeing how much prompt caching saves on a long system prompt or tool list",
+      "Deciding whether nightly jobs should move to the Batch API",
+      "Explaining an LLM bill to finance with per-request and monthly numbers",
+    ],
+    tips: [
+      "Count thinking / reasoning tokens as output — they're billed at the output rate even though you don't see them.",
+      "A cacheable prefix only helps if it's byte-for-byte identical on every request: put the static system prompt and tools first and anything that changes after them.",
+      "Paste a real prompt into the AI Token Counter to get a realistic input size.",
+      "Long-context surcharges apply to the whole request once the input crosses the threshold, not just the extra tokens.",
+    ],
+    faq: [
+      {
+        q: "Where do the prices come from?",
+        a: "From each provider's official API pricing page, checked on the date shown under the results. They're list prices for standard requests; enterprise discounts, taxes and fast or priority tiers aren't included.",
+      },
+      {
+        q: "How is prompt caching priced?",
+        a: "A cache hit costs a fraction of the input price (for example 5% on Claude Opus 5.5). A miss pays to write the prefix to the cache — 1.25× the input price for Anthropic's 5-minute cache, and OpenAI's 30-minute write price. Gemini's implicit caching has no write fee.",
+      },
+      {
+        q: "What does the Batch API change?",
+        a: "Batch requests cost 50% of the standard price and complete within 24 hours. The slider sets the share of your traffic that can wait that long.",
+      },
+      {
+        q: "Why does a model get more expensive above a certain prompt size?",
+        a: "Some models charge more for long prompts: GPT-6 models above 272K input tokens, Gemini 3.1 Pro above 200K and Claude Haiku 5.5 above 100K. The higher price applies to the whole request.",
+      },
+    ],
+  },
+  "payment-test-cards": {
+    about:
+      "Payment Test Cards lists the official test card numbers from Stripe, Adyen, Braintree, PayPal, Checkout.com and Square in one place — the ones that make a test payment succeed, get declined with a specific reason, trigger 3-D Secure, or simulate fraud and disputes. Each card shows the expiry and CVC that provider expects, which is where most failed sandbox tests come from (Adyen, for example, wants 03/2030 and 737).\n\nThese numbers only work in each provider's test mode or sandbox. A random Luhn-valid number from a generator will be declined there, because test environments only recognize their own listed numbers. All numbers are copied from the providers' testing documentation, linked on every tab.",
+    useCases: [
+      "Testing a checkout flow end to end in Stripe test mode or another sandbox",
+      "Making a payment fail on purpose: insufficient funds, expired card, incorrect CVC",
+      "Triggering 3-D Secure / SCA challenges to test the authentication screen",
+      "Testing webhooks for disputes, fraud warnings and asynchronous refunds",
+      "Writing QA test plans with the right card for each scenario",
+    ],
+    tips: [
+      "Use the expiry and CVC listed for the card — some providers refuse other values.",
+      "Braintree simulates most declines by amount (2000.00–2999.99) and PayPal by a trigger in the name field, not by card number.",
+      "Never test with a real card in a sandbox, and never use these numbers in live mode — they're declined there.",
+      "For form validation tests that don't hit a provider, generate Luhn-valid numbers with the Credit Card Test Generator instead.",
+    ],
+    faq: [
+      {
+        q: "Why is my generated test card declined by Stripe?",
+        a: "Stripe's test mode only accepts its own test numbers, like 4242 4242 4242 4242. Numbers from a generator are Luhn-valid but unknown to Stripe, so they're rejected. Use the numbers listed for your provider here.",
+      },
+      {
+        q: "What expiry date and CVC should I use?",
+        a: "For Stripe, Braintree, PayPal and Checkout.com any future date and any 3-digit CVC (4 for American Express) works. Adyen expects 03/2030 and 737 (7373 for Amex), and Square lists a CVV for each card.",
+      },
+      {
+        q: "Can these numbers be used for real purchases?",
+        a: "No. They aren't real cards and only work inside each provider's test environment. Everywhere else they're declined.",
+      },
+    ],
+  },
+  "json-path-finder": {
+    about:
+      "The JSON Path Finder shows your JSON as a tree: click any value and get the path to it, ready to paste as JSONPath ($.order.items[0].sku), JavaScript (data.order.items[0].sku), jq (.order.items[0].sku) or Python (data[\"order\"][\"items\"][0][\"sku\"]). Keys that aren't valid identifiers are quoted the way each language needs.\n\nTick \"All array items\" to turn the indexes into wildcards — [*] in JSONPath, [] in jq, a map in JavaScript and a list comprehension in Python — to get the same field from every item. Search finds every key or value containing a piece of text and jumps to it in the tree.\n\nIt runs entirely in your browser, so it's safe to paste API responses with real data.",
+    useCases: [
+      "Finding the path to a field buried deep in a large API response",
+      "Writing jq filters for the command line",
+      "Getting the accessor for a value in JavaScript or Python code",
+      "Building JSONPath expressions for API tests, Postman or Kubernetes (kubectl -o jsonpath)",
+      "Locating where a value appears in an unfamiliar JSON document",
+    ],
+    tips: [
+      "Use search to find a value you can see in the UI but not in the JSON — it lists every match with its path.",
+      "\"All array items\" turns [0] into [*], so the path selects that field from every element.",
+      "Test a path against the full document in the JSONPath Tester.",
+    ],
+    faq: [
+      {
+        q: "What's the difference between JSONPath and jq paths?",
+        a: "JSONPath starts with $ and is used in many libraries and tools; jq starts with a dot and is the command-line JSON processor's syntax. For simple paths they look alike: $.a.b[0] versus .a.b[0].",
+      },
+      {
+        q: "How are keys with spaces or dashes handled?",
+        a: "They're written in bracket notation: $['post-code'] in JSONPath, [\"post-code\"] in JavaScript and jq, and [\"post-code\"] in Python, so the path always works.",
+      },
+      {
+        q: "Is my JSON uploaded anywhere?",
+        a: "No. Parsing, the tree and the paths are all computed in your browser tab.",
+      },
+    ],
+  },
+  "cidr-merge": {
+    about:
+      "CIDR Merge cleans up IP lists. Paste IP addresses, CIDR blocks, ranges like 10.0.0.1-10.0.0.50 or address/mask pairs — in any mix, separated by new lines or commas — and it merges overlapping and touching entries, removes duplicates and rewrites everything as the fewest CIDR blocks that cover exactly the same addresses.\n\nAdd entries to the Exclude box to subtract them, for example to allow a whole /16 except one subnet. Every IP range is converted to the minimal list of CIDR blocks, which is what firewalls, security groups, nginx allow rules and cloud allowlists expect.\n\nIt works with IPv4 and runs entirely in your browser.",
+    useCases: [
+      "Converting an IP range from a vendor or ISP into CIDR blocks",
+      "Shrinking a long firewall or security-group allowlist",
+      "Combining IP lists from several sources without duplicates",
+      "Allowing a large network except for a few subnets",
+      "Checking how many addresses a list really covers",
+    ],
+    tips: [
+      "Ranges rarely line up with block boundaries, so one range often becomes several CIDR blocks — that's expected.",
+      "Lines starting with # are ignored, so you can paste commented allowlists.",
+      "Switch the output to start–end ranges for tools that want ranges instead of CIDR.",
+    ],
+    faq: [
+      {
+        q: "How do I convert an IP range to CIDR?",
+        a: "Paste the range (for example 192.168.1.10 - 192.168.1.20) and the tool returns the smallest set of CIDR blocks that covers exactly those addresses — here 192.168.1.10/31, 192.168.1.12/30, 192.168.1.16/30 and 192.168.1.20/32.",
+      },
+      {
+        q: "Why does my range need several CIDR blocks?",
+        a: "A CIDR block always has a power-of-two size and starts on a matching boundary. A range that doesn't fit one block exactly is split into the fewest blocks that do.",
+      },
+      {
+        q: "Does it support IPv6?",
+        a: "Not yet — it handles IPv4 addresses, ranges and blocks.",
+      },
+    ],
+  },
+  "vlsm-subnet-planner": {
+    about:
+      "The VLSM Subnet Planner splits a network into subnets of different sizes based on how many hosts each needs. Enter the address space (for example 192.168.10.0/24) and a list like Engineering 60, Sales 28, Servers 12, Router link 2, and it gives every subnet the smallest block that fits, with its CIDR, subnet mask, usable host range and broadcast address — without overlaps and with the remaining free blocks listed for later.\n\nVLSM (variable-length subnet masking) avoids wasting addresses on a one-size-fits-all mask. Subnets are placed largest first, so every block starts on its own boundary. Switch on AWS/Azure rules to account for the 5 addresses those clouds reserve in every subnet and their /16–/28 size limits.",
+    useCases: [
+      "Planning subnets for an office, campus or lab network",
+      "Laying out VPC subnets in AWS or Azure with reserved addresses counted",
+      "Solving subnetting homework and certification exercises (CCNA, Network+)",
+      "Checking whether a set of subnets fits in an address block",
+    ],
+    tips: [
+      "Each subnet needs room for its network and broadcast address: 30 hosts fit a /27, 31 hosts need a /26.",
+      "Leave growth room — ask for a little more than today's host count.",
+      "Point-to-point router links only need 2 hosts, which fits a /30.",
+      "Copy the plan as a table and paste it into a spreadsheet or your docs.",
+    ],
+    faq: [
+      {
+        q: "What is VLSM?",
+        a: "Variable-length subnet masking: splitting a network into subnets of different sizes instead of equal ones, so each subnet gets just the addresses it needs.",
+      },
+      {
+        q: "How many hosts fit in each subnet size?",
+        a: "A block of 2^n addresses has 2^n − 2 usable hosts (network and broadcast are reserved): /26 = 62, /27 = 30, /28 = 14, /29 = 6, /30 = 2. In AWS and Azure subnets, 5 addresses are reserved instead.",
+      },
+      {
+        q: "Why are the biggest subnets placed first?",
+        a: "Placing blocks from largest to smallest keeps each one aligned to its own size, so they pack together without gaps or overlaps.",
+      },
+    ],
+  },
   "google-authenticator-export-decoder": {
     about:
       "The Google Authenticator Export Decoder turns Google Authenticator's \"Transfer accounts\" QR codes into standard 2FA setup links that any authenticator app can import. Google's export QR doesn't contain the usual otpauth://totp link: it holds an otpauth-migration://offline?data=… link — a base64 protobuf with up to ten accounts per code — which Bitwarden, 1Password, Aegis and most other apps don't accept. This tool decodes it and gives you, for each account, the secret, a standard otpauth:// link and a QR code to scan into the new app, with the current code shown so you can check it matches before deleting anything.\n\nIt also works the other way: paste otpauth:// links and build a transfer QR that Google Authenticator imports in one scan.\n\nDecoding happens entirely in your browser tab. Nothing is uploaded, and nothing is saved — not even to the browser's local storage — because these secrets are the keys to your accounts.",

@@ -140,6 +140,12 @@ export default function PrivacyPage() {
             (such as actions/checkout@v4) to GitHub&apos;s public API. Nothing else you entered is included in those
             requests.
           </p>
+          <p className="mt-3" id="header-check">
+            The Security Headers Checker&apos;s <em>Check headers</em> button sends the address you enter to our server, which requests that
+            page once (reading only its response headers) and asks hstspreload.org whether the domain is on the HSTS preload list. We don&apos;t
+            store the address; an anonymous counter, keyed by an identifier that changes every day, limits how many checks one visitor can run.
+            Pasted headers are analyzed in your browser and never sent anywhere.
+          </p>
           <p className="mt-3" id="videos">
             Some pages show one of our YouTube videos. Until you press play, the preview image comes from our own site
             and nothing is loaded from YouTube. When you press play, the player loads from youtube-nocookie.com,

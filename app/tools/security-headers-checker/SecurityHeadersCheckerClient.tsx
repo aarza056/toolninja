@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
-import { CheckCircle2, XCircle, AlertTriangle, Info, Wrench } from "lucide-react";
+import { CheckCircle2, XCircle, AlertTriangle, Info, Wrench, Globe, Loader2 } from "lucide-react";
 import { analyzeHeaders, buildFixSnippet, type HeaderSeverity, type FixSnippetFormat } from "@/lib/security-headers";
 
 const FORMATS: { id: FixSnippetFormat; label: string }[] = [
@@ -34,8 +34,51 @@ function scoreColor(score: number): string {
   return "text-[#ef4444]";
 }
 
+interface UrlCheck {
+  finalUrl: string;
+  status: number;
+  statusText: string;
+  chain: { url: string; status: number }[];
+  preload: { status: string; errors: string[]; warnings: string[] } | null;
+}
+
+const PRELOAD_LABEL: Record<string, string> = {
+  preloaded: "On the HSTS preload list",
+  pending: "Submitted, waiting for the next browser release",
+  unknown: "Not on the preload list",
+  rejected: "Rejected from the preload list",
+  removed: "Removed from the preload list",
+  "pending-removal": "Being removed from the preload list",
+};
+
 export default function SecurityHeadersCheckerClient() {
   const [input, setInput] = useState("");
+  const [url, setUrl] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [checkError, setCheckError] = useState("");
+  const [checked, setChecked] = useState<UrlCheck | null>(null);
+
+  async function checkUrl() {
+    if (!url.trim() || checking) return;
+    setChecking(true);
+    setCheckError("");
+    try {
+      const res = await fetch("/api/check-headers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url }) });
+      const data = await res.json();
+      if (!data.ok) {
+        setCheckError(data.error || "Couldn't check that URL.");
+        setChecked(null);
+        return;
+      }
+      // Feed the fetched headers into the same analysis as pasted ones
+      setInput([`HTTP/1.1 ${data.status} ${data.statusText}`.trim(), ...(data.headers as [string, string][]).map(([k, v]) => `${k}: ${v}`)].join("\n"));
+      setChecked({ finalUrl: data.finalUrl, status: data.status, statusText: data.statusText, chain: data.chain, preload: data.preload });
+    } catch {
+      setCheckError("Couldn't reach the checker — try again.");
+    } finally {
+      setChecking(false);
+    }
+  }
   const [showFix, setShowFix] = useState(false);
   const [fixFormat, setFixFormat] = useState<FixSnippetFormat>("nginx");
 
@@ -60,8 +103,62 @@ export default function SecurityHeadersCheckerClient() {
   return (
     <ToolLayout
       title="HTTP Security Headers Checker"
-      description="Paste raw response headers and check them against HSTS, CSP, X-Frame-Options, and more"
+      description="Check any website's security headers — or paste raw headers — against HSTS, CSP, X-Frame-Options and more, with HSTS preload status"
     >
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          checkUrl();
+        }}
+        className="flex flex-col sm:flex-row gap-2 mb-2"
+      >
+        <label className="flex flex-1 items-center gap-2 px-3 py-2 bg-[#111111] border border-[#222222] rounded-[8px] focus-within:border-[#a855f7]">
+          <Globe size={14} className="text-[#666666] shrink-0" />
+          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="example.com" aria-label="Website to check" spellCheck={false} className="flex-1 min-w-0 bg-transparent text-sm font-mono text-[#f5f5f5] focus:outline-none" />
+        </label>
+        <button type="submit" disabled={checking || !url.trim()} className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm rounded-[8px] bg-[#a855f7] hover:bg-[#9333ea] text-white disabled:opacity-50">
+          {checking && <Loader2 size={14} className="animate-spin" />} Check headers
+        </button>
+      </form>
+      <p className="text-xs text-[#555555] mb-4">
+        We request the page from our server (headers only, nothing stored) and analyze what it sends back. Or paste headers below — that part never leaves your browser.
+      </p>
+      {checkError && <p className="mb-4 text-sm text-[#f87171]">{checkError}</p>}
+      {checked && (
+        <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px] text-xs space-y-1">
+            <p className="text-[#888888]">
+              Final response <span className="font-mono text-[#f5f5f5]">{checked.status} {checked.statusText}</span>
+            </p>
+            <p className="font-mono text-[#bbbbbb] break-all">{checked.finalUrl}</p>
+            {checked.chain.map((c, i) => (
+              <p key={i} className="font-mono text-[#666666] break-all">
+                ↳ {c.status} from {c.url}
+              </p>
+            ))}
+          </div>
+          {checked.preload && (
+            <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px] text-xs space-y-1">
+              <p className={checked.preload.status === "preloaded" ? "text-[#4ade80]" : "text-[#f5f5f5]"}>HSTS preload: {PRELOAD_LABEL[checked.preload.status] ?? checked.preload.status}</p>
+              {checked.preload.status !== "preloaded" &&
+                (checked.preload.errors.length === 0 ? (
+                  <p className="text-[#4ade80]">Eligible — submit the base domain at hstspreload.org.</p>
+                ) : (
+                  checked.preload.errors.map((e, i) => (
+                    <p key={i} className="text-[#f87171]">
+                      {e}
+                    </p>
+                  ))
+                ))}
+              {checked.preload.warnings.map((w, i) => (
+                <p key={i} className="text-[#fbbf24]">
+                  {w}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
           <div className="flex items-center justify-between mb-1">
