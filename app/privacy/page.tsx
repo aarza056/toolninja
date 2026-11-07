@@ -146,6 +146,13 @@ export default function PrivacyPage() {
             store the address; an anonymous counter, keyed by an identifier that changes every day, limits how many checks one visitor can run.
             Pasted headers are analyzed in your browser and never sent anywhere.
           </p>
+          <p className="mt-3" id="tool-requests">
+            A few other tools work through our server. The XML Sitemap Generator&apos;s crawl and the CSP Checker&apos;s URL check send the address you
+            enter to our server, which requests those pages. The Request Headers &amp; Proxy Test shows you the headers and IP address your request
+            arrived with, and the Retry-After &amp; Rate Limit Tester&apos;s test endpoint answers your test requests. We don&apos;t store the addresses,
+            page contents, headers or IP addresses involved. Anonymous counters, keyed by an identifier that changes every day, limit how many
+            requests one visitor can make and expire shortly afterward.
+          </p>
           <p className="mt-3" id="videos">
             Some pages show one of our YouTube videos. Until you press play, the preview image comes from our own site
             and nothing is loaded from YouTube. When you press play, the player loads from youtube-nocookie.com,

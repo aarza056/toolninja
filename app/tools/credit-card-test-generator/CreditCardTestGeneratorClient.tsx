@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { RefreshCw, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
@@ -31,10 +32,14 @@ export default function CreditCardTestGeneratorClient() {
       <div className="flex items-start gap-2 p-3 mb-6 bg-[#ef4444]/10 border border-[#ef4444]/30 rounded-[8px] text-xs text-[#ef4444]">
         <AlertTriangle size={14} className="shrink-0 mt-0.5" />
         <span>
-          These numbers pass the Luhn checksum and look structurally valid, but are <strong>not real,
-          working card numbers</strong> — they have no issuing bank behind them. They exist purely to test
-          form validation and checksum logic. Use them only with test/sandbox payment endpoints
-          (Stripe, PayPal, etc. all publish their own official test numbers for actual charge simulation).
+          <strong>These are not real cards and can&apos;t buy anything.</strong> No bank or account is behind them, so they
+          won&apos;t work for purchases, free trials or sign-ups — every real payment is declined. They exist only to test
+          form validation and Luhn checks in software you&apos;re building. Testing a checkout in a payment provider&apos;s
+          sandbox? Those only accept their own numbers:{" "}
+          <Link href="/tools/payment-test-cards" className="underline hover:text-[#f87171]">
+            official Stripe, Adyen, PayPal and other test cards
+          </Link>
+          .
         </span>
       </div>
 

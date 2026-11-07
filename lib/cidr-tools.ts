@@ -10,7 +10,7 @@ export interface Range {
 
 const MAX = 2 ** 32 - 1;
 
-function maskToPrefix(mask: string): number | null {
+export function maskToPrefix(mask: string): number | null {
   const n = ipToNum(mask);
   if (n === null) return null;
   const bits = n.toString(2).padStart(32, "0");
@@ -224,4 +224,110 @@ export function planVlsm(base: string, needs: SubnetNeed[], cloud = false): Vlsm
   const free = cur <= parsed.end ? rangeToCidrs(cur, parsed.end) : [];
   // Back in the order they were entered
   return { ok: true, subnets: placed.sort((a, b) => a.i - b.i).map((p) => p.subnet), free, used: needed, total };
+}
+
+// ─── CIDR to IP range ────────────────────────────────────────────────────────
+
+export interface RangeRow {
+  input: string;
+  /** The one CIDR block this covers, or null for a range that needs several */
+  cidr: string | null;
+  /** The blocks that cover a range, one for a plain CIDR */
+  cidrs: string[];
+  first: string;
+  last: string;
+  /** Hosts, not counting the network and broadcast addresses. Only meaningful for a CIDR block */
+  firstHost: string;
+  lastHost: string;
+  hosts: number;
+  total: number;
+  mask: string | null;
+  wildcard: string | null;
+  start: number;
+  end: number;
+}
+
+const prefixMask = (prefix: number) => numToIp(MAX - (2 ** (32 - prefix) - 1));
+
+/** One row per line, in the order given. Unlike the merge tool, nothing is deduplicated or joined */
+export function cidrRows(text: string): { rows: RangeRow[]; errors: string[] } {
+  const rows: RangeRow[] = [];
+  const errors: string[] = [];
+  text
+    .split(/\r?\n/)
+    .map((l) => l.replace(/#.*$/, ""))
+    .flatMap((l) => l.split(/[,;]|\t/))
+    .map((x) => x.trim())
+    .filter(Boolean)
+    .forEach((input) => {
+      const r = parseEntry(input);
+      if ("error" in r) {
+        errors.push(r.error);
+        return;
+      }
+      const cidrs = rangeToCidrs(r.start, r.end);
+      const cidr = cidrs.length === 1 ? cidrs[0] : null;
+      const prefix = cidr ? Number(cidr.split("/")[1]) : null;
+      const total = r.end - r.start + 1;
+      // /31 links and /32 hosts have no network or broadcast address (RFC 3021)
+      const trim = prefix !== null && prefix < 31 ? 1 : 0;
+      rows.push({
+        input,
+        cidr,
+        cidrs,
+        first: numToIp(r.start),
+        last: numToIp(r.end),
+        firstHost: numToIp(r.start + trim),
+        lastHost: numToIp(r.end - trim),
+        hosts: total - trim * 2,
+        total,
+        mask: prefix !== null ? prefixMask(prefix) : null,
+        wildcard: prefix !== null ? numToIp(2 ** (32 - prefix) - 1) : null,
+        start: r.start,
+        end: r.end,
+      });
+    });
+  return { rows, errors };
+}
+
+const csvCell = (v: string | number | null) => {
+  const s = v === null ? "" : String(v);
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+};
+
+export function rowsToCsv(rows: RangeRow[]): string {
+  const head = ["input", "cidr", "first_ip", "last_ip", "first_host", "last_host", "total_addresses", "usable_hosts", "subnet_mask", "wildcard_mask"];
+  const body = rows.map((r) => [r.input, r.cidr ?? r.cidrs.join(" "), r.first, r.last, r.firstHost, r.lastHost, r.total, r.hosts, r.mask, r.wildcard].map(csvCell).join(","));
+  return [head.join(","), ...body].join("\n");
+}
+
+/** Every address in the rows, stopping at `limit` so a /8 can't freeze the page */
+export function listAddresses(rows: RangeRow[], limit: number): { addresses: string[]; truncated: boolean } {
+  const addresses: string[] = [];
+  for (const r of rows) {
+    for (let n = r.start; n <= r.end; n++) {
+      if (addresses.length >= limit) return { addresses, truncated: true };
+      addresses.push(numToIp(n));
+    }
+  }
+  return { addresses, truncated: false };
+}
+
+export type MaskConversion = { prefix: number; mask: string; wildcard: string; total: number; hosts: number } | { error: string };
+
+/** "/24", "24", "255.255.255.0" or a wildcard mask like "0.0.0.255" */
+export function convertMask(input: string): MaskConversion {
+  const s = input.trim().replace(/^\//, "");
+  let prefix: number | null = null;
+  if (/^\d{1,2}$/.test(s) && Number(s) <= 32) prefix = Number(s);
+  else if (ipToNum(s) !== null) {
+    prefix = maskToPrefix(s);
+    if (prefix === null) {
+      const n = ipToNum(s)!;
+      prefix = maskToPrefix(numToIp(MAX - n)); // a wildcard mask is a subnet mask with its bits flipped
+    }
+  }
+  if (prefix === null) return { error: "Enter a prefix like /24 or a mask like 255.255.255.0. A mask's 1 bits must be contiguous." };
+  const total = 2 ** (32 - prefix);
+  return { prefix, mask: prefixMask(prefix), wildcard: numToIp(total - 1), total, hosts: prefix >= 31 ? total : total - 2 };
 }

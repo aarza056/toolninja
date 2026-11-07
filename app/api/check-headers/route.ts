@@ -30,9 +30,11 @@ async function preloadInfo(host: string): Promise<Preload | null> {
 export async function POST(req: Request) {
   if (!originAllowed(req)) return json({ ok: false, error: "forbidden" }, 403);
   let url = "";
+  let wantPreload = true;
   try {
     const body = await req.json();
     url = typeof body?.url === "string" ? body.url.slice(0, 2000) : "";
+    wantPreload = body?.preload !== false;
   } catch {}
   if (!url.trim()) return json({ ok: false, error: "Enter a URL to check." }, 400);
 
@@ -47,6 +49,6 @@ export async function POST(req: Request) {
   const r = await fetchHeaders(url);
   if (!r.ok) return json({ ok: false, error: r.error }, 422);
   const final = new URL(r.result.finalUrl);
-  const preload = final.protocol === "https:" ? await preloadInfo(final.hostname) : null;
+  const preload = wantPreload && final.protocol === "https:" ? await preloadInfo(final.hostname) : null;
   return json({ ok: true, ...r.result, preload });
 }

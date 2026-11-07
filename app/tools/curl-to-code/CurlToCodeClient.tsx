@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { AlertCircle, Terminal } from "lucide-react";
@@ -29,12 +28,13 @@ interface Props {
 }
 
 export default function CurlToCodeClient({ initialLanguage, heading, intro }: Props = {}) {
-  const searchParams = useSearchParams();
   const [input, setInput] = useState("");
   const [language, setLanguage] = useState(initialLanguage ?? LANGUAGES[0].id);
 
   useEffect(() => {
-    const fromQuery = searchParams.get("cmd");
+    // Read from the URL here, not with useSearchParams: that hook drops the whole tool (heading
+    // included) out of the static HTML that search engines see.
+    const fromQuery = new URLSearchParams(window.location.search).get("cmd");
     if (fromQuery) {
       try {
         setInput(fromBase64Url(fromQuery));

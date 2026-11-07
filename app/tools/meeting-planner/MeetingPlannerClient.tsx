@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import ToolLayout from "@/components/ToolLayout";
+import CopyButton from "@/components/CopyButton";
 import { X, Plus, Download } from "lucide-react";
 import {
   MEETING_CITIES,
@@ -11,7 +12,12 @@ import {
   formatHour12,
   classifyHour,
   buildIcsFile,
+  rankMeetingHours,
+  encodeMeetingLink,
+  decodeMeetingLink,
+  DEFAULT_HOURS,
   type HourKind,
+  type WorkHours,
 } from "@/lib/meeting-planner";
 
 const STORAGE_KEY = "toolninja:meeting-planner";
@@ -35,15 +41,31 @@ export default function MeetingPlannerClient() {
   const [addCity, setAddCity] = useState("");
   const [meetingTitle, setMeetingTitle] = useState("Team meeting");
   const [durationMinutes, setDurationMinutes] = useState(30);
+  const [hoursByZone, setHoursByZone] = useState<Record<string, WorkHours>>({});
+  const [origin, setOrigin] = useState("");
+  const skipSave = useRef(false);
 
   useEffect(() => {
+    setOrigin(window.location.origin + window.location.pathname);
     try {
       const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      // A shared link wins, and doesn't overwrite the visitor's own saved plan
+      const link = decodeMeetingLink(window.location.search);
+      if (link.ref || link.cities) {
+        skipSave.current = true;
+        setReferenceTimeZone(link.ref ?? browserTz);
+        setCities(link.cities ?? []);
+        if (link.date) setSelectedDate(link.date);
+        if (link.hour !== undefined) setSelectedHour(link.hour);
+        if (link.hours) setHoursByZone(link.hours);
+        return;
+      }
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         setReferenceTimeZone(parsed.referenceTimeZone ?? browserTz);
         setCities(parsed.cities ?? ["America/New_York", "Europe/London", "Asia/Kolkata", "Asia/Tokyo"]);
+        if (parsed.hoursByZone) setHoursByZone(parsed.hoursByZone);
       } else {
         setReferenceTimeZone(browserTz);
         setCities(["America/New_York", "Europe/London", "Asia/Kolkata", "Asia/Tokyo"]);
@@ -54,10 +76,14 @@ export default function MeetingPlannerClient() {
   }, []);
 
   useEffect(() => {
+    if (skipSave.current) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ referenceTimeZone, cities }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ referenceTimeZone, cities, hoursByZone }));
     } catch {}
-  }, [referenceTimeZone, cities]);
+  }, [referenceTimeZone, cities, hoursByZone]);
+
+  const hoursFor = (tz: string) => hoursByZone[tz] ?? DEFAULT_HOURS;
+  const labelFor = (tz: string) => MEETING_CITIES.find((c) => c.id === tz)?.label ?? tz;
 
   const referenceUtcMidnight = useMemo(
     () => localMidnightAsUtc(selectedDate, referenceTimeZone),
@@ -69,11 +95,24 @@ export default function MeetingPlannerClient() {
       cities.map((tz) => ({
         tz,
         label: MEETING_CITIES.find((c) => c.id === tz)?.label ?? tz,
-        offset: getOffsetLabel(tz),
+        offset: getOffsetLabel(tz, new Date(referenceUtcMidnight)),
         cells: buildHourGrid(tz, referenceUtcMidnight, referenceTimeZone),
       })),
     [cities, referenceUtcMidnight, referenceTimeZone]
   );
+
+  // Everyone in the plan, the reference zone included (unless it's also listed as a city)
+  const ranked = useMemo(() => {
+    const everyone = [
+      ...(cities.includes(referenceTimeZone) ? [] : [{ hours: hoursByZone[referenceTimeZone] ?? DEFAULT_HOURS, localHourAt: (h: number) => h }]),
+      ...rows.map((row) => ({ hours: hoursByZone[row.tz] ?? DEFAULT_HOURS, localHourAt: (h: number) => row.cells[h].localHour })),
+    ];
+    return { people: everyone.length, best: rankMeetingHours(everyone).slice(0, 3) };
+  }, [rows, cities, referenceTimeZone, hoursByZone]);
+
+  const shareLink = origin
+    ? `${origin}?${encodeMeetingLink({ ref: referenceTimeZone, date: selectedDate, cities, hour: selectedHour, hours: hoursByZone })}`
+    : "";
 
   const availableToAdd = MEETING_CITIES.filter((c) => !cities.includes(c.id) && c.id !== referenceTimeZone);
 
@@ -106,7 +145,7 @@ export default function MeetingPlannerClient() {
   return (
     <ToolLayout
       title="Meeting Planner"
-      description="Compare working hours across time zones and find a meeting time that works for everyone"
+      description="Compare working hours across time zones, see the best meeting times, and share the plan with a link"
     >
       <div className="flex flex-wrap items-end gap-4 mb-5">
         <div>
@@ -174,7 +213,7 @@ export default function MeetingPlannerClient() {
               {MEETING_CITIES.find((c) => c.id === referenceTimeZone)?.label ?? referenceTimeZone} <span className="text-[#555555]">(ref)</span>
             </div>
             {Array.from({ length: 24 }, (_, h) => {
-              const kind = classifyHour(h);
+              const kind = classifyHour(h, hoursFor(referenceTimeZone));
               return (
                 <div
                   key={h}
@@ -193,7 +232,7 @@ export default function MeetingPlannerClient() {
                 <div className="w-[160px] shrink-0 flex items-center justify-between pr-2">
                   <div className="min-w-0">
                     <p className="text-xs text-[#f5f5f5] truncate">{row.label}</p>
-                    <p className="text-[10px] text-[#555555]">{row.offset}</p>
+                    <p className="text-[10px] text-[#555555]">{row.offset} · {hoursFor(row.tz).start}–{hoursFor(row.tz).end}</p>
                   </div>
                   <button
                     onClick={() => setCities((prev) => prev.filter((c) => c !== row.tz))}
@@ -203,7 +242,7 @@ export default function MeetingPlannerClient() {
                   </button>
                 </div>
                 {row.cells.map((cell) => {
-                  const kind = classifyHour(cell.localHour);
+                  const kind = classifyHour(cell.localHour, hoursFor(row.tz));
                   return (
                     <div
                       key={cell.refHour}
@@ -224,11 +263,67 @@ export default function MeetingPlannerClient() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4 mt-5 text-xs text-[#888888]">
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-[3px] bg-[#22c55e]/25" /> Working hours (9–6)</span>
+      <div className="flex flex-wrap items-center gap-4 mt-5 text-xs text-[#888888]">
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-[3px] bg-[#22c55e]/25" /> Working hours</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-[3px] bg-[#eab308]/20" /> Awake, off-hours</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-[3px] bg-[#1a1a1a] border border-[#222222]" /> Likely asleep</span>
       </div>
+
+      {ranked.people > 1 && (
+        <div className="mt-5 p-3 bg-[#111111] border border-[#222222] rounded-[8px]">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <p className="text-xs font-semibold text-[#f5f5f5]">Best times</p>
+            {shareLink && (
+              <span className="flex items-center gap-2 text-xs text-[#888888]">
+                Share this plan <CopyButton text={shareLink} size="sm" />
+              </span>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {ranked.best.map((r) => (
+              <button
+                key={r.refHour}
+                onClick={() => setSelectedHour(r.refHour)}
+                className={`px-3 py-1.5 text-left rounded-[6px] border transition-colors ${selectedHour === r.refHour ? "border-[#a855f7]/60 bg-[#a855f7]/10" : "border-[#222222] hover:border-[#333333]"}`}
+              >
+                <span className="block text-sm font-mono text-[#f5f5f5]">{formatHour12(r.refHour)}</span>
+                <span className={`block text-[11px] ${r.work === ranked.people ? "text-[#4ade80]" : "text-[#888888]"}`}>
+                  {r.work === ranked.people ? "Everyone in working hours" : `${r.work} of ${ranked.people} in working hours${r.sleep ? `, ${r.sleep} asleep` : ""}`}
+                </span>
+              </button>
+            ))}
+          </div>
+          <details className="mt-3">
+            <summary className="text-xs text-[#a855f7] cursor-pointer">Set working hours per location</summary>
+            <div className="mt-2 grid sm:grid-cols-2 gap-2">
+              {[referenceTimeZone, ...cities.filter((c) => c !== referenceTimeZone)].map((tz) => (
+                <div key={tz} className="flex items-center justify-between gap-2 text-xs text-[#bbbbbb]">
+                  <span className="truncate">{labelFor(tz)}</span>
+                  <span className="flex items-center gap-1 shrink-0">
+                    {(["start", "end"] as const).map((k, i) => (
+                      <span key={k} className="flex items-center gap-1">
+                        {i === 1 && <span className="text-[#555555]">to</span>}
+                        <select
+                          value={hoursFor(tz)[k]}
+                          aria-label={`${labelFor(tz)} work ${k}`}
+                          onChange={(e) => setHoursByZone((prev) => ({ ...prev, [tz]: { ...hoursFor(tz), [k]: Number(e.target.value) } }))}
+                          className="px-1.5 py-1 bg-[#0a0a0a] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+                        >
+                          {Array.from({ length: 24 }, (_, h) => (
+                            <option key={h} value={h}>
+                              {formatHour12(h)}
+                            </option>
+                          ))}
+                        </select>
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </details>
+        </div>
+      )}
 
       {selectedHour !== null && (
         <div className="mt-4 p-3 bg-[#111111] border border-[#222222] rounded-[8px]">

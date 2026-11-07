@@ -137,12 +137,88 @@ export function formatHour12(hour: number): string {
 
 export type HourKind = "sleep" | "off" | "work";
 
-/** Simple, fixed working-hours model (9 AM – 6 PM = work, 7–9 AM & 6–10 PM = off, else sleep) —
- * a reasonable default for visualizing overlap, not a per-person customizable schedule. */
-export function classifyHour(hour: number): HourKind {
-  if (hour >= 9 && hour < 18) return "work";
-  if ((hour >= 7 && hour < 9) || (hour >= 18 && hour < 22)) return "off";
+export interface WorkHours {
+  start: number;
+  /** Exclusive; smaller than start for a night shift (22–6) */
+  end: number;
+}
+
+export const DEFAULT_HOURS: WorkHours = { start: 9, end: 18 };
+
+/** Working hours as given; the 2 hours before and 4 hours after count as awake; the rest as asleep. */
+export function classifyHour(hour: number, hours: WorkHours = DEFAULT_HOURS): HourKind {
+  // Hours since the start of work, wrapping past midnight, so night shifts work too
+  const since = (hour - hours.start + 24) % 24;
+  const length = (hours.end - hours.start + 24) % 24 || 24;
+  if (since < length) return "work";
+  if (since < length + 4 || since >= 22) return "off";
   return "sleep";
+}
+
+export interface RankedHour {
+  /** Hour in the reference time zone */
+  refHour: number;
+  work: number;
+  off: number;
+  sleep: number;
+}
+
+/**
+ * Every hour of the day, best first: most people in working hours, then fewest asleep. Ties keep
+ * the earlier hour, so the result is stable.
+ */
+export function rankMeetingHours(rows: { hours: WorkHours; localHourAt: (refHour: number) => number }[]): RankedHour[] {
+  const ranked: RankedHour[] = [];
+  for (let refHour = 0; refHour < 24; refHour++) {
+    const r: RankedHour = { refHour, work: 0, off: 0, sleep: 0 };
+    for (const row of rows) r[classifyHour(row.localHourAt(refHour), row.hours)]++;
+    ranked.push(r);
+  }
+  return ranked.sort((a, b) => b.work - a.work || a.sleep - b.sleep || a.refHour - b.refHour);
+}
+
+export interface MeetingLink {
+  ref?: string;
+  date?: string;
+  cities?: string[];
+  hour?: number | null;
+  /** Only hours that differ from the default are written */
+  hours?: Record<string, WorkHours>;
+}
+
+const isKnownZone = (tz: string) => MEETING_CITIES.some((c) => c.id === tz);
+
+/** The query string of a shareable link to this plan */
+export function encodeMeetingLink(m: MeetingLink): string {
+  const q = new URLSearchParams();
+  if (m.ref) q.set("ref", m.ref);
+  if (m.date) q.set("date", m.date);
+  if (m.cities?.length) q.set("cities", m.cities.join(","));
+  if (m.hour !== null && m.hour !== undefined) q.set("hour", String(m.hour));
+  const custom = Object.entries(m.hours ?? {}).filter(([, h]) => h.start !== DEFAULT_HOURS.start || h.end !== DEFAULT_HOURS.end);
+  if (custom.length) q.set("hours", custom.map(([tz, h]) => `${tz}:${h.start}-${h.end}`).join(","));
+  return q.toString();
+}
+
+/** Reads a shared link, ignoring anything that isn't valid (it comes from the URL) */
+export function decodeMeetingLink(search: string): MeetingLink {
+  const q = new URLSearchParams(search);
+  const out: MeetingLink = {};
+  const ref = q.get("ref");
+  if (ref && isKnownZone(ref)) out.ref = ref;
+  const date = q.get("date");
+  if (date && /^\d{4}-\d{2}-\d{2}$/.test(date) && !Number.isNaN(Date.parse(date))) out.date = date;
+  const cities = q.get("cities")?.split(",").filter(isKnownZone);
+  if (cities?.length) out.cities = cities.filter((c, i) => cities.indexOf(c) === i).slice(0, 20);
+  const hour = Number(q.get("hour") ?? NaN);
+  if (Number.isInteger(hour) && hour >= 0 && hour <= 23) out.hour = hour;
+  const hours: Record<string, WorkHours> = {};
+  for (const part of (q.get("hours") ?? "").split(",")) {
+    const m = /^(.+):(\d{1,2})-(\d{1,2})$/.exec(part);
+    if (m && isKnownZone(m[1]) && Number(m[2]) <= 23 && Number(m[3]) <= 23 && m[2] !== m[3]) hours[m[1]] = { start: Number(m[2]), end: Number(m[3]) };
+  }
+  if (Object.keys(hours).length) out.hours = hours;
+  return out;
 }
 
 function icsTimestamp(utcMs: number): string {

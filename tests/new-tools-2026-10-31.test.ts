@@ -289,7 +289,7 @@ describe("barcodes", () => {
   });
 
   it("every barcode page uses a format the generator supports", () => {
-    for (const page of BARCODE_PAGES) expect(() => generateBarcode(page.format, page.format === "code39" ? "ABC" : page.format === "code128" ? "abc" : "1".repeat(page.format === "ean8" ? 7 : page.format === "upca" ? 11 : page.format === "ean13" ? 12 : 13)), page.slug).not.toThrow();
+    for (const page of BARCODE_PAGES) expect(() => generateBarcode(page.format, page.format === "gs1128" ? "(01)09501101530003" : page.format === "code39" ? "ABC" : page.format === "code128" ? "abc" : "1".repeat(page.format === "ean8" ? 7 : page.format === "upca" ? 11 : page.format === "ean13" ? 12 : 13)), page.slug).not.toThrow();
   });
 });
 

@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import { Download, Barcode as BarcodeIcon } from "lucide-react";
-import { generateBarcode, type BarcodeFormat } from "@/lib/barcode";
+import { barcodeSvg, generateBarcode, type BarcodeFormat } from "@/lib/barcode";
+import BulkBarcodes from "./BulkBarcodes";
 
 const STORAGE_KEY = "toolninja:barcode-generator";
 
@@ -14,6 +15,7 @@ const FORMATS: { id: BarcodeFormat; label: string; placeholder: string; hint: st
   { id: "ean8", label: "EAN-8", placeholder: "9638507", hint: "7 digits (check digit auto-added) or 8 digits" },
   { id: "code39", label: "Code 39", placeholder: "TOOLNINJA-39", hint: "A–Z, 0–9 and - . space $ / + % (lowercase is uppercased)" },
   { id: "itf14", label: "ITF-14", placeholder: "1540014128876", hint: "13 digits (check digit auto-added) or 14 digits — the GTIN-14 for cartons" },
+  { id: "gs1128", label: "GS1-128", placeholder: "(01)09501101530003(17)261231(10)ABC123", hint: "Application Identifiers in brackets: (01) GTIN, (17) expiry YYMMDD, (10) batch, (21) serial, (00) SSCC…" },
 ];
 
 interface Props {
@@ -28,6 +30,7 @@ export default function BarcodeGeneratorClient({ initialFormat, heading, intro }
   const [value, setValue] = useState(FORMATS.find((f) => f.id === (initialFormat ?? "code128"))!.placeholder);
   const [barWidth, setBarWidth] = useState(2);
   const [height, setHeight] = useState(80);
+  const [mode, setMode] = useState<"single" | "bulk">("single");
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -106,26 +109,7 @@ export default function BarcodeGeneratorClient({ initialFormat, heading, intro }
 
   const downloadSvg = () => {
     if (!result) return;
-    const quietZone = barWidth * 10;
-    const textHeight = 20;
-    const barsWidth = result.modules.length * barWidth;
-    const width = barsWidth + quietZone * 2;
-    const totalHeight = height + textHeight;
-
-    let rects = "";
-    for (let i = 0; i < result.modules.length; i++) {
-      if (result.modules[i] === "1") {
-        rects += `<rect x="${quietZone + i * barWidth}" y="0" width="${barWidth}" height="${height}" fill="#000"/>`;
-      }
-    }
-
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${totalHeight}" viewBox="0 0 ${width} ${totalHeight}">` +
-      `<rect width="${width}" height="${totalHeight}" fill="#fff"/>` +
-      rects +
-      `<text x="${width / 2}" y="${height + 16}" font-family="monospace" font-size="14" text-anchor="middle" fill="#000">${result.displayText}</text>` +
-      `</svg>`;
-
-    const blob = new Blob([svg], { type: "image/svg+xml" });
+    const blob = new Blob([barcodeSvg(result, barWidth, height)], { type: "image/svg+xml" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `barcode-${format}.svg`;
@@ -138,8 +122,18 @@ export default function BarcodeGeneratorClient({ initialFormat, heading, intro }
   return (
     <ToolLayout
       title={heading ?? "Barcode Generator"}
-      description={intro ?? "Generate Code 128, EAN-13, UPC-A, EAN-8, Code 39 and ITF-14 barcodes — download as PNG or SVG, entirely in your browser"}
+      description={intro ?? "Generate Code 128, GS1-128, EAN-13, UPC-A, EAN-8, Code 39 and ITF-14 barcodes, one at a time or in bulk — download PNG, SVG or a ZIP, entirely in your browser"}
     >
+      <div className="flex rounded-[6px] border border-[#222222] overflow-hidden w-fit mb-4">
+        {(["single", "bulk"] as const).map((m) => (
+          <button key={m} onClick={() => setMode(m)} className={`px-4 py-1.5 text-sm transition-colors ${mode === m ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}>
+            {m === "single" ? "Single" : "Bulk"}
+          </button>
+        ))}
+      </div>
+      {mode === "bulk" ? (
+        <BulkBarcodes format={format} formats={FORMATS} onFormat={setFormat} barWidth={barWidth} height={height} />
+      ) : (
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 min-w-0 space-y-4">
           <div className="flex flex-wrap gap-1">
@@ -242,6 +236,7 @@ export default function BarcodeGeneratorClient({ initialFormat, heading, intro }
           )}
         </div>
       </div>
+      )}
     </ToolLayout>
   );
 }

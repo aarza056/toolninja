@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CurlToCodeClient from "../CurlToCodeClient";
@@ -30,13 +29,11 @@ export default function CurlLanguagePage({ params }: { params: { lang: string } 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
-      <Suspense fallback={null}>
-        <CurlToCodeClient
-          initialLanguage={p.lang}
-          heading={`cURL to ${p.name}`}
-          intro={`Paste a curl command and get ${p.name} code using ${p.library} — or pick any other language.`}
-        />
-      </Suspense>
+      <CurlToCodeClient
+        initialLanguage={p.lang}
+        heading={`cURL to ${p.name}`}
+        intro={`Paste a curl command and get ${p.name} code using ${p.library} — or pick any other language.`}
+      />
       <div className="border-t border-[#1a1a1a] px-6 py-10 space-y-8 max-w-3xl">
         <section>
           <h2 className="text-xs font-semibold text-[#555] uppercase tracking-widest mb-3">

@@ -5,7 +5,7 @@ date: "2026-05-20"
 author: "ToolNinja"
 coverEmoji: "☁️"
 tags: ["aws vpc cidr blocks", "aws cidr calculator", "vpc cidr planning", "aws subnet calculator", "aws vpc subnetting", "cidr blocks aws", "how to choose vpc cidr", "aws vpc ip address planning", "vpc subnet sizing", "aws networking cidr", "cidr notation aws", "aws vpc best practices cidr"]
-relatedTools: ["cidr-calculator"]
+relatedTools: ["cidr-calculator", "aws-vpc-subnet-calculator"]
 faqs:
   - q: "What CIDR block should I use for my first AWS VPC?"
     a: "Start with 10.0.0.0/16 for production. It gives you 65,536 addresses — enough for years of growth — and leaves the entire 10.1.x.x through 10.255.x.x range for future VPCs. Avoid 192.168.0.0/16 for AWS VPCs as it's too small and commonly conflicts with on-premises networks."

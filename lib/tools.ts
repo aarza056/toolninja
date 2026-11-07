@@ -496,7 +496,7 @@ export const tools: Tool[] = [
   {
     slug: "fake-data-generator",
     name: "Fake Data Generator",
-    description: "Define a schema and generate realistic mock JSON or CSV data",
+    description: "Generate mock data from a field list or JSON Schema, as JSON, CSV or SQL for Postgres, MySQL and SQLite",
     icon: "Dices",
     category: "Generate",
     keywords: [
@@ -561,7 +561,7 @@ export const tools: Tool[] = [
   {
     slug: "sitemap-generator",
     name: "XML Sitemap Generator",
-    description: "Paste your page URLs and get a ready-to-upload sitemap.xml",
+    description: "Crawl your website, or paste its URLs, and get a ready-to-upload sitemap.xml",
     icon: "FolderTree",
     category: "Generate",
     keywords: [
@@ -573,7 +573,7 @@ export const tools: Tool[] = [
   {
     slug: "barcode-generator",
     name: "Barcode Generator",
-    description: "Generate EAN-13, UPC-A, EAN-8, Code 128, Code 39 and ITF-14 barcodes — download as PNG or SVG",
+    description: "Generate EAN-13, UPC-A, EAN-8, Code 128, GS1-128, Code 39 and ITF-14 barcodes, one at a time or in bulk as a ZIP",
     icon: "Barcode",
     category: "Generate",
     keywords: [
@@ -760,6 +760,41 @@ export const tools: Tool[] = [
       "subnetting calculator",
     ],
   },
+  {
+    slug: "aws-vpc-subnet-calculator",
+    name: "AWS VPC Subnet Calculator",
+    description: "Lay out public, private and database subnets across Availability Zones, with Terraform and CloudFormation output",
+    icon: "Network",
+    category: "Convert",
+    keywords: [
+      "aws vpc subnet calculator",
+      "vpc subnet calculator",
+      "aws subnet calculator",
+      "aws cidr calculator",
+      "vpc cidr calculator",
+      "vpc subnet planner",
+      "terraform vpc subnets",
+      "cloudformation vpc template",
+    ],
+  },
+  {
+    slug: "cidr-to-ip-range",
+    name: "CIDR to IP Range Converter",
+    description: "Turn CIDR blocks into first and last IP, usable hosts and address count, in bulk, with CSV export",
+    icon: "ArrowLeftRight",
+    category: "Convert",
+    keywords: [
+      "cidr to ip range",
+      "cidr to ip",
+      "cidr to ip range converter",
+      "convert cidr to ip range",
+      "cidr range calculator",
+      "bulk cidr converter",
+      "cidr to csv",
+      "subnet mask to cidr",
+      "list ips in cidr",
+    ],
+  },
 
   {
     slug: "docker-run-to-compose",
@@ -867,7 +902,7 @@ export const tools: Tool[] = [
   {
     slug: "meeting-planner",
     name: "Meeting Planner",
-    description: "Compare working hours across time zones and find a meeting time that works for everyone",
+    description: "Rank the best meeting times across time zones with per-location working hours and a shareable link",
     icon: "CalendarClock",
     category: "Convert",
     keywords: [
@@ -1094,7 +1129,7 @@ export const tools: Tool[] = [
     icon: "CreditCard",
     category: "Test",
     keywords: [
-      "credit card test number generator", "fake credit card number generator", "luhn algorithm validator",
+      "credit card test number generator", "luhn algorithm validator",
       "test credit card numbers", "luhn checksum validator", "generate test visa number",
       "generate test mastercard number", "credit card number validator online", "luhn algorithm online",
     ],
@@ -1120,8 +1155,8 @@ export const tools: Tool[] = [
   },
   {
     slug: "patch-generator",
-    name: "Unified Diff / Patch Generator",
-    description: "Generate a real, downloadable .patch file from two texts — usable with git apply or patch",
+    name: "Unified Diff / Patch Generator & Viewer",
+    description: "Generate a real .patch file from two texts, apply one, or read one file by file, side by side",
     icon: "GitCompareArrows",
     category: "Test",
     keywords: [
@@ -1176,6 +1211,42 @@ export const tools: Tool[] = [
       "http header inspector", "http headers explained", "response header checker",
       "what does this http header mean", "http header meaning lookup", "cache-control explained",
       "content-security-policy header explained", "http header reference online",
+    ],
+  },
+  {
+    slug: "retry-after-tester",
+    name: "Retry-After & Rate Limit Tester",
+    description: "Read 429 and 503 headers, test your client against a real rate limiter, and copy retry code with backoff",
+    icon: "Timer",
+    category: "Test",
+    keywords: [
+      "retry-after header",
+      "retry after tester",
+      "429 test url",
+      "rate limit tester",
+      "test 429 response",
+      "x-ratelimit headers",
+      "exponential backoff calculator",
+      "ratelimit-reset header",
+      "429 too many requests retry",
+    ],
+  },
+  {
+    slug: "request-headers-test",
+    name: "Request Headers & Proxy Test",
+    description: "See the exact headers a server receives from your browser, curl or code, and whether a proxy added its own",
+    icon: "Radar",
+    category: "Test",
+    keywords: [
+      "request headers test",
+      "what are my request headers",
+      "http request headers viewer",
+      "proxy header test",
+      "proxy test",
+      "x-forwarded-for test",
+      "show my headers",
+      "echo request headers",
+      "header echo api",
     ],
   },
   {
@@ -1510,6 +1581,23 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "csp-checker",
+    name: "CSP Checker",
+    description: "Paste a Content-Security-Policy or enter a URL to find unsafe-inline, wildcards and missing directives",
+    icon: "ShieldCheck",
+    category: "Security",
+    keywords: [
+      "csp checker",
+      "csp evaluator",
+      "csp validator",
+      "content security policy checker",
+      "content security policy test",
+      "check csp header",
+      "csp analyzer",
+      "unsafe-inline check",
+    ],
+  },
+  {
     slug: "jwt-keypair-generator",
     name: "JWT Key Pair Generator",
     description: "Generate RSA and ECDSA key pairs for signing JWTs — PEM and JWK formats",
@@ -1828,9 +1916,9 @@ export type Category = (typeof categories)[number];
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 // tests/site.test.ts fails if this falls out of step with the newest release in lib/changelog.ts.
 export const LATEST_TOOL_SLUGS = [
-  "llm-api-cost-calculator",
-  "payment-test-cards",
-  "json-path-finder",
-  "cidr-merge",
-  "vlsm-subnet-planner",
+  "aws-vpc-subnet-calculator",
+  "cidr-to-ip-range",
+  "csp-checker",
+  "retry-after-tester",
+  "request-headers-test",
 ];

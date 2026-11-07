@@ -9,7 +9,8 @@ import https from "node:https";
 //   - every address the hostname resolves to must be public; the connection is then pinned to the
 //     checked address, so a second DNS answer can't swap in a private one (DNS rebinding)
 //   - redirects are followed by hand, each hop checked the same way, at most 5
-//   - only the status line and headers are read; the body is never downloaded
+//   - the header check reads only the status line and headers; the sitemap crawler (fetchPage) also
+//     reads the body of successful responses of an accepted type, up to a size limit
 
 const blocked = new BlockList();
 for (const [net, prefix] of [
@@ -72,9 +73,23 @@ export interface FetchedHeaders {
   headers: [string, string][];
   /** Each redirect followed: where it pointed from, and its status */
   chain: { url: string; status: number }[];
+  body?: string;
+  /** The body hit the size limit */
+  truncated?: boolean;
+  /** Stopped at a redirect to another site */
+  leftSite?: boolean;
 }
 
-function requestOnce(url: URL, target: Resolved, timeoutMs: number): Promise<{ status: number; statusText: string; headers: [string, string][] }> {
+interface RequestOptions {
+  userAgent: string;
+  /** Read the body too, up to this many bytes, if `wantBody` says so; otherwise only headers are read */
+  maxBytes?: number;
+  wantBody?: (status: number, headers: [string, string][]) => boolean;
+}
+
+const HEADER_CHECK_UA = "ToolNinja-HeaderCheck/1.0 (+https://toolninja.io/tools/security-headers-checker)";
+
+function requestOnce(url: URL, target: Resolved, timeoutMs: number, opts: RequestOptions): Promise<{ status: number; statusText: string; headers: [string, string][]; body?: string; truncated?: boolean }> {
   const mod = url.protocol === "https:" ? https : http;
   return new Promise((resolve, reject) => {
     const req = mod.request(
@@ -84,7 +99,7 @@ function requestOnce(url: URL, target: Resolved, timeoutMs: number): Promise<{ s
         port: url.port || (url.protocol === "https:" ? 443 : 80),
         path: `${url.pathname}${url.search}`,
         method: "GET",
-        headers: { "User-Agent": "ToolNinja-HeaderCheck/1.0 (+https://toolninja.io/tools/security-headers-checker)", Accept: "text/html,*/*" },
+        headers: { "User-Agent": opts.userAgent, Accept: "text/html,*/*" },
         // Connect to the address we already checked, whatever DNS says now
         lookup: ((_host: string, opts: { all?: boolean }, cb: (...args: unknown[]) => void) =>
           opts?.all ? cb(null, [{ address: target.address, family: target.family }]) : cb(null, target.address, target.family)) as never,
@@ -94,8 +109,29 @@ function requestOnce(url: URL, target: Resolved, timeoutMs: number): Promise<{ s
         const raw = res.rawHeaders;
         const headers: [string, string][] = [];
         for (let i = 0; i + 1 < raw.length; i += 2) headers.push([raw[i], raw[i + 1]]);
-        resolve({ status: res.statusCode ?? 0, statusText: res.statusMessage ?? "", headers });
-        res.destroy(); // headers are all we need
+        const base = { status: res.statusCode ?? 0, statusText: res.statusMessage ?? "", headers };
+        if (!opts.maxBytes || !opts.wantBody?.(base.status, headers)) {
+          resolve(base);
+          res.destroy(); // headers are all we need
+          return;
+        }
+        // Stop reading at the size limit, so a huge or endless response can't tie up the function
+        const chunks: Buffer[] = [];
+        let size = 0;
+        let done = false;
+        const finish = (truncated: boolean) => {
+          if (done) return;
+          done = true;
+          resolve({ ...base, body: Buffer.concat(chunks).toString("utf8"), truncated });
+          res.destroy();
+        };
+        res.on("data", (chunk: Buffer) => {
+          chunks.push(chunk);
+          size += chunk.length;
+          if (size >= opts.maxBytes!) finish(true);
+        });
+        res.on("end", () => finish(false));
+        res.on("error", reject);
       }
     );
     req.on("timeout", () => req.destroy(new Error("The site took too long to respond.")));
@@ -104,7 +140,7 @@ function requestOnce(url: URL, target: Resolved, timeoutMs: number): Promise<{ s
   });
 }
 
-export async function fetchHeaders(input: string, maxRedirects = 5): Promise<{ ok: true; result: FetchedHeaders } | { ok: false; error: string }> {
+async function fetchFollowing(input: string, opts: RequestOptions, maxRedirects: number, stayOn?: (host: string) => boolean): Promise<{ ok: true; result: FetchedHeaders } | { ok: false; error: string }> {
   let url: URL;
   try {
     url = new URL(/^https?:\/\//i.test(input.trim()) ? input.trim() : `https://${input.trim()}`);
@@ -121,7 +157,7 @@ export async function fetchHeaders(input: string, maxRedirects = 5): Promise<{ o
     if ("error" in target) return { ok: false, error: target.error };
     let res;
     try {
-      res = await requestOnce(url, target, Math.max(1000, 9000 - (Date.now() - started)));
+      res = await requestOnce(url, target, Math.max(1000, 9000 - (Date.now() - started)), opts);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "request failed";
       return { ok: false, error: /certificate|SSL|TLS/i.test(msg) ? `TLS error: ${msg}` : `Couldn't connect: ${msg}` };
@@ -129,14 +165,38 @@ export async function fetchHeaders(input: string, maxRedirects = 5): Promise<{ o
     const location = res.headers.find(([k]) => k.toLowerCase() === "location")?.[1];
     if (res.status >= 300 && res.status < 400 && location && hop < maxRedirects) {
       chain.push({ url: url.href, status: res.status });
+      let next: URL;
       try {
-        url = new URL(location, url);
+        next = new URL(location, url);
       } catch {
         return { ok: false, error: `The redirect to “${location}” isn't a valid URL.` };
       }
+      // The caller decides whether to leave the current site; the redirect itself is the answer then
+      if (stayOn && !stayOn(next.hostname)) {
+        return { ok: true, result: { finalUrl: next.href, status: res.status, statusText: res.statusText, headers: res.headers, chain, leftSite: true } };
+      }
+      url = next;
       continue;
     }
-    return { ok: true, result: { finalUrl: url.href, status: res.status, statusText: res.statusText, headers: res.headers, chain } };
+    return { ok: true, result: { finalUrl: url.href, status: res.status, statusText: res.statusText, headers: res.headers, chain, body: res.body, truncated: res.truncated } };
   }
   return { ok: false, error: `More than ${maxRedirects} redirects.` };
 }
+
+export const fetchHeaders = (input: string, maxRedirects = 5) => fetchFollowing(input, { userAgent: HEADER_CHECK_UA }, maxRedirects);
+
+/**
+ * A public page's body (for the sitemap crawler), read only when it's a successful response of an
+ * accepted type and only up to `maxBytes`. With `stayOn`, a redirect to another site isn't followed.
+ */
+export const fetchPage = (input: string, opts: { userAgent: string; maxBytes: number; accept: RegExp; stayOn?: (host: string) => boolean }) =>
+  fetchFollowing(
+    input,
+    {
+      userAgent: opts.userAgent,
+      maxBytes: opts.maxBytes,
+      wantBody: (status, headers) => status >= 200 && status < 300 && opts.accept.test(headers.find(([k]) => k.toLowerCase() === "content-type")?.[1] ?? ""),
+    },
+    5,
+    opts.stayOn
+  );

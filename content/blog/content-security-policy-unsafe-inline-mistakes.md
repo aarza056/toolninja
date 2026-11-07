@@ -5,7 +5,7 @@ date: "2026-08-09"
 author: "ToolNinja"
 coverEmoji: "🛡️"
 tags: ["content security policy", "csp unsafe-inline", "csp xss protection", "csp header mistakes", "csp nonce hash", "content-security-policy guide", "csp object-src none", "csp best practices 2026", "security", "csp", "xss"]
-relatedTools: ["csp-builder"]
+relatedTools: ["csp-builder", "csp-checker"]
 faqs:
   - q: "What does Content-Security-Policy actually protect against?"
     a: "CSP's primary purpose is mitigating Cross-Site Scripting (XSS). Even if an attacker successfully injects a <script> tag into your page — through a stored XSS vulnerability, for example — a correctly configured CSP prevents that injected script from executing, because it didn't come from an explicitly allowed source. It also restricts other risky behaviors, including framing (clickjacking) and form submission targets."
