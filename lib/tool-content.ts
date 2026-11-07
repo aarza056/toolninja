@@ -1685,7 +1685,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "fake-data-generator": {
     about:
-      "The Fake Data Generator lets you define a custom schema — field name plus type — and instantly generates realistic-looking mock data as JSON or CSV. Choose from 20 field types including names, emails, phone numbers, UUIDs, addresses, companies, job titles, dates, and Lorem-style text.\n\nUse it to populate a frontend with realistic test data before a real API exists, generate CSV fixtures for a data pipeline test, or quickly produce a batch of sample records for a demo. An optional seed value makes output reproducible — the same seed with the same schema always generates identical data, useful for consistent test fixtures across CI runs.\n\nAll generation happens in your browser using JavaScript — no data is sent anywhere, and there's no rate limit like hosted mock-data APIs often impose.",
+      "The Fake Data Generator turns a field list or a JSON Schema into realistic-looking mock data, as JSON, NDJSON, CSV or SQL. SQL output is written for PostgreSQL, MySQL or SQLite, with a matching CREATE TABLE and batched INSERT statements. Choose from 20 field types including names, emails, phone numbers, UUIDs, addresses, companies, job titles, dates, and Lorem-style text.\n\nUse it to populate a frontend with realistic test data before a real API exists, generate CSV fixtures for a data pipeline test, or quickly produce a batch of sample records for a demo. An optional seed value makes output reproducible — the same seed with the same schema always generates identical data, useful for consistent test fixtures across CI runs.\n\nAll generation happens in your browser using JavaScript — no data is sent anywhere, and there's no rate limit like hosted mock-data APIs often impose.",
     useCases: [
       "Populating a frontend UI with realistic-looking data before the real backend API is ready",
       "Generating CSV fixtures for testing a data import or ETL pipeline",
@@ -1695,9 +1695,10 @@ export const toolContent: Record<string, ToolContent> = {
     tips: [
       "Set a seed value to get the exact same generated data every time — useful for deterministic test fixtures instead of random data that changes each run.",
       "Field names become JSON object keys or CSV column headers directly — use camelCase or snake_case to match what your API or database expects.",
-      "Generate up to 500 rows per run — for larger datasets, generate in multiple batches or increase the row count and re-download.",
+      "Generate up to 10,000 rows per run. Large results show a preview on the page, and Download and Copy include every row.",
+      "Already have a JSON Schema for your API? Paste it in From JSON Schema mode to get data in exactly that shape, nesting included.",
       "Switch to CSV output to get a file you can drag straight into Excel, Google Sheets, or a database import tool.",
-      "Switch to SQL output to get ready-to-run INSERT INTO statements for seeding a database directly — set the table name to match your actual schema.",
+      "Switch to SQL output and pick your database: column types, quoting, booleans and dates all follow that dialect. Untick CREATE TABLE if the table already exists.",
     ],
     faq: [
       {
@@ -1710,7 +1711,11 @@ export const toolContent: Record<string, ToolContent> = {
       },
       {
         q: "Can I generate nested JSON objects, like an address object inside a user object?",
-        a: "Not directly — each field generates a single flat value (string, number, boolean, or date). For nested structures, generate the flat fields you need and restructure the JSON afterward, or generate separate arrays (users, addresses) and join them in your own code.",
+        a: "Yes, with From JSON Schema mode: describe the shape with nested objects and arrays, and the output follows it. In CSV and SQL, nested values go in the cell as JSON, using a JSON column on Postgres and MySQL. The Pick fields mode stays flat.",
+      },
+      {
+        q: "Which parts of JSON Schema does it follow?",
+        a: "type, format (email, uuid, date, date-time, uri, ipv4 and others), enum, const, minimum and maximum, minLength and maxLength, minItems and maxItems, required, oneOf, anyOf, allOf and $ref within the schema. Values for pattern aren't generated to match the regular expression, and the tool tells you when a schema uses one.",
       },
       {
         q: "How is this different from a hosted service like Mockaroo?",
@@ -2372,12 +2377,14 @@ export const toolContent: Record<string, ToolContent> = {
 
   "barcode-generator": {
     about:
-      "The Barcode Generator creates EAN-13, UPC-A, EAN-8, Code 128, Code 39 and ITF-14 barcodes directly in your browser — no server round-trip, and no external barcode library shipped to your browser either; the encoding logic is implemented from the published symbology specifications. Code 128 handles any printable ASCII text (letters, numbers, punctuation) via Subset B, while EAN-13 and UPC-A handle the numeric product codes used in retail, auto-computing and validating the check digit.\n\nDuring development, the encoder's output was verified byte-for-byte against a widely-used reference barcode library for a range of test inputs — matching not just visually, but at the level of individual black/white module widths — before being reimplemented independently for this tool. The EAN-8, Code 39 and ITF-14 encoders were checked the same way, by decoding the generated bars with the ZXing reference decoder. That verification step matters for a barcode specifically, since a single incorrect module makes the whole thing unscannable while still looking plausible to the eye.\n\nAdjust bar width and height, then download the result as a PNG or SVG ready to drop into a label, document, or product listing.",
+      "The Barcode Generator creates EAN-13, UPC-A, EAN-8, Code 128, GS1-128, Code 39 and ITF-14 barcodes directly in your browser — no server round-trip, and no external barcode library shipped to your browser either; the encoding logic is implemented from the published symbology specifications. Code 128 handles any printable ASCII text (letters, numbers, punctuation) via Subset B, while EAN-13 and UPC-A handle the numeric product codes used in retail, auto-computing and validating the check digit.\n\nDuring development, the encoder's output was verified byte-for-byte against a widely-used reference barcode library for a range of test inputs — matching not just visually, but at the level of individual black/white module widths — before being reimplemented independently for this tool. The EAN-8, Code 39, ITF-14 and GS1-128 encoders were checked by decoding the generated bars with the ZXing reference decoder. That verification step matters for a barcode specifically, since a single incorrect module makes the whole thing unscannable while still looking plausible to the eye.\n\nGS1-128 adds the structure logistics labels need: write Application Identifiers in brackets, like (01)09501101530003(17)261231(10)ABC123, and the tool checks each field's length and check digit and places the FNC1 separators. Bulk mode turns a list of up to 500 values into a ZIP of PNG or SVG files.\n\nAdjust bar width and height, then download the result as a PNG or SVG ready to drop into a label, document, or product listing.",
     useCases: [
       "Generating a Code 128 barcode for an internal inventory or asset-tracking label",
       "Creating an EAN-13 barcode from a product's GTIN for packaging or an e-commerce listing",
       "Producing a UPC-A barcode for a US retail product without a subscription barcode service",
       "Making an ITF-14 carton barcode from a product's EAN-13 for cases and pallets",
+      "Printing GS1-128 logistics labels with batch, expiry and serial data",
+      "Generating a batch of asset tags or SKUs as a ZIP from a spreadsheet column",
       "Quickly checking whether a 12 or 13-digit product code's check digit is actually valid",
     ],
     tips: [
@@ -2466,7 +2473,7 @@ export const toolContent: Record<string, ToolContent> = {
 
   "meeting-planner": {
     about:
-      "The Meeting Planner lays out working hours across multiple time zones on a single grid, so you can see at a glance when a meeting time actually overlaps with everyone's reasonable working hours instead of mentally converting each person's local time one at a time. Pick a reference time zone and date, add the cities you're scheduling across, and each row shows that city's local hour for every hour of the reference day — color-coded as working hours, awake-but-off-hours, or likely asleep.\n\nEvery time lookup goes through the browser's Intl API rather than manual UTC-offset math, so daylight saving time transitions are handled correctly automatically — including the case where two zones are on opposite sides of a DST transition on the day you're planning around, which is exactly the scenario naive offset arithmetic gets wrong.\n\nClick any hour column to see the exact local time it represents for every added city at once, including whether it falls on the previous or next calendar day for a given time zone — and from there, download it directly as a .ics calendar file with a title and duration, saved as an absolute UTC instant so it lands correctly on every attendee's calendar regardless of their own device's time zone setting.",
+      "The Meeting Planner lays out working hours across multiple time zones on a single grid, so you can see at a glance when a meeting time actually overlaps with everyone's reasonable working hours instead of mentally converting each person's local time one at a time. Pick a reference time zone and date, add the cities you're scheduling across, and each row shows that city's local hour for every hour of the reference day — color-coded as working hours, awake-but-off-hours, or likely asleep.\n\nEvery time lookup goes through the browser's Intl API rather than manual UTC-offset math, so daylight saving time transitions are handled correctly automatically — including the case where two zones are on opposite sides of a DST transition on the day you're planning around, which is exactly the scenario naive offset arithmetic gets wrong.\n\nA Best times panel ranks every hour by how many locations it suits, and you can set working hours for each location, including night shifts. A share link carries your cities, date and hours, so the people you're meeting with see the same view.\n\nClick any hour column to see the exact local time it represents for every added city at once, including whether it falls on the previous or next calendar day for a given time zone — and from there, download it directly as a .ics calendar file with a title and duration, saved as an absolute UTC instant so it lands correctly on every attendee's calendar regardless of their own device's time zone setting.",
     useCases: [
       "Finding a meeting time that falls in working hours for a distributed team across 3+ time zones",
       "Checking whether a proposed call time would wake someone up in another region",
@@ -2475,7 +2482,8 @@ export const toolContent: Record<string, ToolContent> = {
       "Downloading the agreed-on time as a .ics file to send in an email or import directly into a calendar app",
     ],
     tips: [
-      "The working-hours coloring (9am–6pm) is a fixed, general default, not a per-person customizable schedule — treat it as a starting point for the conversation, not a hard rule for everyone's actual calendar.",
+      "Working hours default to 9am–6pm. Open the working hours section to set each location's own, including a night shift that runs past midnight.",
+      "Copy the share link from the Best times panel and send it to the group: it opens with the same cities, date and working hours you set.",
       "A city showing a +1 or -1 marker on an hour cell means that hour falls on the next or previous calendar day in that time zone relative to your reference date — worth calling out explicitly when proposing a time.",
       "Because every conversion goes through the browser's own timezone database, results stay correct across DST transitions without needing a manual update.",
       "Click an hour cell first, then set a title and duration below the summary panel, and Download .ics — no need to separately create the event in your own calendar app after agreeing on a time.",
@@ -2486,8 +2494,8 @@ export const toolContent: Record<string, ToolContent> = {
         a: "Yes — every time zone lookup uses the browser's Intl API against the specific date you've selected, which resolves the correct UTC offset for that exact day including any DST rules in effect. This avoids the classic bug where a fixed offset table gives the wrong answer for part of the year.",
       },
       {
-        q: "Why do the 'working hours' look different from my team's actual schedule?",
-        a: "The 9am–6pm coloring is a general-purpose default meant to make the grid readable at a glance, not a customizable per-person calendar. Use it to narrow down a reasonable window, then confirm the specific time works against each person's actual schedule.",
+        q: "Can I set different working hours for each person?",
+        a: "Yes, per location. The default is 9am–6pm; change it for any location and the grid and the ranked best times update. A link you share includes those hours. The tool doesn't read anyone's calendar, so confirm the time with the people involved.",
       },
       {
         q: "What does clicking an hour column actually show?",
@@ -2592,9 +2600,10 @@ export const toolContent: Record<string, ToolContent> = {
 
   "patch-generator": {
     about:
-      "The Unified Diff / Patch Generator produces a real, standards-format .patch file from two pasted texts — the same unified diff format `git diff` and `diff -u` produce, and the same format `git apply` and the `patch` command consume. Paste an original and a modified version, and get back a downloadable patch with proper @@ hunk headers and configurable context lines, rather than just a visual highlight of what changed.\n\nThe diff itself is computed with a classic LCS (longest common subsequence) line-diff algorithm — the same category of algorithm underlying most real diff tools — then grouped into hunks with surrounding context lines, exactly like a real diff utility would produce.\n\nAn Apply mode goes the other direction: paste the original text and a unified diff (from this tool, git diff, or anywhere else), and get back the resulting text — or a specific error naming exactly which line didn't match, if the patch doesn't apply cleanly against that original. This is a genuinely different tool from a visual diff checker: the output here is meant to be applied, not just read.",
+      "The Unified Diff / Patch Generator produces a real, standards-format .patch file from two pasted texts — the same unified diff format `git diff` and `diff -u` produce, and the same format `git apply` and the `patch` command consume. Paste an original and a modified version, and get back a downloadable patch with proper @@ hunk headers and configurable context lines, rather than just a visual highlight of what changed.\n\nThe diff itself is computed with a classic LCS (longest common subsequence) line-diff algorithm — the same category of algorithm underlying most real diff tools — then grouped into hunks with surrounding context lines, exactly like a real diff utility would produce.\n\nAn Apply mode goes the other direction: paste the original text and a unified diff (from this tool, git diff, or anywhere else), and get back the resulting text — or a specific error naming exactly which line didn't match, if the patch doesn't apply cleanly against that original. This is a different tool from a visual diff checker: the output here is meant to be applied.\n\nA View mode covers the reading side. Paste a patch or open a .patch file from git diff, git format-patch or diff -u, and see each file with its status (modified, added, deleted, renamed, binary), its added and removed line counts, the commit details, and the changes in unified or side-by-side form.",
     useCases: [
       "Generating a .patch file to share a small fix without opening a pull request",
+      "Reading a patch someone emailed you, file by file, without applying it",
       "Producing a reviewable patch from a config file change made outside version control",
       "Understanding exactly what a unified diff's @@ hunk header numbers mean",
       "Creating a patch to apply the same textual change across multiple environments",
@@ -3188,6 +3197,180 @@ export const toolContent: Record<string, ToolContent> = {
       },
     ],
   },
+  "aws-vpc-subnet-calculator": {
+    about:
+      "The AWS VPC Subnet Calculator lays out a VPC for you. Enter the VPC range, how many Availability Zones you want, and your tiers (usually public, private and database), and it gives every tier a subnet in every zone, with no overlaps and the usable range worked out using AWS's rules. AWS reserves five addresses in every subnet: the first four and the last, so a /24 has 251 usable addresses, not 254.\n\nIt then writes the same network as Terraform or CloudFormation: the VPC, subnets, internet gateway, route tables and associations, optional NAT gateways (one shared, or one per zone), and a database subnet group for RDS. Zone names come from the region when the code runs, so the output works in any region.\n\nLeaving room for more zones keeps each tier in one contiguous block as you grow, which keeps route tables and security group rules simple. Everything runs in your browser.",
+    useCases: [
+      "Planning the subnet layout for a new AWS VPC before creating anything",
+      "Starting a Terraform module or CloudFormation stack with a correct network",
+      "Checking whether a tier design fits in a /16, /20 or smaller VPC range",
+      "Comparing a single NAT gateway against one per zone in generated code",
+    ],
+    tips: [
+      "Pick a VPC range that won't clash with your other VPCs or your office network. Everyone picks 10.0.0.0/16, and overlapping ranges can't be peered.",
+      "AWS advises against 172.17.0.0/16 because some of its services use it.",
+      "Size for growth. Kubernetes on AWS and Lambda in a VPC can use many addresses, so private tiers are usually much bigger than public ones.",
+      "A VPC's primary range can't be changed later, though you can add secondary ranges.",
+      "Load balancers need a subnet of at least /27 with 8 free addresses.",
+    ],
+    faq: [
+      {
+        q: "Why does a /24 subnet in AWS have 251 usable IPs?",
+        a: "AWS reserves five addresses in every subnet: the network address, the VPC router (.1), DNS (.2), one kept for future use (.3), and the last address. So the first address you can use is .4.",
+      },
+      {
+        q: "What's the difference between public, private and database subnets?",
+        a: "A subnet is public if its route table has a route to an internet gateway. A private subnet has no such route and reaches the internet only through a NAT gateway, if you add one. A database tier here is a private subnet with no internet route at all, grouped so RDS can use it.",
+      },
+      {
+        q: "How large can a VPC be?",
+        a: "A VPC's range can be from /16 (65,536 addresses) to /28 (16 addresses). Subnets have the same limits, and each one sits in a single Availability Zone.",
+      },
+      {
+        q: "Should I use one NAT gateway or one per zone?",
+        a: "One is cheaper, but if its zone has an outage, private subnets in the other zones lose internet access too, and traffic between zones costs extra. One per zone costs more and avoids both problems. NAT gateways are billed per hour and per GB.",
+      },
+    ],
+  },
+  "cidr-to-ip-range": {
+    about:
+      "The CIDR to IP Range Converter turns CIDR blocks into the addresses they cover. Paste one block or thousands, and each line gets its first and last IP, usable host range, total address count and subnet mask. Rows stay in the order you entered them, so the results line up with your source list, and you can export them as CSV for a spreadsheet or firewall review.\n\nIt also accepts an IP with a subnet mask (10.1.0.0 255.255.255.0) or a plain range (192.0.2.10-192.0.2.40), and a side panel converts between prefix lengths, subnet masks and wildcard masks. Tick List every IP address to expand the blocks into individual addresses, up to 65,536.\n\nEverything runs in your browser, so internal network plans stay on your machine. IPv4 only.",
+    useCases: [
+      "Converting a cloud provider's published IP ranges into start and end addresses",
+      "Preparing a firewall or allowlist review as a spreadsheet",
+      "Importing network ranges into a tool that wants first and last IP columns",
+      "Expanding a small block into a list of individual addresses",
+      "Looking up the subnet mask or wildcard mask for a prefix length",
+    ],
+    tips: [
+      "Lines starting with # are ignored, so you can paste commented lists as they are.",
+      "A block with host bits set, like 10.0.0.5/24, is read as its network, 10.0.0.0/24.",
+      "To combine or deduplicate overlapping blocks, use CIDR Merge. This tool keeps each row as entered.",
+      "/31 and /32 have no network or broadcast address, so every address in them counts as usable.",
+    ],
+    faq: [
+      {
+        q: "How do I find the IP range of a CIDR block?",
+        a: "The prefix says how many leading bits are fixed. The first IP has all remaining bits set to 0, and the last has them set to 1. So 192.168.1.0/29 keeps 29 bits fixed, leaves 3 free (8 addresses), and runs from 192.168.1.0 to 192.168.1.7.",
+      },
+      {
+        q: "How many IP addresses are in a CIDR block?",
+        a: "2 to the power of (32 minus the prefix). A /24 has 256, a /16 has 65,536 and a /8 has 16,777,216. Usually two are reserved for the network and broadcast addresses, and cloud providers reserve more.",
+      },
+      {
+        q: "What's a wildcard mask?",
+        a: "A subnet mask with its bits flipped, so 255.255.255.0 becomes 0.0.0.255. Cisco access lists and OSPF configuration use them.",
+      },
+      {
+        q: "Does it support IPv6?",
+        a: "Not yet. It handles IPv4 only.",
+      },
+    ],
+  },
+  "csp-checker": {
+    about:
+      "The CSP Checker reads a Content-Security-Policy the way a browser does and tells you what it really protects. Paste a policy, or enter a URL to check what that page sends, and get a score plus a specific fix for each problem.\n\nIt looks for what undermines a policy: 'unsafe-inline' and 'unsafe-eval', wildcards and bare schemes like https: in script sources, data: URLs, shared CDN hosts that can be used to get around an allowlist, short nonces, keywords missing their quotes, 'none' mixed with other sources, duplicate directives and obsolete ones. It also catches the directives people miss because they don't inherit from default-src: base-uri, form-action and frame-ancestors.\n\nThe rules account for how browsers actually behave. 'unsafe-inline' is ignored when a nonce or hash is present, so it isn't flagged as a hole there, and allowlisted hosts are ignored under 'strict-dynamic'. A Report-Only policy is flagged because it doesn't block anything. Pasted policies never leave your browser.",
+    useCases: [
+      "Reviewing a policy before you deploy it",
+      "Checking what a live site actually sends, after CDNs and frameworks have had their say",
+      "Finding out why a security scanner flagged your CSP",
+      "Learning why a policy that looks strict can still be bypassed",
+    ],
+    tips: [
+      "Nonces with 'strict-dynamic' are usually stronger and easier to maintain than a long list of allowed hosts.",
+      "Roll out with Content-Security-Policy-Report-Only first, then switch to enforcing once the reports are clean.",
+      "A nonce has to be new on every response. Check by reloading the page and comparing.",
+      "The URL check reads response headers only. Paste a policy from a <meta> tag to check that.",
+      "frame-ancestors, report-uri and sandbox don't work in a <meta> tag, so those need a real header.",
+    ],
+    faq: [
+      {
+        q: "What's wrong with 'unsafe-inline'?",
+        a: "CSP's main job is to stop injected scripts from running. 'unsafe-inline' allows inline <script> tags and onclick-style handlers, which is what an XSS attack injects, so it removes most of the protection. Use nonces or hashes for the inline scripts you need.",
+      },
+      {
+        q: "Why is a CDN like cdn.jsdelivr.net flagged?",
+        a: "Anyone can publish files on public CDNs, so allowing the whole host allows an attacker's script too, as well as old library versions with known bypasses. Allow an exact file path, or use nonces instead.",
+      },
+      {
+        q: "Which directives don't fall back to default-src?",
+        a: "base-uri, form-action, frame-ancestors, sandbox and the reporting directives. Setting default-src 'self' doesn't restrict them, so they need setting explicitly.",
+      },
+      {
+        q: "What does the score mean?",
+        a: "It starts at 100 and loses 25 for each high issue, 10 for medium and 3 for low, and notes cost nothing. It's this tool's own guide for comparing policies, not an industry standard, and a good score doesn't replace fixing XSS in your code.",
+      },
+    ],
+  },
+  "retry-after-tester": {
+    about:
+      "The Retry-After & Rate Limit Tester helps you handle HTTP 429 and 503 responses correctly. Paste response headers and it explains each one and tells you how long a client should wait: Retry-After in seconds or as a date, Retry-After-Ms, the RateLimit headers from the IETF draft, the X-RateLimit family, and provider variations such as OpenAI's durations (6m0s), GitHub's Unix timestamps and Anthropic's dates.\n\nThen test your code against a real limiter. Choose how many requests to allow per window, and the endpoint counts your requests and returns 429 or 503 with a correct Retry-After once you're over, then works again when the window ends. Point your own client at it, or run the test on the page to watch a well-behaved client wait and recover.\n\nFor when there's no Retry-After, a backoff calculator shows each retry's delay range and writes retry code in JavaScript and Python, with jitter, a delay cap and proper handling of both Retry-After forms.",
+    useCases: [
+      "Testing that your API client waits and retries after a 429",
+      "Working out what a confusing set of rate limit headers means",
+      "Checking whether a reset value is a delay or a timestamp",
+      "Choosing backoff settings and copying working retry code",
+    ],
+    tips: [
+      "Always read Retry-After as either form: a whole number of seconds or an HTTP date. Code that assumes seconds breaks on the date form.",
+      "Add jitter. Clients that fail together and retry on the same schedule hit the server together again.",
+      "Only retry requests that are safe to repeat. A POST that creates something may need an idempotency key.",
+      "Set a limit on retries and on total time, so a long outage can't pile up waiting requests.",
+      "curl has this built in: --retry honors Retry-After from version 7.66.",
+    ],
+    faq: [
+      {
+        q: "What is the Retry-After header?",
+        a: "A response header saying how long to wait before trying again, sent with 429, 503 and sometimes 3xx responses. RFC 9110 allows two forms: a whole number of seconds (Retry-After: 120) or an HTTP date (Retry-After: Wed, 21 Oct 2026 07:28:00 GMT).",
+      },
+      {
+        q: "What's the difference between Retry-After and X-RateLimit-Reset?",
+        a: "Retry-After is standard and tells you directly how long to wait. X-RateLimit-Reset is a convention that varies: some APIs send seconds from now, others a Unix timestamp. If both are present, follow Retry-After.",
+      },
+      {
+        q: "Should I retry on every error?",
+        a: "No. Retry 429 and 503, and usually 502, 504 and network errors on requests that are safe to repeat. Don't retry other 4xx errors, because the same request will fail the same way.",
+      },
+      {
+        q: "How does the test endpoint work?",
+        a: "/api/mock/rate-limit takes limit, window, status and format. It counts requests per visitor in fixed windows, using an anonymous counter that expires with the window. There's also an overall limit of 300 requests per 10 minutes. It allows cross-origin requests, so you can call it from code running on localhost.",
+      },
+    ],
+  },
+  "request-headers-test": {
+    about:
+      "The Request Headers & Proxy Test shows what a server actually receives from you: every header, the IP address it sees, and notes on what each one means. It's useful when a header goes missing somewhere between your code and your server, or when you need to see what a browser, library or proxy really sends. You can add your own header to a test request, or call the endpoint with curl to compare clients.\n\nIt separates headers that suggest a proxy or CDN handled the request, such as Via, CF-Connecting-IP or X-ProxyUser-Ip, from the rest. Be careful with the result in either direction: a proxy that adds nothing doesn't show up here, so finding no proxy headers doesn't prove there's no proxy. Comparing the IP address with what you expect tells you more.\n\nThis site runs behind a hosting edge that sets X-Forwarded-For, X-Real-IP and similar headers itself and overwrites anything you send, so you can't spoof them here. That's the correct behavior, and your own server should only trust those headers from a proxy you control; the page includes an nginx example. Cookies and Authorization headers are noted but their values are never shown, and nothing is stored.",
+    useCases: [
+      "Seeing exactly which headers your browser, curl or HTTP library sends",
+      "Debugging a custom header that doesn't reach your backend",
+      "Checking whether a corporate proxy or VPN adds identifying headers",
+      "Comparing your IP address with and without a proxy",
+    ],
+    tips: [
+      "Run the curl command directly and through your proxy with -x, then compare the IP and proxy headers.",
+      "Browsers won't let scripts set some headers, including Host and Cookie, so test those with curl.",
+      "User-Agent proves nothing about a client, because any client can set it to anything.",
+      "Header names are case-insensitive. HTTP/2 sends them in lowercase, so don't match them case-sensitively in code.",
+    ],
+    faq: [
+      {
+        q: "How can I tell if I'm behind a proxy?",
+        a: "Headers like Via or X-ProxyUser-Ip are a clear sign. Their absence isn't proof of anything, since anonymous proxies and VPNs add nothing. The stronger test is comparing the IP address shown here with your connection's real address, or with the same test on a different network.",
+      },
+      {
+        q: "What is X-Forwarded-For?",
+        a: "A header proxies use to pass along the client's IP, as a comma-separated chain with each proxy adding the address it received from. Clients can send a fake one, so a server should only trust entries added by its own proxies.",
+      },
+      {
+        q: "Why doesn't my fake X-Forwarded-For show up?",
+        a: "This site's hosting edge sets that header itself and replaces whatever you send. An application that reads the header directly with no proxy in front would accept the fake, which is the mistake this header is known for.",
+      },
+      {
+        q: "Are my headers stored?",
+        a: "No. The response is built from the request and then forgotten. An anonymous counter limits how many requests one visitor can make in a short time. Cookie and Authorization values are left out of the response entirely.",
+      },
+    ],
+  },
   "google-authenticator-export-decoder": {
     about:
       "The Google Authenticator Export Decoder turns Google Authenticator's \"Transfer accounts\" QR codes into standard 2FA setup links that any authenticator app can import. Google's export QR doesn't contain the usual otpauth://totp link: it holds an otpauth-migration://offline?data=… link — a base64 protobuf with up to ten accounts per code — which Bitwarden, 1Password, Aegis and most other apps don't accept. This tool decodes it and gives you, for each account, the secret, a standard otpauth:// link and a QR code to scan into the new app, with the current code shown so you can check it matches before deleting anything.\n\nIt also works the other way: paste otpauth:// links and build a transfer QR that Google Authenticator imports in one scan.\n\nDecoding happens entirely in your browser tab. Nothing is uploaded, and nothing is saved — not even to the browser's local storage — because these secrets are the keys to your accounts.",
@@ -3768,6 +3951,10 @@ export const toolContent: Record<string, ToolContent> = {
         a: "No. They pass the Luhn checksum and match real network prefix/length rules, so they'll pass client-side format validation, but there's no bank account behind them — any real payment processor will reject an actual charge attempt against one. They exist purely to test your form's validation logic, not to process payments.",
       },
       {
+        q: "Can I use these for a free trial or to buy something?",
+        a: "No. A merchant checks a card with the bank that issued it, and no bank has an account for a generated number, so it's declined. Entering made-up card details to get a paid service is at best a breach of that service's terms, and it can be fraud. This tool is for developers testing forms they're building.",
+      },
+      {
         q: "Is it legal and safe to generate numbers like this?",
         a: "Yes — these numbers follow the same publicly documented Luhn algorithm and network prefix ranges used throughout the payments industry for testing, the same category as the well-known test numbers payment processors themselves publish (e.g. Stripe's 4242 4242 4242 4242). They don't correspond to real accounts and can't be used to charge anyone.",
       },
@@ -4050,9 +4237,10 @@ export const toolContent: Record<string, ToolContent> = {
 
   "sitemap-generator": {
     about:
-      "The ToolNinja XML Sitemap Generator builds a standards-compliant sitemap.xml from a list of page URLs — the file search engines use to discover and prioritize crawling your site's pages, especially ones that might not be easily reachable through internal links alone.\n\nEach URL gets an optional lastmod date, changefreq hint, and priority value, following the sitemap protocol (sitemaps.org) that Google, Bing, and other search engines all support. URLs are validated as proper absolute http(s) addresses before generating output, since a sitemap entry that isn't a real absolute URL is simply ignored (or causes a validation warning) by every major search engine's sitemap parser.\n\nThis pairs directly with the existing robots.txt Generator — a robots.txt's Sitemap: directive is exactly how you tell crawlers where to find the sitemap this tool produces. Everything runs 100% in your browser — your URL list never leaves your machine.",
+      "The ToolNinja XML Sitemap Generator builds a standards-compliant sitemap.xml by crawling your website from its address, or from a list of page URLs — the file search engines use to discover and prioritize crawling your site's pages, especially ones that might not be easily reachable through internal links alone.\n\nEach URL gets an optional lastmod date, changefreq hint, and priority value, following the sitemap protocol (sitemaps.org) that Google, Bing, and other search engines all support. URLs are validated as proper absolute http(s) addresses before generating output, since a sitemap entry that isn't a real absolute URL is simply ignored (or causes a validation warning) by every major search engine's sitemap parser.\n\nEnter a website and the crawler follows its links, up to 500 pages, while respecting robots.txt. It also reports what it finds on the way: broken pages, pages marked noindex, and pages robots.txt blocks. Crawled pages keep the Last-Modified date their server reports.\n\nThis pairs directly with the robots.txt Generator — a robots.txt's Sitemap: directive is how you tell crawlers where to find the sitemap this tool produces. A pasted URL list stays in your browser. A crawl goes through our server, which requests the pages and doesn't keep what it reads.",
     useCases: [
       "Generating a sitemap.xml for a site that doesn't have server-side sitemap generation built in",
+      "Crawling a site to find broken links and pages accidentally marked noindex",
       "Producing a sitemap for a subset of pages (e.g. just blog posts) to submit separately in Google Search Console",
       "Quickly building a sitemap from a list of URLs exported from a CMS or static site generator's build output",
       "Understanding exactly what changefreq and priority mean before deciding whether to set them",
@@ -4070,6 +4258,10 @@ export const toolContent: Record<string, ToolContent> = {
       {
         q: "Do search engines actually use the priority value?",
         a: "Google has stated for years that it largely ignores the priority field, treating it as a weak signal at best. It's still part of the sitemap protocol and some search engines or internal tools may use it, but don't expect setting priority to 1.0 on every page to meaningfully change crawl behavior.",
+      },
+      {
+        q: "How does the website crawl work?",
+        a: "It starts at the address you enter and follows links on the same site, up to the page limit you choose. Requests come from our server as ToolNinjaSitemapBot, at a gentle pace, and pages blocked by robots.txt are skipped and listed. It reads the page's HTML, so links that only appear after JavaScript runs won't be found. For a site built that way, paste your URLs instead.",
       },
       {
         q: "Why were some of my pasted URLs rejected?",

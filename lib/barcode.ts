@@ -1,4 +1,4 @@
-export type BarcodeFormat = "code128" | "ean13" | "upca" | "ean8" | "code39" | "itf14";
+export type BarcodeFormat = "code128" | "ean13" | "upca" | "ean8" | "code39" | "itf14" | "gs1128";
 
 export interface BarcodeResult {
   /** Module pattern as a string of "1" (bar) / "0" (space), one character per module. */
@@ -205,8 +205,117 @@ export function encodeITF14(input: string): BarcodeResult {
   return { modules, displayText: full };
 }
 
+// ─── GS1-128 ─────────────────────────────────────────────────────────────────
+
+const CODE128_START_C = 105;
+const CODE128_FNC1 = 102;
+const CODE128_TO_B = 100; // in Code Set C: switch to Set B
+const CODE128_TO_C = 99; // in Code Set B: switch to Set C
+
+// Application Identifiers: fixed data length, or variable up to a maximum (followed by FNC1 unless last)
+const AI_FIXED: Record<string, number> = { "00": 18, "01": 14, "02": 14, "11": 6, "12": 6, "13": 6, "15": 6, "16": 6, "17": 6, "20": 2, "410": 13, "411": 13, "412": 13, "413": 13, "414": 13, "415": 13, "416": 13, "417": 13, "422": 3 };
+const AI_VARIABLE: Record<string, number> = { "10": 20, "21": 20, "22": 20, "240": 30, "241": 30, "30": 8, "37": 8, "400": 30, "401": 30, "403": 30, "420": 20, "90": 30, "91": 90, "92": 90, "93": 90, "94": 90, "95": 90, "96": 90, "97": 90, "98": 90, "99": 90 };
+
+function aiRule(ai: string): { fixed: number } | { max: number } | null {
+  if (ai in AI_FIXED) return { fixed: AI_FIXED[ai] };
+  if (ai in AI_VARIABLE) return { max: AI_VARIABLE[ai] };
+  if (/^3[1-6]\d{2}$/.test(ai)) return { fixed: 6 }; // measures: weight, length… with a decimal-point digit
+  return null;
+}
+
+/** Parses "(01)09501101530003(17)261231(10)ABC" into [AI, data] pairs, checking each against its rule */
+export function parseGs1(input: string): { ai: string; data: string; variable: boolean }[] {
+  const parts = Array.from(input.trim().matchAll(/\((\d{2,4})\)([^()]*)/g));
+  if (!parts.length || parts.map((m) => m[0]).join("") !== input.trim()) {
+    throw new Error("Write GS1-128 data with each Application Identifier in brackets, like (01)09501101530003(10)ABC123.");
+  }
+  return parts.map((m) => {
+    const ai = m[1];
+    const data = m[2];
+    const rule = aiRule(ai);
+    if (!rule) throw new Error(`(${ai}) isn't an Application Identifier this generator knows.`);
+    if (!data) throw new Error(`(${ai}) has no data after it.`);
+    if ("fixed" in rule) {
+      if (data.length !== rule.fixed || !/^\d+$/.test(data)) throw new Error(`(${ai}) needs exactly ${rule.fixed} digits.`);
+      if (ai === "00" || ai === "01" || ai === "02") {
+        const check = gs1CheckDigit(data.slice(0, -1));
+        if (Number(data[data.length - 1]) !== check) throw new Error(`(${ai}) has the wrong check digit: expected ${check}, got ${data[data.length - 1]}.`);
+      }
+    } else if (data.length > rule.max) {
+      throw new Error(`(${ai}) can be at most ${rule.max} characters.`);
+    }
+    return { ai, data, variable: "max" in rule };
+  });
+}
+
+const isDigit = (c: string | undefined) => c !== undefined && c >= "0" && c <= "9";
+
+/** GS1-128: Code 128 starting with FNC1, using Code Set C for digit runs and Set B for everything else */
+export function encodeGS1128(input: string): BarcodeResult {
+  const fields = parseGs1(input);
+  // The element string, with \u001d marking the FNC1 that ends a variable-length field (not needed at the very end)
+  const stream = fields.map((f, i) => f.ai + f.data + (f.variable && i < fields.length - 1 ? "\u001d" : "")).join("");
+  for (const ch of stream) {
+    const c = ch.charCodeAt(0);
+    if (ch !== "\u001d" && (c < 32 || c > 126)) throw new Error(`GS1-128 only supports printable ASCII characters — "${ch}" is not supported.`);
+  }
+  const digitRun = (from: number) => {
+    let n = 0;
+    while (isDigit(stream[from + n])) n++;
+    return n;
+  };
+  let inC = digitRun(0) >= 2;
+  const values = [inC ? CODE128_START_C : CODE128_START_B, CODE128_FNC1];
+  for (let i = 0; i < stream.length; ) {
+    const ch = stream[i];
+    if (ch === "\u001d") {
+      values.push(CODE128_FNC1); // the same symbol in both code sets
+      i++;
+      continue;
+    }
+    const run = digitRun(i);
+    if (inC) {
+      if (run >= 2) {
+        values.push(Number(stream.slice(i, i + 2)));
+        i += 2;
+      } else {
+        values.push(CODE128_TO_B);
+        inC = false;
+      }
+    } else if (run >= 4) {
+      // Only worth switching for at least two pairs
+      values.push(CODE128_TO_C);
+      inC = true;
+    } else {
+      values.push(ch.charCodeAt(0) - 32);
+      i++;
+    }
+  }
+  let checksum = values[0];
+  for (let i = 1; i < values.length; i++) checksum += values[i] * i;
+  values.push(checksum % 103);
+  values.push(CODE128_STOP);
+  return { modules: values.map((v) => CODE128_BARS[v]).join(""), displayText: fields.map((f) => `(${f.ai})${f.data}`).join("") };
+}
+
+/** A complete SVG of a barcode with its text line. The text is escaped: Code 128 can encode < and & */
+export function barcodeSvg(result: BarcodeResult, barWidth = 2, height = 80): string {
+  const quietZone = barWidth * 10;
+  const textHeight = 20;
+  const width = result.modules.length * barWidth + quietZone * 2;
+  const totalHeight = height + textHeight;
+  let rects = "";
+  for (let i = 0; i < result.modules.length; i++) {
+    if (result.modules[i] === "1") rects += `<rect x="${quietZone + i * barWidth}" y="0" width="${barWidth}" height="${height}" fill="#000"/>`;
+  }
+  const text = result.displayText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${totalHeight}" viewBox="0 0 ${width} ${totalHeight}"><rect width="${width}" height="${totalHeight}" fill="#fff"/>${rects}<text x="${width / 2}" y="${height + 16}" font-family="monospace" font-size="14" text-anchor="middle" fill="#000">${text}</text></svg>`;
+}
+
 export function generateBarcode(format: BarcodeFormat, input: string): BarcodeResult {
   switch (format) {
+    case "gs1128":
+      return encodeGS1128(input);
     case "code128":
       return encodeCode128(input);
     case "ean13":

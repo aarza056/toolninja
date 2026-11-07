@@ -5,11 +5,12 @@ import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { Download, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { generateUnifiedDiff, applyUnifiedDiff } from "@/lib/diff-patch";
+import PatchViewer from "./PatchViewer";
 
 const STORAGE_KEY = "toolninja:patch-generator";
 const APPLY_STORAGE_KEY = "toolninja:patch-generator-apply";
 
-type Mode = "generate" | "apply";
+type Mode = "generate" | "apply" | "view";
 
 export default function PatchGeneratorClient() {
   const [mode, setMode] = useState<Mode>("generate");
@@ -75,8 +76,8 @@ export default function PatchGeneratorClient() {
 
   return (
     <ToolLayout
-      title="Unified Diff / Patch Generator"
-      description="Generate a .patch file from two texts, or apply an existing patch — usable with git apply or patch"
+      title="Unified Diff / Patch Generator & Viewer"
+      description="Generate a .patch file from two texts, apply an existing patch, or read one file by file — usable with git apply or patch"
     >
       <div className="flex rounded-[6px] border border-[#222222] overflow-hidden w-fit mb-4">
         <button
@@ -91,9 +92,17 @@ export default function PatchGeneratorClient() {
         >
           Apply
         </button>
+        <button
+          onClick={() => setMode("view")}
+          className={`px-4 py-1.5 text-sm border-l border-[#222222] transition-colors ${mode === "view" ? "bg-[#a855f7] text-white" : "bg-[#111111] text-[#888888] hover:text-[#f5f5f5]"}`}
+        >
+          View
+        </button>
       </div>
 
-      {mode === "apply" ? (
+      {mode === "view" ? (
+        <PatchViewer />
+      ) : mode === "apply" ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[420px] mb-4">
             <div className="flex flex-col gap-1">

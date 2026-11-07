@@ -26,6 +26,26 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    date: "2026-11-07",
+    title: "VPC planning, CSP checks and rate limit testing",
+    summary: "Plan AWS subnets with ready-to-use Terraform, convert CIDR blocks in bulk, audit a Content-Security-Policy, test 429 handling and see the headers a server receives.",
+    items: [
+      { kind: "new", tool: "aws-vpc-subnet-calculator" },
+      { kind: "new", tool: "cidr-to-ip-range" },
+      { kind: "new", tool: "csp-checker" },
+      { kind: "new", tool: "retry-after-tester" },
+      { kind: "new", tool: "request-headers-test" },
+      { kind: "improved", tool: "sitemap-generator", text: "Crawl a website from its URL, respecting robots.txt, with a report of broken, noindex and blocked pages" },
+      { kind: "improved", tool: "patch-generator", text: "A viewer for reading patches file by file, unified or side by side" },
+      { kind: "improved", tool: "meeting-planner", text: "Best times ranked for you, working hours per location, and a link to share the plan" },
+      { kind: "improved", tool: "barcode-generator", text: "GS1-128 for logistics labels, and bulk generation to a ZIP of PNG or SVG files" },
+      { kind: "improved", tool: "fake-data-generator", text: "Generate from a JSON Schema, write SQL for Postgres, MySQL or SQLite with CREATE TABLE, and go up to 10,000 rows" },
+      { kind: "fix", tool: "curl-to-code", text: "Each page now sends its heading and content in the HTML, not only after JavaScript runs" },
+      { kind: "improved", tool: "credit-card-test-generator", text: "Says clearly that these numbers can't buy anything, and links to the sandbox cards each payment provider accepts" },
+      { kind: "guide", post: "test-credit-card-numbers-explained" },
+    ],
+  },
+  {
     date: "2026-10-31",
     title: "LLM costs, payment test cards and network planning",
     summary: "Budget your LLM API bill, find the right sandbox card for every payment scenario, get the path to any JSON value, and merge and plan IP networks.",

@@ -192,7 +192,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "fake-data-generator": {
     title: "Fake Data Generator — Mock JSON, CSV & SQL | ToolNinja",
     description:
-      "Free fake data generator: define fields and get realistic mock JSON, CSV, or SQL INSERT test data. Optional seed for reproducible output. No login.",
+      "Generate mock data from fields or a JSON Schema: JSON, CSV or SQL with CREATE TABLE for Postgres, MySQL and SQLite. Up to 10,000 rows, with an optional seed.",
   },
   "gitignore-generator": {
     title: ".gitignore Generator — Templates for Any Stack | ToolNinja",
@@ -217,12 +217,12 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "sitemap-generator": {
     title: "XML Sitemap Generator Online — Create sitemap.xml Free | ToolNinja",
     description:
-      "Free online XML sitemap generator. Paste your page URLs and get a ready-to-upload sitemap.xml with lastmod, changefreq, and priority. No login, 100% browser-based.",
+      "Free XML sitemap generator: crawl your website from its URL, or paste page URLs, and get a ready-to-upload sitemap.xml, plus a list of broken and noindex pages.",
   },
   "barcode-generator": {
     title: "Barcode Generator — EAN-13, UPC-A, Code 128, Code 39, ITF-14 | ToolNinja",
     description:
-      "Free online barcode generator for EAN-13, UPC-A, EAN-8, Code 128, Code 39 and ITF-14 with automatic check digits. Download PNG or SVG — every format checked against a reference decoder. No login, 100% browser-based.",
+      "Free barcode generator for EAN-13, UPC-A, EAN-8, Code 128, GS1-128, Code 39 and ITF-14. Make one or hundreds at once, and download PNG, SVG or a ZIP. No login.",
   },
   "readme-badge-generator": {
     title: "README Badge Generator — Free shields.io Badge Maker | ToolNinja",
@@ -310,7 +310,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "meeting-planner": {
     title: "Meeting Planner Across Time Zones — Free | ToolNinja",
     description:
-      "Find a meeting time that works in every time zone: compare working hours side by side, spot the overlap at a glance and send a calendar invite. Free, no login.",
+      "Find a meeting time across time zones: set working hours per location, see the best times ranked, share a link and send a calendar invite. Free, no login.",
   },
   "json-to-markdown-table": {
     title: "JSON to Markdown Table Converter Online | ToolNinja",
@@ -375,7 +375,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online text diff tool. Compare strings at character, word or line level with inline diff highlighting. Uses Myers algorithm for accurate differences. Perfect for comparing code snippets. No login required.",
   },
   "xpath-tester": {
-    title: "XPath Online Tester & Evaluator (XML, HTML) | ToolNinja",
+    title: "XPath Tester Online — Test XPath on XML & HTML | ToolNinja",
     description:
       "Test XPath online: paste XML or HTML, type an expression and see every matching node live. Evaluator, validator and cheat sheet in one — free, no login.",
   },
@@ -402,7 +402,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "patch-generator": {
     title: "Patch File Generator — Unified Diff Online | ToolNinja",
     description:
-      "Free online unified diff and patch generator. Paste an original and modified text and get a real, downloadable .patch file usable with git apply or the patch command. No login, 100% browser-based.",
+      "Make a real .patch file from two texts, apply one, or view one file by file and side by side. Works with git diff, git format-patch and diff -u. Free, in your browser.",
   },
   "uuid-parser": {
     title: "UUID Parser Online — Decode UUID & ULID Timestamps | ToolNinja",
@@ -459,6 +459,31 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     description:
       "Free VLSM calculator: enter a network and how many hosts each subnet needs to get the most efficient CIDR, mask and usable range for each — with AWS/Azure reserved-address rules.",
   },
+  "aws-vpc-subnet-calculator": {
+    title: "AWS VPC Subnet Calculator — Terraform & CloudFormation | ToolNinja",
+    description:
+      "Plan an AWS VPC: lay out public, private and database subnets across Availability Zones, with AWS's 5 reserved IPs counted, and copy the Terraform or CloudFormation.",
+  },
+  "cidr-to-ip-range": {
+    title: "CIDR to IP Range Converter — Bulk, CSV Export | ToolNinja",
+    description:
+      "Convert CIDR blocks to first and last IP, usable hosts and address count, one or thousands at once. Export CSV, list every IP, and convert subnet masks. Free, IPv4.",
+  },
+  "csp-checker": {
+    title: "CSP Checker — Test a Content Security Policy | ToolNinja",
+    description:
+      "Paste a Content-Security-Policy or enter a URL. Finds unsafe-inline, wildcards, bypassable hosts and missing directives, with a score and a fix for each problem.",
+  },
+  "retry-after-tester": {
+    title: "Retry-After Tester & 429 Rate Limit Test | ToolNinja",
+    description:
+      "Read Retry-After and RateLimit headers, test your client against a real endpoint that returns 429 or 503, and copy retry code with exponential backoff and jitter.",
+  },
+  "request-headers-test": {
+    title: "Request Headers Test & Proxy Header Check | ToolNinja",
+    description:
+      "See the exact headers a server receives from your browser, curl or code, plus your IP as seen and any proxy headers such as Via. Nothing is stored. Free, no login.",
+  },
   "google-authenticator-export-decoder": {
     title: "Google Authenticator Export Decoder | ToolNinja",
     description:
@@ -477,7 +502,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "credit-card-test-generator": {
     title: "Credit Card Test Generator & Luhn Validator | ToolNinja",
     description:
-      "Free online credit card test number generator. Generate Luhn-valid fake Visa, Mastercard, Amex, and Discover numbers for testing payment forms, or validate any number's Luhn checksum. Not real cards. No login, 100% browser-based.",
+      "For developers testing payment forms: Luhn-valid numbers in Visa, Mastercard, Amex and Discover formats, plus a checksum validator. Not real cards; they can't buy anything.",
   },
   "cors-debugger": {
     title: "CORS Error Debugger — Fix CORS Errors Online | ToolNinja",
@@ -604,7 +629,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Generate an SSH key online in seconds: Ed25519 or RSA key pairs in OpenSSH format with fingerprint, like ssh-keygen without installing anything. Never uploaded.",
   },
   "totp-generator": {
-    title: "2FA Live Code Generator — TOTP from Secret | ToolNinja",
+    title: "TOTP Generator & 2FA Live Code from a Secret | ToolNinja",
     description:
       "Paste your 2FA secret and get the live 6-digit code instantly — several at once, one per line. Free TOTP generator; nothing is uploaded or saved.",
   },

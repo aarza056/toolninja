@@ -87,13 +87,35 @@ export const BARCODE_PAGES: BarcodePage[] = [
     ],
     usedFor: "Code 128 is the general-purpose barcode for text and IDs: shipping labels, warehouse locations, asset tags and serial numbers.",
     notes: [
-      "This generator uses Code Set B, which covers all printable ASCII characters.",
+      "This generator uses Code Set B, which covers all printable ASCII characters. Need many at once? Switch to Bulk and download a ZIP.",
       "GS1-128 (formerly UCC/EAN-128) is Code 128 with a special start character and Application Identifiers like (01) for GTIN.",
       "The hidden check character makes misreads very unlikely, so no extra check digit is needed.",
     ],
     faq: [
       { q: "Code 128 or Code 39 — which should I use?", a: "Code 128 for anything new: it encodes lowercase and punctuation and is much more compact. Use Code 39 only when a system or industry standard requires it." },
       { q: "Can Code 128 encode numbers only?", a: "Yes. Code 128 can pack digits in pairs (Code Set C) for an even shorter barcode; this generator uses Set B, which works for any text including numbers." },
+    ],
+  },
+  {
+    slug: "gs1-128",
+    format: "gs1128",
+    name: "GS1-128",
+    facts: [
+      ["Encodes", "Application Identifiers and their data: GTIN, batch, expiry, serial, SSCC and more"],
+      ["Check character", "Mod 103, added automatically; (00), (01) and (02) are also checked for their own check digit"],
+      ["Used on", "Pallet and carton labels, shipping labels, healthcare and food logistics"],
+      ["Also called", "UCC-128, EAN-128"],
+    ],
+    usedFor: "GS1-128 (formerly UCC-128 or EAN-128) puts structured supply-chain data on a label: which product, which batch, when it expires, which pallet.",
+    notes: [
+      "It's Code 128 with a special FNC1 character right after the start, which tells scanners to read the data as Application Identifiers.",
+      "The brackets around AIs like (01) are only printed in the text line; they aren't encoded in the bars.",
+      "Variable-length fields such as (10) batch are followed by a separator unless they're last, so put them at the end to keep the barcode short.",
+      "Digit runs are packed in pairs (Code Set C), which is why long numbers stay compact.",
+    ],
+    faq: [
+      { q: "What's the difference between Code 128 and GS1-128?", a: "GS1-128 is a use of Code 128. The bars come from the same symbol set, but GS1-128 starts with FNC1 and its data follows the GS1 Application Identifier rules, so any supply-chain system can read what each part means." },
+      { q: "Is EAN-128 or UCC-128 the same as GS1-128?", a: "Yes. They're the older names for the same symbology, from before the EAN and UCC organizations merged into GS1." },
     ],
   },
   {
