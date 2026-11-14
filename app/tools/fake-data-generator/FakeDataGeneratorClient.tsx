@@ -1,13 +1,27 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { Plus, Trash2, Download, Dices } from "lucide-react";
 import { FIELD_TYPES, buildSql, generateFromSchema, generateRows, type FieldSpec, type FieldType, type SqlDialect } from "@/lib/fake-data";
 import { jsonToCsv } from "@/lib/csv-json";
+import { FAKE_DATA_PAGES } from "@/lib/fake-data-pages";
 
 type OutputFormat = "json" | "ndjson" | "csv" | "sql";
+
+interface Props {
+  /** The /tools/fake-data-generator/<format> pages open the generator set up for one output */
+  initialFormat?: OutputFormat;
+  initialDialect?: SqlDialect;
+  initialTable?: string;
+  initialFields?: FieldSpec[];
+  heading?: string;
+  intro?: string;
+  /** The page's own slug, left out of the links to the other formats */
+  pageSlug?: string;
+}
 
 const MAX_ROWS = 10000;
 // Longer output is downloaded or copied whole, but only the start is drawn on the page
@@ -60,22 +74,22 @@ function download(filename: string, content: string, mime: string) {
   URL.revokeObjectURL(a.href);
 }
 
-export default function FakeDataGeneratorClient() {
-  const [fields, setFields] = useState<FieldSpec[]>(DEFAULT_FIELDS);
+export default function FakeDataGeneratorClient({ initialFormat, initialDialect, initialTable, initialFields, heading, intro, pageSlug }: Props = {}) {
+  const [fields, setFields] = useState<FieldSpec[]>(initialFields ?? DEFAULT_FIELDS);
   const [count, setCount] = useState(10);
   const [seed, setSeed] = useState("");
-  const [format, setFormat] = useState<OutputFormat>("json");
+  const [format, setFormat] = useState<OutputFormat>(initialFormat ?? "json");
   const [rows, setRows] = useState<unknown[] | null>(null);
-  const [tableName, setTableName] = useState("users");
+  const [tableName, setTableName] = useState(initialTable ?? "users");
   const [source, setSource] = useState<"fields" | "schema">("fields");
   const [schemaText, setSchemaText] = useState(EXAMPLE_SCHEMA);
   const [schemaError, setSchemaError] = useState("");
   const [patternWarning, setPatternWarning] = useState(false);
-  const [dialect, setDialect] = useState<SqlDialect>("postgres");
+  const [dialect, setDialect] = useState<SqlDialect>(initialDialect ?? "postgres");
   const [createTable, setCreateTable] = useState(true);
 
   const addField = () => {
-    fieldIdCounter += 1;
+    fieldIdCounter = Math.max(fieldIdCounter, ...fields.map((f) => f.id)) + 1;
     setFields((prev) => [...prev, { id: fieldIdCounter, name: `field${prev.length + 1}`, type: "word" }]);
   };
 
@@ -122,8 +136,8 @@ export default function FakeDataGeneratorClient() {
 
   return (
     <ToolLayout
-      title="Fake Data Generator"
-      description="Generate realistic mock data from a field list or a JSON Schema — as JSON, CSV or SQL for Postgres, MySQL and SQLite"
+      title={heading ?? "Fake Data Generator"}
+      description={intro ?? "Generate realistic mock data from a field list or a JSON Schema — as JSON, CSV or SQL for Postgres, MySQL and SQLite"}
     >
       <div className="flex rounded-[6px] border border-[#222222] overflow-hidden w-fit mb-4">
         {(["fields", "schema"] as const).map((m) => (
@@ -294,6 +308,20 @@ export default function FakeDataGeneratorClient() {
           Define your fields above and hit Generate
         </div>
       )}
+
+      <nav aria-label="Fake data by format" className="mt-6 flex flex-wrap items-center gap-2 text-xs">
+        <span className="text-[#666666]">Set up for:</span>
+        {FAKE_DATA_PAGES.filter((p) => p.slug !== pageSlug).map((p) => (
+          <Link key={p.slug} href={`/tools/fake-data-generator/${p.slug}`} className="px-2.5 py-1 bg-[#111111] border border-[#222222] rounded-[6px] text-[#888888] hover:text-[#a855f7]">
+            {p.name}
+          </Link>
+        ))}
+        {pageSlug && (
+          <Link href="/tools/fake-data-generator" className="px-2.5 py-1 text-[#a855f7] hover:underline">
+            All formats
+          </Link>
+        )}
+      </nav>
     </ToolLayout>
   );
 }

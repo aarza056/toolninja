@@ -50,6 +50,8 @@ XPath is strict about syntax. Common causes:
 
 ## Step-by-Step Diagnosis
 
+The quickest first check: paste the XML and the expression into the [XPath Tester](/tools/xpath-tester). If the XML is malformed or the expression is invalid, it says which, so you know which of the steps below to start with.
+
 ### Step 1 — Validate the XML first
 
 ```javascript

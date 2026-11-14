@@ -7,6 +7,7 @@ import { CURL_LANGUAGE_PAGES } from "@/lib/curl-languages";
 import { FLAVORS } from "@/lib/regex-flavors";
 import { BARCODE_PAGES } from "@/lib/barcode-pages";
 import { TOKEN_COUNTER_PAGES } from "@/lib/token-counter-pages";
+import { FAKE_DATA_PAGES } from "@/lib/fake-data-pages";
 
 const BASE_URL = "https://toolninja.io";
 
@@ -38,6 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...FLAVORS.map((f) => ({ url: `${BASE_URL}/tools/regex-tester/${f.slug}`, changeFrequency: "monthly" as const, priority: 0.6 })),
     ...BARCODE_PAGES.map((p) => ({ url: `${BASE_URL}/tools/barcode-generator/${p.slug}`, changeFrequency: "monthly" as const, priority: 0.6 })),
     ...Object.keys(TOKEN_COUNTER_PAGES).map((p) => ({ url: `${BASE_URL}/tools/ai-token-counter/${p}`, changeFrequency: "monthly" as const, priority: 0.6 })),
+    ...FAKE_DATA_PAGES.map((p) => ({ url: `${BASE_URL}/tools/fake-data-generator/${p.slug}`, changeFrequency: "monthly" as const, priority: 0.6 })),
     {
       url: `${BASE_URL}/blog`,
       ...(latestPost ? { lastModified: new Date(latestPost) } : {}),

@@ -74,6 +74,8 @@ export interface FetchedHeaders {
   /** Each redirect followed: where it pointed from, and its status */
   chain: { url: string; status: number }[];
   body?: string;
+  /** The raw body, when it was asked for as bytes (fetchBytes) */
+  bytes?: Buffer;
   /** The body hit the size limit */
   truncated?: boolean;
   /** Stopped at a redirect to another site */
@@ -85,11 +87,14 @@ interface RequestOptions {
   /** Read the body too, up to this many bytes, if `wantBody` says so; otherwise only headers are read */
   maxBytes?: number;
   wantBody?: (status: number, headers: [string, string][]) => boolean;
+  /** Return the body as bytes instead of text */
+  raw?: boolean;
+  accept?: string;
 }
 
 const HEADER_CHECK_UA = "ToolNinja-HeaderCheck/1.0 (+https://toolninja.io/tools/security-headers-checker)";
 
-function requestOnce(url: URL, target: Resolved, timeoutMs: number, opts: RequestOptions): Promise<{ status: number; statusText: string; headers: [string, string][]; body?: string; truncated?: boolean }> {
+function requestOnce(url: URL, target: Resolved, timeoutMs: number, opts: RequestOptions): Promise<{ status: number; statusText: string; headers: [string, string][]; body?: string; bytes?: Buffer; truncated?: boolean }> {
   const mod = url.protocol === "https:" ? https : http;
   return new Promise((resolve, reject) => {
     const req = mod.request(
@@ -99,7 +104,7 @@ function requestOnce(url: URL, target: Resolved, timeoutMs: number, opts: Reques
         port: url.port || (url.protocol === "https:" ? 443 : 80),
         path: `${url.pathname}${url.search}`,
         method: "GET",
-        headers: { "User-Agent": opts.userAgent, Accept: "text/html,*/*" },
+        headers: { "User-Agent": opts.userAgent, Accept: opts.accept ?? "text/html,*/*" },
         // Connect to the address we already checked, whatever DNS says now
         lookup: ((_host: string, opts: { all?: boolean }, cb: (...args: unknown[]) => void) =>
           opts?.all ? cb(null, [{ address: target.address, family: target.family }]) : cb(null, target.address, target.family)) as never,
@@ -122,7 +127,8 @@ function requestOnce(url: URL, target: Resolved, timeoutMs: number, opts: Reques
         const finish = (truncated: boolean) => {
           if (done) return;
           done = true;
-          resolve({ ...base, body: Buffer.concat(chunks).toString("utf8"), truncated });
+          const buf = Buffer.concat(chunks);
+          resolve(opts.raw ? { ...base, bytes: buf, truncated } : { ...base, body: buf.toString("utf8"), truncated });
           res.destroy();
         };
         res.on("data", (chunk: Buffer) => {
@@ -178,7 +184,7 @@ async function fetchFollowing(input: string, opts: RequestOptions, maxRedirects:
       url = next;
       continue;
     }
-    return { ok: true, result: { finalUrl: url.href, status: res.status, statusText: res.statusText, headers: res.headers, chain, body: res.body, truncated: res.truncated } };
+    return { ok: true, result: { finalUrl: url.href, status: res.status, statusText: res.statusText, headers: res.headers, chain, body: res.body, bytes: res.bytes, truncated: res.truncated } };
   }
   return { ok: false, error: `More than ${maxRedirects} redirects.` };
 }
@@ -200,3 +206,7 @@ export const fetchPage = (input: string, opts: { userAgent: string; maxBytes: nu
     5,
     opts.stayOn
   );
+
+/** A public file's bytes (for the Favicon Checker), read only for a successful response and only up to `maxBytes` */
+export const fetchBytes = (input: string, opts: { userAgent: string; maxBytes: number; accept?: string; stayOn?: (host: string) => boolean }) =>
+  fetchFollowing(input, { userAgent: opts.userAgent, maxBytes: opts.maxBytes, raw: true, accept: opts.accept ?? "*/*", wantBody: (status) => status >= 200 && status < 300 }, 5, opts.stayOn);
