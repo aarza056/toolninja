@@ -76,3 +76,144 @@ export const MODE_USES: Record<string, string> = {
   "2775": "Like 775 with setgid: a shared, group-writable folder where every new file automatically belongs to the team's group.",
   "4755": "setuid: the program runs with its owner's rights (often root), like /usr/bin/passwd. Powerful and risky — only for well-audited binaries.",
 };
+
+// ── Reading modes back: ls -l output, rwx strings, symbolic chmod expressions, umask ──────────
+
+export interface LsEntry {
+  /** 4-digit octal mode, e.g. "0755" */
+  octal: string;
+  /** The 3-digit form when no special bits are set, else the 4-digit one */
+  short: string;
+  type: string;
+  typeLabel: string;
+  owner?: string;
+  group?: string;
+  name?: string;
+}
+
+const TYPES: Record<string, string> = { "-": "file", d: "directory", l: "symlink", c: "character device", b: "block device", p: "named pipe", s: "socket" };
+
+/** A 9-character permission string (rwxr-sr-t) as a mode number */
+export function rwxToMode(s: string): number | null {
+  const m = /^([r-])([w-])([xsS-])([r-])([w-])([xsS-])([r-])([w-])([xtT-])$/.exec(s);
+  if (!m) return null;
+  let mode = 0;
+  const set = (on: boolean, bit: number) => {
+    if (on) mode |= bit;
+  };
+  set(m[1] === "r", 0o400);
+  set(m[2] === "w", 0o200);
+  set(m[3] === "x" || m[3] === "s", 0o100);
+  set(m[3] === "s" || m[3] === "S", 0o4000);
+  set(m[4] === "r", 0o40);
+  set(m[5] === "w", 0o20);
+  set(m[6] === "x" || m[6] === "s", 0o10);
+  set(m[6] === "s" || m[6] === "S", 0o2000);
+  set(m[7] === "r", 0o4);
+  set(m[8] === "w", 0o2);
+  set(m[9] === "x" || m[9] === "t", 0o1);
+  set(m[9] === "t" || m[9] === "T", 0o1000);
+  return mode;
+}
+
+export const modeToOctal = (mode: number) => (mode & 0o7777).toString(8).padStart(4, "0");
+export const shortOctal = (mode: number) => (mode & 0o7000 ? modeToOctal(mode) : (mode & 0o777).toString(8).padStart(3, "0"));
+
+/** One line of `ls -l` (or just "drwxr-xr-x", or "rwxr-xr-x") */
+export function parseLsLine(line: string): LsEntry | null {
+  const t = line.trim().split(/\s+/);
+  if (!t[0]) return null;
+  const m = /^([-dlcbps])?([rwxsStT-]{9})[.+@]?$/.exec(t[0]);
+  if (!m) return null;
+  const mode = rwxToMode(m[2]);
+  if (mode === null) return null;
+  const type = m[1] ?? "-";
+  const full = t.length >= 8 && /^\d+$/.test(t[1]);
+  let name: string | undefined;
+  if (full) {
+    // ls -l: perms links owner group size month day time|year name…
+    const nameStart = t.length >= 9 ? 8 : t.length - 1;
+    name = t.slice(nameStart).join(" ").replace(/ -> .*$/, "");
+  }
+  return { octal: modeToOctal(mode), short: shortOctal(mode), type, typeLabel: TYPES[type], owner: full ? t[2] : undefined, group: full ? t[3] : undefined, name };
+}
+
+/**
+ * Applies a symbolic chmod expression (u+x, go-w, a=rX, u=rwx,g=rx,o=) to a mode, like chmod does.
+ * With no u/g/o/a the change applies to all (chmod would also mask it with the umask).
+ */
+export function applySymbolic(mode: number, expr: string, isDir = false): number | null {
+  const e = expr.trim().replace(/^chmod\s+(-R\s+)?/, "");
+  if (/^[0-7]{3,4}$/.test(e)) return parseInt(e, 8);
+  let result = mode;
+  for (const clause of e.split(",")) {
+    const m = /^([ugoa]*)((?:[+=-][rwxXstugo]*)+)$/.exec(clause);
+    if (!m) return null;
+    const who = m[1] && !m[1].includes("a") ? m[1] : "ugo";
+    const ops = m[2].match(/[+=-][rwxXstugo]*/g) ?? [];
+    for (const op of ops) {
+      const sign = op[0];
+      const perms = op.slice(1);
+      let bits = 0;
+      // Copying another class's bits (g=u)
+      const copy = (cls: string) => {
+        const shift = cls === "u" ? 6 : cls === "g" ? 3 : 0;
+        return (result >> shift) & 7;
+      };
+      for (const cls of who) {
+        const shift = cls === "u" ? 6 : cls === "g" ? 3 : 0;
+        let b = 0;
+        for (const p of perms) {
+          if (p === "r") b |= 4;
+          else if (p === "w") b |= 2;
+          else if (p === "x") b |= 1;
+          else if (p === "X") {
+            if (isDir || result & 0o111) b |= 1;
+          } else if (p === "u" || p === "g" || p === "o") b |= copy(p);
+        }
+        bits |= b << shift;
+        if (perms.includes("s")) {
+          if (cls === "u") bits |= 0o4000;
+          if (cls === "g") bits |= 0o2000;
+        }
+        if (perms.includes("t") && cls === "o") bits |= 0o1000;
+      }
+      if (perms.includes("t") && who === "ugo") bits |= 0o1000;
+      let classMask = 0;
+      for (const cls of who) classMask |= cls === "u" ? 0o4700 : cls === "g" ? 0o2070 : 0o1007;
+      if (sign === "+") result |= bits;
+      else if (sign === "-") result &= ~bits;
+      else result = (result & ~classMask) | bits;
+    }
+  }
+  return result & 0o7777;
+}
+
+export interface UmaskResult {
+  umask: string;
+  files: string;
+  dirs: string;
+  /** umask -S form, e.g. u=rwx,g=rx,o=rx */
+  symbolic: string;
+}
+
+/** Default permissions a umask gives new files (from 666) and directories (from 777) */
+export function umaskInfo(umask: string): UmaskResult | null {
+  if (!/^0?[0-7]{3}$/.test(umask)) return null;
+  const u = parseInt(umask, 8) & 0o777;
+  const files = 0o666 & ~u;
+  const dirs = 0o777 & ~u;
+  const cls = (shift: number) => {
+    const b = (dirs >> shift) & 7;
+    return `${b & 4 ? "r" : ""}${b & 2 ? "w" : ""}${b & 1 ? "x" : ""}`;
+  };
+  return {
+    umask: u.toString(8).padStart(4, "0"),
+    files: files.toString(8).padStart(3, "0"),
+    dirs: dirs.toString(8).padStart(3, "0"),
+    symbolic: `u=${cls(6)},g=${cls(3)},o=${cls(0)}`,
+  };
+}
+
+/** The umask that makes new directories get this mode (and files the same without execute) */
+export const umaskFor = (dirMode: string) => (0o777 & ~(parseInt(dirMode.slice(-3), 8) & 0o777)).toString(8).padStart(4, "0");

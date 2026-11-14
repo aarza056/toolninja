@@ -494,6 +494,18 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "favicon-checker",
+    name: "Favicon Checker",
+    description: "See every favicon a website serves, their real sizes and formats, and what's missing for Google, iPhone and Android",
+    icon: "ScanSearch",
+    category: "Test",
+    keywords: [
+      "favicon checker", "check favicon", "favicon test", "favicon validator",
+      "favicon size checker", "why is my favicon not showing in google", "apple touch icon checker",
+      "favicon.ico size", "web manifest icon checker", "favicon checker online",
+    ],
+  },
+  {
     slug: "fake-data-generator",
     name: "Fake Data Generator",
     description: "Generate mock data from a field list or JSON Schema, as JSON, CSV or SQL for Postgres, MySQL and SQLite",
@@ -556,6 +568,18 @@ export const tools: Tool[] = [
       "block ai crawlers robots.txt", "gptbot disallow", "robots.txt generator free",
       "sitemap robots.txt", "robots.txt online tool", "block google-extended",
       "ai bot blocker robots.txt",
+    ],
+  },
+  {
+    slug: "robots-txt-tester",
+    name: "robots.txt Tester",
+    description: "Test URLs against a robots.txt for Googlebot, Bingbot, GPTBot or any crawler, and see the rule that decides",
+    icon: "BotOff",
+    category: "Test",
+    keywords: [
+      "robots.txt tester", "robots txt tester", "robots.txt checker", "robots.txt validator",
+      "is url blocked by robots.txt", "test robots.txt", "googlebot robots.txt test",
+      "robots.txt checker online", "check ai crawler blocking", "robots.txt wildcard tester",
     ],
   },
   {
@@ -826,10 +850,11 @@ export const tools: Tool[] = [
   {
     slug: "csv-json",
     name: "CSV to JSON Converter",
-    description: "Convert CSV to JSON instantly, or JSON back to CSV",
+    description: "Convert CSV to JSON and back, with the delimiter detected, real types and nested objects",
     icon: "FileSpreadsheet",
     category: "Convert",
     keywords: [
+      "csv to json with types", "nested json to csv", "csv delimiter detection", "tsv to json",
       "csv to json", "json to csv", "csv to json converter online",
       "json to csv converter online", "convert csv to json", "convert json to csv",
       "csv json converter free", "csv parser online", "csv to json array",
@@ -897,6 +922,19 @@ export const tools: Tool[] = [
       "rewriterule to nginx", "apache rewrite rules to nginx", "nginx config converter",
       "htaccess to nginx online", "apache nginx migration tool", "mod_rewrite to nginx",
       "htaccess nginx equivalent",
+    ],
+  },
+  {
+    slug: "nginx-location-tester",
+    name: "Nginx Location Tester",
+    description: "Paste your nginx config and test URLs to see which location block handles each one, and why",
+    icon: "Signpost",
+    category: "Test",
+    keywords: [
+      "nginx location tester", "nginx regex tester online", "nginx location regex tester",
+      "nginx location priority", "nginx location order", "test nginx config online",
+      "nginx location matching", "nginx location block tester", "which nginx location matches",
+      "nginx ^~ vs ~",
     ],
   },
   {
@@ -1023,10 +1061,11 @@ export const tools: Tool[] = [
   {
     slug: "semver-calculator",
     name: "SemVer Calculator & Range Checker",
-    description: "Test versions against npm ranges like ^1.2.3 or ~2.0, compare versions, and preview version bumps",
+    description: "Validate and sort versions, test them against npm ranges like ^1.2.3, compare and preview bumps",
     icon: "Milestone",
     category: "Test",
     keywords: [
+      "semver validator", "semver tester", "sort semver versions", "semver regex check",
       "semver calculator", "semver range checker", "npm semver calculator",
       "caret vs tilde npm", "semver checker online", "npm version range tester",
       "compare semver versions", "semver bump calculator", "what does ^ mean in package.json",
@@ -1272,6 +1311,18 @@ export const tools: Tool[] = [
       "jsonpath query tester", "test jsonpath expression", "jsonpath online",
       "jsonpath tool", "json query tester", "jsonpath checker",
       "jsonpath validator", "jsonpath expression tester", "jsonpath playground",
+    ],
+  },
+  {
+    slug: "jmespath-tester",
+    name: "JMESPath Tester",
+    description: "Test JMESPath queries live, the query language of the AWS CLI and Azure CLI --query",
+    icon: "SearchCode",
+    category: "Test",
+    keywords: [
+      "jmespath tester", "jmespath online", "jmespath evaluator", "jmespath playground",
+      "aws cli query tester", "aws --query examples", "azure cli query tester",
+      "jmespath filter examples", "json_query tester", "jmespath validator",
     ],
   },
   {
@@ -1712,6 +1763,18 @@ export const tools: Tool[] = [
     ],
   },
   {
+    slug: "api-key-identifier",
+    name: "API Key Identifier",
+    description: "Paste an API key or token to see which service issued it, whether it's secret, live or test, and how to revoke it",
+    icon: "KeySquare",
+    category: "Security",
+    keywords: [
+      "api key identifier", "api key decoder", "identify api key", "what is this api key",
+      "api key checker", "api key format", "aws access key account id", "token identifier",
+      "stripe key live or test", "github token checksum", "api key type detector",
+    ],
+  },
+  {
     slug: "password-strength-checker",
     name: "Password Strength Checker",
     description: "Check how strong a password actually is — entropy, common-password matches, and predictable patterns",
@@ -1845,10 +1908,11 @@ export const tools: Tool[] = [
   {
     slug: "chmod-calculator",
     name: "Chmod Calculator",
-    description: "Calculate Unix file permissions with visual checkboxes",
+    description: "Calculate Unix file permissions, read ls -l output, and build umask and chown commands",
     icon: "Lock",
     category: "Reference",
     keywords: [
+      "chown calculator", "umask calculator", "rwxr-xr-x to number", "ls -l permissions to octal", "chmod symbolic to octal",
       "chmod calculator", "chmod calculator online", "linux permission calculator",
       "file permission calculator", "chmod 755", "chmod 777",
       "rwxr-xr-x meaning", "linux file permissions calculator",
@@ -1861,10 +1925,11 @@ export const tools: Tool[] = [
   {
     slug: "ai-token-counter",
     name: "AI Token Counter & Cost Estimator",
-    description: "Estimate how many tokens your prompt costs, and what it'd run across Claude, GPT, and Gemini",
+    description: "Count tokens in a prompt or a PDF, Word or text file, and what it'd cost on Claude, GPT and Gemini",
     icon: "Receipt",
     category: "Reference",
     keywords: [
+      "pdf token counter", "count tokens in pdf", "local ai token counter", "word document token counter", "private token counter",
       "ai token counter", "llm token counter", "gpt token counter",
       "claude token counter", "token cost estimator", "openai api cost calculator",
       "gemini token counter", "estimate llm api cost", "token counter online",
@@ -1916,9 +1981,9 @@ export type Category = (typeof categories)[number];
 // HomeClient's "Just added" grid, and the WhatsNewModal all read from here.
 // tests/site.test.ts fails if this falls out of step with the newest release in lib/changelog.ts.
 export const LATEST_TOOL_SLUGS = [
-  "aws-vpc-subnet-calculator",
-  "cidr-to-ip-range",
-  "csp-checker",
-  "retry-after-tester",
-  "request-headers-test",
+  "nginx-location-tester",
+  "api-key-identifier",
+  "jmespath-tester",
+  "favicon-checker",
+  "robots-txt-tester",
 ];

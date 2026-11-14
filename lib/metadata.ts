@@ -280,7 +280,7 @@ const toolMeta: Record<string, { title: string; description: string }> = {
   "csv-json": {
     title: "CSV to JSON Converter Online — and JSON to CSV | ToolNinja",
     description:
-      "Free CSV to JSON converter. Paste or upload CSV and get a JSON array instantly, or convert JSON back to CSV. Handles quoted fields and custom delimiters.",
+      "Convert CSV to JSON and back in your browser: the delimiter is detected, numbers and booleans become real JSON types, and a.b headers become nested objects.",
   },
   "xml-json-converter": {
     title: "XML to JSON Converter Online — Both Ways | ToolNinja",
@@ -360,9 +360,9 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Free online WebSocket tester. Connect to any ws:// or wss:// endpoint, send text or JSON messages, set subprotocols, and watch a live, timestamped message log with JSON pretty-printing. Connects directly from your browser — no proxy, no login.",
   },
   "semver-calculator": {
-    title: "SemVer Calculator — npm Version Range Checker | ToolNinja",
+    title: "SemVer Validator & npm Range Checker | ToolNinja",
     description:
-      "Free online semver calculator. Test versions against npm ranges like ^1.2.3, ~2.0 or >=1 <2 and see exactly what each range means, compare two versions, and preview major/minor/patch/prerelease bumps — using npm's own semver logic. No login.",
+      "Validate and sort semantic versions, test them against npm ranges like ^1.2.3 or ~2.0, compare two versions and preview bumps, with npm's own semver logic.",
   },
   "config-validator": {
     title: "YAML & TOML Validator — Config File Validator Online | ToolNinja",
@@ -468,6 +468,31 @@ const toolMeta: Record<string, { title: string; description: string }> = {
     title: "CIDR to IP Range Converter — Bulk, CSV Export | ToolNinja",
     description:
       "Convert CIDR blocks to first and last IP, usable hosts and address count, one or thousands at once. Export CSV, list every IP, and convert subnet masks. Free, IPv4.",
+  },
+  "nginx-location-tester": {
+    title: "Nginx Location Tester — Which Block Matches? | ToolNinja",
+    description:
+      "Paste your nginx config and test URLs to see which location block wins: exact, ^~, regex or longest prefix, with regex captures and every step explained.",
+  },
+  "api-key-identifier": {
+    title: "API Key Identifier — Which Service Is This Key? | ToolNinja",
+    description:
+      "Find which service issued an API key or token: AWS, Stripe, GitHub, OpenAI, Slack and 50 more. Secret or public, live or test, and how to revoke it.",
+  },
+  "jmespath-tester": {
+    title: "JMESPath Tester — AWS CLI --query Tester Online | ToolNinja",
+    description:
+      "Test JMESPath expressions against JSON as you type. AWS CLI and Azure CLI --query examples, every function, clear errors and ready-to-run commands.",
+  },
+  "favicon-checker": {
+    title: "Favicon Checker — Test Every Favicon on a Site | ToolNinja",
+    description:
+      "Check every favicon a website serves: real sizes and formats, favicon.ico, apple-touch-icon, manifest icons, and what Google Search needs to show yours.",
+  },
+  "robots-txt-tester": {
+    title: "robots.txt Tester — Is a URL Blocked? | ToolNinja",
+    description:
+      "Test URLs against robots.txt for Googlebot, Bingbot, GPTBot or ClaudeBot. See the exact rule that allows or blocks each URL, plus mistakes in the file.",
   },
   "csp-checker": {
     title: "CSP Checker — Test a Content Security Policy | ToolNinja",
@@ -708,14 +733,14 @@ const toolMeta: Record<string, { title: string; description: string }> = {
       "Complete HTTP status codes reference. Look up every HTTP response code including 200, 301, 404, 500 and more, plus a side-by-side comparison of commonly confused codes (401 vs 403, 409 vs 412 vs 423, and more). No login required.",
   },
   "chmod-calculator": {
-    title: "Chmod Calculator — Linux Permissions (755, 644) | ToolNinja",
+    title: "Chmod Calculator — 755, rwxr-xr-x, umask & chown | ToolNinja",
     description:
-      "Free chmod calculator and Linux permissions calculator: convert 755, 644 or 777 to rwxr-xr-x and back with checkboxes, including setuid, setgid and the sticky bit.",
+      "Convert 755 to rwxr-xr-x and back, paste ls -l output to read permissions, apply u+x style changes, and get umask, chown and recursive chmod commands.",
   },
   "ai-token-counter": {
-    title: "AI Token Counter — Claude, GPT & Gemini Cost | ToolNinja",
+    title: "AI Token Counter — Prompts, PDF & Word Files | ToolNinja",
     description:
-      "Free AI token counter and cost estimator. Paste a prompt to estimate its tokens and see the cost on current Claude, GPT and Gemini models, with list prices from each provider. No login — your text never leaves your device.",
+      "Count tokens in a prompt or in PDF, Word and text files, privately in your browser, and see what it costs on current Claude, GPT and Gemini models.",
   },
   "unicode-explorer": {
     title: "Unicode Explorer — Character & Code Point Lookup | ToolNinja",

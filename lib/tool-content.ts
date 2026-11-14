@@ -871,6 +871,14 @@ export const toolContent: Record<string, ToolContent> = {
     ],
     faq: [
       {
+        q: "How do I convert rwxr-xr-x to a number?",
+        a: "Each group of three is one digit: r = 4, w = 2, x = 1, added up. rwx = 7, r-x = 5, r-x = 5, so rwxr-xr-x is 755. Paste the string, or a whole line of ls -l output, into the box at the top and the calculator reads it, including setuid (s), setgid (s) and sticky (t) bits.",
+      },
+      {
+        q: "What does umask 022 mean?",
+        a: "The umask removes permissions from new files and directories. New files start from 666 and directories from 777, so umask 022 gives files 644 and directories 755; umask 002 gives 664 and 775, and 077 makes everything private (600 and 700).",
+      },
+      {
         q: "What does the execute bit mean on a directory vs a file?",
         a: "On a file, the execute bit (x) allows the file to be run as a program or script. On a directory, it grants 'search' permission — the ability to traverse the directory (cd into it and access files inside by name). Without execute permission on a directory, you cannot cd into it or access any file inside, even if you can list it with read permission.",
       },
@@ -1628,12 +1636,16 @@ export const toolContent: Record<string, ToolContent> = {
     ],
     faq: [
       {
+        q: "Why are numbers strings in my JSON?",
+        a: "Plain CSV has no types, so every cell is text. With \"Numbers & booleans as JSON types\" on, 42 becomes a number, true and false become booleans, and empty cells become null. A column where any value has a leading zero, like zip codes (02134) or IDs (007), stays text in every row, and so do integers too large for JavaScript, so nothing is lost.",
+      },
+      {
         q: "How does the converter handle commas inside a CSV field?",
         a: "Standard CSV wraps any field containing the delimiter, a quote character, or a newline in double quotes — e.g. \"Smith, John\" for a value containing a comma. This tool follows that convention on both parsing and export, so fields with embedded commas or quotes round-trip correctly as long as the source CSV was quoted properly.",
       },
       {
         q: "What happens to nested JSON objects or arrays when converting to CSV?",
-        a: "CSV is inherently flat — it has no way to represent nested structure. When a JSON value is an object or array, it gets serialized as a JSON string inside that CSV cell (e.g. {\"street\":\"Main St\"}) rather than being flattened into separate columns. If you need flattened columns, restructure the JSON to be flat before converting.",
+        a: "CSV is flat, so with \"Flatten nested JSON to columns\" on (the default), nested values become dotted columns: {\"address\": {\"city\": \"Oslo\"}} gives an address.city column, and arrays give tags.0, tags.1. Turn it off to put each nested value into its cell as JSON text instead. Going the other way, \"Nest dotted headers\" turns those columns back into objects and arrays.",
       },
       {
         q: "Why do some rows have empty cells after converting JSON to CSV?",
@@ -1641,7 +1653,7 @@ export const toolContent: Record<string, ToolContent> = {
       },
       {
         q: "Can I convert a CSV that uses tabs instead of commas (TSV)?",
-        a: "Yes — select Tab from the delimiter dropdown before pasting or uploading your file. The same parser handles comma, semicolon, tab, and pipe-delimited files; just make sure the selected delimiter matches your source file's actual separator.",
+        a: "Yes. With the delimiter on Auto-detect, tab-separated files are recognized automatically, as are semicolon files from European Excel and pipe-separated exports. You can also pick the delimiter yourself.",
       },
     ],
   },
@@ -1701,6 +1713,10 @@ export const toolContent: Record<string, ToolContent> = {
       "Switch to SQL output and pick your database: column types, quoting, booleans and dates all follow that dialect. Untick CREATE TABLE if the table already exists.",
     ],
     faq: [
+      {
+        q: "Is there a version set up for my database?",
+        a: "Yes: there are pages for PostgreSQL, MySQL, SQLite, CSV and JSON, linked under the generator. Each starts with the right output and column types and shows example output and how to load it.",
+      },
       {
         q: "Is the generated data safe to use — does it resemble real people?",
         a: "The names, emails, and addresses are drawn from small fixed lists of common placeholder values (similar to how Lorem Ipsum works for text) combined randomly — they are not sourced from real user records and any resemblance to a real person is coincidental, the same as with any synthetic test data generator.",
@@ -3371,6 +3387,205 @@ export const toolContent: Record<string, ToolContent> = {
       },
     ],
   },
+  "nginx-location-tester": {
+    about:
+      "The Nginx Location Tester shows which location block nginx picks for a URL, and why. Paste a server block (or just the location blocks), list the URLs you care about, and each one is matched the way nginx does it: exact (=) locations first, then the longest matching prefix, then the regex locations in the order they appear, unless the longest prefix has ^~, which skips the regexes.\n\nEach result names the block and its line, explains the decision in a sentence, and lists every step: which prefixes matched and how long they were, and which regexes were tried before one matched. Regex captures ($1, $2) and named captures are shown, so you can check what a rewrite or proxy_pass will receive. Nested locations are searched the way nginx searches them, and a request for /api against a location /api/ that proxies gets the 301 redirect nginx really sends.\n\nThe config is also checked for the mistakes that stop nginx starting or behave unexpectedly: duplicate locations, missing braces and semicolons, nested locations outside their parent, and PCRE-only regex syntax. Everything runs in your browser.",
+    useCases: [
+      "Finding out why a request goes to the wrong location block",
+      "Checking a new regex location before reloading a production server",
+      "Making sure static files, the API and the app routes each land where they should",
+      "Understanding ^~, = and regex priority while learning nginx",
+    ],
+    tips: [
+      "Regex locations are tried in config order and the first match wins, not the longest. Put specific regexes above general ones.",
+      "Use ^~ on prefix locations like /static/ so a broad regex such as \\.(png|jpg)$ can't take those requests away.",
+      "location = / is the fastest match for the home page, because nginx stops searching immediately.",
+      "Quote any regex that contains { or }, such as \"^/\\d{3}$\", or nginx reads the brace as the start of the block.",
+      "Locations match the decoded path without the query string, so ?page=2 never affects which block is chosen.",
+    ],
+    faq: [
+      {
+        q: "In what order does nginx check location blocks?",
+        a: "First it looks for an exact match (location = /path). Then it finds the longest prefix location that matches. If that prefix has ^~, it uses it. Otherwise it tries the regex locations (~ and ~*) from top to bottom and uses the first that matches; if none does, it uses the longest prefix.",
+      },
+      {
+        q: "What's the difference between ~ and ~*?",
+        a: "Both are regex locations. ~ is case-sensitive and ~* is case-insensitive, so ~* \\.png$ matches both logo.png and LOGO.PNG.",
+      },
+      {
+        q: "What does ^~ do?",
+        a: "It marks a prefix location as final: if it's the longest matching prefix, nginx uses it without trying any regex locations. It's the usual way to keep /static/ or /media/ away from regex rules.",
+      },
+      {
+        q: "Why does /api redirect to /api/?",
+        a: "When a prefix location ends in a slash and passes requests on with proxy_pass, fastcgi_pass or similar, nginx answers a request for the path without the slash with a 301 redirect to the slashed path. Add location = /api if you want to handle it differently.",
+      },
+      {
+        q: "Does the query string affect location matching?",
+        a: "No. nginx matches locations against the normalized path: decoded, without the query string, with repeated slashes merged and ./ and ../ resolved. To route on query parameters, use $arg_name in a map or an if.",
+      },
+      {
+        q: "Is my config sent anywhere?",
+        a: "No. The config is parsed and the URLs are matched in your browser.",
+      },
+    ],
+  },
+  "api-key-identifier": {
+    about:
+      "The API Key Identifier tells you what a key or token is from its format alone: which service issued it, what kind of credential it is, whether it's a secret or meant to be public, and whether it's a live or test key. It recognizes over 60 formats, including AWS, Google Cloud, Azure, GitHub, GitLab, npm, PyPI, Stripe, Slack, Discord, Telegram, Twilio, SendGrid, OpenAI, Anthropic and Hugging Face keys, plus PEM private keys, Google service account files and JWTs.\n\nIt also reads what's inside the key without contacting anyone. AWS access key IDs carry the account number, which is decoded. GitHub and npm tokens end in a checksum, which is verified, so you can tell a real token from a mistyped or made-up one. Discord bot tokens contain the bot's ID and creation date, Telegram tokens the bot ID, and JWTs their issuer, role and expiry, which is how a Supabase service_role key is told apart from the public anon key.\n\nEach result says what someone holding the key could do and where to revoke or rotate it. Nothing leaves your browser: the key isn't sent to us or to the service, and it isn't saved.",
+    useCases: [
+      "Working out which service a key found in old code or a config file belongs to",
+      "Triaging a secret-scanning alert: is it live, a test key, or public by design?",
+      "Finding the AWS account an access key belongs to during an incident",
+      "Checking whether a token is well-formed before debugging an auth error",
+    ],
+    tips: [
+      "Paste the line as it is: quotes, KEY= and Bearer are stripped before matching.",
+      "Publishable keys (Stripe pk_, Supabase anon) are meant to be public; secret and restricted keys never are.",
+      "A valid checksum proves the token is correctly formed, not that it still works.",
+      "If a real secret was committed to git, rotate it. Deleting the commit doesn't help, because clones and forks keep it.",
+      "Keys with no prefix (Cloudflare, Algolia, many internal APIs) can't be identified by format. The variable name usually tells you.",
+    ],
+    faq: [
+      {
+        q: "Is it safe to paste a real API key here?",
+        a: "The key is identified in your browser by pattern matching and never sent anywhere, not to ToolNinja and not to the service, and it isn't stored. Still, if a secret has been exposed somewhere, revoke it whatever this page says.",
+      },
+      {
+        q: "Can you find the AWS account from an access key?",
+        a: "Usually, yes. Access key IDs created since about 2019 (AKIA and ASIA keys) encode the 12-digit account ID, which is decoded here offline. Older keys don't, and the decoded number is meaningless for them. With credentials, aws sts get-access-key-info returns the account too.",
+      },
+      {
+        q: "How do I tell a Stripe live key from a test key?",
+        a: "By the prefix: sk_live_ and rk_live_ are live secret and restricted keys, sk_test_ and rk_test_ are test-mode keys, and pk_ keys are publishable keys meant for your web page.",
+      },
+      {
+        q: "What is the checksum in GitHub tokens?",
+        a: "GitHub tokens (ghp_, gho_, ghu_, ghs_, ghr_) end in six characters that are a CRC32 checksum of the rest, written in base62. npm tokens use the same scheme. It lets scanners tell real tokens from random strings without calling GitHub.",
+      },
+      {
+        q: "Does this check whether a key still works?",
+        a: "No, on purpose: checking means sending the key to the service. To check a key, call the service's own API from your machine, for example aws sts get-caller-identity or GitHub's /user endpoint.",
+      },
+    ],
+  },
+  "jmespath-tester": {
+    about:
+      "The JMESPath Tester runs JMESPath queries against your JSON as you type. JMESPath is the query language behind the AWS CLI's --query option, the Azure CLI's --query and Ansible's json_query filter, and this tester uses the reference JavaScript implementation, so a query that works here works there.\n\nIt comes with a real-shaped AWS EC2 describe-instances response and fourteen worked examples: listing instance IDs, filtering running instances, reading the Name tag, building rows for --output table, sorting by launch time and counting. Each query is turned into ready-to-run AWS CLI, Azure CLI, jp, Python and JavaScript commands, quoted correctly for the shell.\n\nErrors are explained in plain words, including the most common JMESPath mistake: \"double quotes\" name a field, so comparing against \"running\" silently matches nothing. 'Single quotes' or `backticks` are needed for values. The page also lists every built-in function and the JMESPath equivalents of common JSONPath expressions.",
+    useCases: [
+      "Building an aws ... --query expression without trial and error in the terminal",
+      "Pulling a few fields out of a large Azure CLI or AWS CLI response",
+      "Writing json_query filters for Ansible",
+      "Learning projections, filters and multiselect hashes with live feedback",
+    ],
+    tips: [
+      "Use 'single quotes' for string values and `backticks` for numbers and other JSON literals: [?age > `30`].",
+      "A filter on a projection keeps the nesting; add [] at the end to flatten it into one list.",
+      "{Name: name, Id: id} builds new objects, which is how you rename fields for --output table.",
+      "Tags[?Key=='Name'] | [0].Value reads one tag's value; the pipe stops the projection so [0] takes the first match.",
+      "In the AWS CLI, --query runs on the client after all pages are fetched; use --filters to reduce what's downloaded.",
+    ],
+    faq: [
+      {
+        q: "What is JMESPath?",
+        a: "A query language for JSON with a formal specification and compliance tests, so every implementation (Python, JavaScript, Go, Java, Rust and more) gives the same answer. The AWS CLI, Azure CLI and Ansible use it to filter command output.",
+      },
+      {
+        q: "Why does my filter return an empty list?",
+        a: "Usually because of quotes. In JMESPath, \"running\" in double quotes is a field name, so State.Name == \"running\" compares against a field that doesn't exist. Write State.Name == 'running' instead. Field names are also case-sensitive.",
+      },
+      {
+        q: "What's the difference between JMESPath and JSONPath?",
+        a: "JSONPath ($.store.book[*]) is used by Kubernetes, Postman and many APIs, and implementations differ. JMESPath has one specification, can reshape data into new objects and arrays, and has functions like sort_by and length, but has no recursive descent (..).",
+      },
+      {
+        q: "How do I quote a --query on Windows?",
+        a: "In PowerShell, single quotes around the whole query work as in bash. In cmd.exe, wrap the query in double quotes and keep single quotes for string values inside it.",
+      },
+      {
+        q: "Is my JSON uploaded?",
+        a: "No. The query runs in your browser with the jmespath.js library.",
+      },
+    ],
+  },
+  "favicon-checker": {
+    about:
+      "The Favicon Checker looks at a website the way browsers and search engines do and reports every favicon it serves. Enter an address and it reads the page's icon links, the web app manifest and the files browsers request without asking, /favicon.ico and /apple-touch-icon.png, then downloads each icon and reads its real format and pixel size from the file itself, including every size inside an .ico.\n\nThe checklist then says what works and what's missing: whether Google Search can use your icon (square, ideally larger than 48×48), whether /favicon.ico exists, whether the apple-touch-icon is the 180×180 PNG iPhones want, whether the manifest has the 192×192 and 512×512 icons Chrome needs to make a site installable, and whether there's a maskable icon for Android. It also catches declared sizes and types that don't match the file, icons served with the wrong Content-Type, broken links and oversized files.\n\nEach icon is previewed at 32 and 16 pixels, so you can see how it really looks in a tab.",
+    useCases: [
+      "Finding out why Google shows a generic globe instead of your favicon",
+      "Checking a new site's icons before launch",
+      "Making sure the home-screen icon on iPhone and Android looks right",
+      "Auditing a site you inherited for missing or broken icon files",
+    ],
+    tips: [
+      "Keep /favicon.ico at the root even with PNG and SVG icons: many tools and RSS readers only ever ask for that file.",
+      "Google Search wants a square icon and recommends larger than 48×48. A multiple of 48, such as 96×96 or 192×192, is ideal.",
+      "The apple-touch-icon should have no transparency; iOS fills transparent areas with black.",
+      "Give a maskable icon generous padding: Android may crop it to a circle, so keep the logo inside the central 80%.",
+      "A new favicon can take days or weeks to appear in Google, which updates it when it recrawls your home page.",
+    ],
+    faq: [
+      {
+        q: "Why doesn't Google show my favicon?",
+        a: "Google needs a <link rel=\"icon\"> on your home page pointing to a square image that Googlebot is allowed to crawl (check robots.txt). It recommends larger than 48×48. After fixing it, Google updates the icon when it recrawls the home page, which can take weeks.",
+      },
+      {
+        q: "What favicon sizes do I need?",
+        a: "A /favicon.ico with 16, 32 and 48 pixels inside, a 180×180 apple-touch-icon PNG, and for installable sites 192×192 and 512×512 PNGs in the web app manifest. An SVG icon is a good addition for sharp rendering at any size.",
+      },
+      {
+        q: "Do I still need favicon.ico?",
+        a: "Yes, it's still worth having. Browsers fall back to /favicon.ico when a page has no icon link, and many tools, feed readers and crawlers never read your HTML at all. Without it, they produce 404s in your logs.",
+      },
+      {
+        q: "What is a maskable icon?",
+        a: "An icon in the web app manifest with \"purpose\": \"maskable\". It has enough padding that Android can crop it to its icon shape. Without one, Android shrinks the regular icon onto a white circle.",
+      },
+      {
+        q: "What does the checker request?",
+        a: "Our server requests the page you enter, its manifest and up to 14 icon files, once each, and stores nothing. Private and internal addresses are refused.",
+      },
+    ],
+  },
+  "robots-txt-tester": {
+    about:
+      "The robots.txt Tester tells you whether a crawler may fetch a URL, and which line of robots.txt decides it. Paste a robots.txt or fetch one from a site, choose a crawler (Googlebot, Bingbot, GPTBot, ClaudeBot, PerplexityBot and twenty more, or any name), and test as many URLs as you like.\n\nMatching follows RFC 9309 and Google's documented behavior. A crawler obeys only the groups that name it, and ignores the * group completely when one does, a common surprise. Within a group, the longest matching rule wins and Allow wins a tie. * and $ wildcards work as Google applies them, percent-encoding is normalized, and /robots.txt is always allowed. Google's own exceptions are included: its image, video and news crawlers fall back to Googlebot's rules, and AdsBot ignores the * group.\n\nA table shows one URL against every crawler at once, which is the quickest way to check AI crawler blocking. The file itself is checked for misspelled and unsupported directives (including Noindex, which Google dropped in 2019), rules outside any group, relative sitemap URLs and the 500 KiB size limit. A fetched file's HTTP status is explained too: a 5xx makes Google treat the whole site as blocked.",
+    useCases: [
+      "Checking a robots.txt change before deploying it",
+      "Finding out why Search Console reports a page as blocked by robots.txt",
+      "Confirming that GPTBot, ClaudeBot and other AI crawlers are blocked, or allowed",
+      "Debugging wildcard rules for URL parameters and file types",
+    ],
+    tips: [
+      "Once a group names Googlebot, Googlebot ignores the * group. Repeat the * rules you still want in its group.",
+      "The longest rule wins, not the first: Allow: /admin/public/ beats Disallow: /admin/ for files under /admin/public/.",
+      "End a rule with $ to match the end of the URL: Disallow: /*.pdf$ blocks PDFs but not /file.pdf?download=1.",
+      "robots.txt doesn't remove pages from Google. To keep a page out, allow crawling and add noindex.",
+      "A robots.txt that answers 503 makes Google stop crawling the whole site, so make sure it never errors.",
+    ],
+    faq: [
+      {
+        q: "How do I test whether a URL is blocked by robots.txt?",
+        a: "Paste your robots.txt (or fetch it from your site), choose the crawler and enter the URL. The tester says Allowed or Blocked and shows the exact rule and line number that decided it.",
+      },
+      {
+        q: "Which rule wins when Allow and Disallow both match?",
+        a: "The most specific one, meaning the one with the longest path. If they're the same length, Allow wins. The order of the lines doesn't matter.",
+      },
+      {
+        q: "Why does Googlebot ignore my User-agent: * rules?",
+        a: "A crawler obeys exactly one set of rules: the groups that name it, or if there are none, the * group. As soon as you add a User-agent: Googlebot group, the * rules no longer apply to Googlebot.",
+      },
+      {
+        q: "How do I block AI crawlers?",
+        a: "Add groups for their user agents, such as GPTBot, ClaudeBot, CCBot, PerplexityBot and Google-Extended, with Disallow: /. Test them with the crawler table. robots.txt is a request, not enforcement: well-behaved crawlers respect it.",
+      },
+      {
+        q: "Does Google support Crawl-delay or Noindex in robots.txt?",
+        a: "No. Googlebot ignores Crawl-delay (Bing and Yandex respect it), and Google stopped supporting Noindex in robots.txt in 2019. Use a robots meta tag or the X-Robots-Tag header to keep pages out of results.",
+      },
+    ],
+  },
   "google-authenticator-export-decoder": {
     about:
       "The Google Authenticator Export Decoder turns Google Authenticator's \"Transfer accounts\" QR codes into standard 2FA setup links that any authenticator app can import. Google's export QR doesn't contain the usual otpauth://totp link: it holds an otpauth-migration://offline?data=… link — a base64 protobuf with up to ten accounts per code — which Bitwarden, 1Password, Aegis and most other apps don't accept. This tool decodes it and gives you, for each account, the secret, a standard otpauth:// link and a QR code to scan into the new app, with the current code shown so you can check it matches before deleting anything.\n\nIt also works the other way: paste otpauth:// links and build a transfer QR that Google Authenticator imports in one scan.\n\nDecoding happens entirely in your browser tab. Nothing is uploaded, and nothing is saved — not even to the browser's local storage — because these secrets are the keys to your accounts.",
@@ -3886,6 +4101,14 @@ export const toolContent: Record<string, ToolContent> = {
       "Code and non-English text tokenize less predictably than English prose — treat the estimate as looser for those inputs.",
     ],
     faq: [
+      {
+        q: "Can I count the tokens in a PDF or Word document?",
+        a: "Yes. Use Count tokens in files, or drop the files onto the page: PDF, Word (.docx), PowerPoint (.pptx), OpenDocument, Markdown, CSV, JSON and code files are read in your browser and never uploaded. The count is for the document's text. If you send the PDF file itself to Claude or Gemini, each page is also processed as an image, which costs extra tokens.",
+      },
+      {
+        q: "Why does my scanned PDF show no text?",
+        a: "A scanned PDF is a set of page images with no text layer. Models read it with vision, billed per image, so the text count doesn't apply. Run OCR first if you need the text.",
+      },
       {
         q: "Why isn't this using the real GPT or Claude tokenizer?",
         a: "Real tokenizers are trained vocabularies with tens of thousands of entries — too large to bundle into a lightweight, instant-load browser tool without adding a heavy dependency. The approximation here is tuned to track real tokenizer behavior closely for typical English text, but isn't a substitute for an exact count when precision actually matters (e.g. right before a batch job you're billed for).",
@@ -4615,6 +4838,10 @@ export const toolContent: Record<string, ToolContent> = {
       "Versions are compared numerically per segment, so 1.10.0 is newer than 1.9.0, even though it sorts earlier as plain text.",
     ],
     faq: [
+      {
+        q: "What makes a version valid SemVer?",
+        a: "Three numbers, MAJOR.MINOR.PATCH, with no leading zeros, optionally followed by a prerelease (-beta.1) and build metadata (+build.5). 1.2, 1.2.3.4 and 01.2.3 are invalid. npm also accepts a leading v (v1.2.3) and strips it. The Validate & sort tab checks a whole list against the official SemVer 2.0.0 rules and says why each invalid version fails.",
+      },
       {
         q: "What's the difference between ^1.2.3 and ~1.2.3?",
         a: "^1.2.3 allows anything below the next major version (>=1.2.3 <2.0.0), so new features and fixes come in. ~1.2.3 allows anything below the next minor version (>=1.2.3 <1.3.0), so only patch fixes come in.",

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ToolLayout from "@/components/ToolLayout";
 import CopyButton from "@/components/CopyButton";
 import { Terminal } from "lucide-react";
+import { applySymbolic, parseLsLine, shortOctal, umaskFor, umaskInfo, type LsEntry } from "@/lib/chmod-modes";
 
 interface PermSet {
   read: boolean;
@@ -115,6 +116,12 @@ export default function ChmodCalculatorClient({ initialOctal, heading, intro }: 
   const [recursivePath, setRecursivePath] = useState("/path/to/dir");
   const [splitFileDir, setSplitFileDir] = useState(false);
   const [fileOctal, setFileOctal] = useState("644");
+  const [pasted, setPasted] = useState("");
+  const [umask, setUmask] = useState("022");
+  const [chownUser, setChownUser] = useState("www-data");
+  const [chownGroup, setChownGroup] = useState("www-data");
+  const [chownPath, setChownPath] = useState("/var/www/html");
+  const [chownRecursive, setChownRecursive] = useState(true);
 
   const ownerDigit = permSetToDigit(perms.owner);
   const groupDigit = permSetToDigit(perms.group);
@@ -175,6 +182,37 @@ export default function ChmodCalculatorClient({ initialOctal, heading, intro }: 
     }
   };
 
+  const setFromMode = (mode: number) => {
+    const o = shortOctal(mode);
+    const sd = o.length === 4 ? Number(o[0]) : 0;
+    const parsed = octalToPermissions(o.slice(-3));
+    if (!parsed) return;
+    setPerms(parsed);
+    setSpecial({ setuid: (sd & 4) !== 0, setgid: (sd & 2) !== 0, sticky: (sd & 1) !== 0 });
+    setOctalInput(o);
+    setOctalError("");
+  };
+
+  // What was pasted: ls -l lines, an rwx string, or a symbolic chmod expression applied to the current mode
+  const pasteResult = useMemo(() => {
+    const lines = pasted
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l && !/^total \d+$/.test(l));
+    if (!lines.length) return null;
+    const entries = lines.map(parseLsLine);
+    if (entries.every((e) => e)) return { kind: "ls" as const, entries: entries as LsEntry[] };
+    if (lines.length === 1) {
+      const applied = applySymbolic(parseInt(octal, 8), lines[0]);
+      if (applied !== null) return { kind: "symbolic" as const, from: octal, mode: applied };
+    }
+    return { kind: "error" as const };
+  }, [pasted, octal]);
+
+  const um = umaskInfo(umask);
+  const chownWho = chownUser && chownGroup ? `${chownUser}:${chownGroup}` : chownUser || (chownGroup ? `:${chownGroup}` : "user:group");
+  const chownCmds = `sudo chown ${chownRecursive ? "-R " : ""}${chownWho} ${chownPath || "/path"}\nsudo chmod ${chownRecursive ? "-R " : ""}${octal} ${chownPath || "/path"}`;
+
   const applyPreset = (presetOctal: string) => {
     const parsed = octalToPermissions(presetOctal);
     if (parsed) {
@@ -203,6 +241,59 @@ export default function ChmodCalculatorClient({ initialOctal, heading, intro }: 
       description={intro ?? "Calculate Unix file permissions visually. Toggle checkboxes or type an octal value."}
     >
       <div className="max-w-2xl space-y-6">
+        {/* Paste ls -l output, an rwx string or a symbolic expression */}
+        <div>
+          <label htmlFor="chmod-paste" className="text-xs text-[#888888] font-medium block mb-1">
+            Paste <code className="font-mono">ls -l</code> output, a permission string (rwxr-xr-x) or a change like u+x or go-w
+          </label>
+          <textarea
+            id="chmod-paste"
+            value={pasted}
+            onChange={(e) => setPasted(e.target.value)}
+            rows={pasted.includes("\n") ? 4 : 1}
+            spellCheck={false}
+            placeholder="-rwxr-xr-x 1 deploy www-data 4096 Nov 14 09:12 deploy.sh"
+            className="w-full px-3 py-2 text-sm font-mono bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] resize-y"
+          />
+          {pasteResult?.kind === "error" && <p className="text-xs text-[#ef4444] mt-1">Couldn&apos;t read that. Use a line from ls -l, a string like drwxr-xr-x, or an expression like u+x,go-w.</p>}
+          {pasteResult?.kind === "symbolic" && (
+            <div className="flex flex-wrap items-center gap-2 mt-2 text-xs">
+              <span className="text-[#888888]">
+                {pasteResult.from} with <code className="font-mono text-[#f5f5f5]">{pasted.trim()}</code> becomes <code className="font-mono text-[#a855f7]">{shortOctal(pasteResult.mode)}</code>
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setFromMode(pasteResult.mode);
+                  setPasted("");
+                }}
+                className="px-2 py-1 rounded border border-[#2a2a2a] text-[#d4d4d4] hover:border-[#a855f7]"
+              >
+                Apply
+              </button>
+            </div>
+          )}
+          {pasteResult?.kind === "ls" && (
+            <ul className="mt-2 space-y-1">
+              {pasteResult.entries.map((e, i) => (
+                <li key={i} className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                  <code className="font-mono text-[#a855f7] w-10">{e.short}</code>
+                  <span className="text-[#888888]">{e.typeLabel}</span>
+                  {e.name && <span className="font-mono text-[#d4d4d4] break-all">{e.name}</span>}
+                  {e.owner && (
+                    <span className="text-[#666666]">
+                      {e.owner}:{e.group}
+                    </span>
+                  )}
+                  <button type="button" onClick={() => setFromMode(parseInt(e.octal, 8))} className="text-[#a855f7] hover:underline">
+                    Load
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         {/* Octal display + input row */}
         <div className="flex flex-wrap items-end gap-6">
           <div>
@@ -397,6 +488,71 @@ export default function ChmodCalculatorClient({ initialOctal, heading, intro }: 
               </div>
             </div>
           )}
+        </div>
+
+        {/* umask */}
+        <div className="p-4 bg-[#111111] border border-[#222222] rounded-[8px] space-y-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <label htmlFor="umask" className="text-xs text-[#888888] font-medium flex items-center gap-1.5">
+              <Terminal size={12} /> umask calculator
+            </label>
+            <input
+              id="umask"
+              value={umask}
+              onChange={(e) => setUmask(e.target.value.replace(/\D/g, "").slice(0, 4))}
+              maxLength={4}
+              className="w-20 px-2 py-1 text-sm font-mono bg-[#0a0a0a] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]"
+            />
+            {["022", "002", "027", "077"].map((u) => (
+              <button key={u} type="button" onClick={() => setUmask(u)} className={`px-2 py-0.5 text-xs font-mono rounded border ${umask === u ? "border-[#a855f7] text-[#f5f5f5]" : "border-[#2a2a2a] text-[#888888]"}`}>
+                {u}
+              </button>
+            ))}
+          </div>
+          {um ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <p className="text-[#555555]">New files</p>
+                <p className="font-mono text-lg text-[#f5f5f5]">{um.files}</p>
+              </div>
+              <div>
+                <p className="text-[#555555]">New directories</p>
+                <p className="font-mono text-lg text-[#f5f5f5]">{um.dirs}</p>
+              </div>
+              <div className="col-span-2 sm:col-span-1">
+                <p className="text-[#555555]">umask -S</p>
+                <p className="font-mono text-[#bbbbbb] break-all">{um.symbolic}</p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-xs text-[#ef4444]">A umask is 3 or 4 octal digits, like 022.</p>
+          )}
+          <p className="text-xs text-[#555555]">
+            New files start from 666 and directories from 777; the umask removes bits from both. For new directories to get {baseOctal}, set <code className="font-mono text-[#888888]">umask {umaskFor(baseOctal)}</code>.
+          </p>
+        </div>
+
+        {/* chown */}
+        <div className="p-4 bg-[#111111] border border-[#222222] rounded-[8px] space-y-3">
+          <p className="text-xs text-[#888888] font-medium flex items-center gap-1.5">
+            <Terminal size={12} /> Owner and group (chown)
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-[1fr_1fr_2fr] gap-2">
+            <input aria-label="Owner" value={chownUser} onChange={(e) => setChownUser(e.target.value.replace(/[^\w.$-]/g, ""))} placeholder="user" className="min-w-0 px-2 py-1.5 text-sm font-mono bg-[#0a0a0a] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]" />
+            <input aria-label="Group" value={chownGroup} onChange={(e) => setChownGroup(e.target.value.replace(/[^\w.$-]/g, ""))} placeholder="group" className="min-w-0 px-2 py-1.5 text-sm font-mono bg-[#0a0a0a] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]" />
+            <input aria-label="Path" value={chownPath} onChange={(e) => setChownPath(e.target.value)} placeholder="/path" className="col-span-2 sm:col-span-1 min-w-0 px-2 py-1.5 text-sm font-mono bg-[#0a0a0a] border border-[#222222] rounded-[6px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7]" />
+          </div>
+          <label className="flex items-center gap-2 text-xs text-[#888888] cursor-pointer">
+            <input type="checkbox" checked={chownRecursive} onChange={(e) => setChownRecursive(e.target.checked)} className="accent-[#a855f7] w-3.5 h-3.5" />
+            Recursive (-R)
+          </label>
+          <div className="flex items-start gap-3 p-3 bg-[#0a0a0a] border border-[#222222] rounded-[8px]">
+            <code className="flex-1 text-xs font-mono text-[#f5f5f5] whitespace-pre-wrap break-all">{chownCmds}</code>
+            <CopyButton text={chownCmds} size="sm" />
+          </div>
+          <p className="text-xs text-[#555555]">
+            Check what a file has now with <code className="font-mono text-[#888888]">stat -c &apos;%a %U:%G %n&apos; {chownPath || "/path"}</code> (on macOS, <code className="font-mono text-[#888888]">stat -f &apos;%Lp %Su:%Sg %N&apos;</code>). Changing the owner needs root; a user can only change a file&apos;s group to one they belong to.
+          </p>
         </div>
 
         {/* Description */}

@@ -26,6 +26,24 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    date: "2026-11-14",
+    title: "nginx locations, API keys and robots.txt rules",
+    summary: "See which nginx location handles a URL, identify any API key without sending it anywhere, test JMESPath queries, check a site's favicons and test URLs against robots.txt.",
+    items: [
+      { kind: "new", tool: "nginx-location-tester" },
+      { kind: "new", tool: "api-key-identifier" },
+      { kind: "new", tool: "jmespath-tester" },
+      { kind: "new", tool: "favicon-checker" },
+      { kind: "new", tool: "robots-txt-tester" },
+      { kind: "improved", tool: "ai-token-counter", text: "Count tokens in PDF, Word, PowerPoint and text files, read in your browser and never uploaded" },
+      { kind: "improved", tool: "chmod-calculator", text: "Paste ls -l output or a change like u+x, plus a umask calculator and chown commands" },
+      { kind: "improved", tool: "fake-data-generator", text: "Pages set up for PostgreSQL, MySQL, SQLite, CSV and JSON, each with example output and how to load it" },
+      { kind: "improved", tool: "semver-calculator", text: "Validate and sort a list of versions, with the reason each invalid one fails and the nearest valid version" },
+      { kind: "improved", tool: "csv-json", text: "Detects the delimiter, turns numbers and booleans into real JSON types, and nests a.b columns into objects (and back)" },
+      { kind: "guide", post: "find-hardcoded-api-keys" },
+    ],
+  },
+  {
     date: "2026-11-07",
     title: "VPC planning, CSP checks and rate limit testing",
     summary: "Plan AWS subnets with ready-to-use Terraform, convert CIDR blocks in bulk, audit a Content-Security-Policy, test 429 handling and see the headers a server receives.",

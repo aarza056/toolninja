@@ -1,11 +1,18 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import ToolLayout from "@/components/ToolLayout";
-import { Trash2, Info } from "lucide-react";
+import { Trash2, Info, FileText, Upload, X, Lock } from "lucide-react";
 import Link from "next/link";
 import { modelPricing, estimateTokens, estimateCost } from "@/lib/token-counter";
 import { PRICES_CHECKED, PRICING_SOURCES, today, type Provider } from "@/lib/llm-pricing";
+import type { ExtractedFile } from "@/lib/file-text";
+
+interface CountedFile extends ExtractedFile {
+  tokens: number;
+  words: number;
+  characters: number;
+}
 
 const STORAGE_KEY = "toolninja:ai-token-counter";
 
@@ -31,6 +38,38 @@ interface Props {
 export default function AiTokenCounterClient({ provider, heading, intro }: Props = {}) {
   const [input, setInput] = useState("");
   const [outputRatio, setOutputRatio] = useState(1); // assumed output tokens, as a multiple of input
+  // Files are counted in the browser and kept only in memory, never saved or sent
+  const [files, setFiles] = useState<CountedFile[]>([]);
+  const [reading, setReading] = useState("");
+  const [fileError, setFileError] = useState("");
+  const [dragging, setDragging] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
+
+  const addFiles = async (list: FileList | File[]) => {
+    setFileError("");
+    const picked = Array.from(list).slice(0, 20);
+    setReading("Opening…");
+    // Loaded on first use, so the file readers cost nothing until someone opens a file
+    let extractText: typeof import("@/lib/file-text").extractText;
+    try {
+      ({ extractText } = await import("@/lib/file-text"));
+    } catch {
+      setReading("");
+      setFileError("Couldn't load the file reader. Check your connection and try again.");
+      return;
+    }
+    for (const file of picked) {
+      setReading(`Reading ${file.name}…`);
+      try {
+        const r = await extractText(file, (done, total) => setReading(`Reading ${file.name}: page ${done} of ${total}…`));
+        const e = estimateTokens(r.text);
+        setFiles((prev) => [...prev, { ...r, ...e }]);
+      } catch (err) {
+        setFileError(err instanceof Error ? err.message : `Couldn't read ${file.name}.`);
+      }
+    }
+    setReading("");
+  };
 
   useEffect(() => {
     try {
@@ -45,7 +84,11 @@ export default function AiTokenCounterClient({ provider, heading, intro }: Props
     } catch {}
   }, [input]);
 
-  const estimate = useMemo(() => estimateTokens(input), [input]);
+  const textEstimate = useMemo(() => estimateTokens(input), [input]);
+  const estimate = useMemo(
+    () => files.reduce((sum, f) => ({ tokens: sum.tokens + f.tokens, words: sum.words + f.words, characters: sum.characters + f.characters }), textEstimate),
+    [files, textEstimate]
+  );
   const assumedOutputTokens = Math.round(estimate.tokens * outputRatio);
   // Priced on the visitor's date, so announced price changes apply on time; the page's provider first
   const models = useMemo(() => {
@@ -78,6 +121,75 @@ export default function AiTokenCounterClient({ provider, heading, intro }: Props
             className="w-full h-[calc(100vh-320px)] min-h-[300px] p-3 text-sm resize-none bg-[#111111] border border-[#222222] rounded-[8px] text-[#f5f5f5] focus:outline-none focus:border-[#a855f7] leading-relaxed"
             spellCheck={true}
           />
+
+          <div
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragging(false);
+              if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+            }}
+            className={`mt-3 p-3 border border-dashed rounded-[8px] text-xs transition-colors ${dragging ? "border-[#a855f7] bg-[#a855f7]/5" : "border-[#2a2a2a]"}`}
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              <button type="button" onClick={() => fileInput.current?.click()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] border border-[#2a2a2a] text-[#d4d4d4] hover:border-[#a855f7]">
+                <Upload size={13} /> Count tokens in files
+              </button>
+              <span className="text-[#777777]">PDF, Word, PowerPoint, OpenDocument, Markdown, CSV, JSON or code. Drop them here.</span>
+              <input
+                ref={fileInput}
+                type="file"
+                multiple
+                className="hidden"
+                accept=".pdf,.docx,.pptx,.odt,.odp,.txt,.md,.csv,.tsv,.json,.jsonl,.xml,.html,.htm,.js,.jsx,.ts,.tsx,.py,.java,.go,.rs,.rb,.php,.cs,.c,.cpp,.h,.sql,.yaml,.yml,.toml,.log,.srt,.vtt,.ipynb,text/*"
+                onChange={(e) => {
+                  if (e.target.files?.length) addFiles(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+            <p className="flex items-center gap-1.5 mt-2 text-[#666666]">
+              <Lock size={11} className="text-[#4ade80]" /> Files are read in your browser and never uploaded.
+            </p>
+            {reading && <p className="mt-2 text-[#a855f7]">{reading}</p>}
+            {fileError && <p className="mt-2 text-[#f87171]">{fileError}</p>}
+            {files.length > 0 && (
+              <ul className="mt-3 space-y-1.5">
+                {files.map((f, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <FileText size={13} className="text-[#888888] mt-0.5 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-baseline gap-x-2">
+                        <span className="text-[#d4d4d4] break-all">{f.name}</span>
+                        <span className="font-mono text-[#a855f7]">~{f.tokens.toLocaleString()} tokens</span>
+                        <span className="text-[#666666]">
+                          {f.words.toLocaleString()} words{f.pages ? ` · ${f.pages} ${f.kind === "pptx" ? "slide" : "page"}${f.pages === 1 ? "" : "s"}` : ""}
+                        </span>
+                      </div>
+                      {f.note && <p className="text-[#fbbf24] mt-0.5">{f.note}</p>}
+                    </div>
+                    <button type="button" aria-label={`Remove ${f.name}`} onClick={() => setFiles(files.filter((_, j) => j !== i))} className="text-[#666666] hover:text-[#ef4444]">
+                      <X size={13} />
+                    </button>
+                  </li>
+                ))}
+                {files.length > 1 || input.trim() ? (
+                  <li className="text-[#888888] pt-1 border-t border-[#1f1f1f]">
+                    Total with {input.trim() ? "the text above" : "all files"}: <span className="font-mono text-[#f5f5f5]">~{estimate.tokens.toLocaleString()} tokens</span>
+                  </li>
+                ) : null}
+              </ul>
+            )}
+            {files.some((f) => f.kind === "pdf") && (
+              <p className="mt-2 text-[#666666]">
+                This counts the PDF&apos;s text. Sending the PDF file itself costs more: Claude and Gemini also look at each page as an image, which is billed on top.
+              </p>
+            )}
+          </div>
 
           <div className="mt-4 grid grid-cols-3 gap-3">
             <div className="p-3 bg-[#111111] border border-[#222222] rounded-[8px]">

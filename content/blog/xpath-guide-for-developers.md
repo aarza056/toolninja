@@ -19,7 +19,7 @@ faqs:
 
 ## XPath Fundamentals
 
-XPath (XML Path Language) is the standard query language for selecting nodes from XML and HTML document trees. It's the engine behind XSLT transformations, Selenium locators, web scraping libraries like lxml, and XML parsing in virtually every programming language.
+XPath (XML Path Language) is the standard query language for selecting nodes from XML and HTML document trees. It's the engine behind XSLT transformations, Selenium locators, web scraping libraries like lxml, and XML parsing in virtually every programming language. Every expression in this guide can be pasted into the [XPath Tester](/tools/xpath-tester) along with your own XML or HTML, to see exactly which nodes it selects.
 
 ### The Document Tree Model
 
@@ -83,7 +83,7 @@ Axes are the most powerful part of XPath — they define the direction you trave
 
 ## Predicates
 
-Predicates narrow down which nodes to select. They appear in square brackets after a node test.
+Predicates narrow down which nodes to select. They appear in square brackets after a node test. They're also where most XPath bugs hide, so it pays to check them against real markup in an [XPath tester](/tools/xpath-tester) before they go into a scraper or a test.
 
 ### Position Predicates
 
@@ -451,5 +451,7 @@ boolean(//div[@id='error'])
 **Whitespace in text()** — HTML frequently includes leading/trailing whitespace in text nodes. Use `normalize-space(text())='Target'` instead of `text()='Target'` for reliable matching.
 
 **Namespace forgetting** — A namespace declaration on the root element affects all descendants. If your XPath finds nothing on namespaced XML, that's almost always the cause.
+
+When an expression returns nothing and you can't see why, paste the document and the expression into the [XPath Tester](/tools/xpath-tester): it shows every match, and the error message when the expression itself is invalid.
 
 **Dynamic attributes** — Generated class names or IDs change on every build. Prefer stable semantic attributes like `data-testid`, `name`, `role`, or structural positions over dynamic ones.

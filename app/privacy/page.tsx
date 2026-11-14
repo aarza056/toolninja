@@ -15,7 +15,7 @@ export default function PrivacyPage() {
       </Link>
 
       <h1 className="text-2xl font-bold text-[#f5f5f5] mb-2">Privacy Policy</h1>
-      <p className="text-xs text-[#555555] mb-10">Last updated: October 2026</p>
+      <p className="text-xs text-[#555555] mb-10">Last updated: November 2026</p>
 
       <div className="prose-custom space-y-8 text-sm text-[#888888] leading-relaxed">
 
@@ -147,8 +147,9 @@ export default function PrivacyPage() {
             Pasted headers are analyzed in your browser and never sent anywhere.
           </p>
           <p className="mt-3" id="tool-requests">
-            A few other tools work through our server. The XML Sitemap Generator&apos;s crawl and the CSP Checker&apos;s URL check send the address you
-            enter to our server, which requests those pages. The Request Headers &amp; Proxy Test shows you the headers and IP address your request
+            A few other tools work through our server. The XML Sitemap Generator&apos;s crawl, the CSP Checker&apos;s URL check, the Favicon Checker and the robots.txt Tester&apos;s
+            <em>Fetch robots.txt</em> send the address you enter to our server, which requests those pages (and, for the Favicon Checker, the
+            site&apos;s manifest and icon files). The Request Headers &amp; Proxy Test shows you the headers and IP address your request
             arrived with, and the Retry-After &amp; Rate Limit Tester&apos;s test endpoint answers your test requests. We don&apos;t store the addresses,
             page contents, headers or IP addresses involved. Anonymous counters, keyed by an identifier that changes every day, limit how many
             requests one visitor can make and expire shortly afterward.
